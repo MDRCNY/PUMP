@@ -17,12 +17,6 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 }
 ```
 
-Authors@R: c(
-  person("Kristin", "Porter", , "k.porter@mdrc.org", c("aut", "cre")),
-  person("Deni", "Chen",, "d.chen@mdrc.org", c("aut")),
-  person("Zarni", "Htet",,"z.htet@mdrc.org", c("aut"))
-)
-
 
 
 
