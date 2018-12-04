@@ -1,21 +1,21 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1543942772960.000,
+    "created" : 1543950230249.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4243913503",
-    "id" : "31F13872",
+    "hash" : "0",
+    "id" : "A301C4FD",
     "lastKnownWriteTime" : 1543944488,
-    "last_content_update" : 1543944488364,
+    "last_content_update" : 1543944488,
     "path" : "D:/Users/htet/Desktop/Projects/pum/vignettes/estpowerupdate.Rmd",
     "project_path" : "vignettes/estpowerupdate.Rmd",
     "properties" : {
-        "cursorPosition" : "17,3",
-        "scrollLine" : "5"
+        "cursorPosition" : "11,0",
+        "scrollLine" : "4"
     },
-    "relative_order" : 1,
+    "relative_order" : 5,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_markdown"
