@@ -10,6 +10,16 @@ Authors@R: c(
 Maintainer: The package maintainer <deni.chen@mdrc.org>
 Description: This package details provides functions for power calculation, minimum detectable effect size and sample size
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
+Imports:
+     MASS,
+     mvtnorm,
+     multtest,
+     doParallel,
+     foreach,
+     parallel,
+     snow,
+     RcppEigen,
+     lme4
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
