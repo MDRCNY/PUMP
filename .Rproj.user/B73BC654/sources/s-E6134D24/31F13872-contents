@@ -17,6 +17,14 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 }
 ```
 
+Authors@R: c(
+  person("Kristin", "Porter", , "k.porter@mdrc.org", c("aut", "cre")),
+  person("Deni", "Chen",, "d.chen@mdrc.org", c("aut")),
+  person("Zarni", "Htet",,"z.htet@mdrc.org", c("aut"))
+)
+
+
+
 
 This function operates on each row of null test statistics. It first orders the test statistics such that $t_{s_1} \geq t_{s_2} \geq \dots \geq t_{s_M}$, and then compares $max{|T_{s_1}|,\dots,|T_{s_m}|}$ to $|t_{s_1}|$, $max{|T_{s_2}|,\dots,|T_{s_m}|}$ to $|t_{s_2}|$ and so on, until one compares $max{|T_{s_m}|}$ to ${t_{s_m}$. 
     

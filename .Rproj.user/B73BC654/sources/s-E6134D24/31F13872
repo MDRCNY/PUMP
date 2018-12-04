@@ -5,13 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "4289246878",
+    "hash" : "2734944032",
     "id" : "31F13872",
-    "lastKnownWriteTime" : 1543942743,
-    "last_content_update" : 1543942743,
+    "lastKnownWriteTime" : 1543943687,
+    "last_content_update" : 1543943687156,
     "path" : "D:/Users/htet/Desktop/Projects/pum/vignettes/estpowerupdate.Rmd",
     "project_path" : "vignettes/estpowerupdate.Rmd",
     "properties" : {
+        "cursorPosition" : "23,1",
+        "scrollLine" : "5"
     },
     "relative_order" : 1,
     "source_on_save" : false,
