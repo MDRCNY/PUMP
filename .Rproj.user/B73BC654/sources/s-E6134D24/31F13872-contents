@@ -1,0 +1,496 @@
+title: "Power Under Multiplicity Functions"
+author: "Kristin Porter"
+date: "September 13, 2016"
+output: html_notebook
+---
+
+## Functions for Computing Power for Westfall-Young
+
+This function operates on one row of null test statistics. It compares $max_{1 \leq l \leq M} {T_l}$ to $|t_m|$ for all $m$.  
+
+```{r}
+comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
+  M<-length(abs.Zs.H0.1row)
+  maxt <- rep(NA, M)
+  for (m in 1:M) {maxt[m] <- max(abs.Zs.H0.1row[m]) > abs.Zs.H1.1samp[m]}
+  return(as.integer(maxt))
+}
+```
+
+
+This function operates on each row of null test statistics. It first orders the test statistics such that $t_{s_1} \geq t_{s_2} \geq \dots \geq t_{s_M}$, and then compares $max{|T_{s_1}|,\dots,|T_{s_m}|}$ to $|t_{s_1}|$, $max{|T_{s_2}|,\dots,|T_{s_m}|}$ to $|t_{s_2}|$ and so on, until one compares $max{|T_{s_m}|}$ to ${t_{s_m}$. 
+    
+In this function, $abs.Zs.H0.1row$ is one row of test statistics under the joint null hypothesis; $abs.Zs.H1.1samp$ are the raw test statistics when the null is false, for one simulated sample, and oo is the ordering of these raw test statistics.  
+
+```{r}
+comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
+  M<-length(abs.Zs.H0.1row)
+  maxt <- rep(NA, M)
+  nullt.oo<-abs.Zs.H0.1row[oo]
+  rawt.oo<-abs.Zs.H1.1samp[oo]
+  maxt[1] <- max(nullt.oo) > rawt.oo[1]
+  for (h in 2:M) {maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]}
+  return(as.integer(maxt))
+}
+```
+
+In adjust.allsamps.WYSS, we do this multiple times, where snum is number of samples do compute WY pvals to estimate WY power. Here, 
+    # ind.B is a matrix of whether ordered absolute pvalue was greater than ordered null test statistics
+    # pi.p.m # adjusted pvalues before enforcing monotonicity
+
+```{r}
+adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
+  adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
+  doWY<-for (s in 1:snum) {
+    ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    adjp.WY[s,]<-colMeans(ind.B)
+  }
+  return(adjp.WY)
+}
+```
+
+```{r}
+adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
+  cl <- makeCluster(ncl)
+  registerDoParallel(cl)
+  clusterExport(cl=cl, list("comp.rawt.SD"))
+  M<-ncol(abs.Zs.H0)
+  adjp.WY<-matrix(NA,snum,M)
+  doWY <- foreach(s=1:snum, .combine=rbind) %dopar% {
+    ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
+    pi.p.m <- colMeans(ind.B) 
+  # enforcing monotonicity
+    adjp.minp <- numeric(M)
+    adjp.minp[1] <- pi.p.m[1]
+    for (h in 2:M) {adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])}
+    adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
+  }
+  return(doWY)
+  stopCluster(cl)
+}
+```
+
+## Helper functions
+
+Recall that $t(m)$ has a $t$-distribution with mean $MDES(m)/Q(m)$, where 
+$$ Q(m) = \sqrt{ \frac{(1-R^2(m))}{p(1-p)Jn_j} } $$
+
+```{r}
+t.mean.H1<-function(MDES,J,n.j,R2.1,p) { MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1) }
+```
+
+$t(m)$ also has degrees of freedom, $df = Jn_j - J - g^*(m)-1$, where $g^*(m)$ is the toal number of baseline covariates included in the model for the $m^th$ outcome, including the block indicators so that $g^*(m)=J+k(m)$.
+```{r}
+df<-function(J,n.j,numCovar.1) {J*n.j - J - numCovar.1 - 1}
+```
+ *power.blocked.RCT.2: for 2 level blocked RCT*
+    # estimates power, MDES or sample size (either number of blocks or number of units per block)
+    # for either constant, fixed or random effects
+
+    # M is the number of hypothesis tests (outcomes)
+    # MDES = vector of MDES's of length M - can be zero if not assuming all nulls are false
+    # J = number of blocks
+    # n.j = units per block
+    # power = power (assumed same for all tests)
+    # meanProbT = proportion assigned to treatment group
+    # alpha = significance level
+    # numCovar.1 = number of Level 1 covariates (not including block dummies)
+    # numCovar.2 = number of Level 2 covariates
+    # ICC = intraclass correlation
+    # omega =
+    # sigma = correlation matrix for correlations between test statistics
+    # mod. type = "c" for constant effects, "f" for fixed effects, "r" for random effects
+    # tnum = number of test statistics (samples) for all procedures other than WY & number of permutations for WY
+    # snum is number of samples for WY
+
+```{r}
+power.blockedRCT.2<-function(M, MDES, J, n.j,
+                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                             mod.type, sigma, omega,
+                             tnum = 10000, snum=1000, ncl=2) {
+# load required packages
+  require(MASS); require(mvtnorm); require(multtest); require(doParallel)
+  
+# number of false nulls  
+  numfalse<-sum(1*MDES>0)
+ 
+# compute Q(m) for all false nulls
+  t.shift<-t.mean.H1(MDES,J,n.j,R2.1,p)
+  t.df<-df(J,n.j,numCovar.1)
+  t.shift.mat<-t(matrix(rep(t.shift,tnum),M,tnum)) # repeating shift.beta on every row
+    
+# generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
+  Zs.H0<-rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar")) 
+  Zs.H1 <- Zs.H0 + t.shift.mat
+  pvals.H0<-2*pt(-abs(Zs.H0),df=t.df)
+  pvals.H1<-2*pt(-abs(Zs.H1),df=t.df)    
+  abs.Zs.H0 <- abs(Zs.H0)
+  abs.Zs.H1 <- abs(Zs.H1)
+  
+# adjust p-values for all but Westfall-Young  
+  adjp<-apply(pvals.H1,1,mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
+  grab.pval<-function(...,proc) {return(...$adjp[order(...$index),proc])}
+  rawp<-do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
+  adjp.BF<-do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
+  adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
+  adjp.BH<-do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
+  
+# adjust p-values for Westfall-Young (single-step and step-down)
+  order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
+  adjp.SS<-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
+  adjp.WY<-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
+# combine all adjusted p-values in list (each entry is matrix for given MTP)
+  adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
+  
+# for each MTP, get matrix of indicators of whether adjusted p-value is less than alpha  
+  reject<-function(x) {as.matrix(1*(x<alpha))}
+  reject.all<-lapply(adjp.all,reject)
+# in each row for each MTP matrix, count number of p-values less than 0.05, in rows corresponding to false nulls
+  lt.alpha<-function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
+  lt.alpha.all<-lapply(reject.all,lt.alpha)
+# indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
+  power.ind.fun<-function(x) {apply(x,2,mean)}
+  power.ind.all<-lapply(reject.all,power.ind.fun)
+  power.ind.all.mat<-do.call(rbind,power.ind.all)
+# m-min powers for all procs (including complete power when m=M)
+  power.min.fun <- function(x,M) {
+    power.min<-numeric(M)
+    cnt<-0
+    for (m in 1:M) {
+      power.min[m]<-mean(x>cnt)
+      cnt<-cnt+1
+    }
+    return(power.min)
+    }
+  power.min<-lapply(lt.alpha.all,power.min.fun,M=M)
+  power.min.mat<-do.call(rbind,power.min)
+  
+# complete power is probability all false nulls rejected when p-values not adjusted 
+  # this is row 1 and column number = numfalse
+  power.cmp<-rep(power.min.mat[1,M],length(power.min)) # should it be numfalse or M?
+  
+# combine all power for all definitions
+  all.power.results<-cbind(power.ind.all.mat,power.min.mat[,-M],power.cmp)
+# take mean of all individual power estimates
+  mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]),1,mean)
+# revise final matrix to report this mean individual power and return results  
+  all.power.results<-cbind(mean.ind.power,all.power.results)
+  colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
+  rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
+  return(all.power.results)
+}
+```
+
+
+First, for individual power, we can compute MDES easily for raw and BF: 
+
+The critical value for rejecting the $m^{th}$ null hypotheses with a two-sided test, $c_(\alpha/2)(m)$, is the inverse of the t cumulative density function for the value of $\frac{\alpha}{2}$ since
+	
+$\frac{alpha}{2} = Pr(t(m)>c_{(\frac{\alpha}{2})} |H0(m))$
+	$c_{(1-??)}(m)=c_{\alpha\2)}-\frac{MDES(m)}{Q(m)}$.
+
+
+Then, power $(1-\beta)$ is the inverse of the cumulative density function (t-distributed with mean zero and df degrees of freedom) for the value of $c_{(1-\beta)}(m)$, or proportion of the area under this density function that lies to the right of $c_{(1-\beta)}$.
+
+If alternatively, $ES(m)=$ a specified minimum detectable effect size (MDES), then $t(m)$ has a t-distribution with mean $\frac{MDES(m)},{Q(m)}$ and again degrees of freedom $df$. Therefore, the critical value for determining power for rejecting the $m^{th}$ null hypothesis, $c_{(1-\beta)}(m)$, is given by
+
+
+ 
+```{r MDESfun, message=FALSE, warning=FALSE}
+
+midpoint<-function(lower,upper) {lower+(dist(c(lower,upper))/2)}
+
+MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
+                            p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                            mod.type, sigma, omega,
+                            tnum = 10000, snum=2, ncl=2, display.progress=TRUE) {
+  
+  print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
+  
+  if (MTP=="WY-SD" & snum <1000) print("For the step-down Westfall-Young procedure, it is recommended that snum be at least 1000.")
+  if (MTP!="WY-SD") snum<- 2
+  
+# Compute Q(m)
+  Q.m<-sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
+  t.df<-df(J,n.j,numCovar.1)
+  
+# For raw and BF, compute critical values 
+  crit.alpha <- qt(p=(1-alpha/2),df=t.df)  
+  crit.alphaxM <- qt(p=(1-alpha/M/2),df=t.df)  
+  
+# Compute raw and BF MDES for INDIVIDUAL POWER
+  crit.beta <- ifelse(power > 0.5, qt(power,df=t.df), qt(1-power,df=t.df))
+  MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta)) 
+  MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta)) 
+  
+### INDIVIDUAL POWER ###
+if (power.definition=="indiv") {  
+  if (MTP == "raw") return (c(MDES.raw,power))
+  if (MTP == "BF")  return (c(MDES.BF,power))
+}
+    
+# For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
+  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    lowhigh <- c(MDES.raw,MDES.BF)
+    try.MDES <- midpoint(MDES.raw,MDES.BF)
+  }
+
+# For other scenarios, set lowhigh intervals and compute midpoint
+  ifelse (power.definition=="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1) )
+  try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+
+      ii <- 0
+      target.power <- 0
+    while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {   
+      if (display.progress) {
+        print(paste0("MDES is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
+        print(paste("Trying MDES of",round(try.MDES,4)))
+      }
+ 
+      runpower <- power.blockedRCT.2(M, try.MDES, J, n.j,
+                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                     mod.type, sigma, omega,
+                                     tnum, snum, ncl)
+
+      target.power <- runpower[MTP,power.definition]
+      if (display.progress) print(paste("Estimated power for this MDES is",round(target.power,4)))
+
+      is.over <- target.power > power
+      if(target.power > power - marginError & target.power < power + marginError) return(c(try.MDES,target.power))
+      if(!is.over) {
+        lowhigh[1] <- try.MDES
+      }
+      if(is.over) {
+        lowhigh[2] <- try.MDES
+      }
+ #     lowhigh.dist <- lowhigh[2]-lowhigh[1]
+ #     try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
+      try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+      ii <- ii + 1 
+      } # end while
+}
+```
+
+
+# this is a help function for getting SS when no adjustment - it starts with PowerUp package function mrss.bira2cl but that function seems to have a bug - only works if pass in numeric values and not if pass in objects that hold those values. Plus mrss.bira2cl only computes J, not n.j
+
+
+```{r SScalcSingle, message=FALSE, warning=FALSE}
+SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+  i <- 0
+    conv <- FALSE
+    while (i <= num.iter & conv == FALSE) {
+        if (whichSS=="J") df <- J0 * (n.j - 1) - numCovar.1 - 1
+        if (whichSS=="n.j") df <- J * (n.j0 - 1) - numCovar.1 - 1
+        if (df < 0 | df < 0 | is.infinite(df)) {
+            break
+        }
+        T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), 
+            abs(qt(alpha, df)))
+        T2 <- abs(qt(power, df))
+        MT <- ifelse(power >= 0.5, T1 + T2, T1 - T2)
+        if (whichSS=="J") {
+          J1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * n.j))
+          if (abs(J1 - J0) < tol) {
+            conv <- TRUE
+          }
+          J0 <- (J1 + J0)/2
+        }
+        if (whichSS=="n.j") {
+          n.j1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * J))
+          if (abs(n.j1 - n.j0) < tol) {
+            conv <- TRUE
+          }
+          n.j0 <- (n.j1 + n.j0)/2
+        }
+        
+        i <- i + 1
+    }
+    if (whichSS=="J") {
+      J <- ifelse(df > 0, round(J0), NA)
+      return(J)
+    }
+    if (whichSS=="n.j") {
+      n.j <- ifelse(df > 0, round(n.j0), NA)
+      return(n.j)
+    }
+
+}
+```
+
+These currrently only work if numFalse = M and if MDES is the same or all outcomes. 
+
+
+```{r SSfun, message=FALSE, warning=FALSE}
+SS.blockedRCT.2<-function(M, numFalse, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, display.progress=TRUE) {
+
+
+# indicator for which ss to compute
+  doJ <- is.null(J)
+  don.j <- is.null(n.j)
+  
+  ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
+  print(paste("Estimating",whichSS,"for target ",power.definition,"power of ",round(power,4)))
+
+  
+# Compute J or n.j for raw and BF SS for INDIVIDUAL POWER
+# for now assuming only two tailed tests
+ if (doJ) {
+   J.raw <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+   J.BF <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+
+   }
+ if (don.j) {
+   n.j.raw <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+   n.j.BF <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1) 
+   }
+  
+
+# So below can focus on just the one being estimated
+  if (doJ) { 
+    ss.raw <- J.raw
+    ss.BF <- J.BF
+  }
+  if (don.j) {
+    ss.raw <- n.j.raw
+    ss.BF <- n.j.BF
+  }
+  
+  
+### INDIVIDUAL POWER ###
+if (power.definition=="indiv") {  
+  if (MTP == "raw") return(ss.raw) 
+  if (MTP == "BF") return(ss.BF) 
+  }
+    
+# For individual power, other J's or n.j's will be between raw and BF, so make starting value the midpoint
+  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+    lowhigh <- c(ss.raw,ss.BF)
+    try.ss <- midpoint(lowhigh[1],lowhigh[2])
+    }
+
+# For minimal powers, makes starting value = raw
+  if (power.definition != "indiv")  {
+    lowhigh <- c(0,ss.BF)
+    try.ss <- midpoint(lowhigh[1],lowhigh[2])
+  }
+    ii <- 0
+    target.power <- 0
+    while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
+      if (display.progress) {
+       print(paste0(whichSS, " is in the interval [",round(lowhigh[1],4),",",round(lowhigh[2],4),"]"))
+       print(paste("Trying",whichSS,"of",round(try.ss,4)))
+       }
+      if (doJ) {
+        runpower <- power.blockedRCT.2(M, MDES, J= try.ss, n.j,
+                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                     mod.type, sigma, omega,
+                                     tnum, snum, ncl)
+      }
+      if (don.j) {
+        runpower <- power.blockedRCT.2(M, MDES, J, n.j=try.ss,
+                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, 
+                                     mod.type, sigma, omega,
+                                     tnum, snum, ncl)
+      }
+      target.power <- runpower[MTP,power.definition]
+      if (display.progress) print(paste("Estimated power for this",whichSS,"is",target.power))
+      is.over <- target.power > power
+      if(target.power > power - marginError & target.power < power + marginError) return(c(try.ss,target.power))
+      if(!is.over) {
+        p.off <- (power - target.power) / power
+        lowhigh[1] <- try.ss
+      }
+      if(is.over) {
+        lowhigh[2] <- try.ss
+        p.off <- (target.power - power) / power
+      }
+
+      lowhigh.dist <- lowhigh[2]-lowhigh[1]
+
+      try.ss <- ifelse(target.power < power, (try.ss + lowhigh[2])/2, (try.ss + lowhigh[1])/2) # midpoint
+      ii <- ii + 1
+      } # end while
+    
+    if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) print ("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
+
+}
+
+```
+
+
+
+```{r testing, message=FALSE, warning=FALSE}
+
+library(PowerUpR)
+mdes1 <- 0.125
+alpha <- 0.05
+p <- 0.5
+r2 <- 0.2
+n.j <- 20
+J <- 50
+numCovar.1 <- 1
+M <- 2
+sigma <-matrix(0.99,M,M)
+diag(sigma)<-1
+me <- 0.01
+n.j0<-10
+J0<-10
+
+# PowerUp for comparison of raw individual power
+power.up <- power.bira2c1(es=mdes1,alpha,two.tailed=TRUE,p,g1=numCovar.1,r21=r2,n=n.j,J=J)
+
+
+# Power calculations
+test.power <- power.blockedRCT.2(M, MDES=rep(mdes1,M), J, n.j,
+                             p, alpha, numCovar.1=1, numCovar.2=0, R2.1=r2, R2.2=NULL, ICC=NULL, 
+                             mod.type="c", sigma=sigma, omega=NULL,
+                             tnum = 10000, snum=10, ncl=2)
+test.power
+# If TRUE, then raw individual power matches estimate from Power-Up.
+power.up$power < (test.power["rawp","indiv"] + me) & power.up$power > (test.power["rawp","indiv"] - me)
+
+# MDES calculations (be sure to do this for power estimates less than and greater than 0.5)
+  ## indiv, BF
+test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BF","indiv"], power.definition = "indiv", MTP="BF", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
+                          mod.type="constant", sigma=sigma, omega=NULL,
+                          tnum = 10000, snum=2, ncl=2)
+test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
+  ## indiv, BH
+test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BH","indiv"], power.definition = "indiv", MTP="BH", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
+                          mod.type="constant", sigma=sigma, omega=NULL,
+                          tnum = 10000, snum=2, ncl=4)
+test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
+  ## min1, BH
+test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["BH","min1"], power.definition = "min1", MTP="BH", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
+                          mod.type="constant", sigma=sigma, omega=NULL,
+                          tnum = 10000, snum=2, ncl=2)
+test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
+  ## min2, WY-SD
+test.MDES <- MDES.blockedRCT.2(M, numFalse = M, J, n.j, power=test.power["WY-SD","min1"], power.definition = "min1", MTP="WY-SD", marginError = me, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, 
+                          mod.type="constant", sigma=sigma, omega=NULL,
+                          tnum = 10000, snum=1000, ncl=2)
+test.MDES[1] < (mdes1 + me) & test.MDES[1] > (mdes1 - me)
+
+  ## indiv, BF, J
+test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+print(test.SS)
+
+  ## indiv, BH, n.j
+test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+print(test.SS)
+
+  ## min1, BH, J
+test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = mdes1, test.power["BH","min1"], power.definition = "min1", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+print(test.SS)
+
+```
+
+test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)
+
+NOTES:
+    # how do we optimize tnum and snum - can we provide margin of error? 
+    # how to handle MDES when numfalse not equal to M
+
+ 
+
