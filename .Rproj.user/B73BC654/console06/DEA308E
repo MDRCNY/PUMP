@@ -1,79 +1,4 @@
 
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:15 .[0K
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:14 ..[0K
--rw-r--r-- 1 htet 1049089  30 Dec  4 11:14 .Rbuildignore[0K
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:14 .Rproj.user[0K
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:15 .git[0K
--rw-r--r-- 1 htet 1049089 374 Dec  4 11:14 DESCRIPTION[0K
--rw-r--r-- 1 htet 1049089  32 Dec  4 11:14 NAMESPACE[0K
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:14 R[0K
-drwxr-xr-x 1 htet 1049089   0 Dec  4 11:14 man[0K
--rw-r--r-- 1 htet 1049089 376 Dec  4 11:14 pum.Rproj[0K
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K
-$[0K[3G[?25h[?25l$ c[0K[?25hd[0K[6G[?25l$ cd .[0K[?25hb[0K[?25l$ cd .[0K[?25hg[0Ki[0Kt[0K[?25l
-[0K[?25h]0;:/d/Users/htet/Desktop/Projects/pum/.git[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum/.git[0;36m (GIT_DIR!)[0m[0K
-$[0K[3G[?25h[?25l$ l[0K[?25hs[0K[?25l
-[0K[?25hHEAD  config  description  hooks  info  objects  refs[0K[?25l
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum/.git[0;36m (GIT_DIR!)[0m[0K
-$[0K[3G[?25h[?25l$ c[0K[?25ha[0Kt[0K[7G[?25l$ cat c[0K[?25ho[0Kn[0Kf[0Ki[0Kg[0K[?25l
-[0K[?25h[core][0K[?25l
-        repositoryformatversion = 0[0K
-        filemode = false[0K
-        bare = false[0K
-        logallrefupdates = true[0K
-        symlinks = false[0K
-        ignorecase = true[0K
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum/.git[0;36m (GIT_DIR!)[0m[0K
-$[0K[3G[?25h[?25l$ c[0K[?25hd[0K[6G[?25l$ cd .[0K[?25h.[0K[?25l
-[0K[?25h]0;:/d/Users/htet/Desktop/Projects/pum[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K
-$[0K[3G[?25h[?25l$ git remote add origin https://github.com/MDRCNY/p[0K[51G[?25h[?25l$ git remote add origin https://github.com/MDRCNY/pum-p.git[0K[?25h[?25l
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K[1G[?25h[?25l
-$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git r[0K[?25he[0Km[0Ko[0Kt[0Ke[0K[14G[?25l$ git remote -[0K[?25h[?25l$ git remote[0K[14G[?25h[?25l$ git remote v[0K[?25h[?25l$ git remote[0K[15G[?25h[14G[?25l$ git remote -[0K[?25hv[0K[?25l
-[0K[?25horigin  https://github.com/MDRCNY/pum-p.git (fetch)[0K[?25l
-origin  https://github.com/MDRCNY/pum-p.git (push)[0K
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K
-$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git p[0K[?25hu[0Ks[0Kh[0K[12G[11G[?25l$ git pus[0K[?25h[?25l$ git pu[0K[?25h[?25l$ git p[0K[?25h[?25l$ git[0K[7G[?25h[6G[?25l$ gits[0K[?25ht[0K[?25l$ gits[0K[?25h[?25l$ git[0K[?25h[7G[?25l$ git s[0K[?25ht[0Ka[0Kt[0Ku[0Ks[0K[?25l
-[0K[?25hOn branch master[0K[?25l
-[0K
-Initial commit[0K
-[0K
-Untracked files:[0K
-  (use "git add <file>..." to include in what will be committed)[0K
-[0K
-        [0;31m.Rbuildignore[0m[0K
-        [0;31m.Rproj.user/[0m[0K
-        [0;31mDESCRIPTION[0m[0K
-        [0;31mNAMESPACE[0m[0K
-        [0;31mR/[0m[0K
-        [0;31mman/[0m[0K
-        [0;31mpum.Rproj[0m[0K
-[0K
-nothing added to commit but untracked files present (use "git add" to track)[0K
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K
-$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git a[0K[?25hd[0Kd[0K[11G[?25l$ git add .[0K[?25hR[0K[?25l$ git add .[0K[?25h[?25l$ git add[0K[11G[?25h[10G[11G[?25l$ git add .[0K[?25h[?25l
-[0K[?25hwarning: LF will be replaced by CRLF in .Rproj.user/B73BC654/sources/prop/3923DE4D.[0K[?25l
-The file will have its original line endings in your working directory.[0K
-warning: LF will be replaced by CRLF in .Rproj.user/B73BC654/sources/prop/INDEX.[0K
-The file will have its original line endings in your working directory.[0K
-[0K[?25hwarning: LF will be replaced by CRLF in .Rproj.user/B73BC654/sources/s-E6134D24/45E460B7.[0K[?25l
-The file will have its original line endings in your working directory.[0K
-warning: LF will be replaced by CRLF in .Rproj.user/B73BC654/sources/s-E6134D24/45E460B7-contents.[0K
-The file will have its original line endings in your working directory.[0K
-[0K[?25h[?25l
-[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum[0;36m (master)[0m[0K
-$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git x[0K[?25ho[0Km[0Km[0K[?25l$ git xom[0K[?25h[?25l$ git xo[0K[?25h[?25l$ git x[0K[9G[?25h[8G[?25l$ git[0K[7G[?25h[?25l$ git c[0K[?25ho[0Km[0Km[0Ki[0Kt[0K[14G[?25l$ git commit -[0K[?25h[?25lm[0K[15G[?25h[16G[17G[?25l$ git commit -m "[0K[?25h"[0K[18G[?25l$ git commit -m "a"[0K[?25h[19G[?25l$ git commit -m "ad"[0K[20G[?25h[?25l$ git commit -m "add"[0K[?25h[21G[?25l$ git commit -m "add "[0K[22G[?25h[?25l$ git commit -m "add p"[0K[23G[?25h[?25l$ git commit -m "add pr"[0K[24G[?25h[?25l$ git commit -m "add pro"[0K[25G[?25h[?25l$ git commit -m "add proj"[0K[26G[?25h[?25l$ git commit -m "add proje"[0K[27G[?25h[?25l$ git commit -m "add projec"[0K[28G[?25h[?25l$ git commit -m "add project"[0K[29G[?25h[?25l$ git commit -m "add project "[0K[30G[?25h[?25l$ git commit -m "add project t"[0K[31G[?25h[?25l$ git commit -m "add project to"[0K[32G[?25h[?25l$ git commit -m "add project to "[0K[33G[?25h[?25l$ git commit -m "add project to r"[0K[34G[?25h[?25l$ git commit -m "add project to re"[0K[?25h[35G[?25l$ git commit -m "add project to rem"[0K[36G[?25h[?25l$ git commit -m "add project to remo"[0K[37G[?25h[?25l$ git commit -m "add project to remot"[0K[38G[?25h[?25l$ git commit -m "add project to remote"[0K[39G[?25h[?25l$ git commit -m "add project to remote "[0K[40G[?25h[?25l$ git commit -m "add project to remote"[0K[?25h[39G[?25l
-[0K[?25h[master (root-commit) 22dfcac] add project to remote[0K[?25l
- Committer: Zarni Htet <Zarni.Htet@mdrc.org>[0K
-Your name and email address were configured automatically based[0K
-on your username and hostname. Please check that they are accurate.[0K
 You can suppress this message by setting them explicitly. Run the[0K
 following command and follow the instructions in your editor to edit[0K
 your configuration file:[0K
@@ -1013,6 +938,78 @@ Changes not staged for commit:[0K
         [0;31mmodified:   DESCRIPTION[0m[0K
         [0;31mmodified:   NAMESPACE[0m[0K
         [0;31mmodified:   R/blockrct2_power.R[0m[0K
+[0K
+no changes added to commit (use "git add" and/or "git commit -a")[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git a[0K[?25hd[0Kd[0K[11G[?25l$ git add .[0K[?25h[?25l
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git c[0K[?25ho[0Km[0Km[0Ki[0Kt[0K[14G[?25l$ git commit -[0K[?25hm[0K[17G[?25l$ git commit -m "[0K[?25hC[0Kh[0Ka[0Kn[0Kg[0Ki[0Kn[0Kg[0K[27G[?25l$ git commit -m "Changing t[0K[?25hh[0Ke[0K[31G[?25l$ git commit -m "Changing the n[0K[?25ha[0Km[0Ke[0K[36G[?25l$ git commit -m "Changing the name s[0K[?25hp[0Ka[0Kc[0Ke[0K[42G[?25l$ git commit -m "Changing the name space f[0K[?25hi[0Kl[0Ke[0K"[0K[?25l
+[0K[?25h[powerfunctionsdev[0K[20G[?25l[powerfunctionsdev 8d825ae] Changing the name space file[0K
+ Committer: Zarni Htet <Zarni.Htet@mdrc.org>[0K
+Your name and email address were configured automatically based[0K
+on your username and hostname. Please check that they are accurate.[0K
+You can suppress this message by setting them explicitly. Run the[0K
+following command and follow the instructions in your editor to edit[0K
+your configuration file:[0K
+[0K
+    git config --global --edit[0K
+[0K
+After doing this, you may fix the identity used for this commit with:[0K
+[0K
+    git commit --amend --reset-author[0K
+[0K
+ 5 files changed, 66 insertions(+), 16 deletions(-)[0K
+ rewrite .Rproj.user/B73BC654/console06/INDEX001 (96%)[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git p[0K[?25hu[0Ks[0Kh[0K[12G[?25l$ git push o[0K[?25hr[0Ki[0Kg[0Ki[0Kn[0K[19G[?25l$ git push origin p[0K[?25ho[0Kw[0Ke[0Kr[0Kf[0Ku[0Kn[0Kc[0Kt[0Ki[0Ko[0Kn[0Ks[0Kd[0Ke[0Kv[0K[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+[0K[?25hPermission denied (publickey).[0K[?25l
+fatal: Could not read from remote repository.[0K
+[0K
+Please make sure you have the correct access rights[0K
+and the repository exists.[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ git push origin powerfunctionsdev[0K[?25h[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+Permission denied (publickey).[0K
+fatal: Could not read from remote repository.[0K
+[0K
+Please make sure you have the correct access rights[0K
+and the repository exists.[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ git push origin powerfunctionsdev[0K[?25h[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+[0K[?25hCounting objects: 11, done.[0K[?25l
+Delta compression using up to 2 threads.[0K
+Compressing objects: 100% (11/11), done.[0K
+Writing objects: 100% (11/11), 1.65 KiB | 0 bytes/s, done.[0K
+Total 11 (delta 5), reused 0 (delta 0)[0K
+[0K[?25hremote: Resolving deltas: 100% (5/5), completed with 5 local objects.[0K[?25l
+[0K[?25hTo github.com:MDRCNY/pum-p.git[0K[?25l
+   c997312..8d825ae  powerfunctionsdev -> powerfunctionsdev[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[0m[0K]0;:/d/Users/htet/Desktop/Projects/pum-p[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+[?25l[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git s[0K[?25ht[0Ka[0Kt[0Ku[0Ks[0K[?25l
+[0K[?25hOn branch powerfunctionsdev[0K[?25l
+Your branch is up-to-date with 'origin/powerfunctionsdev'.[0K
+Changes not staged for commit:[0K
+  (use "git add <file>..." to update what will be committed)[0K
+  (use "git checkout -- <file>..." to discard changes in working directory)[0K
+[0K
+        [0;31mmodified:   .Rproj.user/B73BC654/console06/DEA308E[0m[0K
+        [0;31mmodified:   .Rproj.user/B73BC654/console06/INDEX001[0m[0K
 [0K
 no changes added to commit (use "git add" and/or "git commit -a")[0K
 [0K[?25h[?25l
