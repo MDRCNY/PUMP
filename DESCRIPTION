@@ -16,7 +16,6 @@ biocViews:
      Biobase,
      multtest,
 Imports:
-     multtest,
      MASS,
      mvtnorm,
      doParallel,
@@ -25,7 +24,8 @@ Imports:
      snow,
      RcppEigen,
      lme4,
-     stats
+     stats,
+     multtest
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

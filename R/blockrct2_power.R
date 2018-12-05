@@ -140,6 +140,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @param ncl the number of clusters to use for parallel processing. It has a default of 2.
 #'
 #' @return power results
+#' @importFrom multtest mt.rawp2adjp
 #' @export
 #'
 power.blockedRCT.2<-function(M, MDES, J, n.j,
