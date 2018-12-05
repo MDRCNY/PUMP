@@ -10,6 +10,9 @@ Authors@R: c(
 Maintainer: The package maintainer <deni.chen@mdrc.org>
 Description: This package details provides functions for power calculation, minimum detectable effect size and sample size
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
+Depends:
+     R (>= 3.3.0)
+biocViews:
 Imports:
      MASS,
      mvtnorm,
