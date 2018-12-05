@@ -918,4 +918,56 @@ no changes added to commit (use "git add" and/or "git commit -a")[0K
 [0K[?25h[?25l
 [0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
 $[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git a[0K[?25hd[0Kd[0K[11G[?25l$ git add .[0K[?25h[?25l
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git c[0K[?25ho[0Km[0Km[0Ki[0Kt[0K[14G[?25l$ git commit -[0K[?25hm[0K[17G[?25l$ git commit -m "[0K[?25hb[0Ki[0Ko[0K[?25l$ git commit -m "bi[0K[?25h[?25l$ git commit -m "b[0K[?25h[?25l$ git commit -m "[0K[?25hC[0Kh[0Ka[0Kn[0Kg[0Ki[0Kn[0Kg[0K[27G[?25l$ git commit -m "Changing t[0K[?25hh[0Ke[0K[31G[?25l$ git commit -m "Changing the d[0K[?25he[0Ks[0Kc[0Kr[0Ki[0Kp[0Kt[0Ki[0Ko[0Kn[0K[43G[?25l$ git commit -m "Changing the description f[0K[?25hi[0Kl[0Ke[0K[48G[?25l$ git commit -m "Changing the description file a[0K[?25h[50G[?25l$ git commit -m "Changing the description file a b[0K[?25hi[0Kt[0K"[0K[?25l
+[0K[?25h[powerfunctionsdev 18df5cd] Changing the description file a bit[0K[?25l
+ Committer: Zarni Htet <Zarni.Htet@mdrc.org>[0K
+Your name and email address were configured automatically based[0K
+on your username and hostname. Please check that they are accurate.[0K
+You can suppress this message by setting them explicitly. Run the[0K
+following command and follow the instructions in your editor to edit[0K
+your configuration file:[0K
+[0K
+    git config --global --edit[0K
+[0K
+After doing this, you may fix the identity used for this commit with:[0K
+[0K
+    git commit --amend --reset-author[0K
+[0K
+ 3 files changed, 53 insertions(+), 1 deletion(-)[0K
+ rewrite .Rproj.user/B73BC654/console06/INDEX001 (96%)[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git p[0K[?25hu[0Ks[0Kh[0K[12G[?25l$ git push o[0K[?25hr[0Ki[0Kg[0Ki[0Kn[0K[19G[?25l$ git push origin p[0K[?25ho[0Kw[0Ke[0Kr[0Kf[0Ku[0Kn[0Kc[0Kt[0Ki[0Ko[0Kn[0Ks[0Kd[0Ke[0Kv[0K[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+[0K[?25hCounting objects: 8, done.[0K[?25l
+Delta compression using up to 2 threads.[0K
+Compressing objects: 100% (8/8), done.[0K
+Writing objects: 100% (8/8), 1.27 KiB | 0 bytes/s, done.[0K
+Total 8 (delta 4), reused 0 (delta 0)[0K
+[0K[?25hremote: Resolving deltas: 100% (4/4), completed with 4 local objects.[0K[?25l
+[0K[?25hTo github.com:MDRCNY/pum-p.git[0K[?25l
+   f02c46a..18df5cd  powerfunctionsdev -> powerfunctionsdev[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[0m[0K[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[2A[?25h]0;:/d/Users/htet/Desktop/Projects/pum-p[?25l
+
+[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git s[0K[?25ht[0Ka[0Kt[0Ku[0Ks[0K[?25l
+[0K[?25hOn branch powerfunctionsdev[0K[?25l
+Your branch is up-to-date with 'origin/powerfunctionsdev'.[0K
+Changes not staged for commit:[0K
+  (use "git add <file>..." to update what will be committed)[0K
+  (use "git checkout -- <file>..." to discard changes in working directory)[0K
+[0K
+        [0;31mmodified:   .Rproj.user/B73BC654/console06/DEA308E[0m[0K
+        [0;31mmodified:   .Rproj.user/B73BC654/console06/INDEX001[0m[0K
+        [0;31mmodified:   DESCRIPTION[0m[0K
+[0K
+no changes added to commit (use "git add" and/or "git commit -a")[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git a[0K[?25hd[0Kd[0K[11G[?25l$ git add .[0K[?25h[?25l
 [0K[?25h

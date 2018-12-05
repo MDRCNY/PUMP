@@ -13,11 +13,12 @@ Description: This package details provides functions for power calculation, mini
 Depends:
      R (>= 3.3.0)
 biocViews:
-Imports:
-     MASS,
-     mvtnorm,
      Biobase,
      multtest,
+Imports:
+     multtest,
+     MASS,
+     mvtnorm,
      doParallel,
      foreach,
      parallel,
