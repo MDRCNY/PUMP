@@ -164,8 +164,8 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   abs.Zs.H1 <- abs(Zs.H1)
 
   # adjust p-values for all but Westfall-Young
-  mt.rawp2adjp = multtest::mt.rawp2adjp
-  adjp<-apply(pvals.H1,1,mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
+  # mt.rawp2adjp <- multtest::mt.rawp2adjp
+  adjp<-apply(pvals.H1,1,multtest::mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
   rawp<-do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
   adjp.BF<-do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
   adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
