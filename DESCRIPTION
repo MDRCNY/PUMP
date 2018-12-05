@@ -19,7 +19,8 @@ Imports:
      parallel,
      snow,
      RcppEigen,
-     lme4
+     lme4,
+     stats
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
