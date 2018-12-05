@@ -16,6 +16,7 @@ biocViews:
 Imports:
      MASS,
      mvtnorm,
+     Biobase,
      multtest,
      doParallel,
      foreach,
