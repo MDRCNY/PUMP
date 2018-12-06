@@ -1015,4 +1015,48 @@ no changes added to commit (use "git add" and/or "git commit -a")[0K
 [0K[?25h[?25l
 [0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
 $[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git a[0K[?25hd[0Kd[0K[11G[?25l$ git add .[0K[?25h[?25l
-[0K[?25h
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git c[0K[?25ho[0Km[0Km[0Ki[0Kt[0K[14G[?25l$ git commit -[0K[?25hm[0K[17G[?25l$ git commit -m "[0K[?25hp[0Ku[0Ks[0Kh[0K[23G[22G[?25l$ git commit -m "pus[0K[?25h[?25l$ git commit -m "pu[0K[21G[?25h[20G[?25l$ git commit -m "p[0K[?25h[?25l$ git commit -m "[0K[?25hC[0Kh[0Ka[0Kn[0Kg[0Ki[0Kn[0Kg[0K[27G[?25l$ git commit -m "Changing n[0K[?25ha[0Km[0Ke[0Ks[0Kp[0Ka[0Kce[0K[37G[?25l$ git commit -m "Changing namespace f[0K[?25ho[0Kr[0K[41G[?25l$ git commit -m "Changing namespace for f[0K[?25hi[0Kle[0K[46G[?25l$ git commit -m "Changing namespace for file i[0K[?25hm[0Kp[0Ko[0Kr[0Kt[0K"[0K[?25l
+[0K[?25h[powerfunctionsdev 78c797d] Changing namespace for file import[0K[?25l
+ Committer: Zarni Htet <Zarni.Htet@mdrc.org>[0K
+Your name and email address were configured automatically based[0K
+on your username and hostname. Please check that they are accurate.[0K
+You can suppress this message by setting them explicitly. Run the[0K
+following command and follow the instructions in your editor to edit[0K
+your configuration file:[0K
+[0K
+    git config --global --edit[0K
+[0K
+After doing this, you may fix the identity used for this commit with:[0K
+[0K
+    git commit --amend --reset-author[0K
+[0K
+ 2 files changed, 73 insertions(+), 76 deletions(-)[0K
+ rewrite .Rproj.user/B73BC654/console06/INDEX001 (96%)[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ g[0K[?25hi[0Kt[0K[7G[?25l$ git p[0K[?25hu[0Ks[0Kh[0K[12G[?25l$ git push o[0K[?25hr[0K[?25li[0K[14G[?25h[15G[?25l$ git push orig[0K[?25hi[0Kn[0K[19G[?25l$ git push origin p[0K[?25ho[0Kw[0Ke[0Kr[0Kf[0Ku[0Kn[0Kc[0Kt[0Ki[0Ko[0Kn[0Ks[0Kd[0Ke[0Kv[0K[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+Enter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25h[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+Permission denied (publickey).[0K
+fatal: Could not read from remote repository.[0K
+[0K
+Please make sure you have the correct access rights[0K
+and the repository exists.[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h[?25l$ git push origin powerfunctionsdev[0K[?25h[?25l
+[0K[?25hEnter passphrase for key '/d/Users/htet/.ssh/id_rsa':[0K[55G[?25l
+[0K[?25hCounting objects: 7, done.[0K[?25l
+Delta compression using up to 2 threads.[0K
+Compressing objects: 100% (7/7), done.[0K
+Writing objects: 100% (7/7), 1.02 KiB | 0 bytes/s, done.[0K
+Total 7 (delta 3), reused 0 (delta 0)[0K
+[0K[?25hremote: Resolving deltas: 100% (3/3), completed with 3 local objects.[0K[?25l
+[0K[?25hTo github.com:MDRCNY/pum-p.git[0K[?25l
+   8d825ae..78c797d  powerfunctionsdev -> powerfunctionsdev[0K
+[0K[?25h[?25l
+[0;32mhtet@EC2AMAZ-VL0SD87 [0;35m [0;33m~/Desktop/Projects/pum-p[0;36m (powerfunctionsdev)[0m[0K
+$[0K[3G[?25h
