@@ -5,8 +5,8 @@
 \title{Block RCT2 power function}
 \usage{
 power.blockedRCT.2(M, MDES, J, n.j, p, alpha, numCovar.1, numCovar.2 = 0,
-  R2.1, R2.2, ICC, mod.type, sigma, omega, tnum = 10000, snum = 1000,
-  ncl = 2)
+  R2.1, R2.2, ICC, mod.type, sigma = 0, omega, tnum = 10000,
+  snum = 1000, ncl = 2)
 }
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}

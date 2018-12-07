@@ -1,0 +1,31 @@
+---
+title: "testpower"
+author: "Zarni Htet"
+date: "December 7, 2018"
+output: pdf_document
+---
+```{r}
+#library(pum)
+source("../R/blockrct2_power.R")
+mdes1 <- 0.125
+alpha <- 0.05
+p <- 0.5
+r2 <- 0.2
+n.j <- 20
+J <- 50
+numCovar.1 <- 1
+M <- 2
+sigma <-matrix(0.99,M,M)
+diag(sigma)<-1
+me <- 0.01
+n.j0<-10
+J0<-10
+
+
+test.power <- power.blockedRCT.2(M, MDES=0.125, J, n.j,
+                                 p, alpha, numCovar.1=1, numCovar.2=0, R2.1=r2, R2.2=NULL, ICC=NULL,
+                                 mod.type="c", sigma=sigma, omega=NULL,
+                                 tnum = 20, snum=10, ncl=2)
+
+```
+

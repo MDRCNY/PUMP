@@ -1,4 +1,4 @@
-if(!exists("LinInterpolate", mode = "function")) source("R/utils.R")
+if(!exists("grab.pval", mode = "function")) source("R/utils.R")
 #' Helper function for Westfall Young Single Step
 #'
 #' This helper function compares permutated test statistics values under H0 with sample test statistics
@@ -9,6 +9,7 @@ if(!exists("LinInterpolate", mode = "function")) source("R/utils.R")
 #' @param oo Order matrix of test statistics in descending order
 #'
 #' @return returns a vector of 1s and 0s with length of M outcomes
+#'
 #'
 comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
@@ -67,6 +68,8 @@ adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 #'
 #' @return blah blah
 #'
+#'
+#'
 adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
 
   cl <- snow::makeCluster(ncl)
@@ -100,6 +103,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
 #'
 #' @return blah blah
 #'
+#'
 t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 
   MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1)
@@ -112,6 +116,8 @@ t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 #' @param numCovar.1 blah
 #'
 #' @return blah blah
+#'
+#'
 
 df<-function(J,n.j,numCovar.1) {
 
@@ -145,8 +151,15 @@ df<-function(J,n.j,numCovar.1) {
 #'
 power.blockedRCT.2<-function(M, MDES, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                             mod.type, sigma, omega,
+                             mod.type, sigma = 0, omega,
                              tnum = 10000, snum=1000, ncl=2) {
+
+  #MDES must be the length of M
+  MDES <- rep(MDES,M)
+
+  #Setting Sigma up
+  sigma <- matrix(0.99, M, M)
+  diag(sigma) <- 1
 
   # number of false nulls
   numfalse<-sum(1*MDES>0)
@@ -166,11 +179,11 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
 
   # adjust p-values for all but Westfall-Young
   # mt.rawp2adjp <- multtest::mt.rawp2adjp
-  adjp<-apply(pvals.H1,1,multtest::mt.rawp2adjp,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
-  rawp<-do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
-  adjp.BF<-do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
-  adjp.HO<-do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
-  adjp.BH<-do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
+  adjp<-multtest::mt.rawp2adjp(pvals.H1,proc=c("Bonferroni","Holm","BH"),alpha=alpha)
+  rawp <- grab.pval(adjp, proc = "rawp")
+  adjp.BF <- grab.pval(adjp, proc = "Bonferroni")
+  adjp.HO <- grab.pval(adjp, proc = "Holm")
+  adjp.BH <- grab.pval(adjp, proc = "BH")
 
   # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
@@ -179,16 +192,27 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   # combine all adjusted p-values in list (each entry is matrix for given MTP)
   adjp.all<-list(rawp,adjp.BF,adjp.HO,adjp.BH,adjp.SS,adjp.WY)
 
+  browser()
+
   # for each MTP, get matrix of indicators of whether adjusted p-value is less than alpha
   reject<-function(x) {as.matrix(1*(x<alpha))}
   reject.all<-lapply(adjp.all,reject)
+
+  browser()
+
   # in each row for each MTP matrix, count number of p-values less than 0.05, in rows corresponding to false nulls
   lt.alpha<-function(x) {apply(as.matrix(x[,MDES>0]),1,sum)}
+  browser()
   lt.alpha.all<-lapply(reject.all,lt.alpha)
   # indiv power for WY, BH, and HO is mean of columns of dummies of whether adjusted pvalues were less than alpha
   power.ind.fun<-function(x) {apply(x,2,mean)}
   power.ind.all<-lapply(reject.all,power.ind.fun)
+
+  browser()
+
   power.ind.all.mat<-do.call(rbind,power.ind.all)
+
+  browser()
   # m-min powers for all procs (including complete power when m=M)
   power.min.fun <- function(x,M) {
     power.min<-numeric(M)
@@ -212,8 +236,17 @@ power.blockedRCT.2<-function(M, MDES, J, n.j,
   mean.ind.power <- apply(as.matrix(all.power.results[,1:M][,MDES>0]),1,mean)
   # revise final matrix to report this mean individual power and return results
   all.power.results<-cbind(mean.ind.power,all.power.results)
+
+  #browser to check dim names
+  browser()
+
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
+
+  #browser to chekc dim names
+  browser()
+
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
+  browser()
   return(all.power.results)
 
 }

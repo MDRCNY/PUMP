@@ -12,7 +12,6 @@ Description: This package details provides functions for power calculation, mini
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
 Depends:
      R (>= 3.3.0),
-     BiocManager,
      multtest
 Imports:
      MASS,
