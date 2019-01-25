@@ -1,4 +1,5 @@
 if(!exists("grab.pval", mode = "function")) source("R/utils.R")
+
 #' Helper function for Westfall Young Single Step
 #'
 #' This helper function compares permutated test statistics values under H0 with sample test statistics
@@ -21,9 +22,9 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
 #' Helper Functions for WestFallYoung Step down
 #'
-#' @param abs.Zs.H0.1row blah blah
-#' @param abs.Zs.H1.1samp blah blah
-#' @param oo blah blah
+#' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
+#' @param abs.Zs.H1.1samp One sample of H1 values
+#' @param oo Order matrix of test statistics in descending order
 #'
 #' @return blah blah
 #'
@@ -77,10 +78,11 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   M<-ncol(abs.Zs.H0)
   #browser()
   adjp.WY<-matrix(NA,snum,M)
-  #browser()
-  #s <- 1:snum
+  # dopar is a special function that has to be specified outside the foreach loop as you cannot type it inside the foreach loop
   `%dopar%` <- foreach::`%dopar%`
-  doWY <- foreach::foreach(s=1:snum, .combine=rbind) %dopar% {
+  #making s a local variable to perpetuate across
+  s = 1:snum
+  doWY <- foreach::foreach(s, .combine=rbind) %dopar% {
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
     # enforcing monotonicity
@@ -103,8 +105,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
 #' @param p blah blah
 #'
 #' @return blah blah
-#'
-#'
+
 t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 
   MDES * sqrt(p*(1-p)*J*n.j) / sqrt(1-R2.1)
@@ -117,8 +118,6 @@ t.mean.H1<-function(MDES,J,n.j,R2.1,p) {
 #' @param numCovar.1 blah
 #'
 #' @return blah blah
-#'
-#'
 
 df<-function(J,n.j,numCovar.1) {
 
@@ -146,11 +145,12 @@ df<-function(J,n.j,numCovar.1) {
 #' @param tnum number of test statistics (samples) for all procedures other than WY & number of permutations for WY (i.e permutation samples) WY has permutation which is reassignment of treatment variables. We do not see the treatment reassignment for permutation explicitly here.
 #' @param snum number of samples for WY (i.e are they less than the other test. If so, why?)
 #' @param ncl the number of clusters to use for parallel processing. It has a default of 2.
-#'
-#' @return power results
+#' @param updateProgress the callback function to update the progress bar
 #' @importFrom multtest mt.rawp2adjp
+#' @return power results
 #' @export
 #'
+
 power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0, omega = NULL,
@@ -305,7 +305,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 #'
 #' @param lower lower bound
 #' @param upper upper bound
-#'
+#' @importFrom stats dist
 #' @return returns midpoint value
 #'
 midpoint<-function(lower,upper) {
@@ -315,34 +315,33 @@ midpoint<-function(lower,upper) {
 
 #' MDES function
 #'
-#' @param M
+#' @param M blah blah
 #' @param numFalse the number of false numbers. Kristin has calculated it one way, but, I have structured it another using AiImpacts.
-#' @param J
-#' @param n.j
-#' @param power
-#' @param power.definition
-#' @param MTP
-#' @param marginError
-#' @param p
-#' @param alpha
-#' @param numCovar.1
-#' @param numCovar.2
-#' @param R2.1
-#' @param R2.2
-#' @param ICC
-#' @param mod.type
-#' @param sigma
-#' @param omega
-#' @param tnum
-#' @param snum
-#' @param Ai_mdes
+#' @param J blah blah
+#' @param n.j blah blah
+#' @param power blah blah
+#' @param power.definition blah blah
+#' @param MTP blah blah
+#' @param marginError blah blah
+#' @param p blah blah
+#' @param alpha blah blah
+#' @param numCovar.1 blah blah
+#' @param numCovar.2 blah blah
+#' @param R2.1 blah blah
+#' @param R2.2 blah blah
+#' @param ICC blah blah
+#' @param mod.type blah blah
+#' @param sigma blah blah
+#' @param omega blah blah
+#' @param tnum blah blah
+#' @param snum blah blah
+#' @param Ai_mdes blah blah
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
-#' @param ncl
-#'
-#' @return
+#' @param ncl blah blah
+#' @importFrom stats qt
+#' @return mdes results
 #' @export
-#'
-#' @examples
+
 MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma, omega,
@@ -499,31 +498,29 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 #' # this is a help function for getting SS when no adjustment -
 #' it starts with PowerUp package function mrss.bira2cl but that function seems to have a bug - only works if pass in numeric values and not if pass in objects that hold those values. Plus mrss.bira2cl only computes J, not n.j
 #'
-#' @param J
-#' @param n.j
+#' @param J blah blah
+#' @param n.j blah blah
 #' @param J0 starting values for J0 to look for optimal J and n.j
 #' @param n.j0 starting values for n.j0 to look for optimal J and n.j
-#' @param whichSS
-#' @param MDES
-#' @param power
-#' @param p
-#' @param alpha
-#' @param numCovar.1
-#' @param numCovar.2
-#' @param R2.1
-#' @param R2.2
-#' @param ICC
-#' @param mod.type
-#' @param sigma
-#' @param omega
-#' @param two.tailed
-#' @param num.iter
-#' @param tol
-#'
-#' @return
+#' @param whichSS blah blah
+#' @param MDES blah blah
+#' @param power blah blah
+#' @param p blah blah
+#' @param alpha blah blah
+#' @param numCovar.1 blah blah
+#' @param numCovar.2 blah blah
+#' @param R2.1 blah blah
+#' @param R2.2 blah blah
+#' @param ICC blah blah
+#' @param mod.type blah blah
+#' @param sigma blah blah
+#' @param omega blah blah
+#' @param two.tailed blah blah
+#' @param num.iter blah blah
+#' @param tol blah blah
+#' @return raw sample returns
 #' @export
-#'
-#' @examples
+
 SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
 
 
@@ -582,39 +579,37 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
 
 #' Sample Function
 #'
-#' @param M
-#' @param numFalse
-#' @param J
-#' @param n.j
-#' @param J0
-#' @param n.j0
-#' @param MDES
-#' @param power
-#' @param power.definition
-#' @param MTP
-#' @param marginError
-#' @param p
-#' @param alpha
-#' @param numCovar.1
-#' @param numCovar.2
-#' @param R2.1
-#' @param R2.2
-#' @param ICC
-#' @param mod.type
-#' @param sigma
-#' @param omega
-#' @param tnum
-#' @param snum
-#' @param ncl
-#' @param num.iter
-#' @param display.progress
+#' @param M blah blah
+#' @param numFalse blah blah
+#' @param typesample blah blah
+#' @param J blah blah
+#' @param n.j blah blah
+#' @param J0 blah blah
+#' @param n.j0 blah blah
+#' @param MDES blah blah
+#' @param power blah blah
+#' @param power.definition blah blah
+#' @param MTP blah blah
+#' @param marginError blah blah
+#' @param p blah blah
+#' @param alpha blah blah
+#' @param numCovar.1 blah blah
+#' @param numCovar.2 blah blah
+#' @param R2.1 blah blah
+#' @param R2.2 blah blah
+#' @param ICC blah blah
+#' @param mod.type blah blah
+#' @param sigma blah blah
+#' @param omega blah blah
+#' @param tnum blah blah
+#' @param snum blah blah
+#' @param ncl blah blah
+#' @param num.iter blah blah
+#' @param updateProgress blah blah
 #'
-#' @return
+#' @return Sample number returns
 #' @export
-#'
-#' @examples
-#'
-#'
+
 SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
                           ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
 

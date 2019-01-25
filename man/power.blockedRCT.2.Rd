@@ -4,14 +4,17 @@
 \alias{power.blockedRCT.2}
 \title{Block RCT2 power function}
 \usage{
-power.blockedRCT.2(M, MDES, J, n.j, p, alpha, numCovar.1, numCovar.2 = 0,
-  R2.1, R2.2, ICC, mod.type, sigma = 0, omega, tnum = 10000,
-  snum = 1000, ncl = 2)
+power.blockedRCT.2(M, MDES, Ai, J, n.j, p, alpha, numCovar.1,
+  numCovar.2 = 0, R2.1, R2.2 = NULL, ICC, mod.type, sigma = 0,
+  omega = NULL, tnum = 10000, snum = 1000, ncl = 2,
+  updateProgress = NULL)
 }
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}
 
-\item{MDES}{vector of MDES's of length M - can be zero if not assuming all nulls are false}
+\item{MDES}{a single entry vector detailing the minimum detectable effect size}
+
+\item{Ai}{a single entry vector detailing the number of outcomes with a non-zero effect}
 
 \item{J}{number of blocks}
 
@@ -42,6 +45,8 @@ power.blockedRCT.2(M, MDES, J, n.j, p, alpha, numCovar.1, numCovar.2 = 0,
 \item{snum}{number of samples for WY (i.e are they less than the other test. If so, why?)}
 
 \item{ncl}{the number of clusters to use for parallel processing. It has a default of 2.}
+
+\item{updateProgress}{the callback function to update the progress bar}
 }
 \value{
 power results
