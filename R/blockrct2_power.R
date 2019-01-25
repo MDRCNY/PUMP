@@ -27,6 +27,7 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #' @param oo Order matrix of test statistics in descending order
 #'
 #' @return blah blah
+#' @export
 #'
 #'
 comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
