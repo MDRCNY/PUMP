@@ -12,10 +12,11 @@ Description: This package details provides functions for power calculation, mini
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
 Depends:
      R (>= 3.3.0)
+biocViews: 
 Imports:
      MASS,
-     mvtnorm,
      multtest,
+     mvtnorm,
      doParallel,
      foreach,
      parallel,
@@ -23,6 +24,7 @@ Imports:
      RcppEigen,
      lme4,
      stats
+Additional_repositories: 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

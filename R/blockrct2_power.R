@@ -25,10 +25,8 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
 #' @param abs.Zs.H1.1samp One sample of H1 values
 #' @param oo Order matrix of test statistics in descending order
-#'
 #' @return blah blah
 #' @export
-#'
 #'
 comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
@@ -83,9 +81,11 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   `%dopar%` <- foreach::`%dopar%`
   #making s a local variable to perpetuate across
   s = 1:snum
-  doWY <- foreach::foreach(s, .combine=rbind) %dopar% {
+ # browser()
+  doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
+    browser()
     # enforcing monotonicity
     adjp.minp <- numeric(M)
     adjp.minp[1] <- pi.p.m[1]
@@ -283,6 +283,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   #browser()
   # revise final matrix to report this mean individual power and return results
   all.power.results<-cbind(mean.ind.power,all.power.results)
+  #browser()
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
   #browser()

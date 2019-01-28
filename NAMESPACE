@@ -3,6 +3,7 @@
 export(MDES.blockedRCT.2)
 export(SS.blockedRCT.2)
 export(SS.blockedRCT.2.RAW)
+export(comp.rawt.SD)
 export(power.blockedRCT.2)
 importFrom(multtest,mt.rawp2adjp)
 importFrom(stats,dist)
