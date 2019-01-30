@@ -17,5 +17,5 @@ adjust.allsamps.WYSS(snum, abs.Zs.H0, abs.Zs.H1)
 blah blah
 }
 \description{
-Adjust Single Step WestFallYoung
+This function implements
 }

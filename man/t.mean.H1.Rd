@@ -2,24 +2,24 @@
 % Please edit documentation in R/blockrct2_power.R
 \name{t.mean.H1}
 \alias{t.mean.H1}
-\title{t.mean.h1 helper function}
+\title{t.mean.h1 function for generating the mean of test statistics under the joint alternative hypothesis}
 \usage{
 \method{t}{mean.H1}(MDES, J, n.j, R2.1, p)
 }
 \arguments{
-\item{MDES}{blah blah}
+\item{MDES}{a vector of length M corresponding to the minimum detectable effect sizes (MDESs) for the M outcomes}
 
-\item{J}{blah blah}
+\item{J}{the number of blocks}
 
-\item{n.j}{blah blah}
+\item{n.j}{the harmonic means of the number of units per block}
 
-\item{R2.1}{blah blah}
+\item{R2.1}{a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes}
 
-\item{p}{blah blah}
+\item{p}{the proportion of test statistics assigned to treatment within each block group}
 }
 \value{
-blah blah
+mean of the test statistics under the joint alternative hypothesis
 }
 \description{
-t.mean.h1 helper function
+The function t.mean.H1 computes the means of the test statistics under the joint alternative hypothesis.
 }
