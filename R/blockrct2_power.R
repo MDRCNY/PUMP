@@ -1,25 +1,30 @@
+# the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
 if(!exists("grab.pval", mode = "function")) source("R/utils.R")
 
 #' Helper function for Westfall Young Single Step
 #'
-#' This helper function compares permutated test statistics values under H0 with sample test statistics
-#' under H1
+#' The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
+#' testing procedure (MTP). It operates on one row of null test statistics.
 #'
 #' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of H1 values
-#' @param oo Order matrix of test statistics in descending order
+#' @param abs.Zs.H1.1samp One sample of raw statistics
+#' @param oo Order matrix of test statistics in descending order (Only used in Step Down)
 #'
 #' @return returns a vector of 1s and 0s with length of M outcomes
 #'
 #'
 comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
+  # getting the number of M outcomes from 1 row of H0
   M <- length(abs.Zs.H0.1row)
+  # creating an empty vector of length M to save boolean values
   maxt <- rep(NA, M)
-  browser()
+
   for (m in 1:M) {
-      browser()
-      maxt[m] <- max(abs.Zs.H0.1row[m]) > abs.Zs.H1.1samp[m]
+
+    # comparing the maximum of null test values of M outcomes to each of the alternative test raw sample values
+    # saving each M boolean in maxt vector
+    maxt[m] <- max(abs.Zs.H0.1row[m]) > abs.Zs.H1.1samp[m]
 
   }
   return(as.integer(maxt))
@@ -30,7 +35,7 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
 #' @param abs.Zs.H1.1samp One sample of H1 values
 #' @param oo Order matrix of test statistics in descending order
-#' @return blah blah
+#' @return
 #' @export
 #'
 comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
@@ -44,26 +49,25 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
   return(as.integer(maxt))
 }
 
-#' Adjust Single Step WestFallYoung
+#' WestFallYoung Single Step Adjustment Function
 #'
-#' This function implements
+#' This adjustment function utilizes the comp.rawt.SS helper function to compare each row of the matrix sample test statistics under
+#' alternative hypothesis to all the rows in the matrix of the test statistics under the complete null (i.e think a distribution).
+#' Furthermore, it carries out the comparison for all the samples of raw test statistics under the alternative.
 #'
-#' @param snum blah blah
-#' @param abs.Zs.H0 blah blah
-#' @param abs.Zs.H1 blah blah
+#' @param snum the number of samples for which test statistics under the alternative hypothesis
+#' are compared with the distribution (matrix) of test statistics under the complete null (this distribution is obtained through permutation)
+#' @param abs.Zs.H0 a matrix of test statistics under the complete null
+#' @param abs.Zs.H1 a matrix of raw test statistics under the alternative
 #'
-#' @return blah blah
-#'
-#'
+#' @return a matrix of adjusted test statistics values
+
 adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
-  browser()
   doWY<-for (s in 1:snum) {
 
-    browser()
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
-    browser()
     adjp.WY[s,]<-colMeans(ind.B)
 
   }
