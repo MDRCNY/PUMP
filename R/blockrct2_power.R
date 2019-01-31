@@ -33,30 +33,42 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 #' Helper Functions for WestFallYoung Step down
 #'
 #' @param abs.Zs.H0.1row A vector of permutated test statistics values under H0
-#' @param abs.Zs.H1.1samp One sample of H1 values
+#' @param abs.Zs.H1.1samp One sample of raw statistics
 #' @param oo Order matrix of test statistics in descending order
-#' @return
+#' @return returns a vector of 1s and 0s with lengths of M outcomes
 #' @export
 #'
 comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
-  M<-length(abs.Zs.H0.1row)
+  # getting M number of outcomes from 1 row of statistics
+  M <- length(abs.Zs.H0.1row)
+  # creating an empty vector of length M to save boolean values
   maxt <- rep(NA, M)
-  nullt.oo<-abs.Zs.H0.1row[oo]
-  rawt.oo<-abs.Zs.H1.1samp[oo]
+  # saving the null test statistics
+  nullt.oo <- abs.Zs.H0.1row[oo]
+  # saving the raw test statistics under H1
+  rawt.oo <- abs.Zs.H1.1samp[oo]
+  # saving the first boolean by comparing the max of null values with the first of raw test statistics
   maxt[1] <- max(nullt.oo) > rawt.oo[1]
-  for (h in 2:M) {maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]}
+
+  # Step-down comparison where the next max of null values is compared to the next raw test statistics
+  for (h in 2:M) {
+    maxt[h] <- max(nullt.oo[-(1:(h-1))]) > rawt.oo[h]
+  } # end of for loop
+
   return(as.integer(maxt))
 }
 
 #' WestFallYoung Single Step Adjustment Function
 #'
-#' This adjustment function utilizes the comp.rawt.SS helper function to compare each row of the matrix sample test statistics under
+#' This adjustment function utilizes the comp.rawt.SS helper function to compare
+#' each row of the matrix sample test statistics under
 #' alternative hypothesis to all the rows in the matrix of the test statistics under the complete null (i.e think a distribution).
 #' Furthermore, it carries out the comparison for all the samples of raw test statistics under the alternative.
 #'
 #' @param snum the number of samples for which test statistics under the alternative hypothesis
-#' are compared with the distribution (matrix) of test statistics under the complete null (this distribution is obtained through permutation)
+#' are compared with the distribution (matrix) of test statistics under the complete null (this distribution
+#' is obtained through drawing test values under H0 with a default of 10,000)
 #' @param abs.Zs.H0 a matrix of test statistics under the complete null
 #' @param abs.Zs.H1 a matrix of raw test statistics under the alternative
 #'
@@ -64,54 +76,73 @@ comp.rawt.SD <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
 adjust.allsamps.WYSS<-function(snum,abs.Zs.H0,abs.Zs.H1) {
 
+  # creating the matrix to store the adjusted test values with the number of samples &
+  # number of M outcomes
   adjp.WY<-matrix(NA,snum,ncol(abs.Zs.H0))
+  # looping through all the samples of raw test statistics under the alternative hypothesis
   doWY<-for (s in 1:snum) {
 
+    # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
     ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SS, abs.Zs.H1.1samp=abs.Zs.H1[s,]))
+    # calculating the p-value for each sample
     adjp.WY[s,]<-colMeans(ind.B)
 
   }
   return(adjp.WY)
 }
 
-#' Adjust allsamps WYSD
+#' Westfall Young Step Down Function
 #'
-#' @param snum blah blah
-#' @param abs.Zs.H0 blah blah
-#' @param abs.Zs.H1 blah blah
-#' @param order.matrix blah blah
-#' @param ncl blah blah
+#' This adjustment function utilizes the comp.rawt.SD helper function to compare
+#' each row of the matrix sample test statistics under
+#' alternative hypothesis to all the rows in the matrix of the test statistics under the complete null (i.e think a distribution).
+#' Furthermore, it carries out the comparison for all the samples of raw test statistics under the alternative.
 #'
-#' @return blah blah
+#' @param snum the number of samples for which test statistics under the alternative hypothesis
+#' are compared with the distribution (matrix) of test statistics under the complete null (this distribution
+#' is obtained through drawing test values under H0 with a default of 10,000)
+#' @param abs.Zs.H0 a matrix of test statistics under the complete null
+#' @param abs.Zs.H1 a matrix of raw test statistics under the alternative
+#' @param order.matrix Order matrix of test statistics in descending order
+#' @param ncl number of clusters to be made for parallelization. The default is 2.
 #'
-#'
+#' @return a matrix of adjusted test statistics values
+
 adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
 
+  # creates clusters to run parallelization on
   cl <- snow::makeCluster(ncl)
+  # leveraging snow to run multiple cores for foreach loops
   doParallel::registerDoParallel(cl)
+  # registering the comp.rawt.SD function in global enivronment of each node
   parallel::clusterExport(cl=cl, list("comp.rawt.SD"))
-  M<-ncol(abs.Zs.H0)
-  #browser()
+  # getting M number of outcomes vector
+  M <- ncol(abs.Zs.H0)
+  # setting up the matrix to save the adjusted p values
   adjp.WY<-matrix(NA,snum,M)
-  # dopar is a special function that has to be specified outside the foreach loop as you cannot type it inside the foreach loop
+  # dopar is a special function that has to be explicitly called from the foreach package
+  # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
+  # series of steps to execute
   `%dopar%` <- foreach::`%dopar%`
-  #making s a local variable to perpetuate across
+  # making s a local variable to perpetuate across (created to bypass a package requirement)
   s = 1:snum
- # browser()
-  doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
-    ind.B<-t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
+    doWY <- foreach::foreach(s= 1:snum, .combine=rbind) %dopar% {
+    # using apply to compare the distribution of test statistics under H0 with 1 sample of the raw statistics under H1
+    ind.B <- t(apply(abs.Zs.H0, 1, comp.rawt.SD, abs.Zs.H1.1samp=abs.Zs.H1[s,], oo=order.matrix[s,]))
     pi.p.m <- colMeans(ind.B)
-    #browser()
+
     # enforcing monotonicity
     adjp.minp <- numeric(M)
     adjp.minp[1] <- pi.p.m[1]
+
     for (h in 2:M) {adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])}
     adjp.WY[s,] <- adjp.minp[order.matrix[s,]]
+
   }
+
   return(doWY)
   parallel::stopCluster(cl)
 }
-
 
 #' t.mean.h1 function for generating the mean of test statistics under the joint alternative hypothesis
 #'
@@ -331,8 +362,6 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 
 }
 
-## NOTE TO SELF: The code documentation below MUST be done more thoroughly!
-
 #' Midpoint function
 #'
 #' Calculating the midpoint between the lower and upper bound by calculating half the distance between the two
@@ -342,7 +371,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 #' @param upper upper bound
 #' @importFrom stats dist
 #' @return returns midpoint value
-#'
+
 midpoint<-function(lower,upper) {
 
   lower+(dist(c(lower,upper))/2)
@@ -821,15 +850,3 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     updateProgress(detail = text)
   }
 } # SS.blockedRCT.2
-
-## indiv, BF, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## indiv, BH, n.j
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## min1, BH, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = mdes1, test.power["BH","min1"], power.definition = "min1", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-#
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)
