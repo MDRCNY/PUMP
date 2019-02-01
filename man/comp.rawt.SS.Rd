@@ -9,14 +9,14 @@ comp.rawt.SS(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo)
 \arguments{
 \item{abs.Zs.H0.1row}{A vector of permutated test statistics values under H0}
 
-\item{abs.Zs.H1.1samp}{One sample of H1 values}
+\item{abs.Zs.H1.1samp}{One sample of raw statistics}
 
-\item{oo}{Order matrix of test statistics in descending order}
+\item{oo}{Order matrix of test statistics in descending order (Only used in Step Down)}
 }
 \value{
 returns a vector of 1s and 0s with length of M outcomes
 }
 \description{
-This helper function compares permutated test statistics values under H0 with sample test statistics
-under H1
+The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
+testing procedure (MTP). It operates on one row of null test statistics.
 }

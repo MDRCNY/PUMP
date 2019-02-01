@@ -11,59 +11,59 @@ SS.blockedRCT.2(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power,
   updateProgress = NULL)
 }
 \arguments{
-\item{M}{blah blah}
+\item{M}{the number of hypothesis tests (outcomes)}
 
-\item{numFalse}{blah blah}
+\item{numFalse}{the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes}
 
-\item{typesample}{blah blah}
+\item{typesample}{the type of the number of sample we would like to estimate: either block J or n.j (harmonic mean within block. For Shiny use)}
 
-\item{J}{blah blah}
+\item{J}{the number of blocks (set to NULL if you do not want to estimate this one)}
 
-\item{n.j}{blah blah}
+\item{n.j}{the harmonic mean of blocks (set to NULL if you do not want to estimate this one)}
 
-\item{J0}{blah blah}
+\item{J0}{the initial value for the sample number of blocks. The default is set at 10.}
 
-\item{n.j0}{blah blah}
+\item{n.j0}{the initial value for the harmonic mean for the number of samples within block. The default is set at 10.}
 
-\item{MDES}{blah blah}
+\item{MDES}{minimum detectable effet size}
 
-\item{power}{blah blah}
+\item{power}{required statistical power for the experiment}
 
-\item{power.definition}{blah blah}
+\item{power.definition}{definition of statistical power from individual, d-minimal to complete power}
 
-\item{MTP}{blah blah}
+\item{MTP}{type of multiple testing procedure in use from Bonferroni, Benjamini-Hocheberg, Holms, Westfall-Young Single Step, Westfall-Young Step Down}
 
-\item{marginError}{blah blah}
+\item{marginError}{the margin of error for MDES estimation based on targeted power value}
 
-\item{p}{blah blah}
+\item{p}{the proportion of samples that are assigned to the treatment}
 
-\item{alpha}{blah blah}
+\item{alpha}{the family wise error rate (FWER)}
 
-\item{numCovar.1}{blah blah}
+\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
 
-\item{numCovar.2}{blah blah}
+\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
 
-\item{R2.1}{blah blah}
+\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
 
-\item{R2.2}{blah blah}
+\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
 
-\item{ICC}{blah blah}
+\item{ICC}{intraclass correlation}
 
-\item{mod.type}{blah blah}
+\item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
-\item{sigma}{blah blah}
+\item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
 
-\item{omega}{blah blah}
+\item{omega}{NULL (parameter in development)}
 
-\item{tnum}{blah blah}
+\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.}
 
-\item{snum}{blah blah}
+\item{snum}{the number of samples for Westfall-Young. The default is set at 1,000.}
 
-\item{ncl}{blah blah}
+\item{ncl}{ncl the number of clusters to use for parallel processing. The default is set at 2.}
 
-\item{num.iter}{blah blah}
+\item{num.iter}{the number of iterations to look for the optimal sample size. The default is set at 20}
 
-\item{updateProgress}{blah blah}
+\item{updateProgress}{a call back function for our internal use in our Shiny application}
 }
 \value{
 Sample number returns

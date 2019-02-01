@@ -12,45 +12,47 @@ power.blockedRCT.2(M, MDES, Ai, J, n.j, p, alpha, numCovar.1,
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}
 
-\item{MDES}{a single entry vector detailing the minimum detectable effect size}
+\item{MDES}{a vector of length M corresponding to the MDESs for the M outcomes}
 
-\item{Ai}{a single entry vector detailing the number of outcomes with a non-zero effect}
+\item{Ai}{a single entry vector specifying the estimated number of outcomes with a non-zero effect}
 
-\item{J}{number of blocks}
+\item{J}{the number of blocks}
 
-\item{n.j}{units per block}
+\item{n.j}{the harmonic mean of the number of units per block}
 
-\item{p}{the proportion of samples that are assigned the treatment}
+\item{p}{the proportion of samples that are assigned to the treatment}
 
-\item{alpha}{significance level}
+\item{alpha}{the family wise error rate (FWER)}
 
 \item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates}
+\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1(R^2 = variation in the data explained by the model)}
+\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2}
+\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
 
 \item{ICC}{intraclass correlation}
 
-\item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects}
+\item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
-\item{sigma}{correlation matrix for correlations between test statistics (this need to be flexible across multiple test statistics. Now, it's set to be at 1)}
+\item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
 
-\item{omega}{NULL}
+\item{omega}{NULL (parameter in development)}
 
-\item{tnum}{number of test statistics (samples) for all procedures other than WY & number of permutations for WY (i.e permutation samples) WY has permutation which is reassignment of treatment variables. We do not see the treatment reassignment for permutation explicitly here.}
+\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000}
 
-\item{snum}{number of samples for WY (i.e are they less than the other test. If so, why?)}
+\item{snum}{the number of samples for Westfall-Young. The default is set at 1,000.}
 
-\item{ncl}{the number of clusters to use for parallel processing. It has a default of 2.}
+\item{ncl}{the number of clusters to use for parallel processing. The default is set at 2.}
 
-\item{updateProgress}{the callback function to update the progress bar}
+\item{updateProgress}{the callback function to update the progress bar (User does not have to input anything)}
 }
 \value{
-power results
+power results across all definitions of power and MTP
 }
 \description{
-Block RCT2 power function
+This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
+(Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down). The function works for
+2-Level Block RCT
 }

@@ -7,15 +7,15 @@
 df(J, n.j, numCovar.1)
 }
 \arguments{
-\item{J}{blah blah}
+\item{J}{number of blocks}
 
-\item{n.j}{blah blah}
+\item{n.j}{units per block}
 
-\item{numCovar.1}{blah}
+\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
 }
 \value{
-blah blah
+the degree of freedom
 }
 \description{
-Degrees of Freedom
+This function calculates the degree of freedom for 2 level RCT block design
 }

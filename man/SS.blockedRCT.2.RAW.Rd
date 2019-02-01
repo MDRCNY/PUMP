@@ -2,57 +2,59 @@
 % Please edit documentation in R/blockrct2_power.R
 \name{SS.blockedRCT.2.RAW}
 \alias{SS.blockedRCT.2.RAW}
-\title{Calculating Raw Sample}
+\title{Calculating Sample for Raw (Unadjusted)}
 \usage{
 SS.blockedRCT.2.RAW(J, n.j, J0 = 10, n.j0 = 10, whichSS, MDES, power,
   p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC, mod.type, sigma,
   omega, two.tailed = TRUE, num.iter = 100, tol = 0.1)
 }
 \arguments{
-\item{J}{blah blah}
+\item{J}{the number of blocks}
 
-\item{n.j}{blah blah}
+\item{n.j}{the harmonic mean of the number of units per block}
 
 \item{J0}{starting values for J0 to look for optimal J and n.j}
 
 \item{n.j0}{starting values for n.j0 to look for optimal J and n.j}
 
-\item{whichSS}{blah blah}
+\item{whichSS}{which type of sample size to optimize for. J or n.j}
 
-\item{MDES}{blah blah}
+\item{MDES}{minimum detectable effect size}
 
-\item{power}{blah blah}
+\item{power}{required statistical power for the experiment}
 
-\item{p}{blah blah}
+\item{p}{the proportion of samples that are assigned to the treatment}
 
-\item{alpha}{blah blah}
+\item{alpha}{the family wise error rate (FWER)}
 
-\item{numCovar.1}{blah blah}
+\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
 
-\item{numCovar.2}{blah blah}
+\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
 
-\item{R2.1}{blah blah}
+\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
 
-\item{R2.2}{blah blah}
+\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
 
-\item{ICC}{blah blah}
+\item{ICC}{intraclass correlation}
 
-\item{mod.type}{blah blah}
+\item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
-\item{sigma}{blah blah}
+\item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
 
-\item{omega}{blah blah}
+\item{omega}{NULL (parameter in development)}
 
-\item{two.tailed}{blah blah}
+\item{two.tailed}{a boolean value for whether we are looking at two-tailed distribution or not}
 
-\item{num.iter}{blah blah}
+\item{num.iter}{number of iterations to look for sample size. The default is set at 100}
 
-\item{tol}{blah blah}
+\item{tol}{tolerance from initializing sample values}
 }
 \value{
 raw sample returns
 }
 \description{
-# this is a help function for getting SS when no adjustment -
-it starts with PowerUp package function mrss.bira2cl but that function seems to have a bug - only works if pass in numeric values and not if pass in objects that hold those values. Plus mrss.bira2cl only computes J, not n.j
+This is a Helper function for getting Sample Size when no adjustments has been made to the test statistics.
+The function starts with PowerUp package function mrss.bira2cl but that function seems to have a bug -
+Only works if we pass in numeric values and not if we pass in objects that hold those values.
+Additionally, mrss.bira2cl only computes J, not n.j.
 }

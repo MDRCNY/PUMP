@@ -2,7 +2,7 @@
 % Please edit documentation in R/blockrct2_power.R
 \name{MDES.blockedRCT.2}
 \alias{MDES.blockedRCT.2}
-\title{MDES function}
+\title{MDES (minimum detectable effect size) function}
 \usage{
 MDES.blockedRCT.2(M, numFalse, Ai_mdes, J, n.j, power, power.definition,
   MTP, marginError, p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2,
@@ -10,49 +10,49 @@ MDES.blockedRCT.2(M, numFalse, Ai_mdes, J, n.j, power, power.definition,
   updateProgress = NULL)
 }
 \arguments{
-\item{M}{blah blah}
+\item{M}{the number of hypothesis tests (outcomes)}
 
-\item{numFalse}{the number of false numbers. Kristin has calculated it one way, but, I have structured it another using AiImpacts.}
+\item{numFalse}{the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes}
 
-\item{Ai_mdes}{blah blah}
+\item{Ai_mdes}{a single entry vector specifying the estimated number of outcomes with a non-zero effect}
 
-\item{J}{blah blah}
+\item{J}{the number of blocks}
 
-\item{n.j}{blah blah}
+\item{n.j}{the harmonic mean of the number of units per block}
 
-\item{power}{blah blah}
+\item{power}{required statistical power for the experiment}
 
-\item{power.definition}{blah blah}
+\item{power.definition}{definition of statistical power from individual, d-minimal to complete power}
 
-\item{MTP}{blah blah}
+\item{MTP}{type of multiple testing procedure}
 
-\item{marginError}{blah blah}
+\item{marginError}{the margin of error for MDES estimation based on targeted power value}
 
-\item{p}{blah blah}
+\item{p}{the proportion of samples that are assigned to the treatment}
 
-\item{alpha}{blah blah}
+\item{alpha}{the family wise error rate (FWER)}
 
-\item{numCovar.1}{blah blah}
+\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
 
-\item{numCovar.2}{blah blah}
+\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
 
-\item{R2.1}{blah blah}
+\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
 
-\item{R2.2}{blah blah}
+\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
 
-\item{ICC}{blah blah}
+\item{ICC}{intraclass correlation}
 
-\item{mod.type}{blah blah}
+\item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
-\item{sigma}{blah blah}
+\item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
 
-\item{omega}{blah blah}
+\item{omega}{NULL (parameter in development)}
 
-\item{tnum}{blah blah}
+\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.}
 
-\item{snum}{blah blah}
+\item{snum}{the number of samples for Westfall-Young. The default is set at 1,000.}
 
-\item{ncl}{blah blah}
+\item{ncl}{ncl the number of clusters to use for parallel processing. The default is set at 2.}
 
 \item{updateProgress}{this is the progress bar function that will be passed to the main MDES calculation function}
 }
@@ -60,5 +60,7 @@ MDES.blockedRCT.2(M, numFalse, Ai_mdes, J, n.j, power, power.definition,
 mdes results
 }
 \description{
-MDES function
+The minimum detectable effect size function calculates the most feasible minimum detectable effect size
+for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the margin of error
+set in the parameter in the power value.
 }

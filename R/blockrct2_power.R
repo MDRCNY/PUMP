@@ -349,7 +349,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   all.power.results<-cbind(mean.ind.power,all.power.results)
 
   # setting the col and row names for all power results table
-  colnames(all.power.results)<-c("average indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
+  colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
   rownames(all.power.results)<-c("rawp","BF","HO","BH","WY-SS","WY-SD")
 
   #5th call back to progress bar: All power calculation done
@@ -365,7 +365,8 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 #' Midpoint function
 #'
 #' Calculating the midpoint between the lower and upper bound by calculating half the distance between the two
-#' and adding the lower bound to it.
+#' and adding the lower bound to it. The function is a helper function in determining the MDES that falls within
+#' acceptable power range.
 #'
 #' @param lower lower bound
 #' @param upper upper bound
@@ -377,31 +378,36 @@ midpoint<-function(lower,upper) {
   lower+(dist(c(lower,upper))/2)
 } # midpoint function to calculate the right power
 
-#' MDES function
+#' MDES (minimum detectable effect size) function
 #'
-#' @param M blah blah
-#' @param numFalse the number of false numbers. Kristin has calculated it one way, but, I have structured it another using AiImpacts.
-#' @param J blah blah
-#' @param n.j blah blah
-#' @param power blah blah
-#' @param power.definition blah blah
-#' @param MTP blah blah
-#' @param marginError blah blah
-#' @param p blah blah
-#' @param alpha blah blah
-#' @param numCovar.1 blah blah
-#' @param numCovar.2 blah blah
-#' @param R2.1 blah blah
-#' @param R2.2 blah blah
-#' @param ICC blah blah
-#' @param mod.type blah blah
-#' @param sigma blah blah
-#' @param omega blah blah
-#' @param tnum blah blah
-#' @param snum blah blah
-#' @param Ai_mdes blah blah
+#' The minimum detectable effect size function calculates the most feasible minimum detectable effect size
+#' for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the margin of error
+#' set in the parameter in the power value.
+#'
+#'
+#' @param M the number of hypothesis tests (outcomes)
+#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes
+#' @param J the number of blocks
+#' @param n.j the harmonic mean of the number of units per block
+#' @param power required statistical power for the experiment
+#' @param power.definition definition of statistical power from individual, d-minimal to complete power
+#' @param MTP type of multiple testing procedure
+#' @param marginError the margin of error for MDES estimation based on targeted power value
+#' @param p the proportion of samples that are assigned to the treatment
+#' @param alpha the family wise error rate (FWER)
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
+#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
+#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
+#' @param ICC intraclass correlation
+#' @param mod.type "c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)
+#' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
+#' @param omega NULL (parameter in development)
+#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
+#' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
+#' @param Ai_mdes a single entry vector specifying the estimated number of outcomes with a non-zero effect
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
-#' @param ncl blah blah
+#' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
 #' @importFrom stats qt
 #' @return mdes results
 #' @export
@@ -411,41 +417,45 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
                             mod.type, sigma, omega,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
 
-  # SET UP #
+  # Setting up Sigma values
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
 
-  # CHECKS ON WHAT WE ARE ESTIMATING, SAMPLE SIZE #
+  # Checks on what we are estimating, sample size
   print(paste("Estimating MDES for target ",power.definition,"power of ",round(power,4)))
 
-  # Check to see if the MTP is Westfall Young and it has enough samples
-  if (MTP=="WY-SD" & snum < 1000) print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
-  if (MTP!="WY-SD") snum<- 2
+  # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
+  if (MTP=="WY-SD" & snum < 1000){
+    print("For the step-down Westfall-Young procedure, it is recommended that sample (snum) be at least 1000.")
+    snum <- 1000
+  } # end of if
+
+  if (MTP!="WY-SD"){
+    snum <- 2
+  } # end of if
 
   # Compute Q(m)
-  Q.m<-sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
-  t.df<-df(J,n.j,numCovar.1)
+  Q.m <- sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
+  t.df <- df(J,n.j,numCovar.1)
 
   # For raw and BF, compute critical values
   crit.alpha <- qt(p=(1-alpha/2),df=t.df)
   crit.alphaxM <- qt(p=(1-alpha/M/2),df=t.df)
 
-  # Compute raw and BF MDES for INDIVIDUAL POWER
+  # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(power > 0.5, qt(power,df=t.df), qt(1-power,df=t.df))
   MDES.raw <- ifelse(power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
   MDES.BF <- ifelse(power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
 
+  # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
 
-  # SETTING THE BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER #
-  #browser()
   ### INDIVIDUAL POWER ###
   if (power.definition =="indiv") {
-    #browser()
-    #print("I am under power definition individual")
 
     if (MTP == "raw"){
 
-      mdes.results <- t(data.frame(c(MDES.raw,power))) #transpose the MDES raw and power to have the results columnwise
+      # Attaching the MDES result to power results for tabular output
+      mdes.results <- t(data.frame(c(MDES.raw,power))) # transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c("MDES without adjustment", paste0(power.definition, " power"))
 
       return (mdes.results)
@@ -454,8 +464,7 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 
     if (MTP == "BF"){
 
-      #print("I am under MTP definition of Bonferroni")
-
+      # Attaching the MDES result to power results for tabular output
       mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
       colnames(mdes.results) <- c(paste0( MTP, " adjusted MDES"), paste0(power.definition, " power"))
 
@@ -463,35 +472,34 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 
     } # Bonferroni adjusted MDES for Individual Power
 
-  } # if we are doing power for unadjusted and Bonferroni
+  } # if we are doing power for raw (i.e. unadjusted) and Bonferroni
 
-  # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint
+  # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
 
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
 
-  } # MTP that is not Bonferroni and for individual power
+  } # MDES for MTP that is not Bonferroni and for individual power
 
   ### NOT INDIVIDUAL POWER ###
 
-  # For other scenarios, set lowhigh intervals and compute midpoint
-  # For cases where the power definition is not related to individual
+  # For other scenarios, set low-high intervals and compute midpoint
+  # For cases where the power definition is not individual power, restrict it between 0 and 1.
   ifelse (power.definition =="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1))
 
-  # LOOKING FOR THE RIGHT MDES through a while loop with 20 iterations as the limit
+  # Searching for the right MDES through a while loop with 20 iterations as the limit
 
   try.MDES <- midpoint(lowhigh[1],lowhigh[2]) # Initializing MDES for first attempt
   ii <- 0 # Iteration counter
   target.power <- 0 # Initializing a target power
 
-  # While loop through until the iteration is past 20 or we have met the target.power which we are caculating is which is
-  # within a margin of error of the power that is being specified. Here target refers to the type of power.
+  # While loop through until the iteration is past 20 or we have met the target.power as we search for the right MDES
+  # within the margin of error we have specified.
 
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
 
-    # If the updateProgress function is passed onto as a function
-
+    # Passing our callback function
     if (is.function(updateProgress)) {
       text <- paste0("Optiomal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ") # Secondary text we want to display
       msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ") # Priamry text we want to display
@@ -499,14 +507,12 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     } # if the function is being called, run the progress bar
 
     # Function to calculate the target power to check in with the pre-specified power in the loop
-
     runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = Ai_mdes, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
 
     # Pull out the power value corresponding to the MTP and definition of power
-
     target.power <- runpower[MTP,power.definition]
 
     # Displaying the progress of mdes calculation via target power
@@ -518,7 +524,6 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     } # checking on Progress Update for MDES
 
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
-
     if(target.power > power - marginError & target.power < power + marginError){
 
       mdes.results <- data.frame(try.MDES[1], target.power)
@@ -530,7 +535,6 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     } # Return results if our targeted power is within a margin of error of the specified power
 
     # Check if the calculated target power is greater than the prescribed power
-
     is.over <- target.power > power
 
     # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
@@ -543,9 +547,6 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
       lowhigh[2] <- try.MDES
     }
 
-    #     lowhigh.dist <- lowhigh[2]-lowhigh[1]
-    #     try.MDES <- ifelse(target.power < power, (try.MDES + lowhigh[2])/2, (try.MDES + lowhigh[1])/2) # midpoint
-
     # re-establish the midpoint
     try.MDES <- midpoint(lowhigh[1],lowhigh[2])
 
@@ -556,47 +557,51 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 
 } # MDES blockedRCT 2
 
-
-#' Calculating Raw Sample
+#' Calculating Sample for Raw (Unadjusted)
 #'
-#' # this is a help function for getting SS when no adjustment -
-#' it starts with PowerUp package function mrss.bira2cl but that function seems to have a bug - only works if pass in numeric values and not if pass in objects that hold those values. Plus mrss.bira2cl only computes J, not n.j
+#' This is a Helper function for getting Sample Size when no adjustments has been made to the test statistics.
+#' The function starts with PowerUp package function mrss.bira2cl but that function seems to have a bug -
+#' Only works if we pass in numeric values and not if we pass in objects that hold those values.
+#' Additionally, mrss.bira2cl only computes J, not n.j.
 #'
-#' @param J blah blah
-#' @param n.j blah blah
+#' @param J the number of blocks
+#' @param n.j the harmonic mean of the number of units per block
 #' @param J0 starting values for J0 to look for optimal J and n.j
 #' @param n.j0 starting values for n.j0 to look for optimal J and n.j
-#' @param whichSS blah blah
-#' @param MDES blah blah
-#' @param power blah blah
-#' @param p blah blah
-#' @param alpha blah blah
-#' @param numCovar.1 blah blah
-#' @param numCovar.2 blah blah
-#' @param R2.1 blah blah
-#' @param R2.2 blah blah
-#' @param ICC blah blah
-#' @param mod.type blah blah
-#' @param sigma blah blah
-#' @param omega blah blah
-#' @param two.tailed blah blah
-#' @param num.iter blah blah
-#' @param tol blah blah
+#' @param whichSS which type of sample size to optimize for. J or n.j
+#' @param MDES minimum detectable effect size
+#' @param power required statistical power for the experiment
+#' @param p the proportion of samples that are assigned to the treatment
+#' @param alpha the family wise error rate (FWER)
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
+#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
+#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
+#' @param ICC intraclass correlation
+#' @param mod.type "c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)
+#' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
+#' @param omega NULL (parameter in development)
+#' @param two.tailed a boolean value for whether we are looking at two-tailed distribution or not
+#' @param num.iter number of iterations to look for sample size. The default is set at 100
+#' @param tol tolerance from initializing sample values
 #' @return raw sample returns
 #' @export
 
-SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
 
 
-  i <- 0
-  conv <- FALSE #
+  i <- 0 # starting the iterator
+  conv <- FALSE # boolean value for convergence
+
   while (i <= num.iter & conv == FALSE) {
+    # checking which type of sample we are estimating
     if (whichSS =="J"){
       df <- J0 * (n.j - 1) - numCovar.1 - 1 # degree of freedom calculation
     }
     if (whichSS =="n.j") {
       df <- J * (n.j0 - 1) - numCovar.1 - 1
     }
+
     if (df < 0 | df < 0 | is.infinite(df)) {
       break
     }
@@ -620,6 +625,7 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
     }
     if (whichSS=="n.j") {
       n.j1 <- (MT/MDES)^2 * ((1 - R2.1)/(p * (1 - p) * J))
+
       if (abs(n.j1 - n.j0) < tol) {
         conv <- TRUE
       }
@@ -643,33 +649,33 @@ SS.blockedRCT.2.RAW<-function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, a
 
 #' Sample Function
 #'
-#' @param M blah blah
-#' @param numFalse blah blah
-#' @param typesample blah blah
-#' @param J blah blah
-#' @param n.j blah blah
-#' @param J0 blah blah
-#' @param n.j0 blah blah
-#' @param MDES blah blah
-#' @param power blah blah
-#' @param power.definition blah blah
-#' @param MTP blah blah
-#' @param marginError blah blah
-#' @param p blah blah
-#' @param alpha blah blah
-#' @param numCovar.1 blah blah
-#' @param numCovar.2 blah blah
-#' @param R2.1 blah blah
-#' @param R2.2 blah blah
-#' @param ICC blah blah
-#' @param mod.type blah blah
-#' @param sigma blah blah
-#' @param omega blah blah
-#' @param tnum blah blah
-#' @param snum blah blah
-#' @param ncl blah blah
-#' @param num.iter blah blah
-#' @param updateProgress blah blah
+#' @param M the number of hypothesis tests (outcomes)
+#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes
+#' @param typesample the type of the number of sample we would like to estimate: either block J or n.j (harmonic mean within block. For Shiny use)
+#' @param J the number of blocks (set to NULL if you do not want to estimate this one)
+#' @param n.j the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
+#' @param J0 the initial value for the sample number of blocks. The default is set at 10.
+#' @param n.j0 the initial value for the harmonic mean for the number of samples within block. The default is set at 10.
+#' @param MDES minimum detectable effet size
+#' @param power required statistical power for the experiment
+#' @param power.definition definition of statistical power from individual, d-minimal to complete power
+#' @param MTP type of multiple testing procedure in use from Bonferroni, Benjamini-Hocheberg, Holms, Westfall-Young Single Step, Westfall-Young Step Down
+#' @param marginError the margin of error for MDES estimation based on targeted power value
+#' @param p the proportion of samples that are assigned to the treatment
+#' @param alpha the family wise error rate (FWER)
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
+#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
+#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
+#' @param ICC intraclass correlation
+#' @param mod.type "c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)
+#' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
+#' @param omega NULL (parameter in development)
+#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
+#' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
+#' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
+#' @param num.iter the number of iterations to look for the optimal sample size. The default is set at 20
+#' @param updateProgress a call back function for our internal use in our Shiny application
 #'
 #' @return Sample number returns
 #' @export
@@ -681,8 +687,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
   sigma <- matrix(0.99, M, M)
   diag(sigma) <- 1
 
-  # indicator for which sample to compute. J is for blocks. n.j is for
-
+  # indicator for which sample to compute. J is for blocks. n.j is for harmonic mean of samples within block
   if(typesample == "J"){
 
     doJ <- TRUE
@@ -697,14 +702,14 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
 
   ifelse(doJ,whichSS<-"J",whichSS<-"n.j")
 
-  # Printing Progress Message
+  # Progress Message for the Type of Sample we are estimating, the type of power and the targeted power value
   if(is.function(updateProgress)){
     msg <- (paste0("Estimating ",whichSS," for target ",power.definition," power of ",round(power,4), " .")) #msg to be displayed in the progress bar
     updateProgress(message = msg)
   } # For printing via update progress function
 
 
-  # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER
+  # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   if (doJ) {
     J.raw <- SS.blockedRCT.2.RAW(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
@@ -716,7 +721,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     n.j.BF <- SS.blockedRCT.2.RAW(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
   }
 
-  # So below can focus on just the one being estimated
+  # So below we focus on just one type of sample being estimated: Either block or samples within block
   if (doJ) {
     ss.raw <- J.raw
     ss.BF <- J.BF
@@ -732,6 +737,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
 
     if (MTP == "raw"){
 
+      # saving the sample estimates for Individual Power with the MTP type
       raw.ss <- data.frame("Raw","Indivdual", ss.raw)
       colnames(raw.ss) <- c("Type of MTP", "Type of Power", "Sample Size")
 
@@ -743,6 +749,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
 
     if (MTP == "BF") {
 
+      # saving the sample estimates for Individual Power with the MTP type
       ss.BF <- data.frame("Bonferroni", "Individual", ss.BF)
       colnames(ss.BF) <- c("Type of MTP", "Type of Power", "Sample Size")
 
@@ -784,11 +791,15 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
         typeofsample <- "Samples within blocks"
       }
 
+      # Updating the progress of the search for sample
       text <- paste0(typeofsample, " is in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),".")
       msg <- paste0("Trying ",typeofsample," of ",round(try.ss,4), " .")
       updateProgress(message = msg, detail = text)
 
     }
+
+    # We check the Power of the experimental set up with the given estimated sample size to see if it is
+    # within the targeted power
 
     if (doJ) {
 
@@ -807,8 +818,10 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
 
     }
 
+    # Pulling the power result out from the table
     target.power <- runpower[MTP,power.definition]
 
+    # Providing message on current targeted power
     if (is.function(updateProgress)){
       text <- paste0("Estimated power for this ",whichSS," is ",target.power)
       updateProgress(detail = text)
@@ -816,18 +829,22 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
 
     # checking if the estimation is over or not
     is.over <- target.power > power
+
+    # if the target power is within the margin we have set, we will return the estimated sample
     if(target.power > power - marginError & target.power < power + marginError) {
 
       # estimated sample for a given MTP, type of power
-
       try.ss.numeric <- ceiling(as.numeric(try.ss))
 
+      # The estimated sample table with MTP type, Power, Sample Size and the target power
       est.sample <- data.frame(MTP, power.definition, try.ss.numeric, target.power)
       colnames(est.sample) <- c("Type of MTP", "Type of Power", "Sample Size", "Target Power")
 
       return(est.sample)
 
     }
+
+    # if the test is underpowered or overpowered, repeat the loop with new bounds as below.
 
     if(!is.over) {
       p.off <- (power - target.power) / power
@@ -850,3 +867,16 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     updateProgress(detail = text)
   }
 } # SS.blockedRCT.2
+
+
+## indiv, BF, J
+# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+# print(test.SS)
+# ## indiv, BH, n.j
+# test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+# print(test.SS)
+# ## min1, BH, J
+# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = mdes1, test.power["BH","min1"], power.definition = "min1", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
+# print(test.SS)
+#
+# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)

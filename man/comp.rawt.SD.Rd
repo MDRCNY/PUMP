@@ -9,12 +9,12 @@ comp.rawt.SD(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo)
 \arguments{
 \item{abs.Zs.H0.1row}{A vector of permutated test statistics values under H0}
 
-\item{abs.Zs.H1.1samp}{One sample of H1 values}
+\item{abs.Zs.H1.1samp}{One sample of raw statistics}
 
 \item{oo}{Order matrix of test statistics in descending order}
 }
 \value{
-blah blah
+returns a vector of 1s and 0s with lengths of M outcomes
 }
 \description{
 Helper Functions for WestFallYoung Step down
