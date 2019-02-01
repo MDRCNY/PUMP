@@ -602,7 +602,7 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
       df <- J * (n.j0 - 1) - numCovar.1 - 1
     }
 
-    if (df < 0 | df < 0 | is.infinite(df)) {
+    if (df < 0 | is.infinite(df)) {
       break
     }
 
