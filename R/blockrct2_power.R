@@ -201,14 +201,16 @@ df<-function(J,n.j,numCovar.1) {
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
 #' @param ncl the number of clusters to use for parallel processing. The default is set at 2.
+#' @param rho correlation between outcomes
 #' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
+#'
 #' @importFrom multtest mt.rawp2adjp
 #' @return power results across all definitions of power and MTP
 #' @export
 
 power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
-                             mod.type, sigma = 0, omega = NULL,
+                             mod.type, sigma = 0,rho = 0.99, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
 
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
@@ -227,7 +229,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   MDES <- c(MDES, noeffect)
 
   # Setting a default Sigma up
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
 
   # number of false nulls (i.e they are really not nulls)
