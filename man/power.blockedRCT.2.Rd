@@ -6,7 +6,7 @@
 \usage{
 power.blockedRCT.2(M, MDES, Ai, J, n.j, p, alpha, numCovar.1,
   numCovar.2 = 0, R2.1, R2.2 = NULL, ICC, mod.type, sigma = 0,
-  omega = NULL, tnum = 10000, snum = 1000, ncl = 2,
+  rho = 0.99, omega = NULL, tnum = 10000, snum = 1000, ncl = 2,
   updateProgress = NULL)
 }
 \arguments{
@@ -37,6 +37,8 @@ power.blockedRCT.2(M, MDES, Ai, J, n.j, p, alpha, numCovar.1,
 \item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
 \item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
+
+\item{rho}{correlation between outcomes}
 
 \item{omega}{NULL (parameter in development)}
 
