@@ -24,7 +24,7 @@ comp.rawt.SS <- function(abs.Zs.H0.1row, abs.Zs.H1.1samp, oo) {
 
     # comparing the maximum of null test values of M outcomes to each of the alternative test raw sample values
     # saving each M boolean in maxt vector
-    maxt[m] <- max(abs.Zs.H0.1row[m]) > abs.Zs.H1.1samp[m]
+    maxt[m] <- max(abs.Zs.H0.1row) > abs.Zs.H1.1samp[m]
 
   }
   return(as.integer(maxt))
