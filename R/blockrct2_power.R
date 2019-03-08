@@ -685,7 +685,7 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @export
 
 SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma = 0, rho, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+                          ICC,mod.type, sigma = 0, rho = 0.99, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
 
   # SET UP #
   sigma <- matrix(rho, M, M)
