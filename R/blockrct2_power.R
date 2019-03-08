@@ -417,7 +417,7 @@ midpoint<-function(lower,upper) {
 
 MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                            mod.type, sigma = 0, rho,omega,
+                            mod.type, sigma = 0, rho = 0.99,omega,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
 
   # Setting up Sigma values
