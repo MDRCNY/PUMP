@@ -6,8 +6,8 @@
 \usage{
 SS.blockedRCT.2(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power,
   power.definition, MTP, marginError, p, alpha, numCovar.1,
-  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type, sigma, omega,
-  tnum = 10000, snum = 2, ncl = 2, num.iter = 20,
+  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type, sigma = 0, rho = 0.99,
+  omega, tnum = 10000, snum = 2, ncl = 2, num.iter = 20,
   updateProgress = NULL)
 }
 \arguments{
@@ -52,6 +52,8 @@ SS.blockedRCT.2(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power,
 \item{mod.type}{"c" for constant effects, "f" for fixed effects, "r" for random effects (parameter not in use at the moment)}
 
 \item{sigma}{correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)}
+
+\item{rho}{correlation between outcomes when sigma is generated}
 
 \item{omega}{NULL (parameter in development)}
 

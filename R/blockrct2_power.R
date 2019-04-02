@@ -409,6 +409,7 @@ midpoint<-function(lower,upper) {
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
 #' @param Ai_mdes a single entry vector specifying the estimated number of outcomes with a non-zero effect
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
+#' @param rho correlation between outcomes. This generates the sigma matrix.
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
 #' @importFrom stats qt
 #' @return mdes results
@@ -416,11 +417,11 @@ midpoint<-function(lower,upper) {
 
 MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                            mod.type, sigma, omega,
+                            mod.type, sigma = 0, rho = 0.99,omega,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
 
   # Setting up Sigma values
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
 
   # Checks on what we are estimating, sample size
@@ -678,15 +679,16 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
 #' @param num.iter the number of iterations to look for the optimal sample size. The default is set at 20
 #' @param updateProgress a call back function for our internal use in our Shiny application
+#' @param rho correlation between outcomes when sigma is generated
 #'
 #' @return Sample number returns
 #' @export
 
 SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+                          ICC,mod.type, sigma = 0, rho = 0.99, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
 
   # SET UP #
-  sigma <- matrix(0.99, M, M)
+  sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
 
   # indicator for which sample to compute. J is for blocks. n.j is for harmonic mean of samples within block
