@@ -537,6 +537,8 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 
     } # Return results if our targeted power is within a margin of error of the specified power
 
+    print(try.MDES[1], " This is from iteration ", ii)
+
     # Check if the calculated target power is greater than the prescribed power
     is.over <- target.power > power
 
