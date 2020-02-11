@@ -590,7 +590,11 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
 #' @return raw sample returns
 #' @export
 
-SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10,
+                                whichSS, MDES, power, p,
+                                alpha, numCovar.1, numCovar.2=0,
+                                R2.1, R2.2, ICC, mod.type, sigma,
+                                omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
 
 
   i <- 0 # starting the iterator
@@ -684,8 +688,12 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10, whichSS, MDES, power, p,
 #' @return Sample number returns
 #' @export
 
-SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power, power.definition, MTP, marginError,p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2,
-                          ICC,mod.type, sigma = 0, rho = 0.99, omega,tnum = 10000, snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
+                            J0, n.j0, MDES, power, power.definition,
+                            MTP, marginError,p, alpha, numCovar.1,
+                            numCovar.2=0, R2.1, R2.2,ICC,mod.type,
+                            sigma = 0, rho = 0.99, omega,tnum = 10000,
+                            snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
 
   # SET UP #
   sigma <- matrix(rho, M, M)
@@ -871,6 +879,7 @@ SS.blockedRCT.2<-function(M, numFalse, typesample, J, n.j, J0, n.j0, MDES, power
     updateProgress(detail = text)
   }
 } # SS.blockedRCT.2
+
 
 
 ## indiv, BF, J
