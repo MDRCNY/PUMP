@@ -23,7 +23,8 @@ Imports:
      snow,
      RcppEigen,
      lme4,
-     stats
+     stats,
+     here
 Additional_repositories: 
 License: MIT + file LICENSE
 Encoding: UTF-8

@@ -1,5 +1,5 @@
 # the if statement checks if we have a grab.pval function. If not, pull it from utils.R file.
-if(!exists("grab.pval", mode = "function")) source("R/utils.R")
+if(!exists("grab.pval", mode = "function")) source(here::here("R", "utils.R"))
 
 #' Helper function for Westfall Young Single Step
 #'
@@ -213,6 +213,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
                              mod.type, sigma = 0,rho = 0.99, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
 
+
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
   if( Ai > M){
 
@@ -242,6 +243,7 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
 
   # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
   # rmvt draws from a multivariate t-distribution
+
   Zs.H0<- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df, delta = rep(0,M),type = c("shifted", "Kshirsagar"))
   Zs.H1 <- Zs.H0 + t.shift.mat
 
@@ -695,8 +697,9 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
                             sigma = 0, rho = 0.99, omega,tnum = 10000,
                             snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
 
+
   # SET UP #
-  sigma <- matrix(rho, M, M)
+  sigma <- matrix(data = rho, nrow = M, ncol = M)
   diag(sigma) <- 1
 
   # indicator for which sample to compute. J is for blocks. n.j is for harmonic mean of samples within block
@@ -817,7 +820,7 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
 
       runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss,n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                                     mod.type, sigma, omega,
+                                     mod.type, sigma, rho, omega,
                                      tnum, snum, ncl)
     }
 
@@ -825,7 +828,7 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
 
       runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J, n.j=try.ss,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                                     mod.type, sigma, omega,
+                                     mod.type, sigma, rho, omega,
                                      tnum, snum, ncl)
 
     }
@@ -878,9 +881,7 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
     text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
     updateProgress(detail = text)
   }
-} # SS.blockedRCT.2
-
-
+}
 
 ## indiv, BF, J
 # test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
