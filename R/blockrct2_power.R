@@ -390,7 +390,7 @@ midpoint<-function(lower,upper) {
 #'
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes
+#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations.
 #' @param J the number of blocks
 #' @param n.j the harmonic mean of the number of units per block
 #' @param power required statistical power for the experiment
@@ -409,7 +409,7 @@ midpoint<-function(lower,upper) {
 #' @param omega NULL (parameter in development)
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param Ai_mdes a single entry vector specifying the estimated number of outcomes with a non-zero effect
+#' @param numFalse a single entry vector specifying the estimated number of outcomes with a non-zero effect
 #' @param updateProgress this is the progress bar function that will be passed to the main MDES calculation function
 #' @param rho correlation between outcomes. This generates the sigma matrix.
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
@@ -417,7 +417,7 @@ midpoint<-function(lower,upper) {
 #' @return mdes results
 #' @export
 
-MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition, MTP, marginError,
+MDES.blockedRCT.2<-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma = 0, rho = 0.99,omega,
                             tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
@@ -512,7 +512,7 @@ MDES.blockedRCT.2<-function(M, numFalse,Ai_mdes, J, n.j, power, power.definition
     } # if the function is being called, run the progress bar
 
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, Ai = Ai_mdes, J = J, n.j = n.j,
+    runpower <- power.blockedRCT.2(M = M, MDES = try.MDES, numFalse, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
@@ -659,7 +659,7 @@ SS.blockedRCT.2.RAW <- function(J, n.j, J0=10, n.j0=10,
 #' Sample Function
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations. For Shiny calculations, refer to Ai_mdes
+#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations
 #' @param typesample the type of the number of sample we would like to estimate: either block J or n.j (harmonic mean within block. For Shiny use)
 #' @param J the number of blocks (set to NULL if you do not want to estimate this one)
 #' @param n.j the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
