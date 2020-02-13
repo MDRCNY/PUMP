@@ -185,7 +185,7 @@ df<-function(J,n.j,numCovar.1) {
 #'
 #' @param M the number of hypothesis tests (outcomes)
 #' @param MDES a vector of length M corresponding to the MDESs for the M outcomes
-#' @param Ai a single entry vector specifying the estimated number of outcomes with a non-zero effect
+#' @param numFalse a single entry vector specifying the estimated number of outcomes with a non-zero effect
 #' @param J the number of blocks
 #' @param n.j the harmonic mean of the number of units per block
 #' @param p the proportion of samples that are assigned to the treatment
@@ -208,14 +208,14 @@ df<-function(J,n.j,numCovar.1) {
 #' @return power results across all definitions of power and MTP
 #' @export
 
-power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
+power.blockedRCT.2<-function(M, MDES, numFalse, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0,rho = 0.99, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
 
 
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
-  if( Ai > M){
+  if( numFalse > M){
 
     stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment.
          Please adjust your inputs.')
@@ -223,10 +223,10 @@ power.blockedRCT.2<-function(M, MDES, Ai, J, n.j,
   } # end of if statement
 
   # MDES must be the length of Actual Impacts
-  MDES <- rep(MDES,Ai)
+  MDES <- rep(MDES,numFalse)
 
-  # the difference between the length of M and Ai would be zero as they do not have any impacts
-  noeffect <- rep(0, M-Ai)
+  # the difference between the length of M and numFalse would be zero as they do not have any impacts
+  noeffect <- rep(0, M - numFalse)
   MDES <- c(MDES, noeffect)
 
   # Setting a default Sigma up
@@ -818,7 +818,7 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
 
     if (doJ) {
 
-      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J= try.ss,n.j,
+      runpower <- power.blockedRCT.2(M, MDES, numFalse, J= try.ss,n.j,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                                      mod.type, sigma, rho, omega,
                                      tnum, snum, ncl)
@@ -826,7 +826,7 @@ SS.blockedRCT.2 <- function(M, numFalse, typesample, J, n.j,
 
     if (don.j) {
 
-      runpower <- power.blockedRCT.2(M, MDES, Ai = numFalse, J, n.j=try.ss,
+      runpower <- power.blockedRCT.2(M, MDES, numFalse, J, n.j=try.ss,
                                      p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                                      mod.type, sigma, rho, omega,
                                      tnum, snum, ncl)
