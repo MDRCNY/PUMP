@@ -423,7 +423,7 @@ midpoint<-function(lower,upper) {
 mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma = 0, rho = 0.99,omega,
-                            tnum = 10000, snum=2, ncl=2, updateProgress=NULL) {
+                            tnum = 10000, snum= 1000, ncl=2, updateProgress=NULL) {
 
   # Setting up Sigma values
   sigma <- matrix(rho, M, M)
@@ -438,9 +438,9 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     snum <- 1000
   } # end of if
 
-  if (MTP!="WY-SD"){
-    snum <- 2
-  } # end of if
+  # if (MTP!="WY-SD"){
+  #   snum <- 2
+  # } # end of if
 
   # Compute Q(m)
   Q.m <- sqrt( (1-R2.1) / (p*(1-p)*J*n.j) )
@@ -485,6 +485,8 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
   if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
 
+    browser()
+
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
 
@@ -506,6 +508,8 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   # within the margin of error we have specified.
 
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
+
+    browser()
 
     # Passing our callback function
     if (is.function(updateProgress)) {
