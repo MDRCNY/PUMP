@@ -115,7 +115,7 @@ adjust.allsamps.WYSD<-function(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl) {
   # leveraging snow to run multiple cores for foreach loops
   doParallel::registerDoParallel(cl)
   # registering the comp.rawt.SD function in global enivronment of each node
-  parallel::clusterExport(cl=cl, list("comp.rawt.SD"))
+  parallel::clusterExport(cl=cl, list("comp.rawt.SD"), envir = .GlobalEnv)
   # getting M number of outcomes vector
   M <- ncol(abs.Zs.H0)
   # setting up the matrix to save the adjusted p values
@@ -483,24 +483,33 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   } # if we are doing power for raw (i.e. unadjusted) and Bonferroni
 
   # For individual power, other MDES's will be between MDES.raw and MDES.BF, so make starting value the midpoint!
-  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
+  # MDES for MTP that is not Bonferroni and for individual powers
 
-    browser()
+  if (MTP %in% c("HO","BH","WY-SS","WY-SD") & power.definition == "indiv") {
 
     lowhigh <- c(MDES.raw,MDES.BF)
     try.MDES <- midpoint(MDES.raw,MDES.BF)
 
-  } # MDES for MTP that is not Bonferroni and for individual power
+  } else if (power.definition =="indiv") {
 
-  ### NOT INDIVIDUAL POWER ###
+    # For other scenarios, set low-high intervals and compute midpoint
+    # ?What other scenarios are we talking about?
 
-  # For other scenarios, set low-high intervals and compute midpoint
-  # For cases where the power definition is not individual power, restrict it between 0 and 1.
-  ifelse (power.definition =="indiv", lowhigh<-c(MDES.raw,1), lowhigh<-c(0,1))
+    lowhigh <- c(MDES.raw,1)
+    try.MDES <- midpoint(lowhigh[1], lowhigh[2])
+  } else {
+
+    # For cases where the power definition is not individual power, restrict it between 0 and 1.
+
+    lowhigh <- c(0,1)
+    try.MDES <- midpoint(lowhigh[1],lowhigh[2])
+  }
+
 
   # Searching for the right MDES through a while loop with 20 iterations as the limit
 
-  try.MDES <- midpoint(lowhigh[1],lowhigh[2]) # Initializing MDES for first attempt
+  # Initializing MDES for first attempt
+
   ii <- 0 # Iteration counter
   target.power <- 0 # Initializing a target power
 
@@ -508,8 +517,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   # within the margin of error we have specified.
 
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
-
-    browser()
 
     # Passing our callback function
     if (is.function(updateProgress)) {

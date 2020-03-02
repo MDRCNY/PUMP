@@ -6,8 +6,8 @@
 \usage{
 mdes_blocked_i1_2c(M, numFalse, J, n.j, power, power.definition, MTP,
   marginError, p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC,
-  mod.type, sigma = 0, rho = 0.99, omega, tnum = 10000, snum = 2,
-  ncl = 2, updateProgress = NULL)
+  mod.type, sigma = 0, rho = 0.99, omega, tnum = 10000,
+  snum = 1000, ncl = 2, updateProgress = NULL)
 }
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}
