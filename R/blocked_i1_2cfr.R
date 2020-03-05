@@ -206,7 +206,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @param ncl the number of clusters to use for parallel processing. The default is set at 2.
 #' @param rho correlation between outcomes
 #' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
-#' @param procs multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
+#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
 #'              (we expect inputs in  such order)
 #'
 #' @importFrom multtest mt.rawp2adjp
@@ -214,7 +214,7 @@ df<-function(J,n.j,numCovar.1) {
 #' @export
 #'
 #'
-power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
+power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
                              p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0,rho = 0.99, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
@@ -287,7 +287,7 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
 
   rawp <- do.call(rbind,lapply(adjp,grab.pval,proc="rawp"))
-  if (procs == "Bonferroni"){
+  if (MTP == "Bonferroni"){
 
     adjp.BF <- do.call(rbind,lapply(adjp,grab.pval,proc="Bonferroni"))
 
@@ -299,7 +299,7 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
     } # call back function for updating the progress bar in Shiny
 
-  } else if (procs == "Holm") {
+  } else if (MTP == "Holm") {
 
     adjp.HO <- do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
 
@@ -311,7 +311,7 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
     } # call back function for updating the progress bar in Shiny
 
-  } else if (procs == "BH") {
+  } else if (MTP == "BH") {
 
     adjp.BH <- do.call(rbind,lapply(adjp,grab.pval,proc="BH"))
 
@@ -325,21 +325,10 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
   } # non-Westfall Young choices
 
-  # 2nd call back to progress bar on adjustments except WestFall Young is done
-  if (is.function(updateProgress) & !is.null(adjp.BH)) {
-
-    msg  <- paste0("Multiple adjustments done except for WestFall Young.")
-    # Priamry text we want to display
-    updateProgress(message = msg)
-    # Passing back the progress messages onto the callback function
-
-  } # if the function is being called, run the progress bar
-
-
   # adjust p-values for Westfall-Young (single-step and step-down)
   order.matrix<-t(apply(abs.Zs.H1,1,order,decreasing=TRUE))
 
-  if (procs == "WY-SS"){
+  if (MTP == "WY-SS"){
 
     adjp.SS <-adjust.allsamps.WYSS(snum,abs.Zs.H0,abs.Zs.H1)
 
@@ -351,9 +340,9 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
     } # call back function for updating the progress bar in Shiny
 
-  } else if (procs == "WY-SD"){
+  } else if (MTP == "WY-SD"){
 
-    adjp.WY <-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
+    adjp.SD <-adjust.allsamps.WYSD(snum,abs.Zs.H0,abs.Zs.H1,order.matrix,ncl)
 
     if (is.function(updateProgress) & !is.null(adjp.SD)){
 
@@ -367,23 +356,23 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
 
 
   # combine all adjusted p-values in list (each entry is a matrix for given MTP)
-  if (procs == "Bonferroni"){
+  if (MTP == "Bonferroni"){
 
     adjp.each <- list(rawp, adjp.BF)
 
-  } else if (procs == "Holm"){
+  } else if (MTP == "Holm"){
 
     adjp.each <- list(rawp, adjp.HO)
 
-  } else if (procs == "BH"){
+  } else if (MTP == "BH"){
 
     adjp.each <- list(rawp, adjp.BH)
 
-  } else if (procs == "WY-SS"){
+  } else if (MTP == "WY-SS"){
 
     adjp.each <- list(rawp, adjp.SS)
 
-  } else if (procs == "WY-SD"){
+  } else if (MTP == "WY-SD"){
 
     adjp.each <- list(rawp, adjp.SD)
 
@@ -441,23 +430,23 @@ power_blocked_i1_2c <- function(M, procs, MDES, numFalse, J, n.j,
   # setting the col and row names for all power results table
   colnames(all.power.results)<-c("indiv",paste0("indiv",1:M),paste0("min",1:(M-1)),"complete")
 
-  if (procs == "Bonferroni") {
+  if (MTP == "Bonferroni") {
 
     rownames(all.power.results) <- c("rawp", "BF")
 
-  } else if (procs == "Holm") {
+  } else if (MTP == "Holm") {
 
     rownames(all.power.results) <- c("rawp", "HO")
 
-  } else if (procs == "BH") {
+  } else if (MTP == "BH") {
 
     rownames(all.power.results) <- c("rawp", "BH")
 
-  } else if (procs == "WY-SS") {
+  } else if (MTP == "WY-SS") {
 
     rownames(all.power.results) <- c("rawp", "WY-SS")
 
-  } else if (procs == "WY-SD") {
+  } else if (MTP == "WY-SD") {
 
     rownames(all.power.results) <- c("rawp", "WY-SD")
 

@@ -4,7 +4,7 @@
 \alias{power_blocked_i1_2c}
 \title{Power for 2 level blocked designs}
 \usage{
-power_blocked_i1_2c(M, procs, MDES, numFalse, J, n.j, p, alpha, numCovar.1,
+power_blocked_i1_2c(M, MTP, MDES, numFalse, J, n.j, p, alpha, numCovar.1,
   numCovar.2 = 0, R2.1, R2.2 = NULL, ICC, mod.type, sigma = 0,
   rho = 0.99, omega = NULL, tnum = 10000, snum = 1000, ncl = 2,
   updateProgress = NULL)
@@ -12,7 +12,7 @@ power_blocked_i1_2c(M, procs, MDES, numFalse, J, n.j, p, alpha, numCovar.1,
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}
 
-\item{procs}{multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
+\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
 (we expect inputs in  such order)}
 
 \item{MDES}{a vector of length M corresponding to the MDESs for the M outcomes}
