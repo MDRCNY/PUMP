@@ -611,7 +611,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 
   while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
 
-    browser()
     # Passing our callback function
     if (is.function(updateProgress)) {
       text <- paste0("Optiomal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ") # Secondary text we want to display
@@ -620,7 +619,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     } # if the function is being called, run the progress bar
 
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse, J = J, n.j = n.j,
+    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse = numFalse, MTP = MTP, J = J, n.j = n.j,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
@@ -638,8 +637,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     if(target.power > power - marginError & target.power < power + marginError){
-
-      browser()
 
       mdes.results <- data.frame(try.MDES[1], target.power)
 
@@ -671,7 +668,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     ii <- ii + 1
 
     # debugging this function
-    browser()
 
   } # end while
 
