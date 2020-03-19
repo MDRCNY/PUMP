@@ -299,7 +299,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
 
     } # call back function for updating the progress bar in Shiny
 
-  } else if (MTP == "Holm") {
+  } else if (MTP == "Holm" | MTP == "HO") {
 
     adjp.HO <- do.call(rbind,lapply(adjp,grab.pval,proc="Holm"))
 
@@ -434,7 +434,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
 
     rownames(all.power.results) <- c("rawp", "BF")
 
-  } else if (MTP == "Holm") {
+  } else if (MTP == "Holm" | MTP == "HO") {
 
     rownames(all.power.results) <- c("rawp", "HO")
 
@@ -654,11 +654,9 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 
     if(!is.over) {
       lowhigh[1] <- try.MDES
-      print("I enter this loop of !isover")
     }
     if(is.over) {
       lowhigh[2] <- try.MDES
-      print("I enter this loop of is over")
     }
 
     # re-establish the midpoint
