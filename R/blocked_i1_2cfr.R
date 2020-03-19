@@ -360,7 +360,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
 
     adjp.each <- list(rawp, adjp.BF)
 
-  } else if (MTP == "Holm"){
+  } else if (MTP == "Holm" | MTP == "HO"){
 
     adjp.each <- list(rawp, adjp.HO)
 
