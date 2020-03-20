@@ -221,6 +221,7 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
 
 
   # Error handling when user put in actual effect number that is greater than the total number of outcomes
+
   if( numFalse > M){
 
     stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment.
@@ -927,18 +928,18 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 
     if (doJ) {
 
-      runpower <- power_blocked_i1_2c(M, MDES, numFalse, J= try.ss,n.j,
-                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                                     mod.type, sigma, rho, omega,
-                                     tnum, snum, ncl)
+      runpower <- power_blocked_i1_2c(M = M, MDES = MDES, MTP = MTP, numFalse = numFalse, J = try.ss,n.j = n.j,
+                                     p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                                     mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
+                                     tnum = tnum, snum = snum, ncl = ncl)
     }
 
     if (don.j) {
 
-      runpower <- power_blocked_i1_2c(M, MDES, numFalse, J, n.j=try.ss,
-                                     p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
-                                     mod.type, sigma, rho, omega,
-                                     tnum, snum, ncl)
+      runpower <- power_blocked_i1_2c(M, MDES = MDES,MTP = MTP, numFalse = numFalse, J = J, n.j=try.ss,
+                                     p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
+                                     mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
+                                     tnum = tnum, snum = snum, ncl = ncl)
 
     }
 
