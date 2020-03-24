@@ -817,11 +817,15 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 
     doJ <- TRUE
     don.j <- FALSE
+    J = NULL
+    n.j0 = NULL
 
   } else if (typesample == "n.j") {
 
     don.j <- TRUE
     doJ <- FALSE
+    n.j = NULL
+    J0 = NULL
 
   } # Sample within block
 
@@ -837,13 +841,13 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   if (doJ) {
-    J.raw <- sample_blocked_i1_2c_raw(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    J.BF <- sample_blocked_i1_2c_raw(J=NULL, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    J.raw <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    J.BF <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
   }
 
   if (don.j) {
-    n.j.raw <- sample_blocked_i1_2c_raw(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    n.j.BF <- sample_blocked_i1_2c_raw(J, n.j=NULL, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    n.j.raw <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    n.j.BF <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
   }
 
   # So below we focus on just one type of sample being estimated: Either block or samples within block
