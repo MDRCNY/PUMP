@@ -215,7 +215,7 @@ df<-function(J,n.j,numCovar.1) {
 #'
 #'
 power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
-                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2 = NULL, ICC,
+                             p, alpha, numCovar.1 = 0, numCovar.2 = 0, R2.1, R2.2 = NULL, ICC,
                              mod.type, sigma = 0,rho = 0.99, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
 
@@ -230,7 +230,9 @@ power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
   } # end of if statement
 
   # MDES must be the length of Actual Impacts
-  MDES <- rep(MDES,numFalse)
+  if (length(MDES) < M) {
+    MDES <- rep(MDES,numFalse)
+  }
 
   # the difference between the length of M and numFalse would be zero as they do not have any impacts
   noeffect <- rep(0, M - numFalse)
