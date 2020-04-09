@@ -216,7 +216,7 @@ df<-function(J,n.j,numCovar.1) {
 #'
 power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
                              p, alpha, numCovar.1 = 0, numCovar.2 = 0, R2.1, R2.2 = NULL, ICC,
-                             mod.type, sigma = 0,rho = 0.99, omega = NULL,
+                             mod.type, sigma = 0,rho, omega = NULL,
                              tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
 
 
