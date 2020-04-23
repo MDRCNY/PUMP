@@ -4,9 +4,28 @@
 \alias{sample_blocked_i1_2c_raw}
 \title{Calculating Sample for Raw (Unadjusted)}
 \usage{
-sample_blocked_i1_2c_raw(J, n.j, J0 = 10, n.j0 = 10, whichSS, MDES,
-  power, p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC, mod.type,
-  sigma, omega, two.tailed = TRUE, num.iter = 100, tol = 0.1)
+sample_blocked_i1_2c_raw(
+  J,
+  n.j,
+  J0 = 10,
+  n.j0 = 10,
+  whichSS,
+  MDES,
+  power,
+  p,
+  alpha,
+  numCovar.1,
+  numCovar.2 = 0,
+  R2.1,
+  R2.2,
+  ICC,
+  mod.type,
+  sigma,
+  omega,
+  two.tailed = TRUE,
+  num.iter = 100,
+  tol = 0.1
+)
 }
 \arguments{
 \item{J}{the number of blocks}

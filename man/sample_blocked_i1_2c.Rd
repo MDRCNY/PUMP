@@ -4,11 +4,36 @@
 \alias{sample_blocked_i1_2c}
 \title{Sample Function}
 \usage{
-sample_blocked_i1_2c(M, numFalse, typesample, J, n.j, J0, n.j0, MDES,
-  power, power.definition, MTP, marginError, p, alpha, numCovar.1,
-  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type, sigma = 0, rho = 0.99,
-  omega, tnum = 10000, snum = 2, ncl = 2, num.iter = 20,
-  updateProgress = NULL)
+sample_blocked_i1_2c(
+  M,
+  numFalse,
+  typesample,
+  J,
+  n.j,
+  J0,
+  n.j0,
+  MDES,
+  power,
+  power.definition,
+  MTP,
+  marginError,
+  p,
+  alpha,
+  numCovar.1,
+  numCovar.2 = 0,
+  R2.1,
+  R2.2,
+  ICC,
+  mod.type,
+  sigma = 0,
+  rho = 0.99,
+  omega,
+  tnum = 10000,
+  snum = 2,
+  ncl = 2,
+  num.iter = 20,
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{M}{the number of hypothesis tests (outcomes)}
