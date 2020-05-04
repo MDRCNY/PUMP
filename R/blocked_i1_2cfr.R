@@ -570,7 +570,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 
       # Attaching the MDES result to power results for tabular output
       mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
-      colnames(mdes.results) <- c(paste0( MTP, " adjusted MDES"), paste0(power.definition, " power"))
+      colnames(mdes.results) <- c(paste0( MTP, " estimated adjusted MDES"), paste0("Specified ", power.definition, " power"))
 
       return(mdes.results)
 
@@ -622,7 +622,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     } # if the function is being called, run the progress bar
 
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse = numFalse, MTP = MTP, J = J, n.j = n.j,
+    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse = numFalse, MTP = MTP, J = J, n.j = n.j,rho = rho,
                                    p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                    mod.type = mod.type, sigma = sigma, omega = omega,
                                    tnum = tnum, snum = snum, ncl = ncl)
@@ -641,9 +641,10 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     if(target.power > power - marginError & target.power < power + marginError){
 
+      browser()
       mdes.results <- data.frame(try.MDES[1], target.power)
 
-      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"),paste0(power.definition, " power")) # Giving the proper colnames
+      colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"),paste0("Method Estimated ",power.definition, " power")) # Giving the proper colnames
 
       return(mdes.results)
 
