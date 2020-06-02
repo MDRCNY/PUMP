@@ -641,7 +641,6 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     # If the calculated target.power is within the margin of error of the prescribed power, break and return the results
     if(target.power > power - marginError & target.power < power + marginError){
 
-      browser()
       mdes.results <- data.frame(try.MDES[1], target.power)
 
       colnames(mdes.results) <- c(paste0(MTP, " adjusted MDES"),paste0("Method Estimated ",power.definition, " power")) # Giving the proper colnames
