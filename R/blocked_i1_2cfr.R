@@ -519,7 +519,7 @@ midpoint<-function(lower,upper) {
 mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
                             p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC,
                             mod.type, sigma = 0, rho = 0.99,omega,
-                            tnum = 10000, snum= 1000, ncl=2, updateProgress=NULL) {
+                            tnum = 10000, snum= 1000, ncl=2, max.iter = 20, updateProgress=NULL) {
 
   # Setting up Sigma values
   sigma <- matrix(rho, M, M)
@@ -612,7 +612,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
   # While loop through until the iteration is past 20 or we have met the target.power as we search for the right MDES
   # within the margin of error we have specified.
 
-  while (ii < 20 & (target.power < power - marginError | target.power > power + marginError)) {
+  while (ii < max.iter & (target.power < power - marginError | target.power > power + marginError)) {
 
     # Passing our callback function
     if (is.function(updateProgress)) {
@@ -699,7 +699,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 #' @param sigma correlation matrix for correlations between test statistics (parameter not in use at the moment.Default is set to 0.99)
 #' @param omega NULL (parameter in development)
 #' @param two.tailed a boolean value for whether we are looking at two-tailed distribution or not
-#' @param num.iter number of iterations to look for sample size. The default is set at 100
+#' @param max.iter number of iterations to look for sample size. The default is set at 100
 #' @param tol tolerance from initializing sample values
 #' @return raw sample returns
 #' @export
@@ -708,13 +708,13 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0=10, n.j0=10,
                                 whichSS, MDES, power, p,
                                 alpha, numCovar.1, numCovar.2=0,
                                 R2.1, R2.2, ICC, mod.type, sigma,
-                                omega, two.tailed = TRUE, num.iter = 100, tol=0.1) {
+                                omega, two.tailed = TRUE, max.iter = 100, tol=0.1) {
 
 
   i <- 0 # starting the iterator
   conv <- FALSE # boolean value for convergence
 
-  while (i <= num.iter & conv == FALSE) {
+  while (i <= max.iter & conv == FALSE) {
     # checking which type of sample we are estimating
     if (whichSS =="J"){
       df <- J0 * (n.j - 1) - numCovar.1 - 1 # degree of freedom calculation
@@ -795,7 +795,7 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0=10, n.j0=10,
 #' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000.
 #' @param snum the number of samples for Westfall-Young. The default is set at 1,000.
 #' @param ncl ncl the number of clusters to use for parallel processing. The default is set at 2.
-#' @param num.iter the number of iterations to look for the optimal sample size. The default is set at 20
+#' @param max.iter the number of iterations to look for the optimal sample size. The default is set at 20
 #' @param updateProgress a call back function for our internal use in our Shiny application
 #' @param rho correlation between outcomes when sigma is generated
 #'
@@ -807,7 +807,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
                             MTP, marginError,p, alpha, numCovar.1,
                             numCovar.2=0, R2.1, R2.2,ICC,mod.type,
                             sigma = 0, rho = 0.99, omega,tnum = 10000,
-                            snum=2, ncl=2, num.iter = 20, updateProgress=NULL) {
+                            snum=2, ncl=2, max.iter = 20, updateProgress=NULL) {
 
 
   # SET UP #
@@ -843,13 +843,13 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   # Compute J or n.j for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   if (doJ) {
-    J.raw <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    J.BF <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    J.raw <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol=0.1)
+    J.BF <- sample_blocked_i1_2c_raw(J=J, n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol=0.1)
   }
 
   if (don.j) {
-    n.j.raw <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
-    n.j.BF <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, num.iter = 100, tol=0.1)
+    n.j.raw <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol=0.1)
+    n.j.BF <- sample_blocked_i1_2c_raw(J, n.j=n.j, J0=J0, n.j0=n.j0, whichSS, MDES, power, p, alpha/M, numCovar.1, numCovar.2=0, R2.1, R2.2, ICC, mod.type, sigma, omega, max.iter = 100, tol=0.1)
   }
 
   # So below we focus on just one type of sample being estimated: Either block or samples within block
@@ -911,7 +911,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
   }
   ii <- 0
   target.power <- 0
-  while (ii < num.iter & (target.power < power - marginError | target.power > power + marginError) ) {
+  while (ii < max.iter & (target.power < power - marginError | target.power > power + marginError) ) {
 
     if (is.function(updateProgress)) {
 
@@ -992,9 +992,9 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
     ii <- ii + 1
   } # end while
 
-  if (ii==num.iter & !(target.power > power - marginError & target.power < power + marginError)) {
+  if (ii==max.iter & !(target.power > power - marginError & target.power < power + marginError)) {
 
-    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (num.iter).")
+    text <- paste0("Reached maximum iterations without converging on MDES estimate within margin of error. Try increasing maximum number of iterations (max.iter).")
     updateProgress(detail = text)
   }
 }
