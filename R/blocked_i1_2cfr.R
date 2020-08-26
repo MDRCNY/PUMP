@@ -566,7 +566,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
 
     } #Raw MDES if anybody ever asked for it
 
-    if (MTP == "BF"){
+    if (MTP == "Bonferroni"){
 
       # Attaching the MDES result to power results for tabular output
       mdes.results <- t(data.frame(c(MDES.BF,power))) #transpose the MDES raw and power to have the results columnwise
@@ -878,7 +878,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 
     } #MTP raw
 
-    if (MTP == "BF") {
+    if (MTP == "Bonferroni") {
 
       # saving the sample estimates for Individual Power with the MTP type
       ss.BF <- data.frame("Bonferroni", "Individual", ss.BF)
