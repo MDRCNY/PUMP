@@ -188,7 +188,6 @@ df<-function(J,n.j,numCovar.1) {
 #'
 #' @param M the number of hypothesis tests (outcomes)
 #' @param MDES a vector of length M corresponding to the MDESs for the M outcomes
-#' @param numFalse a single entry vector specifying the estimated number of outcomes with a non-zero effect
 #' @param J the number of blocks
 #' @param n.j the harmonic mean of the number of units per block
 #' @param p the proportion of samples that are assigned to the treatment
@@ -214,29 +213,16 @@ df<-function(J,n.j,numCovar.1) {
 #' @export
 #'
 #'
-power_blocked_i1_2c <- function(M, MTP, MDES, numFalse, J, n.j,
+power_blocked_i1_2c <- function(M, MTP, MDES, J, n.j,
                                 p, alpha, numCovar.1 = 0, numCovar.2 = 0, R2.1, R2.2 = NULL, ICC,
-                                mod.type, sigma = 0,rho, omega = NULL,
-                                tnum = 10000, snum=1000, ncl=2, updateProgress = NULL) {
+                                mod.type, sigma = 0, rho, omega = NULL,
+                                tnum = 10000, snum = 1000, ncl = 2, updateProgress = NULL) {
 
 
-  # Error handling when user put in actual effect number that is greater than the total number of outcomes
-
-  if( numFalse > M){
-
-    stop('The number of outcomes with actual effects cannot be greater than the total number of outcomes of an experiment.
-         Please adjust your inputs.')
-
-  } # end of if statement
-
-  # MDES must be the length of Actual Impacts
-  if (length(MDES) < M) {
-    MDES <- rep(MDES,numFalse)
+  if(length(MDES) < M)
+  {
+    stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
   }
-
-  # the difference between the length of M and numFalse would be zero as they do not have any impacts
-  noeffect <- rep(0, M - numFalse)
-  MDES <- c(MDES, noeffect)
 
   # Setting a default Sigma up
   sigma <- matrix(rho, M, M)
@@ -501,7 +487,6 @@ midpoint<-function(lower,upper) {
 #'
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations.
 #' @param J the number of blocks
 #' @param n.j the harmonic mean of the number of units per block
 #' @param power required statistical power for the experiment
@@ -528,7 +513,7 @@ midpoint<-function(lower,upper) {
 #' @export
 #'
 
-mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP, marginError,
+mdes_blocked_i1_2c <-function(M, J, n.j, power, power.definition, MTP, marginError,
                               p, alpha, numCovar.1, numCovar.2 = 0, R2.1, R2.2, ICC,
                               mod.type, sigma = 0, rho = 0.99,omega,
                               tnum = 10000, snum = 1000, ncl = 2, max.iter = 20, updateProgress=NULL) {
@@ -634,7 +619,7 @@ mdes_blocked_i1_2c <-function(M, numFalse, J, n.j, power, power.definition, MTP,
     } # if the function is being called, run the progress bar
 
     # Function to calculate the target power to check in with the pre-specified power in the loop
-    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, numFalse = numFalse, MTP = MTP, J = J, n.j = n.j,rho = rho,
+    runpower <- power_blocked_i1_2c(M = M, MDES = try.MDES, MTP = MTP, J = J, n.j = n.j,rho = rho,
                                     p = p, alpha = alpha, numCovar.1 = numCovar.1,numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                     mod.type = mod.type, sigma = sigma, omega = omega,
                                     tnum = tnum, snum = snum, ncl = ncl)
@@ -783,7 +768,6 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
 #' Sample Function
 #'
 #' @param M the number of hypothesis tests (outcomes)
-#' @param numFalse the number of false nulls. This parameter is used for non-Shiny calculations
 #' @param typesample the type of the number of sample we would like to estimate: either block J or n.j (harmonic mean within block. For Shiny use)
 #' @param J the number of blocks (set to NULL if you do not want to estimate this one)
 #' @param n.j the harmonic mean of blocks (set to NULL if you do not want to estimate this one)
@@ -814,7 +798,7 @@ sample_blocked_i1_2c_raw <- function(J, n.j, J0 = 10, n.j0 = 10,
 #' @return Sample number returns
 #' @export
 
-sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
+sample_blocked_i1_2c <- function(M, typesample, J, n.j,
                                  J0 = 10, n.j0 = 10, MDES, power, power.definition,
                                  MTP, marginError,p, alpha, numCovar.1,
                                  numCovar.2 = 0, R2.1, R2.2, ICC, mod.type,
@@ -960,7 +944,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 
     if (doJ) {
 
-      runpower <- power_blocked_i1_2c(M = M, MDES = MDES, MTP = MTP, numFalse = numFalse, J = try.ss,n.j = n.j,
+      runpower <- power_blocked_i1_2c(M = M, MDES = MDES, MTP = MTP, J = try.ss,n.j = n.j,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
                                       tnum = tnum, snum = snum, ncl = ncl)
@@ -968,7 +952,7 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
 
     if (don.j) {
 
-      runpower <- power_blocked_i1_2c(M, MDES = MDES,MTP = MTP, numFalse = numFalse, J = J, n.j=try.ss,
+      runpower <- power_blocked_i1_2c(M, MDES = MDES,MTP = MTP, J = J, n.j=try.ss,
                                       p = p, alpha = alpha, numCovar.1 = numCovar.1, numCovar.2=0, R2.1 = R2.1, R2.2 = R2.2, ICC = ICC,
                                       mod.type = mod.type, sigma = sigma, rho = rho, omega = omega,
                                       tnum = tnum, snum = snum, ncl = ncl)
@@ -1024,15 +1008,3 @@ sample_blocked_i1_2c <- function(M, numFalse, typesample, J, n.j,
     updateProgress(detail = text)
   }
 }
-
-## indiv, BF, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = rep(mdes1,M), power=test.power["BF","indiv"], power.definition = "indiv", MTP = "BF", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## indiv, BH, n.j
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J, n.j=NULL, J0=J0, n.j0=n.j0, MDES = mdes1, power=test.power["BH","indiv"], power.definition = "indiv", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-# ## min1, BH, J
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, J0=J0, n.j0=n.j0, MDES = mdes1, test.power["BH","min1"], power.definition = "min1", MTP = "BH", marginError = 0.005,p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0, mod.type="constant", sigma=sigma, omega=NULL,  tnum = 10000, snum=2, ncl=4)
-# print(test.SS)
-#
-# test.SS <- SS.blockedRCT.2(M, numFalse = M, J=NULL, n.j, power=0.417, power.definition, MTP, marginError = 0.005, p, alpha, numCovar.1=0, numCovar.2=0, R2.1=r2, R2.2=0, ICC=0 mod.type="constant", sigma=sigma, omega=NULL,tnum = 10000, snum=2, ncl=2)
