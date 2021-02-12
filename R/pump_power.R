@@ -66,6 +66,7 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
 #' @param numCovar.3 number of Level 3 baseline covariates
 #'
 #' @return the degree of freedom
+#' @export
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
