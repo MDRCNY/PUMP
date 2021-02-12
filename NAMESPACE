@@ -2,6 +2,7 @@
 
 export(adjp.wysd)
 export(adjp.wyss)
+export(calc.df)
 export(comp.rawt.sd)
 export(comp.rawt.ss)
 export(get.adjp.minp)
