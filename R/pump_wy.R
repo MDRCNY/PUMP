@@ -42,16 +42,11 @@ comp.rawt.sd <- function(nullt, rawt, rawt.order) {
     qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
   }
 
+  # now calculate actual p-value
   maxt <- rep(NA, M)
   for (h in 1:M) {
     maxt[h] <- qstar[h] > abs(rawt.ordered)[h]
   }
-# print(maxt)
-#
-#   maxt[1] <- max(abs(nullt)) > abs(rawt)[rawt.order][1]
-#   for (h in 2:M) {
-#     maxt[h] <- max(abs(nullt)[rawt.order][-(1:(h-1))]) > abs(rawt)[rawt.order][h]
-#   }
   return(as.integer(maxt))
 }
 
@@ -169,30 +164,30 @@ adjp.wysd <- function(rawt.matrix, B, sigma, t.df, cl = NULL) {
     ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,]))
     adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
   }
-
-  # if(!is.null(cl))
-  # {
-  #   # leveraging snow to run multiple cores for foreach loops
-  #   doParallel::registerDoParallel(cl)
-  #   # registering the comp.rawt.SD function in global enivronment of each node
-  #   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
-  #
-  #   # dopar is a special function that has to be explicitly called from the foreach package
-  #   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
-  #   # series of steps to execute
-  #   # `%dopar%` <- foreach::`%dopar%`
-  #   # making s a local variable to perpetuate across (created to bypass a package requirement)
-  #   # s = 1:B
-  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
-  #     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
-  #   }
-  # } else
-  # {
-  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
-  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
-  #   }
-  # }
-
   return(adjp)
 }
+
+
+# if(!is.null(cl))
+# {
+#   # leveraging snow to run multiple cores for foreach loops
+#   doParallel::registerDoParallel(cl)
+#   # registering the comp.rawt.SD function in global enivronment of each node
+#   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
+#
+#   # dopar is a special function that has to be explicitly called from the foreach package
+#   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
+#   # series of steps to execute
+#   # `%dopar%` <- foreach::`%dopar%`
+#   # making s a local variable to perpetuate across (created to bypass a package requirement)
+#   # s = 1:B
+#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
+#     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
+#   }
+# } else
+# {
+#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
+#   }
+# }
