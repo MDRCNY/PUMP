@@ -27,12 +27,31 @@ comp.rawt.ss <- function(nullt, rawt) {
 #' @export
 #'
 comp.rawt.sd <- function(nullt, rawt, rawt.order) {
+
   M <- length(nullt)
-  maxt <- rep(NA, M)
-  maxt[1] <- max(abs(nullt)) > abs(rawt)[rawt.order][1]
-  for (h in 2:M) {
-    maxt[h] <- max(abs(nullt)[rawt.order][-(1:(h-1))]) > abs(rawt)[rawt.order][h]
+
+  # ordered version of raw and null values
+  rawt.ordered <- rawt[rawt.order]
+  nullt.ordered <- abs(nullt[rawt.order])
+
+  # compute successive maxima
+  qstar <- rep(NA, M)
+  qstar[1] <- nullt.ordered[1]
+  for (h in 2:M)
+  {
+    qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
   }
+
+  maxt <- rep(NA, M)
+  for (h in 1:M) {
+    maxt[h] <- qstar[h] > abs(rawt.ordered)[h]
+  }
+# print(maxt)
+#
+#   maxt[1] <- max(abs(nullt)) > abs(rawt)[rawt.order][1]
+#   for (h in 2:M) {
+#     maxt[h] <- max(abs(nullt)[rawt.order][-(1:(h-1))]) > abs(rawt)[rawt.order][h]
+#   }
   return(as.integer(maxt))
 }
 
@@ -137,17 +156,17 @@ adjp.wysd <- function(rawt.matrix, B, sigma, t.df, cl = NULL) {
       list("rawt.matrix"),
       envir = environment()
     )
-    rawt.order.matrix <- t(parallel::parApply(cl, rawt.matrix, 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.matrix), 1, order, decreasing = FALSE))
   } else
   {
-    rawt.order.matrix <- t(apply(rawt.matrix, 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = FALSE))
   }
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
     # generate null t statistics
     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt.matrix[t,], rawt.order.matrix[t,]))
+    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,]))
     adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
   }
 

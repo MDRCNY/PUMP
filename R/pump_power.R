@@ -164,8 +164,6 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   return(K)
 }
 
-grab.pval<-function(...,proc) {return(...$adjp[order(...$index),proc])}
-
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
@@ -237,8 +235,6 @@ pump_power <- function(
 
   # seperating out p values that are adjusted by Bonferroni, Holm and Benjamini-Hocheberg
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
-
-
 
   if (MTP == "Bonferroni"){
 
