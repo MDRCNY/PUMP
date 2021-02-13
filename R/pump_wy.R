@@ -27,11 +27,25 @@ comp.rawt.ss <- function(nullt, rawt) {
 #' @export
 #'
 comp.rawt.sd <- function(nullt, rawt, rawt.order) {
+
   M <- length(nullt)
+
+  # ordered version of raw and null values
+  rawt.ordered <- rawt[rawt.order]
+  nullt.ordered <- abs(nullt[rawt.order])
+
+  # compute successive maxima
+  qstar <- rep(NA, M)
+  qstar[1] <- nullt.ordered[1]
+  for (h in 2:M)
+  {
+    qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+  }
+
+  # now calculate actual p-value
   maxt <- rep(NA, M)
-  maxt[1] <- max(abs(nullt)) > abs(rawt)[rawt.order][1]
-  for (h in 2:M) {
-    maxt[h] <- max(abs(nullt)[rawt.order][-(1:(h-1))]) > abs(rawt)[rawt.order][h]
+  for (h in 1:M) {
+    maxt[h] <- qstar[h] > abs(rawt.ordered)[h]
   }
   return(as.integer(maxt))
 }
@@ -137,43 +151,43 @@ adjp.wysd <- function(rawt.matrix, B, sigma, t.df, cl = NULL) {
       list("rawt.matrix"),
       envir = environment()
     )
-    rawt.order.matrix <- t(parallel::parApply(cl, rawt.matrix, 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.matrix), 1, order, decreasing = FALSE))
   } else
   {
-    rawt.order.matrix <- t(apply(rawt.matrix, 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = FALSE))
   }
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
     # generate null t statistics
     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt.matrix[t,], rawt.order.matrix[t,]))
+    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,]))
     adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
   }
-
-  # if(!is.null(cl))
-  # {
-  #   # leveraging snow to run multiple cores for foreach loops
-  #   doParallel::registerDoParallel(cl)
-  #   # registering the comp.rawt.SD function in global enivronment of each node
-  #   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
-  #
-  #   # dopar is a special function that has to be explicitly called from the foreach package
-  #   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
-  #   # series of steps to execute
-  #   # `%dopar%` <- foreach::`%dopar%`
-  #   # making s a local variable to perpetuate across (created to bypass a package requirement)
-  #   # s = 1:B
-  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
-  #     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
-  #   }
-  # } else
-  # {
-  #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
-  #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
-  #   }
-  # }
-
   return(adjp)
 }
+
+
+# if(!is.null(cl))
+# {
+#   # leveraging snow to run multiple cores for foreach loops
+#   doParallel::registerDoParallel(cl)
+#   # registering the comp.rawt.SD function in global enivronment of each node
+#   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
+#
+#   # dopar is a special function that has to be explicitly called from the foreach package
+#   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
+#   # series of steps to execute
+#   # `%dopar%` <- foreach::`%dopar%`
+#   # making s a local variable to perpetuate across (created to bypass a package requirement)
+#   # s = 1:B
+#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
+#     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
+#   }
+# } else
+# {
+#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
+#   }
+# }
