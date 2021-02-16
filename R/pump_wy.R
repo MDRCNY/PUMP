@@ -28,18 +28,20 @@ comp.rawt.ss <- function(nullt, rawt) {
 #'
 comp.rawt.sd <- function(nullt, rawt, rawt.order) {
 
+  # nullt = nullt[1,]; rawt = rawt.matrix[t,]; rawt.order = rawt.order.matrix[t,]
+
   M <- length(nullt)
 
   # ordered version of raw and null values
   rawt.ordered <- rawt[rawt.order]
-  nullt.ordered <- abs(nullt[rawt.order])
+  nullt.ordered <- nullt[rawt.order]
 
   # compute successive maxima
   qstar <- rep(NA, M)
-  qstar[1] <- nullt.ordered[1]
-  for (h in 2:M)
+  qstar[M] <- abs(nullt.ordered[M])
+  for (h in (M-1):1)
   {
-    qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+    qstar[h] <- max(qstar[h + 1], abs(nullt.ordered[h]))
   }
 
   # now calculate actual p-value
@@ -47,6 +49,7 @@ comp.rawt.sd <- function(nullt, rawt, rawt.order) {
   for (h in 1:M) {
     maxt[h] <- qstar[h] > abs(rawt.ordered)[h]
   }
+
   return(as.integer(maxt))
 }
 
@@ -151,10 +154,10 @@ adjp.wysd <- function(rawt.matrix, B, sigma, t.df, cl = NULL) {
       list("rawt.matrix"),
       envir = environment()
     )
-    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.matrix), 1, order, decreasing = FALSE))
+    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.matrix), 1, order, decreasing = TRUE))
   } else
   {
-    rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = FALSE))
+    rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = TRUE))
   }
 
   # looping through all the samples of raw test statistics
