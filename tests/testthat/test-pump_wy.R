@@ -153,18 +153,18 @@ test_that("p-values match", {
 #--------------------------#
 rawt <- c(2.1, 2.2, 2.3)
 nullt <- c(3, 2, 4)
-rawt.order <- order(abs(rawt))
+rawt.order <- order(abs(rawt), decreasing = TRUE)
 
 rawt.ordered <- rawt[rawt.order]
-nullt.ordered <- abs(nullt[rawt.order])
+nullt.ordered <- nullt[rawt.order]
 qstar <- rep(NA, M)
-qstar[1] <- nullt.ordered[1]
-for (h in 2:M)
+qstar[M] <- abs(nullt.ordered[M])
+for (h in (M-1):1)
 {
-  qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+  qstar[h] <- max(qstar[h + 1], abs(nullt.ordered[h]))
 }
 
-exp.qstar <- c(3, 3, 4)
+exp.qstar <- c(4, 3, 3)
 test_that("Qstar match", {
   expect_equal(qstar, exp.qstar)
 })
@@ -181,20 +181,20 @@ test_that("Indicator functions match", {
 
 
 #--------------------------#
-rawt <- c(2.2, 2.1, 2.3)
-nullt <- c(3, 2, 4)
-rawt.order <- c(2, 1, 3)
+rawt <- c(2.2, 2.1, 4.1)
+nullt <- c(4, 3, 2)
+rawt.order <- c(3, 1, 2)
 
 rawt.ordered <- rawt[rawt.order]
-nullt.ordered <- abs(nullt[rawt.order])
+nullt.ordered <- nullt[rawt.order]
 qstar <- rep(NA, M)
-qstar[1] <- nullt.ordered[1]
-for (h in 2:M)
+qstar[M] <- abs(nullt.ordered[M])
+for (h in (M-1):1)
 {
-  qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+  qstar[h] <- max(qstar[h + 1], abs(nullt.ordered[h]))
 }
 
-exp.qstar <- c(2, 3, 4)
+exp.qstar <- c(4, 4, 3)
 test_that("Qstar match", {
   expect_equal(qstar, exp.qstar)
 })
@@ -212,24 +212,25 @@ test_that("Indicator functions match", {
 
 #--------------------------#
 rawt <- c(-2.2, 2.1, 2.3)
-nullt <- c(3, -2, 4)
-rawt.order <- c(2, 1, 3)
+nullt <- c(3, -2, 2.25)
+rawt.order <- c(3, 1, 2)
 
 rawt.ordered <- rawt[rawt.order]
-nullt.ordered <- abs(nullt[rawt.order])
+nullt.ordered <- nullt[rawt.order]
 qstar <- rep(NA, M)
-qstar[1] <- nullt.ordered[1]
-for (h in 2:M)
+qstar[M] <- abs(nullt.ordered[M])
+for (h in (M-1):1)
 {
-  qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+  qstar[h] <- max(qstar[h + 1], abs(nullt.ordered[h]))
 }
-exp.qstar <- c(2, 3, 4)
+
+exp.qstar <- c(3, 3, 2)
 test_that("Qstar match", {
   expect_equal(qstar, exp.qstar)
 })
 
 # test indicator B
-exp.ind.B <- c(0, 1, 1)
+exp.ind.B <- c(1, 1, 0)
 ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
@@ -241,23 +242,24 @@ test_that("Indicator functions match", {
 #--------------------------#
 rawt <- c(-5, 1.1, 4)
 nullt <- c(3, -2, 1.8)
-rawt.order <- c(2, 3, 1)
+rawt.order <- c(1, 3, 2)
 
 rawt.ordered <- rawt[rawt.order]
 nullt.ordered <- abs(nullt[rawt.order])
 qstar <- rep(NA, M)
-qstar[1] <- nullt.ordered[1]
-for (h in 2:M)
+qstar[M] <- abs(nullt.ordered[M])
+for (h in (M-1):1)
 {
-  qstar[h] <- max(abs(qstar[h - 1]), nullt.ordered[h])
+  qstar[h] <- max(qstar[h + 1], abs(nullt.ordered[h]))
 }
-exp.qstar <- c(2, 2, 3)
+
+exp.qstar <- c(3, 2, 2)
 test_that("Qstar match", {
   expect_equal(qstar, exp.qstar)
 })
 
 # test indicator B
-exp.ind.B <- c(1, 0, 0)
+exp.ind.B <- c(0, 0, 1)
 ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
@@ -351,10 +353,10 @@ rawt.matrix = rbind(
   c(0.3, 1, 0.1)
 )
 
-rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = FALSE))
+rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = TRUE))
 exp.rawt.order.matrix <- rbind(
-  c(2, 1, 3),
-  c(3, 1, 2)
+  c(3, 1, 2),
+  c(2, 1, 3)
 )
 test_that("Order matrix matches", {
   expect_equal(rawt.order.matrix, exp.rawt.order.matrix)
@@ -384,4 +386,50 @@ test_that("P value output matches", {
   expect_equal(adjp, exp.adjp)
 })
 
+#----------------------------------------------------#
+# test whole process
+#----------------------------------------------------#
+
+#--------------------------#
+rawt.matrix = rbind(
+  c(0.8, -0.4, 3),
+  c(0.3, 1, 0.1)
+)
+set.seed(4335)
+adjp.sd <- adjp.wysd(rawt.matrix, B, sigma, t.df, cl = NULL)
+set.seed(4335)
+adjp.ss <- adjp.wyss(rawt.matrix, B, sigma, t.df)
+test_that("Smallest p-value should match", {
+  expect_equal(adjp.sd[1,3], adjp.ss[1,3])
+})
+test_that("Smallest p-value should match", {
+  expect_equal(adjp.sd[2,2], adjp.ss[2,2])
+})
+#--------------------------#
+
+# calculate by hand
+#--------------------------#
+rawt.matrix = rbind(
+  c(0.8, -0.4, 3),
+  c(0.3, 1, 0.1)
+)
+# nullt
+# [,1]       [,2]       [,3]
+# [1,]  1.5400465 0.00675733 -0.1173385
+# [2,] -0.3683377 0.21203830 -0.8790077
+# [,1]          [,2]       [,3]
+# [1,]  0.4936366 -0.0007528196 -0.4612104
+# [2,] -1.0086968 -0.6327400480  0.8786953
+
+set.seed(4334)
+adjp <- adjp.wysd(rawt.matrix, B, sigma, t.df, cl = NULL)
+exp.adjp = rbind(
+  c(0.5, 0.5, 0),
+  c(1, 0.5, 1)
+)
+
+test_that("P value output matches", {
+  expect_equal(adjp, exp.adjp)
+})
+#--------------------------#
 
