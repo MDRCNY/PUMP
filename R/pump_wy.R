@@ -1,3 +1,10 @@
+#' for testing
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#   install.packages("BiocManager")
+# BiocManager::install("multtest")
+
+library(multtest)
+
 #' Helper function for Westfall Young Single Step
 #'
 #' The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
