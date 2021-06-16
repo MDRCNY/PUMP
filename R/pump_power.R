@@ -1,3 +1,23 @@
+
+#' List all the supported designs of the `pum` package.
+#'
+#' List all supported designs, with brief descriptions.
+#'
+#' @export
+supported_designs <- function() {
+  cat( "Supported designs:\n" )
+  cat( "blocked_i1_2c - Individual rand at level 1, constant impact model\n")
+  cat( "blocked_i1_2f - Individual rand at level 1, fixed effects, constant impact model\n")
+  cat( "blocked_i1_2r - Individual rand at level 1, random effect for impact (RIRC)\n")
+  cat( "blocked_i1_3r - \n")
+  cat( "simple_c2_2r - \n")
+  cat( "simple_c3_3r - \n")
+  cat( "blocked_c2_3f - Randomization at level 2, fixed effects for level 3\n")
+  cat( "blocked_c2_3r - Randomization at level 2, random effects\n")
+
+}
+
+
 #' The function calc.Q.m computes Qm, the standard error of the effect size estimate
 #'
 #' @param design RCT design (see list/naming convention)
@@ -170,29 +190,42 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 #' (Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
 
 #' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-#'              (we expect inputs in  such order)
-#' @param MDES a vector of length M corresponding to the MDESs for the M outcomes
+#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH,
+#'   Holms, WY_SS & WY_SD (we expect inputs in  such order)
+#' @param MDES a vector of length M corresponding to the MDESs for the M
+#'   outcomes.  Can provide single MDES value which will be repeated for the M
+#'   outcomes.
 #' @param M the number of hypothesis tests (outcomes)
 #' @param J the number of schools
 #' @param K the number of districts
 #' @param nbar the harmonic mean of the number of units per block
 #' @param Tbar the proportion of samples that are assigned to the treatment
 #' @param alpha the family wise error rate (FWER)
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
-#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
-#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
-#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
+#' @param numCovar.1 number of Level 1 baseline covariates (not including block
+#'   dummies)
+#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this
+#'   design)
+#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this
+#'   design)
+#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level
+#'   1 (R^2 = variation in the data explained by the model)
+#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level
+#'   2 (R^2 = variation in the data explained by the model)
 #' @param ICC.2 school intraclass correlation
 #' @param ICC.3 district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects variability
-#' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
-#' @param B the number of samples for Westfall-Young. The default is set at 1,000.
+#' @param omega.2 ratio of school effect size variability to random effects
+#'   variability
+#' @param omega.3 ratio of district effect size variability to random effects
+#'   variability
+#' @param tnum the number of test statistics (samples) for all procedures other
+#'   than Westfall-Young & number of permutations for WY. The default is set at
+#'   10,000
+#' @param B the number of samples for Westfall-Young. The default is set at
+#'   1,000.
 #' @param cl clusters object to use for parallel processing.
 #' @param rho correlation between outcomes
-#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
+#' @param updateProgress the callback function to update the progress bar (User
+#'   does not have to input anything)
 #'
 #' @importFrom multtest mt.rawp2adjp
 #' @return power results across all definitions of power and MTP
@@ -206,9 +239,18 @@ pump_power <- function(
   tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
 )
 {
+  if ( length( MTP ) > 1 ) {
+      stop( "Please provide only a single MTP procedure" )
+  }
+
   if(length(MDES) < M)
   {
-    stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
+    if ( length(MDES) == 1 ) {
+      MDES = rep( MDES, M )
+      message( "Assuming same MDES for all outcomes.  Specify full vector to remove this message." )
+    } else {
+      stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
+    }
   }
 
   # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
@@ -282,8 +324,9 @@ pump_power <- function(
   lt.alpha <- function(x) { apply(as.matrix(x[,MDES > 0]), 1, sum) }
   lt.alpha.each <- lapply(reject.each, lt.alpha)
 
-  # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of whether adjusted pvalues were less than alpha
-  # in other words, the null has been rejected
+  # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of
+  # whether adjusted pvalues were less than alpha.  In other words, the null has
+  # been rejected
   power.ind.fun <- function(x) { apply(x, 2, mean) }
   power.ind.each <- lapply(reject.each, power.ind.fun)
   power.ind.each.mat <- do.call(rbind, power.ind.each)
@@ -336,17 +379,19 @@ pump_power <- function(
 
 }
 
+
+
 #' Midpoint function
 #'
-#' Calculating the midpoint between the lower and upper bound by calculating half the distance between the two
-#' and adding the lower bound to it. The function is a helper function in determining the MDES that falls within
+#' Calculating the midpoint between the lower and upper bound by calculating
+#' half the distance between the two and adding the lower bound to it. The
+#' function is a helper function in determining the MDES that falls within
 #' acceptable power range.
 #'
 #' @param lower lower bound
 #' @param upper upper bound
 #' @importFrom stats dist
 #' @return returns midpoint value
-
 midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
 }
@@ -532,8 +577,7 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 #' set in the parameter in the power value.
 #'
 #' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-#'              (we expect inputs in  such order)
+#' @param MTP multiple adjustment procedure of interest (Options are Bonferroni, BH, Holms, WY-SS & WY-SD).
 #' @param M the number of hypothesis tests (outcomes)
 #' @param J the number of schools
 #' @param K the number of districts

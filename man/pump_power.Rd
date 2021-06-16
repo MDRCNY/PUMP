@@ -34,10 +34,12 @@ pump_power(
 \arguments{
 \item{design}{RCT design (see list/naming convention)}
 
-\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-(we expect inputs in  such order)}
+\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH,
+Holms, WY_SS & WY_SD (we expect inputs in  such order)}
 
-\item{MDES}{a vector of length M corresponding to the MDESs for the M outcomes}
+\item{MDES}{a vector of length M corresponding to the MDESs for the M
+outcomes.  Can provide single MDES value which will be repeated for the M
+outcomes.}
 
 \item{M}{the number of hypothesis tests (outcomes)}
 
@@ -51,15 +53,20 @@ pump_power(
 
 \item{alpha}{the family wise error rate (FWER)}
 
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
+\item{numCovar.1}{number of Level 1 baseline covariates (not including block
+dummies)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
+\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this
+design)}
 
-\item{numCovar.3}{number of Level 3 baseline covariates (set to 0 for this design)}
+\item{numCovar.3}{number of Level 3 baseline covariates (set to 0 for this
+design)}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
+\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level
+1 (R^2 = variation in the data explained by the model)}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
+\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level
+2 (R^2 = variation in the data explained by the model)}
 
 \item{ICC.2}{school intraclass correlation}
 
@@ -67,17 +74,23 @@ pump_power(
 
 \item{rho}{correlation between outcomes}
 
-\item{omega.2}{ratio of school effect size variability to random effects variability}
+\item{omega.2}{ratio of school effect size variability to random effects
+variability}
 
-\item{omega.3}{ratio of district effect size variability to random effects variability}
+\item{omega.3}{ratio of district effect size variability to random effects
+variability}
 
-\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000}
+\item{tnum}{the number of test statistics (samples) for all procedures other
+than Westfall-Young & number of permutations for WY. The default is set at
+10,000}
 
-\item{B}{the number of samples for Westfall-Young. The default is set at 1,000.}
+\item{B}{the number of samples for Westfall-Young. The default is set at
+1,000.}
 
 \item{cl}{clusters object to use for parallel processing.}
 
-\item{updateProgress}{the callback function to update the progress bar (User does not have to input anything)}
+\item{updateProgress}{the callback function to update the progress bar (User
+does not have to input anything)}
 }
 \value{
 power results across all definitions of power and MTP

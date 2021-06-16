@@ -15,7 +15,8 @@ midpoint(lower, upper)
 returns midpoint value
 }
 \description{
-Calculating the midpoint between the lower and upper bound by calculating half the distance between the two
-and adding the lower bound to it. The function is a helper function in determining the MDES that falls within
+Calculating the midpoint between the lower and upper bound by calculating
+half the distance between the two and adding the lower bound to it. The
+function is a helper function in determining the MDES that falls within
 acceptable power range.
 }
