@@ -18,25 +18,24 @@ supported_designs <- function() {
 }
 
 
-#' The function calc.Q.m computes Qm, the standard error of the effect size estimate
+#' Computes Q_m, the standard error of the effect size estimate
 #'
-#' @param design RCT design (see list/naming convention)
-#' @param MDES  a vector of length M corresponding to the minimum detectable effect sizes (MDESs) for the M outcomes
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param nbar the harmonic means of the number of units per block
-#' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
-#' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
-#' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
-#' @param ICC.2 a vector of length M of school intraclass correlation
-#' @param ICC.3 a vector of length M of district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects variability
-#' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param Tbar the proportion of test statistics assigned to treatment within each block group
+#' @param design a single RCT design (see list/naming convention)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param R2.1 vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects variability
 #'
-#' @return mean of the test statistics under the joint alternative hypothesis
+#' @return Q_m, the standard error of the effect size estimate
 
-calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar) {
+calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
@@ -76,17 +75,18 @@ calc.Q.m <- function(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2
 }
 
 
-#' This function calculates the degree of freedom for all implemented designs
-#' @param design RCT design (see list/naming convention)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param nbar units per block
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates
-#' @param numCovar.3 number of Level 3 baseline covariates
+#' Calculate the degrees of freedom for a particular design
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
+#'   dummies)
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
 #'
 #' @return the degree of freedom
-#' @export
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
@@ -121,21 +121,20 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   return(df)
 }
 
-#' This function calculates J for all implemented designs
-#' @param design RCT design (see list/naming convention)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param nbar units per block
-#' @param R2.1 a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes
-#' @param R2.2 a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes
-#' @param R2.3 a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes
-#' @param ICC.2 a vector of length M of school intraclass correlation
-#' @param ICC.3 a vector of length M of district intraclass correlation
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates
-#' @param numCovar.3 number of Level 3 baseline covariates
+#' Calculates J, the number of schools
 #'
-#' @return the degree of freedom
+#' @param design a single RCT design (see list/naming convention)
+#' @param MT multiplier
+#' @param MDES scalar, or vector of length M; the MDES values for each outcome
+#' @param J scalar; the number of schools
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
+#'
+#' @return J, the number of schools
 
 calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
 
@@ -156,6 +155,26 @@ calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
   }
 }
 
+#' Calculates K, the number of districts
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param MT multiplier
+#' @param vector of length M; the MDES values for each outcome.
+#'   Can provide single MDES value which will be repeated for the M outcomes.
+#' @param J scalar; the number of schools
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects
+#'   variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects
+#'   variability
+#'
+#' @return K, the number of districts
 calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
   if(design == 'blocked_i1_3r')
@@ -188,59 +207,58 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
 #' (Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
-
-#' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH,
-#'   Holms, WY_SS & WY_SD (we expect inputs in  such order)
-#' @param MDES a vector of length M corresponding to the MDESs for the M
-#'   outcomes.  Can provide single MDES value which will be repeated for the M
-#'   outcomes.
-#' @param M the number of hypothesis tests (outcomes)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param nbar the harmonic mean of the number of units per block
-#' @param Tbar the proportion of samples that are assigned to the treatment
-#' @param alpha the family wise error rate (FWER)
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+#'   Holm, WY-SS, WY-SD
+#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param M scalar; the number of hypothesis tests (outcomes)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param alpha scalar; the family wise error rate (FWER)
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
 #'   dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this
-#'   design)
-#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this
-#'   design)
-#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level
-#'   1 (R^2 = variation in the data explained by the model)
-#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level
-#'   2 (R^2 = variation in the data explained by the model)
-#' @param ICC.2 school intraclass correlation
-#' @param ICC.3 district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects
 #'   variability
-#' @param omega.3 ratio of district effect size variability to random effects
+#' @param omega.3 scalar; ratio of district effect size variability to random effects
 #'   variability
-#' @param tnum the number of test statistics (samples) for all procedures other
-#'   than Westfall-Young & number of permutations for WY. The default is set at
-#'   10,000
-#' @param B the number of samples for Westfall-Young. The default is set at
-#'   1,000.
-#' @param cl clusters object to use for parallel processing.
-#' @param rho correlation between outcomes
+#' @param rho scalar; correlation between outcomes
+#' @param tnum scalar; the number of test statistics (samples)
+#' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
 #'
 #' @importFrom multtest mt.rawp2adjp
-#' @return power results across all definitions of power and MTP
+#' @return power results for MTP and unadjusted across all definitions of power
 #' @export
 #'
 #'
 pump_power <- function(
-  design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
-  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-  rho, omega.2, omega.3 = NULL,
-  tnum = 10000, B = 1000, cl = NULL, updateProgress = NULL
+  design, MTP, MDES, M,
+  J, K = 1, nbar, Tbar,
+  alpha = 0.05,
+  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
+  R2.1, R2.2 = NULL, R2.3 = NULL,
+  ICC.2, ICC.3 = NULL,
+  omega.2, omega.3 = NULL,
+  rho,
+  tnum = 10000, B = 1000,
+  cl = NULL,
+  updateProgress = NULL
 )
 {
   if ( length( MTP ) > 1 ) {
-      stop( "Please provide only a single MTP procedure" )
+    stop( "Please provide only a single MTP procedure" )
   }
 
   if(length(MDES) < M)
@@ -253,29 +271,33 @@ pump_power <- function(
     }
   }
 
-  # compute Q(m) for all false nulls. We are calculating the test statistics for when the alternative hypothesis is true.
-  t.shift <- MDES/calc.Q.m(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar)
-  t.df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
-
-  t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum)) # repeating shift.beta on every row
-
-  # generate test statistics and p-values under null and alternative $s=\frac{1}{2}$
-  # rmvt draws from a multivariate t-distribution
+  # compute test statistics for when null hypothesis is false
+  Q.m <- calc.Q.m(
+    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+    ICC.2 = ICC.2, ICC.3 = ICC.3,
+    omega.2 = omega.2, omega.3 = omega.3
+  )
+  t.shift <- MDES/Q.m
+  t.df <- calc.df(
+    design = design, J = J, K = K,
+    nbar = nbar,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
+  )
+  t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum))
 
   # correlation between the test statistics
   sigma <- matrix(rho, M, M)
   diag(sigma) <- 1
 
-  # generate t statistics and p values
+  # generate t values and p values under alternative hypothesis using multivariate t-distribution
   rawt.matrix <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df) + t.shift.mat
   rawp.matrix <- pt(-abs(rawt.matrix), df = t.df) * 2
 
-  # 1st call back to progress bar on progress of calculation: P values generation
   if (is.function(updateProgress) & !is.null(rawp.matrix)) {
     updateProgress(message = "P-values have been generated!")
   }
 
-  # seperating out p values that are adjusted by Bonferroni, Holm and Benjamini-Hocheberg
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
 
   if (MTP == "Bonferroni"){
@@ -306,6 +328,7 @@ pump_power <- function(
     adjp <- adjp.wysd(rawt.matrix = rawt.matrix, B = B, sigma = sigma, t.df = t.df, cl = cl)
 
   } else {
+
     stop(paste("Unknown MTP:", MTP))
   }
 
@@ -315,59 +338,47 @@ pump_power <- function(
 
   adjp.each <- list(rawp.matrix, adjp)
 
-  # for each MTP, get matrix of indicators for whether the adjusted p-value is less than alpha
+  # get matrix of indicators for whether the adjusted p-value is less than alpha
   reject <- function(x) { as.matrix(1*(x < alpha)) }
   reject.each <- lapply(adjp.each, reject)
 
-  # Helper function: In each row for each MTP matrix, count number of p-values less than 0.05,
-  # in rows corresponding to false nulls
+  # for true positive outcomes, count number of p-values less than 0.05,
   lt.alpha <- function(x) { apply(as.matrix(x[,MDES > 0]), 1, sum) }
   lt.alpha.each <- lapply(reject.each, lt.alpha)
 
-  # indiv power for WY-SS, WY-SD, BH, HO, BF is mean of columns of booleans of
-  # whether adjusted pvalues were less than alpha.  In other words, the null has
-  # been rejected
+  # individual power
+  # mean of columns of booleans of whether adjusted p-values were less than alpha
   power.ind.fun <- function(x) { apply(x, 2, mean) }
   power.ind.each <- lapply(reject.each, power.ind.fun)
   power.ind.each.mat <- do.call(rbind, power.ind.each)
 
-  # 3rd call back to progress bar: Individual power calculations are done
+  # mean individual power
+  mean.ind.power <- apply(as.matrix(power.ind.each.mat[,MDES > 0]), 1, mean)
+
   if (is.function(updateProgress) & !is.null(power.ind.each.mat)) {
     updateProgress(message = "Individual power calculation is done.")
   }
 
-  # Helper function: m-min powers for all MTPs (including complete power when m=M)
+  # calculate minimum and complete power
   power.min.fun <- function(x, M) {
-    power.min<-numeric(M)
+    power.min <- numeric(M)
     for (m in 1:M) {
       power.min[m] <- mean(x >= m)
     }
     return(power.min)
-  } # end of calculating d-minimal power
-
-  # calculating d-minimal power
+  }
   power.min <- lapply(lt.alpha.each, power.min.fun, M = M)
   power.min.mat <- do.call(rbind, power.min)
-  power.min0 <- lapply(lt.alpha.each, function(x){ mean(x > 0)})
-  power.min0 <- do.call(rbind, power.min0)
-
-  # complete power is the power to detect outcomes at least as large as the MDES on all outcomes
-  # separating out complete power from d-minimal power by taking the last entry
-  power.cmp <- rep(power.min.mat[1,M], length(power.min)) # should it be numfalse or M?
-
-  # calculating average individual power
-  mean.ind.power <- apply(as.matrix(power.ind.each.mat[,MDES>0]), 1, mean)
 
   # combine all power for all definitions
-  all.power.results <- cbind(power.ind.each.mat, mean.ind.power, power.min0, power.min.mat[,-M], power.cmp)
+  all.power.results <- cbind(power.ind.each.mat, mean.ind.power, power.min.mat)
 
-  # setting the col and row names for all power results table
   if(M == 1)
   {
     colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", "complete")
   } else
   {
-    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", paste0("min",1:(M-1)), "complete")
+    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", paste0("min",1:(M-1)), "complete")
   }
   rownames(all.power.results) <- c("rawp", MTP)
 
@@ -376,7 +387,6 @@ pump_power <- function(
   }
 
   return(all.power.results)
-
 }
 
 
@@ -397,16 +407,52 @@ midpoint <- function(lower, upper) {
 }
 
 
-# optimizes power for either MDES, ss.J = sample size J, ss.nbar = sample size nbar
-
+#' Optimizes power to help in search for MDES or SS
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param search.type options: MDES, J, K (nbar not currently supported)
+#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+#'   Holm, WY-SS, WY-SD
+#' @param target.power Target power to arrive at
+#' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
+#' @param tol tolerance
+#' @param start.tnum number of samples for initial power search (should be low to increase speed)
+#' @param start.low lower bound for possible power
+#' @param start.hight upper bound for possible power
+#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param alpha scalar; the family wise error rate (FWER)
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
+#'   dummies)
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects variability
+#' @param rho scalar; correlation between outcomes
+#' @param tnum scalar; the number of test statistics (samples)
+#' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param cl cluster object to use for parallel processing
+#' @param max.steps how many steps allowed before terminating
+#' @param max.cum.tnum maximum cumulative number of samples
+#' @param final.tnum number of samples for final draw
+#'
+#' @return power
 optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
                            MDES = NULL, J = NULL, K = NULL, nbar = NULL,
-                           M = M, Tbar = Tbar, alpha = alpha,
-                           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                           rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                           B = B, cl = cl,
+                           M = M, Tbar = Tbar, alpha,
+                           numCovar.1, numCovar.2, numCovar.3 = NULL,
+                           R2.1, R2.2, R2.3 = NULL, ICC.2, ICC.3 = NULL,
+                           omega.2, omega.3 = NULL, rho,
+                           B = NULL, cl = NULL,
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
   # search.type = 'mdes';
@@ -540,7 +586,16 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   return(test.pts)
 }
 
-# extract roots from quadratic curve based on given evaluated points
+#' Extract roots from quadratic curve based on given evaluated points
+#'
+#' @param test.pts power evaluated at different points
+#' @param start.low lower bound
+#' @param start.high upper bound
+#' @param target.power goal power
+#' @param alternate alternate point to return if quadratic fit fails
+#'
+#' @return root of quadratic curve
+
 find_best <- function(test.pts, start.low, start.high, target.power, alternate = NA)
 {
   # fit quadratic curve
@@ -576,31 +631,40 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 #' for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the tolerance
 #' set in the parameter in the power value.
 #'
-#' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedure of interest (Options are Bonferroni, BH, Holms, WY-SS & WY-SD).
-#' @param M the number of hypothesis tests (outcomes)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param target.power required statistical power for the experiment
-#' @param power.definition definition of statistical power from individual, d-minimal to complete power
-#' @param tol the tolerance for MDES estimation based on targeted power value
-#' @param nbar the harmonic mean of the number of units per block
-#' @param Tbar the proportion of samples that are assigned to the treatment
-#' @param alpha the family wise error rate (FWER)
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
-#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
-#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
-#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
-#' @param ICC.2 school intraclass correlation
-#' @param ICC.3 district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects variability
-#' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
-#' @param B the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param cl clusters object to use for parallel processing.
-#' @param rho correlation between outcomes
-#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
+#' @param design a single RCT design (see list/naming convention)
+#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+#'   Holm, WY-SS, WY-SD
+#' @param target.power Target power to arrive at
+#' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
+#' @param tol tolerance
+#' @param M scalar; the number of hypothesis tests (outcomes)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param alpha scalar; the family wise error rate (FWER)
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
+#'   dummies)
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects
+#'   variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects
+#'   variability
+#' @param rho scalar; correlation between outcomes
+#' @param tnum scalar; the number of test statistics (samples)
+#' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param max.steps how many steps allowed before terminating
+#' @param max.cum.tnum maximum cumulative number of samples
+#' @param final.tnum number of samples for final draw
+#' @param cl cluster object to use for parallel processing
+#' @param updateProgress the callback function to update the progress bar (User
+#'   does not have to input anything)
 #'
 #' @importFrom stats qt
 #' @return mdes results
@@ -643,7 +707,7 @@ pump_mdes <- function(
   message(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
 
   # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
-  if (MTP == "WY-SD" & B < 1000){
+  if (MTP == "WY-SD" && B < 1000){
     warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
   }
 
@@ -701,36 +765,38 @@ pump_mdes <- function(
 #' Only works if we pass in numeric values and not if we pass in objects that hold those values.
 #' Additionally, mrss.bira2cl only computes J, not nbar.
 #'
-#' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-#'              (we expect inputs in  such order)
-#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar
-#' @param M the number of hypothesis tests (outcomes)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param J0 starting values for J
-#' @param K0 starting values for K
-#' @param nbar0 starting values for nbar0 to look for optimal J and nbar
-#' @param target.power required statistical power for the experiment
-#' @param power.definition definition of statistical power from individual, d-minimal to complete power
-#' @param tol the tolerance for MDES estimation based on targeted power value
-#' @param nbar the harmonic mean of the number of units per block
-#' @param Tbar the proportion of samples that are assigned to the treatment
-#' @param alpha the family wise error rate (FWER)
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
-#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
-#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
-#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
-#' @param ICC.2 school intraclass correlation
-#' @param ICC.3 district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects variability
-#' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
-#' @param B the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param cl clusters object to use for parallel processing.
-#' @param rho correlation between outcomes
-#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
+#' @param design a single RCT design (see list/naming convention)
+#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+#'   Holm, WY-SS, WY-SD
+#' @param typesample type of sample size to calculate: J, K, or nbar
+#' @param MDES scalar, or vector of length M; the MDES values for each outcome
+#' @param target.power target power to arrive at
+#' @param tol tolerance
+#' @param M scalar; the number of hypothesis tests (outcomes)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param J0 scalar; starting point for J
+#' @param K0 scalar; starting point for K
+#' @param nbar0 scalar; starting point for nbar
+#' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed whether to calculate two-tailed or one-tailed power
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
+#'   dummies)
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects
+#'   variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects
+#'   variability
+#' @param rho scalar; correlation between outcomes
+#' @param max.steps how many steps allowed before terminating
 #' @return raw sample returns
 #' @export
 
@@ -815,49 +881,59 @@ pump_sample_raw <- function(
   }
 }
 
-#These currently only work if numFalse = M and if MDES is the same or all outcomes.
-
-#' Sample Function
-
-#' @param design RCT design (see list/naming convention)
-#' @param MTP multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-#'              (we expect inputs in  such order)
-#' @param typesample the type of the number of sample we would like to estimate: either block J or nbar
-#' @param M the number of hypothesis tests (outcomes)
-#' @param J the number of schools
-#' @param K the number of districts
-#' @param J0 starting values for J0 to look for optimal J and nbar
-#' @param nbar0 starting values for nbar0 to look for optimal J and nbar
-#' @param target.power required statistical power for the experiment
-#' @param power.definition definition of statistical power from individual, d-minimal to complete power
-#' @param tol the tolerance for MDES estimation based on targeted power value
-#' @param nbar the harmonic mean of the number of units per block
-#' @param Tbar the proportion of samples that are assigned to the treatment
-#' @param alpha the family wise error rate (FWER)
-#' @param numCovar.1 number of Level 1 baseline covariates (not including block dummies)
-#' @param numCovar.2 number of Level 2 baseline covariates (set to 0 for this design)
-#' @param numCovar.3 number of Level 3 baseline covariates (set to 0 for this design)
-#' @param R2.1 a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)
-#' @param R2.2 a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)
-#' @param ICC.2 school intraclass correlation
-#' @param ICC.3 district intraclass correlation
-#' @param omega.2 ratio of school effect size variability to random effects variability
-#' @param omega.3 ratio of district effect size variability to random effects variability
-#' @param tnum the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000
-#' @param B the number of samples for Westfall-Young. The default is set at 1,000.
-#' @param cl clusters object to use for parallel processing.
-#' @param rho correlation between outcomes
-#' @param updateProgress the callback function to update the progress bar (User does not have to input anything)
+# TODO: is this true? These currently only work if numFalse = M and if MDES is the same or all outcomes.
+#' Calculate sample size
 #'
-#' @return Sample number returns
+#' @param design a single RCT design (see list/naming convention)
+#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+#'   Holm, WY-SS, WY-SD
+#' @param typesample type of sample size to calculate: J, K, or nbar
+#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param target.power target power to arrive at
+#' @param power.definition must be a valid power type output by power function, i.e. D1indiv, min1, etc.
+#' @param tol tolerance
+#' @param M scalar; the number of hypothesis tests (outcomes)
+#' @param J scalar; the number of schools
+#' @param K scalar; the number of districts
+#' @param nbar scalar; the harmonic mean of the number of units per school
+#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param J0 scalar; starting point for J
+#' @param K0 scalar; starting point for K
+#' @param nbar0 scalar; starting point for nbar
+#' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed whether to calculate two-tailed or one-tailed power
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
+#'   dummies)
+#' @param numCovar.2 scalar; number of Level 2 (school) covariates
+#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param ICC.2 scalar; school intraclass correlation
+#' @param ICC.3 scalar; district intraclass correlation
+#' @param omega.2 scalar; ratio of school effect size variability to random effects
+#'   variability
+#' @param omega.3 scalar; ratio of district effect size variability to random effects
+#'   variability
+#' @param rho scalar; correlation between outcomes
+#' @param tnum scalar; the number of test statistics (samples)
+#' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param max.steps how many steps allowed before terminating
+#' @param max.cum.tnum maximum cumulative number of samples
+#' @param final.tnum number of samples for final draw
+#' @param cl cluster object to use for parallel processing
+#' @param updateProgress the callback function to update the progress bar (User
+#'   does not have to input anything)
+#'
+#' @return sample size results
 #' @export
 
 pump_sample <- function(
   design, MTP, typesample,
-  MDES, M, J, K = 1,
+  MDES, M, J, K = 1, nbar, Tbar,
   J0 = 10, K0 = 4, nbar0 = 10,
-  ATE_ES, target.power, power.definition, tol,
-  nbar, Tbar, alpha, two.tailed = TRUE,
+  target.power, power.definition, tol,
+  alpha, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0,
   numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
   rho, omega.2, omega.3 = NULL,
@@ -984,100 +1060,3 @@ pump_sample <- function(
 
   return(list(ss.results = ss.results, test.pts = test.pts))
 }
-
-
-
-
-
-#
-#
-#
-# # Searching for the right MDES through a while loop
-# ii <- 0 # Iteration counter
-# target.power <- 0 # Initializing a target power
-#
-# # While loop through until the iteration is past max iterations or
-# # we have met the target.power as we search for the right MDES
-# # within the tolerance we have specified.
-#
-# # save out different tries
-# mdes.tries <- try.MDES
-# power.tries <- target.power
-#
-# while (ii < max.iter & (target.power < power - tol | target.power > power + tol)) {
-#
-#   if (is.function(updateProgress)) {
-#     text <- paste0("Optimal MDES is currently in the interval between ",round(lowhigh[1],4)," and ",round(lowhigh[2],4),". ")
-#     msg  <- paste0("Trying MDES of ",round(try.MDES,4)," ... ")
-#     updateProgress(message = msg, detail = text)
-#   }
-#
-#   # Function to calculate the target power to check in with the pre-specified power in the loop
-#   runpower <- pump_power(design, MTP = MTP, MDES = rep(try.MDES, M), M = M, J = J, K = K,
-#                          nbar = nbar, Tbar = Tbar, alpha = alpha,
-#                          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-#                          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-#                          rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-#                          tnum = tnum, B = B, cl = cl)
-#
-#   # Pull out the power value corresponding to the MTP and definition of power
-#   target.power <- runpower[MTP, power.definition]
-#
-#   # Displaying the progress of mdes calculation via target power
-#   if (is.function(updateProgress)) {
-#
-#     msg <- paste("Estimated power for this MDES is", round(target.power,4)) # Text for estimating power
-#     updateProgress(message = msg)
-#
-#   } # checking on Progress Update for MDES
-#
-#   # save out progress
-#   mdes.tries <- c(mdes.tries, try.MDES)
-#   power.tries <- c(power.tries, target.power)
-#
-#   # If the calculated target.power is within the tolerance of the prescribed power, break and return the results
-#   if(target.power > power - tol & target.power < power + tol){
-#
-#     mdes.results <- data.frame(MTP, try.MDES[1], target.power)
-#     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-#     tries = data.frame(
-#       MTP = MTP, iter = seq(1, length(mdes.tries)),
-#       mdes.tries = mdes.tries, power.tries = power.tries,
-#       power.goal = power
-#     )
-#     return(list(mdes.results = mdes.results, tries = tries))
-#
-#   } # Return results if our targeted power is within a tolerance of the specified power
-#
-#   # Check if the calculated target power is greater than the prescribed power
-#   is.over <- target.power > power
-#
-#   # if we are overpowered, we can detect EVEN SMALLER effect size so we would shrink the effect range with the
-#   # high end of the bound being the current MDES. Else it would be the opposite.
-#
-#   if(!is.over) {
-#     lowhigh[1] <- try.MDES
-#   }
-#   if(is.over) {
-#     lowhigh[2] <- try.MDES
-#   }
-#
-#   # re-establish the midpoint and increase iteration
-#   try.MDES <- midpoint(lowhigh[1],lowhigh[2])
-#   ii <- ii + 1
-#
-# } # end while
-#
-# if (ii == max.iter & !(target.power > power - tol & target.power < power + tol)) {
-#   message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-# }
-# mdes.results <- data.frame(MTP, NA, NA)
-# colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-# tries = data.frame(
-#   MTP = MTP, iter = seq(1, length(mdes.tries)),
-#   mdes.tries = mdes.tries, power.tries = power.tries,
-#   power.goal = power
-# )
-# return(list(mdes.results = mdes.results, tries = tries))
-#
-#
