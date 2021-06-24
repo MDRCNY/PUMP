@@ -711,9 +711,16 @@ pump_mdes <- function(
     warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
   }
 
-  # Compute Q.m
-  Q.m <- calc.Q.m(design, J, K, nbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3, Tbar)
-  t.df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  # Compute Q.m and df
+  Q.m <- calc.Q.m(
+    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
+  )
+  t.df <- calc.df(
+    design = design, J = J, K = K, nbar = nbar,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
+  )
 
   # For raw and BF, compute critical values
   crit.alpha <- qt(p = (1-alpha/2), df = t.df)
