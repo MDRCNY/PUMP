@@ -237,7 +237,26 @@ validate_inputs <- function(
     stop('Invalid MTP.')
   }
 
-  if(length(params.list$MDES) < params.list$M)
+  if( (is.null(params.list$MDES) & is.null(params.list$numTP)) |
+      (!is.null(params.list$MDES) & !is.null(params.list$numTP)) )
+  {
+    stop('Please provide either MDES or number of true positives, but not both.')
+  }
+
+  if(!is.null(params.list$numTP) & length(params.list$MTP) != 1)
+  {
+    stop('If providing a number of true positives, please provide a single MDES value.')
+  }
+
+  if(!is.null(params.list$numTP))
+  {
+    numFalse <- params.list$M - params.list$numTP
+    params.list$MDES <- c(rep(params.list$MDES, params.list$numTP), rep(0, numFalse))
+    print(paste('Assumed MDES vector:', params.list$MDES))
+  }
+
+
+  if(!is.null(params.list$MDES) && length(params.list$MDES) < params.list$M)
   {
     if ( length(params.list$MDES) == 1 ) {
       params.list$MDES <- rep( params.list$MDES, params.list$M )
@@ -246,6 +265,7 @@ validate_inputs <- function(
       stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:', MDES, 'M =', M))
     }
   }
+
 
   if(params.list$K <= 0 | params.list$J <= 0 | params.list$nbar <= 0)
   {
@@ -274,7 +294,7 @@ validate_inputs <- function(
     stop('Please provide R2 as a probability between 0 and 1')
   }
 
-  if(params.list$omega.2 < 0 | params.list$omega.3 < 0)
+  if(params.list$omega.2 < 0 | (!is.null(params.list$omega.3) && params.list$omega.3 < 0))
   {
     stop('Please provide a non-negative value of Omega')
   }
@@ -319,12 +339,12 @@ validate_inputs <- function(
   {
     if(params.list$omega.2 > 0)
     {
-      warning('Omega is assumed to be 0 for constant treatment effects models')
+      warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
       params.list$omega.2 <- 0
     }
     if(!is.null(params.list$omega.3) && params.list$omega.3 > 0)
     {
-      warning('Omega is assumed to be 0 for constant treatment effects models')
+      warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
       params.list$omega.3 <- 0
     }
   }
@@ -349,17 +369,17 @@ validate_inputs <- function(
   {
     if(params.list$omega.2 > 0)
     {
-      warning('Omega2 is assumed to be 0 for blocked_c2_3f model')
+      warning('Omega2 is assumed to be 0 for blocked_c2_3f model. Ignoring input omega.2 value')
       params.list$omega.2 <- 0
     }
     if(params.list$R2.3 > 0)
     {
-      warning('R2.3 is assumed to be 0 for blocked_c2_3f model')
+      warning('R2.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input R2.3 value')
       params.list$R2.3 <- 0
     }
     if(params.list$ICC.3 > 0)
     {
-      warning('ICC.3 is assumed to be 0 for blocked_c2_3f model')
+      warning('ICC.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input ICC.3 value')
       params.list$ICC.3 <- 0
     }
   }
@@ -409,8 +429,8 @@ validate_inputs <- function(
 #'
 #'
 pump_power <- function(
-  design, MTP, MDES, M,
-  J, K = NULL, nbar, Tbar,
+  design, MTP, MDES = NULL, numTP = NULL,
+  M, J, K = NULL, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1, R2.2 = NULL, R2.3 = NULL,
@@ -423,8 +443,8 @@ pump_power <- function(
 )
 {
   # validate input parameters
-  params.list = list(
-    MDES = MDES, M = M, J = J, K = K,
+  params.list <- list(
+    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -860,8 +880,8 @@ pump_mdes <- function(
 {
 
   # validate input parameters
-  params.list = list(
-    MDES = MDES, M = M, J = J, K = K,
+  params.list <- list(
+    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -1154,8 +1174,8 @@ pump_sample <- function(
   }
 
   # validate input parameters
-  params.list = list(
-    MDES = MDES, M = M, J = J, K = K,
+  params.list <- list(
+    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
