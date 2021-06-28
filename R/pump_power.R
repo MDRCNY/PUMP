@@ -204,15 +204,14 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 }
 
 
-#' Calculate power using PUMP method
+#' Validates user inputs
 #'
-#' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
-#' (Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+#' This functions takes in a list of user inputs. Depending on the inputs,
+#' it produces errors or warnings, and at times modifies inputs if necessary.
 #'
 #' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
-#' @param params.list
+#' @param MTP a single multiple adjustment procedure of interest.
+#' @param params.list a list of parameters input by a user
 #'
 #' @return params.list
 #' @export
@@ -221,9 +220,21 @@ validate_inputs <- function(
   design, MTP, params.list
 )
 {
+  if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
+                     'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
+                     'blocked_c2_3f', 'blocked_c2_3r')))
+  {
+    stop('Invalid design.')
+  }
 
-  if ( length( MTP ) > 1 ) {
+  if(length( MTP ) > 1)
+  {
     stop( 'Please provide only a single MTP procedure.' )
+  }
+
+  if(!(MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  {
+    stop('Invalid MTP.')
   }
 
   if(length(params.list$MDES) < params.list$M)
