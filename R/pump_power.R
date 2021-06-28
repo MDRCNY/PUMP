@@ -203,6 +203,171 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
   return(K)
 }
 
+
+#' Validates user inputs
+#'
+#' This functions takes in a list of user inputs. Depending on the inputs,
+#' it produces errors or warnings, and at times modifies inputs if necessary.
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param MTP a single multiple adjustment procedure of interest.
+#' @param params.list a list of parameters input by a user
+#'
+#' @return params.list
+#' @export
+#'
+validate_inputs <- function(
+  design, MTP, params.list
+)
+{
+  if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
+                     'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
+                     'blocked_c2_3f', 'blocked_c2_3r')))
+  {
+    stop('Invalid design.')
+  }
+
+  if(length( MTP ) > 1)
+  {
+    stop( 'Please provide only a single MTP procedure.' )
+  }
+
+  if(!(MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  {
+    stop('Invalid MTP.')
+  }
+
+  if(length(params.list$MDES) < params.list$M)
+  {
+    if ( length(params.list$MDES) == 1 ) {
+      params.list$MDES <- rep( params.list$MDES, params.list$M )
+      warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
+    } else {
+      stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:', MDES, 'M =', M))
+    }
+  }
+
+  if(params.list$K <= 0 | params.list$J <= 0 | params.list$nbar <= 0)
+  {
+    stop('Please provide positive values of J, K, nbar')
+  }
+
+  if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  | params.list$numCovar.3 < 0 )
+  {
+    stop('Please provide non-negative values of num.Covar')
+  }
+
+  if(params.list$Tbar >= 1 | params.list$Tbar <= 0)
+  {
+    stop('Please provide Tbar as a probability strictly between 0 and 1')
+  }
+
+  if(params.list$alpha > 1 | params.list$alpha < 0)
+  {
+    stop('Please provide alpha as a probability  between 0 and 1')
+  }
+
+  if(any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
+     any(params.list$R2.2 > 1) | any(params.list$R2.2 < 0) |
+     any(params.list$R2.3 > 1) | any(params.list$R2.3 < 0))
+  {
+    stop('Please provide R2 as a probability between 0 and 1')
+  }
+
+  if(params.list$omega.2 < 0 | params.list$omega.3 < 0)
+  {
+    stop('Please provide a non-negative value of Omega')
+  }
+
+  if(params.list$rho > 1 | params.list$rho < -1)
+  {
+    stop('Please provide rho as a correlation between -1 and 1')
+  }
+
+  # two level models
+  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
+  {
+    if(!is.null(params.list$K) | !is.null(params.list$numCovar.3) | !is.null(params.list$R2.3))
+    {
+      warning('The following parameters are not valid for two-level designs, and will be ignored: K, numCovar.3, R2.3, ICC.3, omega.3')
+      params.list$K <- NULL
+      params.list$numCovar.3 <- NULL
+      params.list$R2.3 <- NULL
+      params.list$ICC.3 <- NULL
+      params.list$omega.3 <- NULL
+    }
+  }
+
+  # three level models
+  # two level models
+  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  {
+    if(is.null(params.list$K) | is.null(params.list$numCovar.3) | !is.null(params.list$R2.3))
+    {
+      stop('The following parameters are required for three-level designs: K, numCovar.3, R2.3')
+    }
+  }
+
+  # ICC
+  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
+  {
+    stop('ICC.2 + ICC.3 must be <= 1')
+  }
+
+  # constant treatment effects models
+  if(design %in% c('blocked_i1_2c', 'simple_c2_2r', 'simple_c3_3r'))
+  {
+    if(params.list$omega.2 > 0)
+    {
+      warning('Omega is assumed to be 0 for constant treatment effects models')
+      params.list$omega.2 <- 0
+    }
+    if(!is.null(params.list$omega.3) && params.list$omega.3 > 0)
+    {
+      warning('Omega is assumed to be 0 for constant treatment effects models')
+      params.list$omega.3 <- 0
+    }
+  }
+
+  # specific 3 level models
+  if(design %in% c('blocked_i1_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  {
+    if(is.null(params.list$omega.3))
+    {
+      stop('Omega.3 is required for this design.')
+    }
+  }
+  if(design %in% c('blocked_i1_3r', 'blocked_c2_3r'))
+  {
+    if(is.null(params.list$ICC.3))
+    {
+      stop('ICC.3 is required for this design.')
+    }
+  }
+
+  if(design == 'blocked_c2_3f')
+  {
+    if(params.list$omega.2 > 0)
+    {
+      warning('Omega2 is assumed to be 0 for blocked_c2_3f model')
+      params.list$omega.2 <- 0
+    }
+    if(params.list$R2.3 > 0)
+    {
+      warning('R2.3 is assumed to be 0 for blocked_c2_3f model')
+      params.list$R2.3 <- 0
+    }
+    if(params.list$ICC.3 > 0)
+    {
+      warning('ICC.3 is assumed to be 0 for blocked_c2_3f model')
+      params.list$ICC.3 <- 0
+    }
+  }
+
+  return(params.list)
+
+}
+
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
@@ -245,7 +410,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 #'
 pump_power <- function(
   design, MTP, MDES, M,
-  J, K = 1, nbar, Tbar,
+  J, K = NULL, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1, R2.2 = NULL, R2.3 = NULL,
@@ -257,19 +422,28 @@ pump_power <- function(
   updateProgress = NULL
 )
 {
-  if ( length( MTP ) > 1 ) {
-    stop( "Please provide only a single MTP procedure" )
-  }
+  # validate input parameters
+  params.list = list(
+    MDES = MDES, M = M, J = J, K = K,
+    nbar = nbar, Tbar = Tbar, alpha = alpha,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
+    rho = rho
+  )
+  ##
+  params.list <- validate_inputs(design, MTP, params.list)
+  ##
+  MDES <- params.list$MDES
+  M <- params.list$M; J <- params.list$J; K <- params.list$K
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
+  numCovar.3 <- params.list$numCovar.3
+  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
+  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
+  rho <- params.list$rho
 
-  if(length(MDES) < M)
-  {
-    if ( length(MDES) == 1 ) {
-      MDES = rep( MDES, M )
-      message( "Assuming same MDES for all outcomes.  Specify full vector to remove this message." )
-    } else {
-      stop(paste('Please provide a vector of MDES values of length M. Current vector:', MDES, 'M =', M))
-    }
-  }
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc.Q.m(
@@ -415,7 +589,7 @@ midpoint <- function(lower, upper) {
 #'   Holm, WY-SS, WY-SD
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance
+#' @param tol tolerance for target power
 #' @param start.tnum number of samples for initial power search (should be low to increase speed)
 #' @param start.low lower bound for possible power
 #' @param start.hight upper bound for possible power
@@ -455,11 +629,6 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            B = NULL, cl = NULL,
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
-  # search.type = 'mdes';
-  # start.low = mdes.low; start.high = mdes.high
-  # search.type = 'J';
-  # search.type = 'nbar';
-  # start.low = ss.low; start.high = ss.high;
 
   # fit initial quadratic curve
   # generate a series of points to try
@@ -490,6 +659,12 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
       B = B, cl = cl
     )
+    if(!(power.definition %in% colnames(pt.power.results)))
+    {
+      stop(paste0(
+        'Please provide a valid power definition. Provided definition: ', power.definition,
+        '. Available options: ', paste(colnames(pt.power.results), collapse = ',')))
+    }
     test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
 
@@ -499,6 +674,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   cum.tnum <- 0
   step <- 0
 
+  # fit quadratic based on initial points
   while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
   {
     step <- step + 1
@@ -636,7 +812,7 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 #'   Holm, WY-SS, WY-SD
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance
+#' @param tol tolerance for target power
 #' @param M scalar; the number of hypothesis tests (outcomes)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
@@ -682,6 +858,30 @@ pump_mdes <- function(
   cl = NULL, updateProgress = NULL
 )
 {
+
+  # validate input parameters
+  params.list = list(
+    MDES = MDES, M = M, J = J, K = K,
+    nbar = nbar, Tbar = Tbar, alpha = alpha,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
+    rho = rho
+  )
+  ##
+  params.list <- validate_inputs(design, MTP, params.list)
+  ##
+  MDES <- params.list$MDES
+  M <- params.list$M; J <- params.list$J; K <- params.list$K
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
+  numCovar.3 <- params.list$numCovar.3
+  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
+  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
+  rho <- params.list$rho
+
+
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) == 0)
   {
@@ -691,7 +891,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
-  # check if zero power, then return 0 MDES
+  # check if max power, then return infinite MDES
   if(round(target.power, 2) == 1)
   {
     message('Target power of 1 requested')
@@ -706,7 +906,6 @@ pump_mdes <- function(
 
   message(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
 
-  # Check to see if the MTP is Westfall Young and it has enough samples. Otherwise, enforce the requirement.
   if (MTP == "WY-SD" && B < 1000){
     warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
   }
@@ -730,8 +929,6 @@ pump_mdes <- function(
   crit.beta <- ifelse(target.power > 0.5, qt(target.power, df = t.df), qt(1 - target.power, df = t.df))
   mdes.raw  <- ifelse(target.power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
   mdes.bf   <- ifelse(target.power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
-
-  # SETTING THE MDES BOUNDS FOR INDIVIDUAL AND OTHER TYPES OF POWER from using raw and bf mdes bounds #
 
   ### raw or bonferroni ###
   if (MTP == "rawp"){
@@ -834,8 +1031,10 @@ pump_sample_raw <- function(
       df <- calc.df(design, J, K, nbar0, numCovar.1, numCovar.2, numCovar.3)
     }
 
+    # t statistics
     T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
     T2 <- abs(qt(target.power, df))
+    # multiplier
     MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
 
     if (typesample == "J") {
@@ -888,7 +1087,6 @@ pump_sample_raw <- function(
   }
 }
 
-# TODO: is this true? These currently only work if numFalse = M and if MDES is the same or all outcomes.
 #' Calculate sample size
 #'
 #' @param design a single RCT design (see list/naming convention)
@@ -949,6 +1147,34 @@ pump_sample <- function(
   cl = NULL, updateProgress = NULL
 )
 {
+  # extra validation
+  if(length(MDES) > 1 & length(unique(MDES)) > 1)
+  {
+    stop('Procedure assumes MDES is the same for all outcomes.')
+  }
+
+  # validate input parameters
+  params.list = list(
+    MDES = MDES, M = M, J = J, K = K,
+    nbar = nbar, Tbar = Tbar, alpha = alpha,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
+    rho = rho
+  )
+  ##
+  params.list <- validate_inputs(design, MTP, params.list)
+  ##
+  MDES <- params.list$MDES
+  M <- params.list$M; J <- params.list$J; K <- params.list$K
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
+  numCovar.3 <- params.list$numCovar.3
+  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
+  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
+  rho <- params.list$rho
+
   # save out target sample size
   if(typesample == 'J'){
     target.ss <- J
@@ -971,10 +1197,11 @@ pump_sample <- function(
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
-  # Checks on what we are estimating, sample size
-  message(paste("Estimating sample size of type", typesample, "for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
+  message(paste(
+    "Estimating sample size of type", typesample, "for", MTP, "for target", power.definition,
+    "power of", round(target.power, 4))
+  )
 
-  # indicator for which sample to compute. J is for blocks. nbar is for harmonic mean of samples within block
   if(typesample == "J"){
     J <- NULL
     nbar0 <- NULL
@@ -988,14 +1215,13 @@ pump_sample <- function(
     K0 <- NULL
   }
 
-  # Progress Message for the Type of Sample we are estimating, the type of power and the targeted power value
   if (is.function(updateProgress)) {
-    msg <- (paste("Estimating", whichSS, "for target", power.definition, "power of",round(power,4))) #msg to be displayed in the progress bar
+    msg <- (paste("Estimating", whichSS, "for target", power.definition, "power of",round(power,4)))
     updateProgress(message = msg)
-  } # For printing via update progress function
+  }
 
-
-  # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating bounds like we estimated MDES bounds.
+  # Compute raw and BF SS for INDIVIDUAL POWER.
+  # We are estimating bounds like we estimated MDES bounds.
   # for now assuming only two tailed tests
   ss.raw <- pump_sample_raw(
     design = design, MTP, typesample,
@@ -1029,8 +1255,8 @@ pump_sample <- function(
     return(ss.BF)
   }
 
-  # Like the MDES calculation, the sample size would be between raw and Bonferroni. There is no adjustment and there is very
-  # conservative adjustment
+  # Like the MDES calculation, the sample size would be between raw and Bonferroni.
+  # There is no adjustment and there is very conservative adjustment
   ss.low <- ss.raw
   ss.high <- ss.BF
 
