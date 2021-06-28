@@ -237,26 +237,20 @@ validate_inputs <- function(
     stop('Invalid MTP.')
   }
 
-  if( (is.null(params.list$MDES) & is.null(params.list$numTP)) |
-      (!is.null(params.list$MDES) & !is.null(params.list$numTP)) )
+  if(!is.null(params.list$numZero) & length(params.list$MTP) != 1)
   {
-    stop('Please provide either MDES or number of true positives, but not both.')
+    stop('If providing a number of zero outcomes, please provide a single MDES value.')
   }
 
-  if(!is.null(params.list$numTP) & length(params.list$MTP) != 1)
+  if(!is.null(params.list$numZero))
   {
-    stop('If providing a number of true positives, please provide a single MDES value.')
-  }
-
-  if(!is.null(params.list$numTP))
-  {
-    numFalse <- params.list$M - params.list$numTP
-    params.list$MDES <- c(rep(params.list$MDES, params.list$numTP), rep(0, numFalse))
+    numNonzero <- params.list$M - params.list$numZero
+    params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
     print(paste('Assumed MDES vector:', params.list$MDES))
   }
 
 
-  if(!is.null(params.list$MDES) && length(params.list$MDES) < params.list$M)
+  if(length(params.list$MDES) < params.list$M)
   {
     if ( length(params.list$MDES) == 1 ) {
       params.list$MDES <- rep( params.list$MDES, params.list$M )
@@ -397,6 +391,7 @@ validate_inputs <- function(
 #' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
 #'   Holm, WY-SS, WY-SD
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param numZero if MDES is scalar, number of outcomes assumed to be zero.
 #' @param M scalar; the number of hypothesis tests (outcomes)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
@@ -429,7 +424,7 @@ validate_inputs <- function(
 #'
 #'
 pump_power <- function(
-  design, MTP, MDES = NULL, numTP = NULL,
+  design, MTP, MDES, numZero = NULL,
   M, J, K = NULL, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -444,7 +439,7 @@ pump_power <- function(
 {
   # validate input parameters
   params.list <- list(
-    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
+    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -881,7 +876,7 @@ pump_mdes <- function(
 
   # validate input parameters
   params.list <- list(
-    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
+    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -1175,7 +1170,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MDES = MDES, numTP = numTP, M = M, J = J, K = K,
+    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
