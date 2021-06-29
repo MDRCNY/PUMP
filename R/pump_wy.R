@@ -1,7 +1,9 @@
-#' for testing
+# for testing
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # BiocManager::install("multtest")
+
+
 
 library(multtest)
 
@@ -62,15 +64,14 @@ comp.rawt.sd <- function(nullt, rawt, rawt.order) {
 
 #' Helper function for Westfall Young
 #'
-#' enforces monotonicity
+#' enforces monotonicity in p-values.
 #'
-#' @param ind.B
-#' @param rawt.order
+#' @param ind.B FILL IN (Matrix)
+#' @param rawt.order FILL IN
 #'
 #' @return returns adjp matrix
 #' @export
 #'
-# enforce monotonicity in p-values
 get.adjp.minp <- function(ind.B, rawt.order)
 {
   # take means of dummies, these are already ordered (by r.m.r) but still need to enforce monotonicity

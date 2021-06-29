@@ -2,53 +2,51 @@
 % Please edit documentation in R/pump_power.R
 \name{calc.Q.m}
 \alias{calc.Q.m}
-\title{The function calc.Q.m computes Qm, the standard error of the effect size estimate}
+\title{Computes Q_m, the standard error of the effect size estimate}
 \usage{
 calc.Q.m(
   design,
   J,
   K,
   nbar,
+  Tbar,
   R2.1,
   R2.2,
   R2.3,
   ICC.2,
   ICC.3,
   omega.2,
-  omega.3,
-  Tbar
+  omega.3
 )
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{J}{the number of schools}
+\item{J}{scalar; the number of schools}
 
-\item{K}{the number of districts}
+\item{K}{scalar; the number of districts}
 
-\item{nbar}{the harmonic means of the number of units per block}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the treatment}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes}
+\item{R2.1}{vector of length M; percent of variation explained by Level 1 covariates for each outcome}
 
-\item{R2.3}{a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes}
+\item{R2.2}{vector of length M; percent of variation explained by Level 2 covariates for each outcome}
 
-\item{ICC.2}{a vector of length M of school intraclass correlation}
+\item{R2.3}{vector of length M; percent of variation explained by Level 3 covariates for each outcome}
 
-\item{ICC.3}{a vector of length M of district intraclass correlation}
+\item{ICC.2}{scalar; school intraclass correlation}
 
-\item{omega.2}{ratio of school effect size variability to random effects variability}
+\item{ICC.3}{scalar; district intraclass correlation}
 
-\item{omega.3}{ratio of district effect size variability to random effects variability}
+\item{omega.2}{scalar; ratio of school effect size variability to random effects variability}
 
-\item{Tbar}{the proportion of test statistics assigned to treatment within each block group}
-
-\item{MDES}{a vector of length M corresponding to the minimum detectable effect sizes (MDESs) for the M outcomes}
+\item{omega.3}{scalar; ratio of district effect size variability to random effects variability}
 }
 \value{
-mean of the test statistics under the joint alternative hypothesis
+Q_m, the standard error of the effect size estimate
 }
 \description{
-The function calc.Q.m computes Qm, the standard error of the effect size estimate
+Computes Q_m, the standard error of the effect size estimate
 }

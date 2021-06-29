@@ -8,23 +8,24 @@ pump_power(
   design,
   MTP,
   MDES,
+  numZero = NULL,
   M,
   J,
-  K = 1,
+  K = NULL,
   nbar,
   Tbar,
-  alpha,
+  alpha = 0.05,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
-  R2.1,
-  R2.2 = NULL,
-  R2.3 = NULL,
-  ICC.2,
-  ICC.3 = NULL,
+  R2.1 = 0,
+  R2.2 = 0,
+  R2.3 = 0,
+  ICC.2 = 0,
+  ICC.3 = 0,
+  omega.2 = 0,
+  omega.3 = 0,
   rho,
-  omega.2,
-  omega.3 = NULL,
   tnum = 10000,
   B = 1000,
   cl = NULL,
@@ -32,70 +33,74 @@ pump_power(
 )
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH,
-Holms, WY_SS & WY_SD (we expect inputs in  such order)}
+\item{MTP}{Multiple adjustment procedure of interest. Supported options:
+Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+automatically re-run for each procedure on the list.}
 
-\item{MDES}{a vector of length M corresponding to the MDESs for the M
-outcomes.  Can provide single MDES value which will be repeated for the M
-outcomes.}
+\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
 
-\item{M}{the number of hypothesis tests (outcomes)}
+\item{numZero}{if MDES is scalar, number of outcomes assumed to be zero.}
 
-\item{J}{the number of schools}
+\item{M}{scalar; the number of hypothesis tests (outcomes)}
 
-\item{K}{the number of districts}
+\item{J}{scalar; the number of schools}
 
-\item{nbar}{the harmonic mean of the number of units per block}
+\item{K}{scalar; the number of districts}
 
-\item{Tbar}{the proportion of samples that are assigned to the treatment}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{alpha}{the family wise error rate (FWER)}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
 
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block
-dummies)}
+\item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this
-design)}
+\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
+including block dummies)}
 
-\item{numCovar.3}{number of Level 3 baseline covariates (set to 0 for this
-design)}
+\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level
-1 (R^2 = variation in the data explained by the model)}
+\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level
-2 (R^2 = variation in the data explained by the model)}
+\item{R2.1}{scalar, or vector of length M; percent of variation explained by
+Level 1 covariates for each outcome. Defaults to 0.}
 
-\item{ICC.2}{school intraclass correlation}
+\item{R2.2}{scalar, or vector of length M; percent of variation explained by
+Level 2 covariates for each outcome. Defaults to 0.}
 
-\item{ICC.3}{district intraclass correlation}
+\item{R2.3}{scalar, or vector of length M; percent of variation explained by
+Level 3 covariates for each outcome. Defaults to 0.}
 
-\item{rho}{correlation between outcomes}
+\item{ICC.2}{scalar; school intraclass correlation}
 
-\item{omega.2}{ratio of school effect size variability to random effects
-variability}
+\item{ICC.3}{scalar; district intraclass correlation}
 
-\item{omega.3}{ratio of district effect size variability to random effects
-variability}
+\item{omega.2}{scalar; ratio of variance of school-average impacts to
+variance of school-level random intercepts.  Default to 0 (no treatment
+variation).}
 
-\item{tnum}{the number of test statistics (samples) for all procedures other
-than Westfall-Young & number of permutations for WY. The default is set at
-10,000}
+\item{omega.3}{scalar; ratio of variance of district-average impacts to
+variance of district-level random intercepts. Default to 0 (no treatment
+variation).}
 
-\item{B}{the number of samples for Westfall-Young. The default is set at
-1,000.}
+\item{rho}{scalar; assumed correlation between the test statistics of the
+tests.}
 
-\item{cl}{clusters object to use for parallel processing.}
+\item{tnum}{scalar; the number of test statistics (samples)}
+
+\item{B}{scalar; the number of samples/permutations for Westfall-Young}
+
+\item{cl}{cluster object to use for parallel processing}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
 }
 \value{
-power results across all definitions of power and MTP
+power results for MTP and unadjusted across all definitions of power
 }
 \description{
-This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
-(Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+This functions calculates power for all definitions of power (individual,
+d-minimal, complete) for all the different MTPs (Bonferroni, Holms,
+Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
 }

@@ -2,38 +2,37 @@
 % Please edit documentation in R/pump_power.R
 \name{calc.J}
 \alias{calc.J}
-\title{This function calculates J for all implemented designs}
+\title{This function calculates needed J for all implemented designs}
 \usage{
 calc.J(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2)
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{nbar}{units per block}
+\item{MT}{multiplier}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for Level-1 covariates for M outcomes}
+\item{MDES}{scalar, or vector of length M; the MDES values for each outcome}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for Level-2 covariates for M outcomes}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{ICC.2}{a vector of length M of school intraclass correlation}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
 
-\item{J}{the number of schools}
+\item{R2.1}{scalar, or vector of length M; percent of variation explained by
+Level 1 covariates for each outcome. Defaults to 0.}
 
-\item{K}{the number of districts}
+\item{R2.2}{scalar, or vector of length M; percent of variation explained by
+Level 2 covariates for each outcome. Defaults to 0.}
 
-\item{R2.3}{a vector of length M corresponding to R^2 for Level-3 covariates for M outcomes}
+\item{ICC.2}{scalar; school intraclass correlation}
 
-\item{ICC.3}{a vector of length M of district intraclass correlation}
-
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
-
-\item{numCovar.2}{number of Level 2 baseline covariates}
-
-\item{numCovar.3}{number of Level 3 baseline covariates}
+\item{omega.2}{scalar; ratio of variance of school-average impacts to
+variance of school-level random intercepts.  Default to 0 (no treatment
+variation).}
 }
 \value{
-the degree of freedom
+J, the number of schools
 }
 \description{
-This function calculates J for all implemented designs
+This function calculates needed J for all implemented designs
 }

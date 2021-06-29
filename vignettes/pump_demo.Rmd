@@ -1,5 +1,5 @@
 ---
-title: "Demo of using the pum-p package for a simple power calculation"
+title: "pump_demo"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{pump_demo}
@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 )
 library( tidyverse )
 ```
+
+# Demo of using the pum-p package for a simple power calculation
 
 
 To illustrate the pum-p package we conduct a power analysis for a blocked cluster-randomized RCT. In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview).
@@ -72,12 +74,12 @@ pump_power( design="blocked_c2_3f",
 
 The top row are powers without any multiple testing correction.  The `min1` and `min2` columns show the chance of rejecting at least 1 or 2 of our hypotheses.  The `complete` is rejecting all 3.
 
-The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is well powered to detect some effect, even when using the very conservative correction procedure of Bonferroni.
+The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is more powered than we might expect to detect some effect, even when using the very conservative correction procedure of Bonferroni.
 
 
 # Examining other correction procedures
 
-It is easy to rerun the above using Westfall-Young Stepdown (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, it is rerunning the simulation behind the scenes, so it can get computationally intensive:
+It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, it is rerunning the simulation behind the scenes, so it can get computationally intensive:
 
 ```{r othercorrections, cache=TRUE}
 pump_power( design="blocked_c2_3f",
@@ -96,12 +98,12 @@ pump_power( design="blocked_c2_3f",
             tnum = 500 ) # how correlated outcomes are
 ```
 
-Due to the correlation in our outcomes (`rho = 0.4`), we see substantially elevated power if we use this more sophisticated (and less conservative) correction approach.
+Due to the correlation in our outcomes (`rho = 0.4`), we see elevated power if we use this more sophisticated (and less conservative) correction approach for each individual test.  We do not see elevated rates for min1, interestingly.
 
 
 # Choosing the method of estimation
 
-For a given design, one might analyze the resulting data differently.  For example, we could use a fixed effect design, as above, or possibly a random effects design. We specify this with the `design` parameter:
+For a given design, one might analyze the resulting data differently.  For example, we could use a fixed effect model, as above, or possibly a random effects model. We specify this with the `design` parameter:
 
 ```{r}
 pump_power( design="blocked_c2_3r",
@@ -114,51 +116,20 @@ pump_power( design="blocked_c2_3r",
             Tbar = 0.50, # prop Tx
             alpha = 0.05, # significance level
             numCovar.1 = 5, numCovar.2 = 3,
+            numCovar.3 = 1, R2.3 = 0.10,
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
             rho = 0.4 ) # how correlated outcomes are
 
 ```
 
+With random effects models we might also have level 3 covariates.  We need to specify how many, and how predictive they are of outcomes.
 
 # Exploring parameter combinations
 
 If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations. For example, we might not be sure what 
 
 ```{r}
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
-pump_power_grid <- function( design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha,
-                             numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0, 
-                             R2.1, R2.2 = NULL, R2.3 = NULL, 
-                             ICC.2, ICC.3 = NULL,
-                             rho, omega.2 = NULL, omega.3 = NULL, ... ) {
-
-  args = list( M = M, J = J, K = K, nbar = nbar,
-               Tbar = Tbar, alpha = alpha, 
-               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
-  nulls = purrr::map_lgl( args, is.null )
-  args = args[ !nulls ]
-  
-  grid = do.call( expand.grid, args ) 
-  scat( "Processing %d calls\n", nrow(grid) )
-  grid$res = purrr::pmap( grid, pump_power, 
-                   design = design,
-                   MTP = MTP, 
-                   MDES = MDES, ... )
-  
-  grid$res = purrr::map( grid$res, as.data.frame )
-  grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid = tidyr::unnest( grid, res )
-
-  grid
-}
-
 grid <- pump_power_grid( design="blocked_c2_3f",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
@@ -198,20 +169,20 @@ Here, for example, we find the MDES for obtaining 80% individual power using the
 
 ```{r MDEScalc}
 pump_mdes( design="blocked_c2_3f",
-            MTP = "Holm",
+           MTP = "Holm",
            target.power = 0.80,
            power.definition = "D1indiv",
            tol = 0.01,
-            M = 3,
-            J = 4, # number of schools/block
-            K = 21, # number RA blocks
-            nbar = 258,
-            Tbar = 0.50, # prop Tx
-            alpha = 0.05, # significance level
-            numCovar.1 = 5, numCovar.2 = 0,
-            R2.1 = 0.1, R2.2 = 0.7,
-            ICC.2 = 0.05, ICC.3 = 0.4,
-            rho = 0.4 ) # how correlated outcomes are
+           M = 3,
+           J = 4, # number of schools/block
+           K = 21, # number RA blocks
+           nbar = 258,
+           Tbar = 0.50, # prop Tx
+           alpha = 0.05, # significance level
+           numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7,
+           ICC.2 = 0.05, ICC.3 = 0.4,
+           rho = 0.4 ) # how correlated outcomes are
 ```
 This method does a search, looking for the impact (assumed shared across all outcomes) to achieve the desired level of power. The top prints out the estimated MDES and the corresponding estimated power.  The tolerance controls how close the final power should be to the target power.
 
