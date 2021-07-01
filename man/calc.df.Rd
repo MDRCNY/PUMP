@@ -15,8 +15,8 @@ calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not including block
-dummies)}
+\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
+including block dummies)}
 
 \item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
@@ -26,5 +26,6 @@ dummies)}
 the degree of freedom
 }
 \description{
-Calculate the degrees of freedom for a particular design
+Given sample sizes, return the used degrees of freedom (frequently
+conservative) for the design.
 }

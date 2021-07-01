@@ -85,16 +85,14 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
 #' Calculate the degrees of freedom for a particular design
 #'
-#' @param design a single RCT design (see list/naming convention)
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' Given sample sizes, return the used degrees of freedom (frequently
+#' conservative) for the design.
 #'
-#' @return the degree of freedom
+#' @inheritParams pump_power
+#'
+#' @return Degree of freedom for the design.
+#'
+#' @export
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
@@ -129,83 +127,6 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   return(df)
 }
 
-#' This function calculates needed J for all implemented designs
-#'
-#' @inheritParams pump_power
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MT multiplier
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome
-#'
-#' @return J, the number of schools
-
-calc.J <- function(design, MT, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
-
-  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
-  {
-    J <- (MT/MDES)^2 * ( (1 - R2.1) / (Tbar * (1 - Tbar) * nbar) )
-  } else if (design == 'blocked_i1_2r')
-  {
-    J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) +
-                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
-  } else if (design == 'simple_c2_2r')
-  {
-    J <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar)) +
-                         ((1 - ICC.2)*(1 - R2.1)) / (Tbar * (1 - Tbar) * nbar) )
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-}
-
-#' Calculates K, the number of districts
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MT multiplier
-#' @param vector of length M; the MDES values for each outcome.
-#'   Can provide single MDES value which will be repeated for the M outcomes.
-#' @param J scalar; the number of schools
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
-#'
-#' @return K, the number of districts
-calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
-
-  if(design == 'blocked_i1_3r')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                         (ICC.2 * omega.2) / J +
-                         ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'simple_c3_3r')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
-                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'blocked_c2_3f')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'blocked_c2_3r')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                         (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-  return(K)
-}
-
 
 #' Validates user inputs
 #'
@@ -217,9 +138,10 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 #' @param params.list a list of parameters input by a user
 #'
 #' @return params.list
-#' @export
 #'
-validate_inputs <- function( design, MTP, params.list, mdes_call = FALSE )
+validate_inputs <- function( design, MTP, params.list,
+                             mdes_call = FALSE,
+                             single_MDES = FALSE )
 {
   if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
                      'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
@@ -254,7 +176,11 @@ validate_inputs <- function( design, MTP, params.list, mdes_call = FALSE )
       print(paste('Assumed full MDES vector:', params.list$MDES))
     }
 
-    if(length(params.list$MDES) < params.list$M)
+    if ( single_MDES ) {
+      if ( length(params.list$MDES) != 1 ) {
+        stop( "Single MDES necessary" )
+      }
+    } else if(length(params.list$MDES) < params.list$M)
     {
       if ( length(params.list$MDES) == 1 ) {
         params.list$MDES <- rep( params.list$MDES, params.list$M )
@@ -267,7 +193,7 @@ validate_inputs <- function( design, MTP, params.list, mdes_call = FALSE )
 
   }
 
-  if(params.list$K <= 0 | params.list$J <= 0 | params.list$nbar <= 0)
+  if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
   {
     stop('Please provide positive values of J, K, nbar')
   }
@@ -681,30 +607,8 @@ midpoint <- function(lower, upper) {
 #'   Holm, WY-SS, WY-SD
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance for target power
-#' @param start.tnum number of samples for initial power search (should be low to increase speed)
-#' @param start.low lower bound for possible power
-#' @param start.hight upper bound for possible power
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param alpha scalar; the family wise error rate (FWER)
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects variability
-#' @param rho scalar; correlation between outcomes
-#' @param tnum scalar; the number of test statistics (samples)
-#' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @inheritParams pump_power
+#'
 #' @param cl cluster object to use for parallel processing
 #' @param max.steps how many steps allowed before terminating
 #' @param max.cum.tnum maximum cumulative number of samples
@@ -760,7 +664,12 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
 
-  current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = midpoint(start.low, start.high))
+  # Did we get NAs?  If so, currently crash (but should impute 0 to keep search
+  # going?)
+  stopifnot( all( !is.na( test.pts$power ) ) )
+
+  current.try <- find_best(test.pts, start.low, start.high, target.power,
+                           alternate = midpoint(start.low, start.high))
   current.power <- 0
   current.tnum <- start.tnum
   cum.tnum <- 0
@@ -773,7 +682,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
     cum.tnum <- cum.tnum + current.tnum
 
-    if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
+    if(search.type == 'mdes') {
+      MDES <- rep(current.try, M)
+    }
+
     current.power.results <- pump_power(
       design, MTP = MTP,
       MDES = MDES,
@@ -840,9 +752,11 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     test.pts <- bind_rows(test.pts, iter.results)
 
     if(current.power < target.power) {
-      current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try + 0.10 * (start.high - current.try))
+      current.try <- find_best(test.pts, start.low, start.high, target.power,
+                               alternate = current.try + 0.10 * (start.high - current.try))
     } else {
-      current.try <- find_best(test.pts, start.low, start.high, target.power, alternate = current.try - 0.10 * (current.try - start.low) )
+      current.try <- find_best(test.pts, start.low, start.high, target.power,
+                               alternate = current.try - 0.10 * (current.try - start.low) )
     }
   }
 
@@ -1065,342 +979,6 @@ pump_mdes <- function(
   return(list(mdes.results = mdes.results, test.pts = test.pts))
 
 } # MDES
-
-#' Calculating Sample for Raw (Unadjusted)
-#'
-#' This is a Helper function for getting Sample Size when no adjustments has
-#' been made to the test statistics. The function starts with PowerUp package
-#' function mrss.bira2cl but that function seems to have a bug - Only works if
-#' we pass in numeric values and not if we pass in objects that hold those
-#' values. Additionally, mrss.bira2cl only computes J, not nbar.
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
-#' @param typesample type of sample size to calculate: J, K, or nbar
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome
-#' @param target.power target power to arrive at
-#' @param tol tolerance
-#' @param M scalar; the number of hypothesis tests (outcomes)
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param J0 scalar; starting point for J
-#' @param K0 scalar; starting point for K
-#' @param nbar0 scalar; starting point for nbar
-#' @param alpha scalar; the family wise error rate (FWER)
-#' @param two.tailed whether to calculate two-tailed or one-tailed power
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
-#' @param rho scalar; correlation between outcomes
-#' @param max.steps how many steps allowed before terminating
-#'
-#' @return raw sample returns
-#' @export
-
-pump_sample_raw <- function(
-  design, MTP, typesample,
-  MDES, M, J = NULL, K = 1,
-  J0 = 10, K0 = 4, nbar0 = 10,
-  target.power,
-  nbar = NULL, Tbar, alpha, two.tailed = TRUE,
-  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-  R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
-  rho = NULL, omega.2 = NULL, omega.3 = NULL,
-  tol = 0.1, max.steps = 100
-)
-{
-  browser()
-
-  i <- 0
-  # convergence
-  conv <- FALSE
-
-  while (i <= max.steps & conv == FALSE) {
-    # checking which type of sample we are estimating
-    if (typesample == "J"){
-      df <- calc.df(design, J0, K, nbar, numCovar.1, numCovar.2, numCovar.3)
-    } else if (typesample == "K"){
-      df <- calc.df(design, J, K0, nbar, numCovar.1, numCovar.2, numCovar.3)
-    } else if (typesample == "nbar") {
-      df <- calc.df(design, J, K, nbar0, numCovar.1, numCovar.2, numCovar.3)
-    }
-
-    # t statistics
-    T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
-    T2 <- abs(qt(target.power, df))
-    # multiplier
-    MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
-
-    if (typesample == "J") {
-      J1 <- calc.J(
-        design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2
-      )
-      if (abs(J1 - J0) < tol) {
-        conv <- TRUE
-      }
-      J0 <- (J1 + J0)/2
-    } else if (typesample == "K") {
-      K1 <- calc.K(
-        design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1], ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-        omega.2 = omega.2, omega.3 = omega.3
-      )
-      if (abs(K1 - K0) < tol) {
-        conv <- TRUE
-      }
-      K0 <- (K1 + K0)/2
-    } else if (typesample == "nbar") {
-      nbar1 <- calc.nbar(
-        design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
-        ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-        omega.2 = omega.2, omega.3 = omega.3
-      )
-      if (abs(nbar1 - nbar0) < tol) {
-        conv <- TRUE
-      }
-      nbar0 <- (nbar1 + nbar0)/2
-    }
-    i <- i + 1
-  }
-
-  if(df < 0 | is.infinite(df)) {
-    stop('Problem with starting values resulting in impossible df')
-  }
-
-  if (typesample == "J") {
-    J <- ifelse(df > 0, ceiling(J1), NA)
-    return(J)
-  } else if (typesample == "K") {
-    K <- ifelse(df > 0, ceiling(K1), NA)
-    return(K)
-  } else if (typesample == "nbar") {
-    nbar <- ifelse(df > 0, ceiling(nbar1), NA)
-    return(nbar)
-  }
-}
-
-
-#' Calculate sample size
-#'
-# Note: These currently only work if MDES is the same for all outcomes.
-#'
-#' @inheritParams pump_power
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
-#' @param typesample type of sample size to calculate: J, K, or nbar
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
-#' @param target.power target power to arrive at
-#' @param power.definition must be a valid power type output by power function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance
-#' @param two.tailed whether to calculate two-tailed or one-tailed power
-#' @param rho scalar; correlation between outcomes
-#' @param tnum scalar; the number of test statistics (samples)
-#' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param max.steps how many steps allowed before terminating
-#' @param max.cum.tnum maximum cumulative number of samples
-#' @param final.tnum number of samples for final draw
-#' @param cl cluster object to use for parallel processing
-#' @param updateProgress the callback function to update the progress bar (User
-#'   does not have to input anything)
-#'
-#' @return sample size results
-#' @export
-
-pump_sample <- function(
-  design, MTP, typesample,
-  MDES, M, J, K = 1, nbar, Tbar,
-  J0 = 10, K0 = 4, nbar0 = 10,
-  target.power, power.definition, tol,
-  alpha, two.tailed = TRUE,
-  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-  R2.1 = 0, R2.2 = 0, R2.3 = 0,
-  ICC.2 = 0, ICC.3 = 0,
-  rho,
-  omega.2 = 0, omega.3 = 0,
-  tnum = 10000, B = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
-  cl = NULL, updateProgress = NULL
-)
-{
-  # extra validation
-  if(length(MDES) > 1 & length(unique(MDES)) > 1)
-  {
-    stop('Procedure assumes MDES is the same for all outcomes.')
-  }
-
-  # validate input parameters
-  params.list <- list(
-    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
-    nbar = nbar, Tbar = Tbar, alpha = alpha,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho
-  )
-  ##
-  params.list <- validate_inputs(design, MTP, params.list)
-  ##
-  MDES <- params.list$MDES
-  M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
-  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
-  numCovar.3 <- params.list$numCovar.3
-  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
-  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
-  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-  rho <- params.list$rho
-
-  # save out target sample size
-  if(typesample == 'J'){
-    target.ss <- J
-  } else if(typesample == 'K')
-  {
-    target.ss <- K
-  } else if(typesample == 'nbar')
-  {
-    target.ss <- nbar
-  }
-  output.colnames <- c("MTP", "Sample type", "Sample size",
-                       paste(power.definition, "power"), "Target sample size")
-
-  # check if zero power, then return 0 MDES
-  if(round(target.power, 2) == 0)
-  {
-    message('Target power of 0 requested')
-    test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 0, 0, target.ss)
-    colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = test.pts))
-  }
-
-  # Checks on what we are estimating, sample size
-  message(paste("Estimating sample size of type", typesample, "for", MTP, "for target",
-                power.definition, "power of", round(target.power, 4)))
-
-  # indicator for which sample to compute. J is for blocks. nbar is for harmonic
-  # mean of samples within block
-
-  if(typesample == "J"){
-    J <- NULL
-    nbar0 <- NULL
-  } else if (typesample == "K") {
-    K <- NULL
-    J0 <- NULL
-    nbar0 <- NULL
-  } else if (typesample == "nbar") {
-    nbar <- NULL
-    J0 <- NULL
-    K0 <- NULL
-  }
-
-  # Progress Message for the Type of Sample we are estimating, the type of power
-  # and the targeted power value
-  if (is.function(updateProgress)) {
-    msg <- (paste("Estimating", whichSS, "for target", power.definition, "power of",round(power,4)))
-    updateProgress(message = msg)
-  }
-
-  # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating
-  # bounds like we estimated MDES bounds. for now assuming only two tailed tests
-  ss.raw <- pump_sample_raw(
-    design = design, MTP, typesample,
-    MDES, M, J, K,
-    J0, K0, nbar0,
-    target.power,
-    nbar, Tbar, alpha, two.tailed,
-    numCovar.1, numCovar.2, numCovar.3,
-    R2.1, R2.2, R2.3, ICC.2, ICC.3,
-    rho, omega.2, omega.3
-  )
-
-  # Done if this is what we are looking for
-  if (MTP == "rawp"){
-    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
-    colnames(raw.ss) <- output.colnames
-    return(raw.ss)
-  }
-
-  ss.BF <- pump_sample_raw(
-    design = design, MTP, typesample,
-    MDES, M, J, K,
-    J0, K0, nbar0,
-    target.power,
-    # change alpha for BF
-    nbar, Tbar, alpha/M, two.tailed,
-    numCovar.1, numCovar.2, numCovar.3,
-    R2.1, R2.2, R2.3, ICC.2, ICC.3,
-    rho, omega.2, omega.3
-  )
-
-  # Done if this is what we are looking for
-  if (MTP == "Bonferroni") {
-    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
-    colnames(ss.BF) <- output.colnames
-    return(ss.BF)
-  }
-
-  # Like the MDES calculation, the sample size would be between raw and Bonferroni.
-  # There is no adjustment and there is very conservative adjustment
-  ss.low <- ss.raw
-  ss.high <- ss.BF
-
-  # sometimes we already know the answer!
-  if(ss.low == ss.high)
-  {
-    test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 1, target.power, target.ss)
-    colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = test.pts))
-  }
-
-  test.pts <- optimize_power(
-    design = design, search.type = typesample,
-    MTP, target.power, power.definition, tol,
-    start.tnum, start.low = ss.low, start.high = ss.high,
-    MDES = MDES,
-    J = ifelse(typesample == 'J', NULL, J),
-    K = ifelse(typesample == 'K', NULL, K),
-    nbar = ifelse(typesample == 'nbar', NULL, nbar),
-    M = M, Tbar = Tbar, alpha = alpha,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-    rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-    B = B, cl = cl,
-    max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-    final.tnum = final.tnum
-  )
-
-  # Assemble results
-  ss.results <- data.frame(
-    MTP,
-    typesample,
-    ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
-    test.pts$power[nrow(test.pts)],
-    target.ss
-  )
-  colnames(ss.results) <- output.colnames
-
-  return(list(ss.results = ss.results, test.pts = test.pts))
-}
-
-
 
 
 
