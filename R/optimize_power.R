@@ -117,8 +117,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   stopifnot( all( !is.na( test.pts$power ) ) )
 
   # Based on initial grid, pick best guess for search.
-  current.try <- find_best(test.pts, start.low, start.high, target.power,
-                           alternate = midpoint(start.low, start.high))
+  current.try <- find_best(test.pts, start.low, start.high, target.power, gamma = 1.5)
   current.power <- 0
   current.tnum <- start.tnum
   step <- 0
@@ -173,10 +172,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
     if(current.power < target.power) {
       current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               alternate = current.try + 0.10 * (start.high - current.try))
+                               gamma = 1.5)
     } else {
       current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               alternate = current.try - 0.10 * (current.try - start.low) )
+                               gamma = 1.5 )
     }
   }
 
@@ -202,33 +201,71 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 #'
 #' @return root of quadratic curve
 
-find_best <- function(test.pts, start.low, start.high, target.power, alternate = NA)
+find_best <- function(test.pts, start.low, start.high, gamma = 1.5, target.power )
 {
   # fit quadratic curve
-  quad.mod <- lm( power ~ 1 + pt + I(pt^2), data = test.pts)
+  quad.mod <- lm( power ~ 1 + pt + I(pt^2), weights = w, data = test.pts)
 
   # extract point where it crosses target power
   cc <- rev( coef( quad.mod ) )
-  # Using x = [ b pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
+
+  # Our curve is now a x^2 + b x + (c - target.power)
+  # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
   # first check if root exists
   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
 
+  happy = FALSE
   if ( rt.check > 0 ) {
-    # point to try
+    # We have a place where our quad crosses target.power
+
+    # calculate the two points to try
     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
     hits <- (start.low <= try.pt) & (try.pt <= start.high)
+
     if ( sum( hits ) == 1 ) {
       try.pt <- try.pt[hits]
+      happy = TRUE
+    } else if ( sum( hits ) == 2 ) {
+      # pick one root at random.
+      try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
     } else {
-      # error
-      cat( "Root concerns\n" )
-      try.pt <- alternate
+      # No roots in the original range.  Try extrapolation, if we can stay
+      # within gamma of the original range
+      try.pt = sort( try.pt )
+      if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
+        if ( try.pt[[1]] < start.low / gamma ) {
+          try.pt <- try.pt[[2]]
+        } else if ( try.pt[[2]] > start.high * gamma ) {
+          try.pt <- try.pt[[1]]
+        } else {
+          try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+        }
+      }
+
+      warning( ifelse( hits == 2, "Both roots in range concerns\n", "No roots in range concerns\n" ) )
     }
   } else {
-    cat( "No roots\n" )
-    # error
-    try.pt <- alternate
+    warning( "No root in quadratic model fit" )
   }
+
+
+
+
+  # If no roots in the original range, try linear extrapolation, but stay within
+  # gamma of the original range
+  if ( !happy ) {
+    lin.mod <- lm( power ~ 1 + pt, data = test.pts)
+    cc <- rev( coef( lin.mod ) )
+    try.pt = (target.power - cc[[2]]) / cc[[1]]
+
+    if ( try.pt < start.low / gamma ) {
+      try.pt <- start.low / gamma
+    } else if ( try.pt > start.high * gamma ) {
+      try.pt <- start.high * gamma
+    }
+  }
+
+
   return(try.pt)
 }
 
@@ -237,10 +274,15 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 #' Examine search path of the power search
 #'
 #' @param pwr Result from the pump_sample or pump_mdes
-plot_power_search = function( pwr ) {
-  ggplot( pwr$test.pts, aes( pt, power ) ) +
+plot_power_search = function( pwr, step_plot = FALSE ) {
+  if ( !step_plot ) {
+    ggplot( pwr$test.pts, aes( pt, power ) ) +
+    geom_point( aes( size = w ), alpha = 0.5 ) + theme_minimal() +
+      geom_hline( yintercept = pwr$test.pts$target.power[[1]], col="red" ) +
+      geom_text( aes( label = pwr$test.pts$step ), nudge_y=0.01 )
+  } else {
+    ggplot( pwr$test.pts, aes(step, power, size=w) ) +
     geom_point()
-  ggplot( pwr$test.pts, aes(step, power) ) +
-    geom_point()
+  }
 }
 

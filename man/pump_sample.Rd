@@ -10,18 +10,15 @@ pump_sample(
   typesample,
   MDES,
   M,
-  J,
-  K = 1,
-  nbar,
-  Tbar,
-  J0 = 10,
-  K0 = 4,
-  nbar0 = 10,
+  nbar = NULL,
+  J = NULL,
+  K = NULL,
   target.power,
   power.definition,
   tol,
   alpha,
   two.tailed = TRUE,
+  Tbar,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
@@ -55,14 +52,11 @@ options: Bonferroni, BH, Holm, WY-SS, WY-SD}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes)}
 
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
+
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
-
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
-
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
 
 \item{target.power}{target power to arrive at}
 
@@ -74,6 +68,9 @@ i.e. D1indiv, min1, etc.}
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
 \item{two.tailed}{whether to calculate two-tailed or one-tailed power}
+
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}

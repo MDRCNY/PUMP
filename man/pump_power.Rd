@@ -11,7 +11,7 @@ pump_power(
   numZero = NULL,
   M,
   J,
-  K = NULL,
+  K = 1,
   nbar,
   Tbar,
   alpha = 0.05,
@@ -27,7 +27,7 @@ pump_power(
   omega.3 = 0,
   rho,
   tnum = 10000,
-  B = 1000,
+  B = 3000,
   cl = NULL,
   updateProgress = NULL
 )

@@ -155,7 +155,7 @@ validate_inputs <- function( design, MTP, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  if(!(MTP %in% c('rawp', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -198,7 +198,8 @@ validate_inputs <- function( design, MTP, params.list,
     stop('Please provide positive values of J, K, and/or nbar')
   }
 
-  if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  | params.list$numCovar.3 < 0 )
+  if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  |
+     ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
   {
     stop('Please provide non-negative values of your num.Covar parameters')
   }

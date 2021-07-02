@@ -23,7 +23,7 @@ including block dummies)}
 \item{numCovar.3}{scalar; number of Level 3 (district) covariates}
 }
 \value{
-the degree of freedom
+Degree of freedom for the design.
 }
 \description{
 Given sample sizes, return the used degrees of freedom (frequently

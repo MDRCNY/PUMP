@@ -111,9 +111,6 @@ pump_mdes <- function(
     return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
 
-  sigma <- matrix(rho, M, M)
-  diag(sigma) <- 1
-
   message(paste("Estimating MDES for", MTP, "for target", power.definition,
                 "power of", round(target.power, 4)))
 
@@ -147,20 +144,23 @@ pump_mdes <- function(
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
 
-  ### raw or bonferroni ###
-  if (MTP == "rawp"){
-    mdes.results <- data.frame(MTP, mdes.raw, target.power)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return (list(mdes.results = mdes.results, tries = NULL))
-  } else if (MTP == "Bonferroni"){
-    mdes.results <- data.frame(MTP, mdes.bf, target.power)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return(list(mdes.results = mdes.results, tries = NULL))
+  ### raw or bonferroni for indiv powers can work ###
+  if ( endsWith( power.definition, "indiv" ) ) {
+    if (MTP == "rawp"){
+      mdes.results <- data.frame(MTP, mdes.raw, target.power)
+      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+      return (list(mdes.results = mdes.results, tries = NULL))
+    } else if (MTP == "Bonferroni"){
+      mdes.results <- data.frame(MTP, mdes.bf, target.power)
+      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+      return(list(mdes.results = mdes.results, tries = NULL))
+    }
   }
 
-  # MDES will be between MDES.raw and MDES.BF
+  # Some of the MDES will be between MDES.raw and MDES.BF
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
+
 
   test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
                              start.tnum, start.low = mdes.low, start.high = mdes.high,

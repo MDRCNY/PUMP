@@ -108,7 +108,7 @@ test_that("pump_sample_raw works", {
 })
 
 
-test_that( "optimize_power solves" {
+test_that( "optimize_power solves", {
   op_pow <- pum:::optimize_power(
     MTP = "Holm", nbar=200,
     power.definition="D1indiv",
@@ -119,10 +119,13 @@ test_that( "optimize_power solves" {
     MDES = 0.05, target.power = 0.80, tol = 0.01,
     Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
-    rho = 0.4
+    rho = 0.4, max.cum.tnum = 1000, final.tnum = 2000
   )
   op_pow
   expect_true( ncol( op_pow ) == 6 )
+  expect_true( all( op_pow$w <= 2000 ) )
+  expect_true( max( op_pow$w ) == 2000 )
+
 })
 
 
@@ -138,8 +141,19 @@ test_that("pump_sample 2 level/2 level", {
                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                rho = 0.4 )
   pwr
-  expect_true( pwr$ss.results$`Sample size` == 64 )
 
+  p2 = pump_power( design="blocked_i1_2c",
+                   MTP = "Holm",
+                   J = pwr$ss.results$`Sample size`,
+                   nbar = 200,
+                   M = 3,
+                   MDES = 0.05,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                   rho = 0.4 )
+  p2
+
+  expect_true( abs( p2[ 2, "indiv.mean" ] - 0.80) <= 0.01 )
 
 })
 

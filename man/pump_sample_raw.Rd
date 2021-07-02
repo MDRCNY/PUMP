@@ -9,7 +9,6 @@ pump_sample_raw(
   MTP,
   typesample,
   MDES,
-  M,
   nbar = NULL,
   J = NULL,
   K = NULL,
@@ -25,7 +24,6 @@ pump_sample_raw(
   R2.3 = NULL,
   ICC.2 = NULL,
   ICC.3 = NULL,
-  rho = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
   tol = 0.1,
@@ -42,8 +40,6 @@ automatically re-run for each procedure on the list.}
 \item{typesample}{type of sample size to calculate: J, K, or nbar}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
-
-\item{M}{scalar; the number of hypothesis tests (outcomes)}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -79,9 +75,6 @@ Level 3 covariates for each outcome. Defaults to 0.}
 \item{ICC.2}{scalar; school intraclass correlation}
 
 \item{ICC.3}{scalar; district intraclass correlation}
-
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
 
 \item{omega.2}{scalar; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment

@@ -167,55 +167,56 @@ To identify the MDES of a given design we use the `pump_mdes` method. Along with
 
 Here, for example, we find the MDES for obtaining 80% individual power using the Holm procedure if we had 4 schools per block instead of 3:
 
-```{r MDEScalc}
+```{r MDEScalc, cache=TRUE}
 pump_mdes( design="blocked_c2_3f",
            MTP = "Holm",
-           target.power = 0.80,
-           power.definition = "D1indiv",
-           tol = 0.01,
-           M = 3,
-           J = 4, # number of schools/block
-           K = 21, # number RA blocks
-           nbar = 258,
-           Tbar = 0.50, # prop Tx
-           alpha = 0.05, # significance level
-           numCovar.1 = 5, numCovar.2 = 0,
-           R2.1 = 0.1, R2.2 = 0.7,
-           ICC.2 = 0.05, ICC.3 = 0.4,
-           rho = 0.4 ) # how correlated outcomes are
+           target.power = 0.80, power.definition = "D1indiv", tol = 0.01,
+           M = 3, J = 4, K = 21, nbar = 258,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
 This method does a search, looking for the impact (assumed shared across all outcomes) to achieve the desired level of power. The top prints out the estimated MDES and the corresponding estimated power.  The tolerance controls how close the final power should be to the target power.
 
+Note if we are looking for MDES for "min1" power (i.e., what effect do we have to assume across all observations such that we will find some significant result with 80% power), we have a much smaller MDES:
+
+```{r MDEScalcmin1, cache=TRUE}
+pump_mdes( design="blocked_c2_3f",
+           MTP = "Holm",
+           target.power = 0.80, power.definition = "min1", tol = 0.01,
+           M = 3, J = 4, K = 21, nbar = 258,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+```
 
 
 # Determining necessary sample size
 
-For our design we might want to determine the needed number of students/school, number of schools, or number of blocks needed. The `pump_sample` method will search over one of these at a time.
+For our design we might want to determine the needed number of students/school, number of schools, or number of blocks needed. The `pump_sample` method will search over any one of these, as requested.
 
 Here we see how many schools are needed to achieve a MDES of 0.05 for min1 power (so how many schools are needed to have 80% chance of finding at least 1 outcome significant, if all outcomes had a true effect size of 0.05).
 
-**Note: This does not work.**
+**NOTE: Need to implement formula to allow for blocked_c2_3f design here**
 
-```{r samplesizecalc, eval=FALSE}
-pump_sample( design="blocked_i1_2c",
+```{r samplesizecalc, cache=TRUE}
+smp <- pump_sample( design="blocked_i1_2c",
             MTP = "Holm",
-            typesample = "nbar",
-            MDES = 0.05,
-           target.power = 0.80,
-           power.definition = "D1indiv",
-           tol = 0.01,
-           J0 = 3,
-           J = 4,
-            M = 3,
-            K = 21, # number RA blocks
-            nbar = 258,
-            Tbar = 0.50, # prop Tx
-            alpha = 0.05, # significance level
-            numCovar.1 = 5, numCovar.2 = 0,
-            R2.1 = 0.1, R2.2 = 0.7,
-            ICC.2 = 0.05, ICC.3 = 0.4,
-            rho = 0.4 ) # how correlated outcomes are
+            typesample = "J",
+           target.power = 0.80, power.definition = "min1", tol = 0.01,
+           MDES = 0.05, M = 3, nbar = 258, K = 21,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+smp
 ```
 
+We can check as so:
+
+```{r samplesizeverify, cache=TRUE}
+
+pump_power( design="blocked_i1_2c",
+            MTP = "Holm", MDES = 0.05, 
+           M = 3, nbar = 258, J = smp$ss.results$`Sample size`, K = 21,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+```
 
 
