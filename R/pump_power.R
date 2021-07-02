@@ -382,6 +382,46 @@ validate_inputs <- function(
 
 }
 
+
+#' Calculates different definitions of power
+#'
+#' This function takes in a matrix of adjusted p-values and outputs different types of power
+#'
+#' @param pval.mat matrix of p-values, columns are outcomes
+#' @param ind.nonzero vector indicating which outcomes are nonzero
+#' @param alpha scalar; the family wise error rate (FWER)
+#'
+#' @return power results for individual, minimum, complete power
+#' @export
+get.power.results = function(pval.mat, ind.nonzero, alpha)
+{
+  M <- ncol(pval.mat)
+  num.nonzero <- sum(ind.nonzero)
+
+  # rejected tests
+  rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
+  rejects.nonzero <- rejects[,ind.nonzero]
+
+  # individual power
+  power.ind <- apply(rejects.nonzero, 2, mean)
+  power.ind.mean <- mean(power.ind)
+
+  # minimum power
+  power.min <- rep(NA, num.nonzero)
+  for(m in 1:num.nonzero)
+  {
+    min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
+    power.min[m] <- mean(min.rejects)
+  }
+
+  # combine all power for all definitions
+  all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
+  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"), "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+
+  return(all.power.results)
+}
+
+
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
@@ -480,10 +520,10 @@ pump_power <- function(
   diag(sigma) <- 1
 
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
-  rawt.matrix <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df) + t.shift.mat
-  rawp.matrix <- pt(-abs(rawt.matrix), df = t.df) * 2
+  rawt.mat <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df) + t.shift.mat
+  rawp.mat <- pt(-abs(rawt.mat), df = t.df) * 2
 
-  if (is.function(updateProgress) & !is.null(rawp.matrix)) {
+  if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
   }
 
@@ -491,30 +531,30 @@ pump_power <- function(
 
   if (MTP == "Bonferroni"){
 
-    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
+    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Bonferroni"))
 
   } else if (MTP == "Holm") {
 
-    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
+    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
 
   } else if (MTP == "BH") {
 
-    adjp <- apply(rawp.matrix, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
+    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
     adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "BH"))
 
   } else if(MTP == "rawp") {
 
-    adjp <- rawp.matrix
+    adjp <- rawp.mat
 
   } else if (MTP == "WY-SS"){
 
-    adjp <- adjp.wyss(rawt.matrix = rawt.matrix, B = B, sigma = sigma, t.df = t.df)
+    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B, sigma = sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp <- adjp.wysd(rawt.matrix = rawt.matrix, B = B, sigma = sigma, t.df = t.df, cl = cl)
+    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B, sigma = sigma, t.df = t.df, cl = cl)
 
   } else {
 
@@ -525,58 +565,17 @@ pump_power <- function(
     updateProgress(message = paste("Multiple adjustments done for", MTP))
   }
 
-  adjp.each <- list(rawp.matrix, adjp)
+  ind.nonzero <- MDES > 0
+  power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha)
+  power.results.proc <- get.power.results(adjp, ind.nonzero, alpha)
+  power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
+  rownames(power.results.all) <- c('rawp', MTP)
 
-  # get matrix of indicators for whether the adjusted p-value is less than alpha
-  reject <- function(x) { as.matrix(1*(x < alpha)) }
-  reject.each <- lapply(adjp.each, reject)
-
-  # for true positive outcomes, count number of p-values less than 0.05,
-  lt.alpha <- function(x) { apply(as.matrix(x[,MDES > 0]), 1, sum) }
-  lt.alpha.each <- lapply(reject.each, lt.alpha)
-
-  # individual power
-  # mean of columns of booleans of whether adjusted p-values were less than alpha
-  power.ind.fun <- function(x) { apply(x, 2, mean) }
-  power.ind.each <- lapply(reject.each, power.ind.fun)
-  power.ind.each.mat <- do.call(rbind, power.ind.each)
-
-  # mean individual power
-  mean.ind.power <- apply(as.matrix(power.ind.each.mat[,MDES > 0]), 1, mean)
-
-  if (is.function(updateProgress) & !is.null(power.ind.each.mat)) {
-    updateProgress(message = "Individual power calculation is done.")
-  }
-
-  # calculate minimum and complete power
-  power.min.fun <- function(x, M) {
-    power.min <- numeric(M)
-    for (m in 1:M) {
-      power.min[m] <- mean(x >= m)
-    }
-    return(power.min)
-  }
-  power.min <- lapply(lt.alpha.each, power.min.fun, M = M)
-  power.min.mat <- do.call(rbind, power.min)
-
-  # combine all power for all definitions
-  all.power.results <- cbind(power.ind.each.mat, mean.ind.power, power.min.mat)
-
-  if(M == 1)
-  {
-    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", "min", "complete")
-  } else
-  {
-    colnames(all.power.results) = c(paste0("D", 1:M, "indiv"), "indiv.mean", paste0("min",1:(M-1)), "complete")
-  }
-  rownames(all.power.results) <- c("rawp", MTP)
-
-  if (is.function(updateProgress) & !is.null(all.power.results)) {
-    updateProgress(message = paste0("All definitions of power calculation are done."))
-  }
-
-  return(all.power.results)
+  return(power.results.all)
 }
+
+
+
 
 
 
