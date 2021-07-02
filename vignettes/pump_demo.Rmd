@@ -3,8 +3,10 @@ title: "pump_demo"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{pump_demo}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r initialize, include = FALSE}
@@ -12,20 +14,23 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library( tidyverse )
 ```
 
+# Demo of using the pum-p package for a simple power calculation
 
-To illustrate the pum-p package we conduct a sample power analysis for a blocked cluster-randomized RCT. In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview)
 
-As taken from the above site, Diplomas Now, is a secondary school model focused on meeting the holistic needs of all students in grades six through twelve. It is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle grade and high schools attended by many students who fall off the path to high school graduation. Diplomas Now combines programming developed by each of the three organizations that created it: Talent Development, City Year, and Communities In Schools.
+To illustrate the pum-p package we conduct a power analysis for a blocked cluster-randomized RCT. In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview).
+
+As taken from the above site, Diplomas Now "is a secondary school model focused on meeting the holistic needs of all students in grades six through twelve. It is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle grade and high schools attended by many students who fall off the path to high school graduation. Diplomas Now combines programming developed by each of the three organizations that created it: Talent Development, City Year, and Communities In Schools."
 
 Diplomas Now, with MDRC as a partner, was one of the first validation grants awarded as part of the i3 competition (administered by the federal Department of Education and was created by the American Recovery and Reinvestment Act of 2009).
 
-For the actual experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Taken from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
+For the actual experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Details quoted from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
 
-In fact, the study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, they were left with 29 high schools and 29 middle schools across 21 random assignment blocks.
+The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, they were left with 29 high schools and 29 middle schools across 21 random assignment blocks.
 
-The levels of this design are (for third level) the RA blocks, with schools as the 2nd level clusters, and students nested within the schools.
+The levels of this design are the RA blocks at level 3, schools as the 2nd level clusters, and students nested within the schools as level 1 individuals.  RA blocks are nested in districts, but if we used fixed effect for the RA blocks, then we can ignore this 4th level of nesting.
 
 
 
@@ -35,11 +40,14 @@ The above specifies the design of our RCT.  Power analysis packages typically as
 
 We also have to select the $R^2$ of our covariates we use for adjustment.  The report is silent on these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$.
 
-At this point we also need to specify the method of analysis. The report calls their model a "two-level" model, but this is not quite in alignment with this package. In particular, they include fixed effects for the randomization block in their second level---in our package, this is a third level of nesting.  In particular, fixed effects at level 3 and cluster randomization.
+At this point we also need to specify the method of analysis. The report calls their model a "two-level" model, but this is not quite in alignment with the language of this package. In particular, the report analysis include fixed effects for the randomization block in their second level.
+In our package, this is a third level of nesting.  In particular, they fit a model with fixed effects at level 3 and cluster randomization.
 
-The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance, and an ABC composite measure of an indicator of whether a student is above given thresholds in their ABCs, or the first three measures).  Given this, we might do power analysis separately for each group to control family-wise error.  
+The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance (the ABCs), and an ABC composite measure of an indicator of whether a student is above given thresholds on the first three measures).  Given this, we might do power analysis separately for each group to control family-wise error.  
 
-Let's focus on attendance. Within the attendance group of outcomes, we have to specify how correlated out test statistics are likely to be.  The attendance measures are fairly related, so we select `rho = 0.40`. 
+Let's focus on attendance. Within the attendance group of outcomes, we have to specify how correlated out test statistics are likely to be.
+As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level.
+The attendance measures are fairly related, so we select `rho = 0.40`. 
 
 Putting this all together, we might have:
 
@@ -66,16 +74,16 @@ pump_power( design="blocked_c2_3f",
 
 The top row are powers without any multiple testing correction.  The `min1` and `min2` columns show the chance of rejecting at least 1 or 2 of our hypotheses.  The `complete` is rejecting all 3.
 
-The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is well powered to detect some effect, even when using the very conservative correction procedure of Bonferroni.
+The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is more powered than we might expect to detect some effect, even when using the very conservative correction procedure of Bonferroni.
 
 
-# Other procedures
+# Examining other correction procedures
 
-It is easy to rerun the above using Westfall-Young Stepdown (this procedure is much more computationally intensive to run):
+It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, it is rerunning the simulation behind the scenes, so it can get computationally intensive:
 
-```{r, cache=TRUE}
+```{r othercorrections, cache=TRUE}
 pump_power( design="blocked_c2_3f",
-            MTP = "WY-SD",
+            MTP = c("Bonferroni", "Holm", "WY-SD"),
             MDES = rep( 0.10, 3 ),
             M = 3,
             J = 3, # number of schools/block
@@ -86,28 +94,128 @@ pump_power( design="blocked_c2_3f",
             numCovar.1 = 5, numCovar.2 = 3,
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
-            rho = 0.4 ) # how correlated outcomes are
+            rho = 0.4,
+            tnum = 500 ) # how correlated outcomes are
 ```
 
-Due to the correlation in our outcomes (`rho = 0.4`), we see substantially elevated power if we use this more sophisticated (and less conservative) correction approach.
+Due to the correlation in our outcomes (`rho = 0.4`), we see elevated power if we use this more sophisticated (and less conservative) correction approach for each individual test.  We do not see elevated rates for min1, interestingly.
 
+
+# Choosing the method of estimation
+
+For a given design, one might analyze the resulting data differently.  For example, we could use a fixed effect model, as above, or possibly a random effects model. We specify this with the `design` parameter:
+
+```{r}
+pump_power( design="blocked_c2_3r",
+            MTP = "Bonferroni",
+            MDES = rep( 0.10, 3 ),
+            M = 3,
+            J = 3, # number of schools/block
+            K = 21, # number RA blocks
+            nbar = 258,
+            Tbar = 0.50, # prop Tx
+            alpha = 0.05, # significance level
+            numCovar.1 = 5, numCovar.2 = 3,
+            numCovar.3 = 1, R2.3 = 0.10,
+            R2.1 = 0.1, R2.2 = 0.7,
+            ICC.2 = 0.05, ICC.3 = 0.4,
+            rho = 0.4 ) # how correlated outcomes are
+
+```
+
+With random effects models we might also have level 3 covariates.  We need to specify how many, and how predictive they are of outcomes.
 
 # Exploring parameter combinations
 
-If uncertain about specific design parameters, one can call `pump_power` 
-Talk about ICC parameters and ICC2 and ICC3
+If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations. For example, we might not be sure what 
+
+```{r}
+grid <- pump_power_grid( design="blocked_c2_3f",
+            MTP = "Bonferroni",
+            MDES = rep( 0.10, 3 ),
+            M = 3,
+            J = 3, # number of schools/block
+            K = 21, # number RA blocks
+            nbar = 258,
+            Tbar = 0.50, # prop Tx
+            alpha = 0.05, # significance level
+            numCovar.1 = 5, numCovar.2 = 3,
+            R2.1 = 0.1, R2.2 = 0.7,
+            ICC.2 = seq( 0, 0.3, 0.05 ),
+            ICC.3 = seq( 0, 0.45, 0.15 ),
+            rho = 0.4,
+            tnum = 500 ) 
 
 
+grid$ICC.3 = as.factor( grid$ICC.3 )
+ggplot( grid, aes( ICC.2, min1, group=ICC.3, col=ICC.3 ) ) +
+  facet_wrap( ~ adjustment ) +
+  geom_line() + geom_point()
+```
 
+We see that higher ICC.2 radically reduces power to detect anything (this makes sense: we are putting the variation right at the level of treatment assignment).
+
+The ICC.3 parameter appears to do nothing.
+
+Note we radically reduce the number of permutations (from 10000 to 500 via `tnum`) to speed up computation.
+
+
+ 
 # MDES of the original design
 
-To explore the MDES of a single outcome given this design we can use the `pum` package as so:
+To identify the MDES of a given design we use the `pump_mdes` method. Along with the correction procedure and the design parameters discussed above, you also need to specify the target power, the type of power, and the tolerance of the search algorith. 
 
+Here, for example, we find the MDES for obtaining 80% individual power using the Holm procedure if we had 4 schools per block instead of 3:
 
-```{r MDESoriginal}
-library(pum)
-
-
+```{r MDEScalc}
+pump_mdes( design="blocked_c2_3f",
+           MTP = "Holm",
+           target.power = 0.80,
+           power.definition = "D1indiv",
+           tol = 0.01,
+           M = 3,
+           J = 4, # number of schools/block
+           K = 21, # number RA blocks
+           nbar = 258,
+           Tbar = 0.50, # prop Tx
+           alpha = 0.05, # significance level
+           numCovar.1 = 5, numCovar.2 = 0,
+           R2.1 = 0.1, R2.2 = 0.7,
+           ICC.2 = 0.05, ICC.3 = 0.4,
+           rho = 0.4 ) # how correlated outcomes are
 ```
+This method does a search, looking for the impact (assumed shared across all outcomes) to achieve the desired level of power. The top prints out the estimated MDES and the corresponding estimated power.  The tolerance controls how close the final power should be to the target power.
+
+
+
+# Determining necessary sample size
+
+For our design we might want to determine the needed number of students/school, number of schools, or number of blocks needed. The `pump_sample` method will search over one of these at a time.
+
+Here we see how many schools are needed to achieve a MDES of 0.05 for min1 power (so how many schools are needed to have 80% chance of finding at least 1 outcome significant, if all outcomes had a true effect size of 0.05).
+
+**Note: This does not work.**
+
+```{r samplesizecalc, eval=FALSE}
+pump_sample( design="blocked_i1_2c",
+            MTP = "Holm",
+            typesample = "nbar",
+            MDES = 0.05,
+           target.power = 0.80,
+           power.definition = "D1indiv",
+           tol = 0.01,
+           J0 = 3,
+           J = 4,
+            M = 3,
+            K = 21, # number RA blocks
+            nbar = 258,
+            Tbar = 0.50, # prop Tx
+            alpha = 0.05, # significance level
+            numCovar.1 = 5, numCovar.2 = 0,
+            R2.1 = 0.1, R2.2 = 0.7,
+            ICC.2 = 0.05, ICC.3 = 0.4,
+            rho = 0.4 ) # how correlated outcomes are
+```
+
 
 

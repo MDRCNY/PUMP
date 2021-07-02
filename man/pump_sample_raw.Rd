@@ -36,71 +36,73 @@ pump_sample_raw(
 )
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-(we expect inputs in  such order)}
+\item{MTP}{a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
+Holm, WY-SS, WY-SD}
 
-\item{typesample}{the type of the number of sample we would like to estimate: either block J or nbar}
+\item{typesample}{type of sample size to calculate: J, K, or nbar}
 
-\item{M}{the number of hypothesis tests (outcomes)}
+\item{MDES}{scalar, or vector of length M; the MDES values for each outcome}
 
-\item{J}{the number of schools}
+\item{M}{scalar; the number of hypothesis tests (outcomes)}
 
-\item{K}{the number of districts}
+\item{J}{scalar; the number of schools}
 
-\item{J0}{starting values for J}
+\item{K}{scalar; the number of districts}
 
-\item{K0}{starting values for K}
+\item{J0}{scalar; starting point for J}
 
-\item{nbar0}{starting values for nbar0 to look for optimal J and nbar}
+\item{K0}{scalar; starting point for K}
 
-\item{target.power}{required statistical power for the experiment}
+\item{nbar0}{scalar; starting point for nbar}
 
-\item{nbar}{the harmonic mean of the number of units per block}
+\item{target.power}{target power to arrive at}
 
-\item{Tbar}{the proportion of samples that are assigned to the treatment}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{alpha}{the family wise error rate (FWER)}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the treatment}
 
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
+\item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
+\item{two.tailed}{whether to calculate two-tailed or one-tailed power}
 
-\item{numCovar.3}{number of Level 3 baseline covariates (set to 0 for this design)}
+\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not including block
+dummies)}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
+\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
+\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
 
-\item{ICC.2}{school intraclass correlation}
+\item{R2.1}{scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome}
 
-\item{ICC.3}{district intraclass correlation}
+\item{R2.2}{scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome}
 
-\item{rho}{correlation between outcomes}
+\item{R2.3}{scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome}
 
-\item{omega.2}{ratio of school effect size variability to random effects variability}
+\item{ICC.2}{scalar; school intraclass correlation}
 
-\item{omega.3}{ratio of district effect size variability to random effects variability}
+\item{ICC.3}{scalar; district intraclass correlation}
 
-\item{tol}{the tolerance for MDES estimation based on targeted power value}
+\item{rho}{scalar; correlation between outcomes}
 
-\item{power.definition}{definition of statistical power from individual, d-minimal to complete power}
+\item{omega.2}{scalar; ratio of school effect size variability to random effects
+variability}
 
-\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000}
+\item{omega.3}{scalar; ratio of district effect size variability to random effects
+variability}
 
-\item{B}{the number of samples for Westfall-Young. The default is set at 1,000.}
+\item{tol}{tolerance}
 
-\item{cl}{clusters object to use for parallel processing.}
-
-\item{updateProgress}{the callback function to update the progress bar (User does not have to input anything)}
+\item{max.steps}{how many steps allowed before terminating}
 }
 \value{
 raw sample returns
 }
 \description{
-This is a Helper function for getting Sample Size when no adjustments has been made to the test statistics.
-The function starts with PowerUp package function mrss.bira2cl but that function seems to have a bug -
-Only works if we pass in numeric values and not if we pass in objects that hold those values.
-Additionally, mrss.bira2cl only computes J, not nbar.
+This is a Helper function for getting Sample Size when no adjustments has
+been made to the test statistics. The function starts with PowerUp package
+function mrss.bira2cl but that function seems to have a bug - Only works if
+we pass in numeric values and not if we pass in objects that hold those
+values. Additionally, mrss.bira2cl only computes J, not nbar.
 }

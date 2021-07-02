@@ -7,11 +7,13 @@
 get.adjp.minp(ind.B, rawt.order)
 }
 \arguments{
-\item{rawt.order}{}
+\item{ind.B}{FILL IN (Matrix)}
+
+\item{rawt.order}{FILL IN}
 }
 \value{
 returns adjp matrix
 }
 \description{
-enforces monotonicity
+enforces monotonicity in p-values.
 }

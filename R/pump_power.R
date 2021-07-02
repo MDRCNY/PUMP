@@ -5,16 +5,24 @@
 #'
 #' @export
 supported_designs <- function() {
-  cat( "Supported designs:\n" )
-  cat( "blocked_i1_2c - Individual rand at level 1, constant impact model\n")
-  cat( "blocked_i1_2f - Individual rand at level 1, fixed effects, constant impact model\n")
-  cat( "blocked_i1_2r - Individual rand at level 1, random effect for impact (RIRC)\n")
-  cat( "blocked_i1_3r - \n")
-  cat( "simple_c2_2r - \n")
-  cat( "simple_c3_3r - \n")
-  cat( "blocked_c2_3f - Randomization at level 2, fixed effects for level 3\n")
-  cat( "blocked_c2_3r - Randomization at level 2, random effects\n")
+  design = tibble::tribble( ~ Code, ~ Comment,
+                   "blocked_i1_2c", "Individual rand at level 1, constant impact model\n",
+                   "blocked_i1_2f", "Individual rand at level 1, fixed effects, constant impact model\n",
+                   "blocked_i1_2r", "Individual rand at level 1, random effect for impact (RIRC)",
+                   "blocked_i1_3r", "",
+                   "simple_c2_2r", "",
+                   "simple_c3_3r", "",
+                   "blocked_c2_3f", "Randomization at level 2, fixed effects for level 3\n",
+                   "blocked_c2_3r", "Randomization at level 2, random effects\n" )
 
+  adjust = tibble::tribble( ~ Code, ~ Comment,
+                            "Bonferroni", "The classic (and conservative) multiple testing correction",
+                            "Holm", "Bonferroni improved!",
+                            "BH", "Benjamini-Hochberg (False Discovery Rate)",
+                            "WY-SS", "Westfall-Young, Single Step",
+                            "WY-SD", "Westfall-Young, Step Down" )
+
+  dplyr::bind_rows( Design=design, Adjustment=adjust, .id="Group")
 }
 
 
@@ -121,18 +129,13 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   return(df)
 }
 
-#' Calculates J, the number of schools
+#' This function calculates needed J for all implemented designs
+#'
+#' @inheritParams pump_power
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MT multiplier
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome
-#' @param J scalar; the number of schools
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
 #'
 #' @return J, the number of schools
 
@@ -216,9 +219,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC
 #' @return params.list
 #' @export
 #'
-validate_inputs <- function(
-  design, MTP, params.list
-)
+validate_inputs <- function( design, MTP, params.list, mdes_call = FALSE )
 {
   if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
                      'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
@@ -237,29 +238,34 @@ validate_inputs <- function(
     stop('Invalid MTP.')
   }
 
-  if(!is.null(params.list$numZero) & length(params.list$MTP) != 1)
-  {
-    stop('If providing a number of zero outcomes, please provide a single MDES value.')
-  }
-
-  if(!is.null(params.list$numZero))
-  {
-    numNonzero <- params.list$M - params.list$numZero
-    params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
-    print(paste('Assumed MDES vector:', params.list$MDES))
-  }
-
-
-  if(length(params.list$MDES) < params.list$M)
-  {
-    if ( length(params.list$MDES) == 1 ) {
-      params.list$MDES <- rep( params.list$MDES, params.list$M )
-      warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
-    } else {
-      stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:', MDES, 'M =', M))
+  if ( mdes_call ) {
+    if ( !is.null( params.list$MDES ) ) {
+      stop( "No providing MDES to pump_mdes" )
     }
-  }
+  } else {
+    if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
+    {
+      stop('If providing a number of zero outcomes, please provide a single MDES value.')
+    }
+    if(!is.null(params.list$numZero))
+    {
+      numNonzero <- params.list$M - params.list$numZero
+      params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
+      print(paste('Assumed full MDES vector:', params.list$MDES))
+    }
 
+    if(length(params.list$MDES) < params.list$M)
+    {
+      if ( length(params.list$MDES) == 1 ) {
+        params.list$MDES <- rep( params.list$MDES, params.list$M )
+        warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
+      } else {
+        stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
+                   MDES, 'M =', M))
+      }
+    }
+
+  }
 
   if(params.list$K <= 0 | params.list$J <= 0 | params.list$nbar <= 0)
   {
@@ -312,15 +318,37 @@ validate_inputs <- function(
     }
   }
 
-  # three level models
-  # two level models
-  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  if(design == 'blocked_c2_3f')
   {
-    if(is.null(params.list$K) | is.null(params.list$numCovar.3) | !is.null(params.list$R2.3))
+    if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+        ( !is.null(params.list$R2.3) && params.list$R2.3 > 0 ) )
     {
-      stop('The following parameters are required for three-level designs: K, numCovar.3, R2.3')
+      warning('The following parameters are not valid for fixed effect designs, and will be ignored: numCovar.3, R2.3')
+      params.list$numCovar.3 <- NULL
+      params.list$R2.3 <- NULL
     }
   }
+
+
+  # three level models
+  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  {
+    if(is.null(params.list$K) )
+    {
+      stop('You must specify K (number of units at level 3) for three-level designs' )
+    }
+  }
+
+  # three level models, continued.
+  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3r'))
+  {
+    if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
+    {
+      stop('You must specify both numCovar.3 and R2.3 for three-level designs with random effects')
+    }
+  }
+
+
 
   # ICC
   if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
@@ -366,16 +394,15 @@ validate_inputs <- function(
       warning('Omega2 is assumed to be 0 for blocked_c2_3f model. Ignoring input omega.2 value')
       params.list$omega.2 <- 0
     }
-    if(params.list$R2.3 > 0)
-    {
-      warning('R2.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input R2.3 value')
-      params.list$R2.3 <- 0
-    }
-    if(params.list$ICC.3 > 0)
-    {
-      warning('ICC.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input ICC.3 value')
-      params.list$ICC.3 <- 0
-    }
+
+    # NOTE: I believe we could have a ICC > 0, even if we do not model it.  This
+    # would force other variation down. -lwm
+    #
+    # if(params.list$ICC.3 > 0)
+    # {
+    #   warning('ICC.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input ICC.3 value')
+    #   params.list$ICC.3 <- 0
+    # }
   }
 
   return(params.list)
@@ -424,34 +451,43 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
 #' Calculate power using PUMP method
 #'
-#' This functions calculates power for all definitions of power (individual, d-minimal, complete) for all the different MTPs
-#' (Bonferroni, Holms, Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+#' This functions calculates power for all definitions of power (individual,
+#' d-minimal, complete) for all the different MTPs (Bonferroni, Holms,
+#' Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
 #'
 #' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
+#' @param MTP Multiple adjustment procedure of interest. Supported options:
+#'   Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+#'   automatically re-run for each procedure on the list.
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome.
 #' @param numZero if MDES is scalar, number of outcomes assumed to be zero.
 #' @param M scalar; the number of hypothesis tests (outcomes)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param Tbar scalar; the proportion of samples that are assigned to the
+#'   treatment
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
+#'   including block dummies)
 #' @param numCovar.2 scalar; number of Level 2 (school) covariates
 #' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by
+#'   Level 1 covariates for each outcome. Defaults to 0.
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by
+#'   Level 2 covariates for each outcome. Defaults to 0.
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by
+#'   Level 3 covariates for each outcome. Defaults to 0.
 #' @param ICC.2 scalar; school intraclass correlation
 #' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
-#' @param rho scalar; correlation between outcomes
+#' @param omega.2 scalar; ratio of variance of school-average impacts to
+#'   variance of school-level random intercepts.  Default to 0 (no treatment
+#'   variation).
+#' @param omega.3 scalar; ratio of variance of district-average impacts to
+#'   variance of district-level random intercepts. Default to 0 (no treatment
+#'   variation).
+#' @param rho scalar; assumed correlation between the test statistics of the
+#'   tests.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
 #' @param cl cluster object to use for parallel processing
@@ -468,15 +504,42 @@ pump_power <- function(
   M, J, K = NULL, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-  R2.1, R2.2 = NULL, R2.3 = NULL,
-  ICC.2, ICC.3 = NULL,
-  omega.2, omega.3 = NULL,
+  R2.1 = 0, R2.2 = 0, R2.3 = 0,
+  ICC.2 = 0, ICC.3 = 0,
+  omega.2 = 0, omega.3 = 0,
   rho,
   tnum = 10000, B = 1000,
   cl = NULL,
   updateProgress = NULL
 )
 {
+  # Call self for each element on MTP list.
+  if ( length( MTP ) > 1 ) {
+    des = purrr::map( MTP,
+                     pum::pump_power, design=design, MDES=MDES, M=M, J=J, K = K, nbar=nbar,
+                     Tbar=Tbar,
+                     alpha=alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                     numCovar.3 = numCovar.3, R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                     ICC.2 = ICC.2, ICC.3 = ICC.3,
+                     rho=rho, omega.2=omega.2, omega.3 = omega.3,
+                     tnum = tnum, B = B, cl = cl, updateProgress = updateProgress )
+    des = do.call( rbind, des )
+    des = des[ -seq( 3, nrow(des), by=2 ), ]
+    return( des )
+  }
+
+
+  if(length(MDES) < M)
+  {
+    if ( length(MDES) == 1 ) {
+      MDES = rep( MDES, M )
+      message( "Assuming same MDES for all outcomes.  Specify full vector to remove this message." )
+    } else {
+      stop(paste('Please provide a vector of MDES values of length M. Current vector:',
+                 MDES, 'M =', M))
+    }
+  }
+
   # validate input parameters
   params.list <- list(
     MDES = MDES, numZero = numZero, M = M, J = J, K = K,
@@ -486,6 +549,7 @@ pump_power <- function(
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
     rho = rho
   )
+
   ##
   params.list <- validate_inputs(design, MTP, params.list)
   ##
@@ -498,6 +562,8 @@ pump_power <- function(
   ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho
+
+
 
 
   # compute test statistics for when null hypothesis is false
@@ -817,35 +883,41 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 
 #' MDES (minimum detectable effect size) function
 #'
-#' The minimum detectable effect size function calculates the most feasible minimum detectable effect size
-#' for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the tolerance
-#' set in the parameter in the power value.
+#' The minimum detectable effect size function calculates the most feasible
+#' minimum detectable effect size for a given MTP, power and power definition.
+#' The goal is to find the MDES value that satisfies the tolerance set in the
+#' parameter in the power value.
 #'
 #' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
+#' @param MTP a single multiple adjustment procedure of interest. Supported
+#'   options: Bonferroni, BH, Holm, WY-SS, WY-SD
 #' @param target.power Target power to arrive at
-#' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
+#' @param power.definition must be a valid power type outputted by power
+#'   function, i.e. D1indiv, min1, etc.
 #' @param tol tolerance for target power
 #' @param M scalar; the number of hypothesis tests (outcomes)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
+#' @param Tbar scalar; the proportion of samples that are assigned to the
+#'   treatment
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
+#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
+#'   including block dummies)
 #' @param numCovar.2 scalar; number of Level 2 (school) covariates
 #' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by
+#'   Level 1 covariates for each outcome
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by
+#'   Level 2 covariates for each outcome
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by
+#'   Level 3 covariates for each outcome
 #' @param ICC.2 scalar; school intraclass correlation
 #' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
+#' @param omega.2 scalar; ratio of school effect size variability to random
+#'   effects variability
+#' @param omega.3 scalar; ratio of district effect size variability to random
+#'   effects variability
 #' @param rho scalar; correlation between outcomes
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
@@ -864,18 +936,23 @@ find_best <- function(test.pts, start.low, start.high, target.power, alternate =
 pump_mdes <- function(
   design, MTP, M, J, K = 1,
   target.power, power.definition, tol,
-  nbar, Tbar, alpha, numCovar.1 = 0, numCovar.2 = 0,
-  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-  rho, omega.2, omega.3 = NULL,
+  nbar, Tbar, alpha,
+  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
+  R2.1 = 0, R2.2 = 0, R2.3 = 0,
+  ICC.2 = 0, ICC.3 = 0,
+  rho, omega.2 = 0, omega.3 = 0,
   tnum = 10000, B = 1000,
   max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
 )
 {
+  if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
+    stop( "target.power, power.definition, or tol (tolerance) not supplied" )
+  }
 
   # validate input parameters
   params.list <- list(
-    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
+    M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -883,7 +960,7 @@ pump_mdes <- function(
     rho = rho
   )
   ##
-  params.list <- validate_inputs(design, MTP, params.list)
+  params.list <- validate_inputs(design, MTP, params.list, mdes_call = TRUE )
   ##
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
@@ -897,18 +974,19 @@ pump_mdes <- function(
 
 
   # check if zero power, then return 0 MDES
-  if(round(target.power, 2) == 0)
+  if(round(target.power, 2) <= 0)
   {
-    message('Target power of 0 requested')
+    message('Target power of 0 (or negative) requested')
     test.pts <- NULL
     mdes.results <- data.frame(MTP, 0, 0)
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
+
   # check if max power, then return infinite MDES
-  if(round(target.power, 2) == 1)
+  if(round(target.power, 2) >= 1)
   {
-    message('Target power of 1 requested')
+    message('Target power of 1 (or larger) requested')
     test.pts <- NULL
     mdes.results <- data.frame(MTP, Inf, 1)
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
@@ -978,10 +1056,11 @@ pump_mdes <- function(
 
 #' Calculating Sample for Raw (Unadjusted)
 #'
-#' This is a Helper function for getting Sample Size when no adjustments has been made to the test statistics.
-#' The function starts with PowerUp package function mrss.bira2cl but that function seems to have a bug -
-#' Only works if we pass in numeric values and not if we pass in objects that hold those values.
-#' Additionally, mrss.bira2cl only computes J, not nbar.
+#' This is a Helper function for getting Sample Size when no adjustments has
+#' been made to the test statistics. The function starts with PowerUp package
+#' function mrss.bira2cl but that function seems to have a bug - Only works if
+#' we pass in numeric values and not if we pass in objects that hold those
+#' values. Additionally, mrss.bira2cl only computes J, not nbar.
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
@@ -1015,6 +1094,7 @@ pump_mdes <- function(
 #'   variability
 #' @param rho scalar; correlation between outcomes
 #' @param max.steps how many steps allowed before terminating
+#'
 #' @return raw sample returns
 #' @export
 
@@ -1030,6 +1110,7 @@ pump_sample_raw <- function(
   tol = 0.1, max.steps = 100
 )
 {
+  browser()
 
   i <- 0
   # convergence
@@ -1086,7 +1167,7 @@ pump_sample_raw <- function(
   }
 
   if(df < 0 | is.infinite(df)) {
-    message('Problem with starting values resulting in impossible df')
+    stop('Problem with starting values resulting in impossible df')
   }
 
   if (typesample == "J") {
@@ -1101,7 +1182,12 @@ pump_sample_raw <- function(
   }
 }
 
+
 #' Calculate sample size
+#'
+# Note: These currently only work if MDES is the same for all outcomes.
+#'
+#' @inheritParams pump_power
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
@@ -1111,29 +1197,7 @@ pump_sample_raw <- function(
 #' @param target.power target power to arrive at
 #' @param power.definition must be a valid power type output by power function, i.e. D1indiv, min1, etc.
 #' @param tol tolerance
-#' @param M scalar; the number of hypothesis tests (outcomes)
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param J0 scalar; starting point for J
-#' @param K0 scalar; starting point for K
-#' @param nbar0 scalar; starting point for nbar
-#' @param alpha scalar; the family wise error rate (FWER)
 #' @param two.tailed whether to calculate two-tailed or one-tailed power
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not including block
-#'   dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
 #' @param rho scalar; correlation between outcomes
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
@@ -1153,9 +1217,11 @@ pump_sample <- function(
   J0 = 10, K0 = 4, nbar0 = 10,
   target.power, power.definition, tol,
   alpha, two.tailed = TRUE,
-  numCovar.1 = 0, numCovar.2 = 0,
-  numCovar.3 = 0, R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-  rho, omega.2, omega.3 = NULL,
+  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
+  R2.1 = 0, R2.2 = 0, R2.3 = 0,
+  ICC.2 = 0, ICC.3 = 0,
+  rho,
+  omega.2 = 0, omega.3 = 0,
   tnum = 10000, B = 1000,
   max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL
@@ -1199,7 +1265,8 @@ pump_sample <- function(
   {
     target.ss <- nbar
   }
-  output.colnames <- c("MTP", "Sample type", "Sample size", paste(power.definition, "power"), "Target sample size")
+  output.colnames <- c("MTP", "Sample type", "Sample size",
+                       paste(power.definition, "power"), "Target sample size")
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) == 0)
@@ -1211,10 +1278,12 @@ pump_sample <- function(
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
-  message(paste(
-    "Estimating sample size of type", typesample, "for", MTP, "for target", power.definition,
-    "power of", round(target.power, 4))
-  )
+  # Checks on what we are estimating, sample size
+  message(paste("Estimating sample size of type", typesample, "for", MTP, "for target",
+                power.definition, "power of", round(target.power, 4)))
+
+  # indicator for which sample to compute. J is for blocks. nbar is for harmonic
+  # mean of samples within block
 
   if(typesample == "J"){
     J <- NULL
@@ -1229,14 +1298,15 @@ pump_sample <- function(
     K0 <- NULL
   }
 
+  # Progress Message for the Type of Sample we are estimating, the type of power
+  # and the targeted power value
   if (is.function(updateProgress)) {
     msg <- (paste("Estimating", whichSS, "for target", power.definition, "power of",round(power,4)))
     updateProgress(message = msg)
   }
 
-  # Compute raw and BF SS for INDIVIDUAL POWER.
-  # We are estimating bounds like we estimated MDES bounds.
-  # for now assuming only two tailed tests
+  # Compute J or nbar for raw and BF SS for INDIVIDUAL POWER. We are estimating
+  # bounds like we estimated MDES bounds. for now assuming only two tailed tests
   ss.raw <- pump_sample_raw(
     design = design, MTP, typesample,
     MDES, M, J, K,
@@ -1247,6 +1317,14 @@ pump_sample <- function(
     R2.1, R2.2, R2.3, ICC.2, ICC.3,
     rho, omega.2, omega.3
   )
+
+  # Done if this is what we are looking for
+  if (MTP == "rawp"){
+    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+    colnames(raw.ss) <- output.colnames
+    return(raw.ss)
+  }
+
   ss.BF <- pump_sample_raw(
     design = design, MTP, typesample,
     MDES, M, J, K,
@@ -1259,11 +1337,8 @@ pump_sample <- function(
     rho, omega.2, omega.3
   )
 
-  if (MTP == "rawp"){
-    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
-    colnames(raw.ss) <- output.colnames
-    return(raw.ss)
-  } else if (MTP == "Bonferroni") {
+  # Done if this is what we are looking for
+  if (MTP == "Bonferroni") {
     ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
     colnames(ss.BF) <- output.colnames
     return(ss.BF)
@@ -1299,11 +1374,70 @@ pump_sample <- function(
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
     final.tnum = final.tnum
   )
+
+  # Assemble results
   ss.results <- data.frame(
-    MTP, typesample, ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
-    test.pts$power[nrow(test.pts)], target.ss
+    MTP,
+    typesample,
+    ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
+    test.pts$power[nrow(test.pts)],
+    target.ss
   )
   colnames(ss.results) <- output.colnames
 
   return(list(ss.results = ss.results, test.pts = test.pts))
+}
+
+
+
+
+
+
+
+scat = function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
+
+#' Run pump_power on combination of factors
+#'
+#' This extenstion of `pump_power()` will take lists of parameter values and run
+#' `pump_power()` on all combinations of these values.
+#'
+#' It can only assume the same MDES value for all outcomes due to this.
+#'
+#' Each parameter in the parameter list can be a list, not scalar.
+#'
+#' @inheritParams pump_power
+#'
+#' @param MDES This is *not* a list of MDES for each outcome, but rather a list
+#'   of MDES to explore. Each value will be assumed held constant across all M
+#'   outcomes.
+#'
+#' @export
+pump_power_grid <- function( design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha,
+                             numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
+                             R2.1, R2.2 = NULL, R2.3 = NULL,
+                             ICC.2, ICC.3 = NULL,
+                             rho, omega.2 = NULL, omega.3 = NULL, ... ) {
+
+  args = list( M = M, J = J, K = K, nbar = nbar,
+               Tbar = Tbar, alpha = alpha,
+               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
+               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+  nulls = purrr::map_lgl( args, is.null )
+  args = args[ !nulls ]
+
+  grid = do.call( expand.grid, args )
+  scat( "Processing %d calls\n", nrow(grid) )
+  grid$res = purrr::pmap( grid, pump_power,
+                          design = design,
+                          MTP = MTP,
+                          MDES = MDES, ... )
+
+  grid$res = purrr::map( grid$res, as.data.frame )
+  grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
+  grid = tidyr::unnest( grid, res )
+
+  grid
 }

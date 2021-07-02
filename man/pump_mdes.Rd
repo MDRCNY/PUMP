@@ -19,14 +19,14 @@ pump_mdes(
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
-  R2.1,
-  R2.2 = NULL,
-  R2.3 = NULL,
-  ICC.2,
-  ICC.3 = NULL,
+  R2.1 = 0,
+  R2.2 = 0,
+  R2.3 = 0,
+  ICC.2 = 0,
+  ICC.3 = 0,
   rho,
-  omega.2,
-  omega.3 = NULL,
+  omega.2 = 0,
+  omega.3 = 0,
   tnum = 10000,
   B = 1000,
   max.steps = 20,
@@ -38,62 +38,80 @@ pump_mdes(
 )
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{MTP}{multiple adjustment procedures of interest such as Bonferroni, BH, Holms, WY_SS & WY_SD
-(we expect inputs in  such order)}
+\item{MTP}{a single multiple adjustment procedure of interest. Supported
+options: Bonferroni, BH, Holm, WY-SS, WY-SD}
 
-\item{M}{the number of hypothesis tests (outcomes)}
+\item{M}{scalar; the number of hypothesis tests (outcomes)}
 
-\item{J}{the number of schools}
+\item{J}{scalar; the number of schools}
 
-\item{K}{the number of districts}
+\item{K}{scalar; the number of districts}
 
-\item{target.power}{required statistical power for the experiment}
+\item{target.power}{Target power to arrive at}
 
-\item{power.definition}{definition of statistical power from individual, d-minimal to complete power}
+\item{power.definition}{must be a valid power type outputted by power
+function, i.e. D1indiv, min1, etc.}
 
-\item{tol}{the tolerance for MDES estimation based on targeted power value}
+\item{tol}{tolerance for target power}
 
-\item{nbar}{the harmonic mean of the number of units per block}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{Tbar}{the proportion of samples that are assigned to the treatment}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
 
-\item{alpha}{the family wise error rate (FWER)}
+\item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
+\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
+including block dummies)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates (set to 0 for this design)}
+\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
-\item{numCovar.3}{number of Level 3 baseline covariates (set to 0 for this design)}
+\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
 
-\item{R2.1}{a vector of length M corresponding to R^2 for M outcomes of Level 1 (R^2 = variation in the data explained by the model)}
+\item{R2.1}{scalar, or vector of length M; percent of variation explained by
+Level 1 covariates for each outcome}
 
-\item{R2.2}{a vector of length M corresponding to R^2 for M outcomes of Level 2 (R^2 = variation in the data explained by the model)}
+\item{R2.2}{scalar, or vector of length M; percent of variation explained by
+Level 2 covariates for each outcome}
 
-\item{ICC.2}{school intraclass correlation}
+\item{R2.3}{scalar, or vector of length M; percent of variation explained by
+Level 3 covariates for each outcome}
 
-\item{ICC.3}{district intraclass correlation}
+\item{ICC.2}{scalar; school intraclass correlation}
 
-\item{rho}{correlation between outcomes}
+\item{ICC.3}{scalar; district intraclass correlation}
 
-\item{omega.2}{ratio of school effect size variability to random effects variability}
+\item{rho}{scalar; correlation between outcomes}
 
-\item{omega.3}{ratio of district effect size variability to random effects variability}
+\item{omega.2}{scalar; ratio of school effect size variability to random
+effects variability}
 
-\item{tnum}{the number of test statistics (samples) for all procedures other than Westfall-Young & number of permutations for WY. The default is set at 10,000}
+\item{omega.3}{scalar; ratio of district effect size variability to random
+effects variability}
 
-\item{B}{the number of samples for Westfall-Young. The default is set at 1,000.}
+\item{tnum}{scalar; the number of test statistics (samples)}
 
-\item{cl}{clusters object to use for parallel processing.}
+\item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{updateProgress}{the callback function to update the progress bar (User does not have to input anything)}
+\item{max.steps}{how many steps allowed before terminating}
+
+\item{max.cum.tnum}{maximum cumulative number of samples}
+
+\item{final.tnum}{number of samples for final draw}
+
+\item{cl}{cluster object to use for parallel processing}
+
+\item{updateProgress}{the callback function to update the progress bar (User
+does not have to input anything)}
 }
 \value{
 mdes results
 }
 \description{
-The minimum detectable effect size function calculates the most feasible minimum detectable effect size
-for a given MTP, power and power definition. The goal is to find the MDES value that satisfies the tolerance
-set in the parameter in the power value.
+The minimum detectable effect size function calculates the most feasible
+minimum detectable effect size for a given MTP, power and power definition.
+The goal is to find the MDES value that satisfies the tolerance set in the
+parameter in the power value.
 }

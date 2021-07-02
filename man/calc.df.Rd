@@ -2,28 +2,29 @@
 % Please edit documentation in R/pump_power.R
 \name{calc.df}
 \alias{calc.df}
-\title{This function calculates the degree of freedom for all implemented designs}
+\title{Calculate the degrees of freedom for a particular design}
 \usage{
 calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
 }
 \arguments{
-\item{design}{RCT design (see list/naming convention)}
+\item{design}{a single RCT design (see list/naming convention)}
 
-\item{J}{the number of schools}
+\item{J}{scalar; the number of schools}
 
-\item{K}{the number of districts}
+\item{K}{scalar; the number of districts}
 
-\item{nbar}{units per block}
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{numCovar.1}{number of Level 1 baseline covariates (not including block dummies)}
+\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not including block
+dummies)}
 
-\item{numCovar.2}{number of Level 2 baseline covariates}
+\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
-\item{numCovar.3}{number of Level 3 baseline covariates}
+\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
 }
 \value{
 the degree of freedom
 }
 \description{
-This function calculates the degree of freedom for all implemented designs
+Calculate the degrees of freedom for a particular design
 }
