@@ -270,7 +270,7 @@ pump_sample_raw <- function(
 pump_sample <- function(
   design, MTP, typesample,
   MDES, M,
-  J = NULL, K = NULL, nbar = NULL,
+  nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition, tol,
   alpha, two.tailed = TRUE,
   Tbar,
@@ -332,16 +332,16 @@ pump_sample <- function(
   } else if ( typesample == "K" ) {
     K = NULL
   }
-browser()
+
   output.colnames <- c("MTP", "Sample type", "Sample size",
-                       paste(power.definition, "power"), "Target sample size")
+                       paste(power.definition, "power") )
 
   # check if zero power
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 0, 0, target.ss)
+    ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
@@ -374,7 +374,7 @@ browser()
 
   # We are done if raw power is what we are looking for
   if (MTP == "rawp"){
-    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power, target.ss)
+    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power)
     colnames(raw.ss) <- output.colnames
     return(raw.ss)
   }
@@ -393,7 +393,7 @@ browser()
 
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni") {
-    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power, target.ss)
+    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
     colnames(ss.BF) <- output.colnames
     return(ss.BF)
   }
@@ -407,7 +407,7 @@ browser()
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
-    ss <- data.frame(MTP, power.definition, NA, typesample, target.power, target.ss)
+    ss <- data.frame(MTP, power.definition, NA, typesample, target.power, typesample)
     colnames(ss) <- output.colnames
     return(ss)
   }
@@ -417,19 +417,18 @@ browser()
   if(ss.low == ss.high)
   {
     test.pts <- NULL
-    ss.results <- data.frame(MTP, typesample, 1, target.power, target.ss)
+    ss.results <- data.frame(MTP, typesample, 1, target.power)
     colnames(ss.results) <- output.colnames
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
+  # search in the grid from min to max.
   test.pts <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
-    J = ifelse(typesample == 'J', NULL, J),
-    K = ifelse(typesample == 'K', NULL, K),
-    nbar = ifelse(typesample == 'nbar', NULL, nbar),
+    J = J, K = K, nbar = nbar,
     M = M, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -444,8 +443,7 @@ browser()
     MTP,
     typesample,
     ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
-    test.pts$power[nrow(test.pts)],
-    target.ss
+    test.pts$power[nrow(test.pts)]
   )
   colnames(ss.results) <- output.colnames
 

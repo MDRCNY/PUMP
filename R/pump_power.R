@@ -162,7 +162,7 @@ validate_inputs <- function( design, MTP, params.list,
 
   if ( mdes_call ) {
     if ( !is.null( params.list$MDES ) ) {
-      stop( "No providing MDES to pump_mdes" )
+      stop( "You cannot provide MDES to pump_mdes()" )
     }
   } else {
     if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
@@ -195,12 +195,12 @@ validate_inputs <- function( design, MTP, params.list,
 
   if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
   {
-    stop('Please provide positive values of J, K, nbar')
+    stop('Please provide positive values of J, K, and/or nbar')
   }
 
   if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  | params.list$numCovar.3 < 0 )
   {
-    stop('Please provide non-negative values of num.Covar')
+    stop('Please provide non-negative values of your num.Covar parameters')
   }
 
   if(params.list$Tbar >= 1 | params.list$Tbar <= 0)
@@ -233,7 +233,10 @@ validate_inputs <- function( design, MTP, params.list,
   # two level models
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
   {
-    if(!is.null(params.list$K) | !is.null(params.list$numCovar.3) | !is.null(params.list$R2.3))
+    if( (!is.null(params.list$K) && params.list$K > 1 )|
+       ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+       ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
+       ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
     {
       warning('The following parameters are not valid for two-level designs, and will be ignored: K, numCovar.3, R2.3, ICC.3, omega.3')
       params.list$K <- NULL
@@ -247,7 +250,7 @@ validate_inputs <- function( design, MTP, params.list,
   if(design == 'blocked_c2_3f')
   {
     if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-        ( !is.null(params.list$R2.3) && params.list$R2.3 > 0 ) )
+        ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
     {
       warning('The following parameters are not valid for fixed effect designs, and will be ignored: numCovar.3, R2.3')
       params.list$numCovar.3 <- NULL
@@ -259,9 +262,9 @@ validate_inputs <- function( design, MTP, params.list,
   # three level models
   if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
   {
-    if(is.null(params.list$K) )
+    if(is.null(params.list$K) || params.list$K <= 1 )
     {
-      stop('You must specify K (number of units at level 3) for three-level designs' )
+      stop('You must specify K, with K > 1 (number of units at level 3) for three-level designs' )
     }
   }
 
@@ -387,14 +390,14 @@ validate_inputs <- function( design, MTP, params.list,
 #'
 pump_power <- function(
   design, MTP, MDES, numZero = NULL,
-  M, J, K = NULL, nbar, Tbar,
+  M, J, K = 1, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
   rho,
-  tnum = 10000, B = 1000,
+  tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL
 )
@@ -580,408 +583,6 @@ pump_power <- function(
 
   return(all.power.results)
 }
-
-
-
-#' Midpoint function
-#'
-#' Calculating the midpoint between the lower and upper bound by calculating
-#' half the distance between the two and adding the lower bound to it. The
-#' function is a helper function in determining the MDES that falls within
-#' acceptable power range.
-#'
-#' @param lower lower bound
-#' @param upper upper bound
-#' @importFrom stats dist
-#' @return returns midpoint value
-midpoint <- function(lower, upper) {
-  return(lower + dist(c(lower, upper))[[1]]/2)
-}
-
-
-#' Optimizes power to help in search for MDES or SS
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param search.type options: MDES, J, K (nbar not currently supported)
-#' @param MTP a single multiple adjustment procedure of interest. Supported options: Bonferroni, BH,
-#'   Holm, WY-SS, WY-SD
-#' @param target.power Target power to arrive at
-#' @param power.definition must be a valid power type outputted by power function, i.e. D1indiv, min1, etc.
-#' @inheritParams pump_power
-#'
-#' @param cl cluster object to use for parallel processing
-#' @param max.steps how many steps allowed before terminating
-#' @param max.cum.tnum maximum cumulative number of samples
-#' @param final.tnum number of samples for final draw
-#'
-#' @return power
-optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
-                           start.tnum, start.low, start.high,
-                           MDES = NULL, J = NULL, K = NULL, nbar = NULL,
-                           M = M, Tbar = Tbar, alpha,
-                           numCovar.1, numCovar.2, numCovar.3 = NULL,
-                           R2.1, R2.2, R2.3 = NULL, ICC.2, ICC.3 = NULL,
-                           omega.2, omega.3 = NULL, rho,
-                           B = NULL, cl = NULL,
-                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
-{
-
-  # fit initial quadratic curve
-  # generate a series of points to try
-  test.pts <- data.frame(
-    step = 0,
-    pt = seq(start.low, start.high, length.out = 5),
-    power = NA,
-    w = start.tnum,
-    MTP = MTP,
-    target.power = target.power
-  )
-
-  # generate power for all these points
-  for(i in 1:nrow(test.pts))
-  {
-    if(search.type == 'mdes'){ MDES <- rep(test.pts$pt[i], M) }
-    pt.power.results <- pump_power(
-      design, MTP = MTP,
-      MDES = MDES,
-      J = ifelse(search.type == 'J', test.pts$pt[i], J),
-      K = ifelse(search.type == 'K', test.pts$pt[i], K),
-      nbar = ifelse(search.type == 'nbar', test.pts$pt[i], nbar),
-      tnum = start.tnum,
-      # fixed params
-      M = M, Tbar = Tbar, alpha = alpha,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-      B = B, cl = cl
-    )
-    if(!(power.definition %in% colnames(pt.power.results)))
-    {
-      stop(paste0(
-        'Please provide a valid power definition. Provided definition: ', power.definition,
-        '. Available options: ', paste(colnames(pt.power.results), collapse = ',')))
-    }
-    test.pts$power[i] <- pt.power.results[MTP, power.definition]
-  }
-
-  # Did we get NAs?  If so, currently crash (but should impute 0 to keep search
-  # going?)
-  stopifnot( all( !is.na( test.pts$power ) ) )
-
-  current.try <- find_best(test.pts, start.low, start.high, target.power,
-                           alternate = midpoint(start.low, start.high))
-  current.power <- 0
-  current.tnum <- start.tnum
-  cum.tnum <- 0
-  step <- 0
-
-  # fit quadratic based on initial points
-  while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
-  {
-    step <- step + 1
-    current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
-    cum.tnum <- cum.tnum + current.tnum
-
-    if(search.type == 'mdes') {
-      MDES <- rep(current.try, M)
-    }
-
-    current.power.results <- pump_power(
-      design, MTP = MTP,
-      MDES = MDES,
-      J = ifelse(search.type == 'J', current.try, J),
-      K = ifelse(search.type == 'K', current.try, K),
-      nbar = ifelse(search.type == 'nbar', current.try, nbar),
-      tnum = current.tnum,
-      # fixed params
-      M = M, Tbar = Tbar, alpha = alpha,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      rho = rho, omega.2 = omega.2, omega.3 = omega.3, B = B, cl = cl
-    )
-    current.power <- current.power.results[MTP, power.definition]
-
-    if(abs(current.power - target.power) < tol)
-    {
-      check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
-
-      if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
-      check.power.results <- pump_power(
-        design, MTP = MTP,
-        MDES = MDES,
-        J = ifelse(search.type == 'J', current.try, J),
-        K = ifelse(search.type == 'K', current.try, K),
-        nbar = ifelse(search.type == 'nbar', current.try, nbar),
-        tnum = check.power.tnum,
-        # fixed params
-        M = M,  Tbar = Tbar, alpha = alpha,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-        R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-        rho = rho, omega.2 = omega.2, omega.3 = omega.3, B = B, cl = cl
-      )
-      check.power <- check.power.results[MTP, power.definition]
-
-      # cum.tnum <- cum.tnum + check.power.tnum
-      # TODO: replace with weighted average?
-      current.power <- check.power
-      # If still good, go to our final check to see if we are winners!
-      # TODO: && (test_pow_R < MAX_ITER)
-      if(abs(current.power - target.power) < tol)
-      {
-        if(search.type == 'mdes'){ MDES <- rep(current.try, M) }
-        final.power.results <- pump_power(
-          design, MTP = MTP,
-          MDES = MDES,
-          J = ifelse(search.type == 'J', current.try, J),
-          K = ifelse(search.type == 'K', current.try, K),
-          nbar = ifelse(search.type == 'nbar', current.try, nbar),
-          tnum = final.tnum,
-          # fixed params
-          M = M, Tbar = Tbar, alpha = alpha,
-          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-          R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-          rho = rho, omega.2 = omega.2, omega.3 = omega.3, B = B, cl = cl
-        )
-      }
-    } # end if within tolerance
-
-    iter.results <- data.frame(
-      step = step, pt = current.try, power = current.power, w = current.tnum,
-      MTP = MTP, target.power = target.power
-    )
-    test.pts <- bind_rows(test.pts, iter.results)
-
-    if(current.power < target.power) {
-      current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               alternate = current.try + 0.10 * (start.high - current.try))
-    } else {
-      current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               alternate = current.try - 0.10 * (current.try - start.low) )
-    }
-  }
-
-  if( (cum.tnum == max.cum.tnum | step == max.steps) & abs(current.power - target.power) > tol) {
-    message("Reached maximum iterations without converging on MDES estimate within tolerance.")
-    test.pts <- rbind(test.pts, c(step, NA, NA, NA, MTP, target.power))
-  }
-
-  return(test.pts)
-}
-
-#' Extract roots from quadratic curve based on given evaluated points
-#'
-#' @param test.pts power evaluated at different points
-#' @param start.low lower bound
-#' @param start.high upper bound
-#' @param target.power goal power
-#' @param alternate alternate point to return if quadratic fit fails
-#'
-#' @return root of quadratic curve
-
-find_best <- function(test.pts, start.low, start.high, target.power, alternate = NA)
-{
-  # fit quadratic curve
-  quad.mod <- lm( power ~ 1 + pt + I(pt^2), data = test.pts)
-  # extract point where it crosses target power
-  cc <- rev( coef( quad.mod ) )
-  # Using x = [ b pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
-  # first check if root exists
-  rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-
-  if ( rt.check > 0 ) {
-    # point to try
-    try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
-    hits <- (start.low <= try.pt) & (try.pt <= start.high)
-    if ( sum( hits ) == 1 ) {
-      try.pt <- try.pt[hits]
-    } else {
-      # error
-      cat( "Root concerns\n" )
-      try.pt <- alternate
-    }
-  } else {
-    cat( "No roots\n" )
-    # error
-    try.pt <- alternate
-  }
-  return(try.pt)
-}
-
-#' MDES (minimum detectable effect size) function
-#'
-#' The minimum detectable effect size function calculates the most feasible
-#' minimum detectable effect size for a given MTP, power and power definition.
-#' The goal is to find the MDES value that satisfies the tolerance set in the
-#' parameter in the power value.
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported
-#'   options: Bonferroni, BH, Holm, WY-SS, WY-SD
-#' @param target.power Target power to arrive at
-#' @param power.definition must be a valid power type outputted by power
-#'   function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance for target power
-#' @param M scalar; the number of hypothesis tests (outcomes)
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the
-#'   treatment
-#' @param alpha scalar; the family wise error rate (FWER)
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
-#'   including block dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by
-#'   Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by
-#'   Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by
-#'   Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random
-#'   effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random
-#'   effects variability
-#' @param rho scalar; correlation between outcomes
-#' @param tnum scalar; the number of test statistics (samples)
-#' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param max.steps how many steps allowed before terminating
-#' @param max.cum.tnum maximum cumulative number of samples
-#' @param final.tnum number of samples for final draw
-#' @param cl cluster object to use for parallel processing
-#' @param updateProgress the callback function to update the progress bar (User
-#'   does not have to input anything)
-#'
-#' @importFrom stats qt
-#' @return mdes results
-#' @export
-#'
-
-pump_mdes <- function(
-  design, MTP, M, J, K = 1,
-  target.power, power.definition, tol,
-  nbar, Tbar, alpha,
-  numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-  R2.1 = 0, R2.2 = 0, R2.3 = 0,
-  ICC.2 = 0, ICC.3 = 0,
-  rho, omega.2 = 0, omega.3 = 0,
-  tnum = 10000, B = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
-  cl = NULL, updateProgress = NULL
-)
-{
-  if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
-    stop( "target.power, power.definition, or tol (tolerance) not supplied" )
-  }
-
-  # validate input parameters
-  params.list <- list(
-    M = M, J = J, K = K,
-    nbar = nbar, Tbar = Tbar, alpha = alpha,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho
-  )
-  ##
-  params.list <- validate_inputs(design, MTP, params.list, mdes_call = TRUE )
-  ##
-  MDES <- params.list$MDES
-  M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
-  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
-  numCovar.3 <- params.list$numCovar.3
-  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
-  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
-  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-  rho <- params.list$rho
-
-
-  # check if zero power, then return 0 MDES
-  if(round(target.power, 2) <= 0)
-  {
-    message('Target power of 0 (or negative) requested')
-    test.pts <- NULL
-    mdes.results <- data.frame(MTP, 0, 0)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return(list(mdes.results = mdes.results, test.pts = test.pts))
-  }
-
-  # check if max power, then return infinite MDES
-  if(round(target.power, 2) >= 1)
-  {
-    message('Target power of 1 (or larger) requested')
-    test.pts <- NULL
-    mdes.results <- data.frame(MTP, Inf, 1)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return(list(mdes.results = mdes.results, test.pts = test.pts))
-  }
-
-  sigma <- matrix(rho, M, M)
-  diag(sigma) <- 1
-
-  message(paste("Estimating MDES for", MTP, "for target", power.definition, "power of", round(target.power, 4)))
-
-  if (MTP == "WY-SD" && B < 1000){
-    warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
-  }
-
-  # Compute Q.m and df
-  Q.m <- calc.Q.m(
-    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
-  )
-  t.df <- calc.df(
-    design = design, J = J, K = K, nbar = nbar,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
-  )
-
-  # For raw and BF, compute critical values
-  crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-  crit.alphaxM <- qt(p = (1-alpha/M/2), df = t.df)
-
-  # Compute raw and BF MDES for individual power
-  crit.beta <- ifelse(target.power > 0.5, qt(target.power, df = t.df), qt(1 - target.power, df = t.df))
-  mdes.raw  <- ifelse(target.power > 0.5, Q.m * (crit.alpha + crit.beta), Q.m * (crit.alpha - crit.beta))
-  mdes.bf   <- ifelse(target.power > 0.5, Q.m * (crit.alphaxM + crit.beta), Q.m * (crit.alphaxM - crit.beta))
-
-  ### raw or bonferroni ###
-  if (MTP == "rawp"){
-    mdes.results <- data.frame(MTP, mdes.raw, target.power)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return (list(mdes.results = mdes.results, tries = NULL))
-  } else if (MTP == "Bonferroni"){
-    mdes.results <- data.frame(MTP, mdes.bf, target.power)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    return(list(mdes.results = mdes.results, tries = NULL))
-  }
-
-  # MDES will be between MDES.raw and MDES.BF
-  mdes.low <- mdes.raw
-  mdes.high <- mdes.bf
-
-  test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
-                             start.tnum, start.low = mdes.low, start.high = mdes.high,
-                             MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, Tbar = Tbar, alpha = alpha,
-                             numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                             R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                             rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                             B = B, cl = cl,
-                             max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-                             final.tnum = final.tnum)
-  mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
-  colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-
-  return(list(mdes.results = mdes.results, test.pts = test.pts))
-
-} # MDES
-
-
-
 
 
 scat = function( str, ... ) {
