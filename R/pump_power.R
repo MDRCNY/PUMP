@@ -47,7 +47,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
-    Q.m <- sqrt( (1 - R2.1) /(Tbar * (1-Tbar) * J * nbar) )
+    Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_2r')
   {
     Q.m <- sqrt( (ICC.2 * omega.2)/J +
@@ -69,7 +69,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
   } else if (design == 'blocked_c2_3f')
   {
     Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-                 ( ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
+                 ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
   } else if (design == 'blocked_c2_3r')
   {
     Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +
@@ -440,7 +440,8 @@ pump_power <- function(
   rho,
   tnum = 10000, B = 3000,
   cl = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  validate.inputs = TRUE
 )
 {
   # Call self for each element on MTP list.
@@ -458,43 +459,30 @@ pump_power <- function(
     return( des )
   }
 
-
-  if(length(MDES) < M)
+  if(validate.inputs)
   {
-    if ( length(MDES) == 1 ) {
-      MDES = rep( MDES, M )
-      message( "Assuming same MDES for all outcomes.  Specify full vector to remove this message." )
-    } else {
-      stop(paste('Please provide a vector of MDES values of length M. Current vector:',
-                 MDES, 'M =', M))
-    }
+    # validate input parameters
+    params.list <- list(
+      MDES = MDES, numZero = numZero, M = M, J = J, K = K,
+      nbar = nbar, Tbar = Tbar, alpha = alpha,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+      ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
+      rho = rho
+    )
+
+    params.list <- validate_inputs(design, MTP, params.list)
+
+    MDES <- params.list$MDES
+    M <- params.list$M; J <- params.list$J; K <- params.list$K
+    nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+    numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
+    numCovar.3 <- params.list$numCovar.3
+    R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+    ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
+    omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
+    rho <- params.list$rho
   }
-
-  # validate input parameters
-  params.list <- list(
-    MDES = MDES, numZero = numZero, M = M, J = J, K = K,
-    nbar = nbar, Tbar = Tbar, alpha = alpha,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-    ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho
-  )
-
-  ##
-  params.list <- validate_inputs(design, MTP, params.list)
-  ##
-  MDES <- params.list$MDES
-  M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
-  numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
-  numCovar.3 <- params.list$numCovar.3
-  R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
-  ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
-  omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-  rho <- params.list$rho
-
-
-
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc.Q.m(
