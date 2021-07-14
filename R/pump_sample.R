@@ -10,6 +10,7 @@
 #' @inheritParams calc.J
 #'
 #' @return nbar, the number of individuals needed, or NA if not possible given design
+#' @export
 
 calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
@@ -54,6 +55,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome
 #'
 #' @return J, the number of schools needed
+#' @export
 
 calc.J <- function(design, MT = 2.8, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
 
@@ -95,6 +97,7 @@ calc.J <- function(design, MT = 2.8, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.
 #'   variability
 #'
 #' @return K, the number of districts
+#' @export
 calc.K <- function(design, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
