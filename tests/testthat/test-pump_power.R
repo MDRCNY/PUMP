@@ -1,26 +1,26 @@
-
-
+library( pum )
+library( testthat )
 
 test_that("skipping level three inputs for level 2 works", {
-  pp <- pump_power( design="blocked_i1_2c",
-                    MTP = "Bonferroni",
-                    MDES = rep( 0.10, 3 ),
-                    M = 3,
-                    J = 3, # number of schools/block
-                    K = 21, # number RA blocks
-                    nbar = 258,
-                    Tbar = 0.50, # prop Tx
-                    alpha = 0.05, # significance level
-                    numCovar.1 = 5, numCovar.2 = 3,
-                    R2.1 = 0.1, R2.2 = 0.7,
-                    ICC.2 = 0.05,
-                    rho = 0.4, tnum = 200
-  ) # how correlated outcomes are
+
+  expect_warning(pp <- pump_power( design="blocked_i1_2c",
+                                     MTP = "Bonferroni",
+                                     MDES = rep( 0.10, 3 ),
+                                     M = 3,
+                                     J = 3, # number of schools/block
+                                     K = 21, # number RA blocks
+                                     nbar = 258,
+                                     Tbar = 0.50, # prop Tx
+                                     alpha = 0.05, # significance level
+                                     numCovar.1 = 5, numCovar.2 = 3,
+                                     R2.1 = 0.1, R2.2 = 0.7,
+                                     ICC.2 = 0.05,
+                                     rho = 0.4, tnum = 200
+  ))
 
   expect_equal( dim( pp ), c(2,7) )
 
   expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
-
 })
 
 
