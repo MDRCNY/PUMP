@@ -1,6 +1,6 @@
 
-library( pum )
-library( testthat )
+# library( pum )
+# library( testthat )
 
 
 test_that("pump_mdes runs for Bonferroni", {
