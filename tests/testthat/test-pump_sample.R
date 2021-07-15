@@ -92,7 +92,7 @@ test_that("pump_sample_raw works", {
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcJ2
-  expect_true( abs( calcJ - calcJ2 ) < 2 )
+  expect_true( abs( calcJ - calcJ2 ) < 1 )
 
   calcn2 <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "nbar",
