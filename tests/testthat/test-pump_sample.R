@@ -1,6 +1,6 @@
 
-library( pum )
-library( testthat )
+# library( pum )
+# library( testthat )
 
 
 test_that("calc.nbar works", {
@@ -82,7 +82,7 @@ test_that("pump_sample_raw works", {
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcn
-  expect_true( abs( calcn - 245 ) < 10 )
+  expect_true( abs( calcn - 258 ) < 2 )
 
   calcJ2 <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "J",
@@ -92,7 +92,7 @@ test_that("pump_sample_raw works", {
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcJ2
-  # expect_true( abs( calcn - 258 ) < 10 )
+  expect_true( abs( calcJ - calcJ2 ) < 1 )
 
   calcn2 <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "nbar",
@@ -102,9 +102,7 @@ test_that("pump_sample_raw works", {
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcn2
-  #expect_true( abs( calcn - calcn2 ) < 10 )
-
-  # THERE IS A PROBLEM HERE!  Shouldnt these two things align???
+  expect_true( abs( calcn - calcn2 ) < 2 )
 })
 
 
@@ -147,7 +145,7 @@ test_that("pump_sample 2 level/2 level", {
                    J = pwr$ss.results$`Sample size`,
                    nbar = 200,
                    M = 3,
-                   MDES = 0.05,
+                   MDES = rep(0.05, 3),
                    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )

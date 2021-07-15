@@ -91,7 +91,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-      B = B, cl = cl
+      B = B, cl = cl,
+      validate.inputs = FALSE
     )
 
     pt.power.results
