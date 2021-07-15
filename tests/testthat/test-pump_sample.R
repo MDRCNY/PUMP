@@ -1,6 +1,6 @@
 
-library( pum )
-library( testthat )
+# library( pum )
+# library( testthat )
 
 
 test_that("calc.nbar works", {
