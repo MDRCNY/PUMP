@@ -238,6 +238,29 @@ pump_sample_raw <- function(
 }
 
 
+parse_power_definition = function( power.definition, M ) {
+  powertype = list( min = FALSE,
+                    complete = FALSE,
+                    indiv = FALSE )
+
+  if ( stringr::str_detect( power.definition, "min" ) ) {
+    powertype$min = TRUE
+    powertype$min_k = as.numeric( gsub( "min", "", power.definition ) )
+    stopifnot( !is.numeric( powertype$min_k ) )
+  } else if ( stringr::str_detect( power.definition, "complete" ) ) {
+    powertype$min = TRUE
+    powertype$complete = TRUE
+    powertype$min_k = M
+  } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
+    powertype$indiv = TRUE
+    powertime$indiv_k = as.numeric( gsub( "indiv", "", power.definition ) )
+    stopifnot( !is.numeric( powertype$indiv_k ) )
+  }
+
+  return( powertype )
+}
+
+
 #' Calculate sample size
 #'
 #' Note: These currently only work if MDES is the same for all outcomes.
@@ -284,7 +307,7 @@ pump_sample <- function(
   cl = NULL, updateProgress = NULL
 )
 {
-  # Give prelim values for the validation of parameters.
+  # Give prelim values for the validation of parameters process.
   if ( typesample=="nbar" ) {
     stopifnot( is.null( nbar ) )
     nbar = 1000
@@ -324,7 +347,7 @@ pump_sample <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho
 
-  # Give prelim values for the validation of parameters.
+  # Delete parameter we are actually going to search over.
   if ( typesample=="nbar" ) {
     nbar = NULL
   } else if ( typesample == "J" ) {
@@ -359,8 +382,9 @@ pump_sample <- function(
     updateProgress(message = msg)
   }
 
+
   # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
-  # estimating bounds like we estimated MDES bounds.
+  # estimating (potential) bounds like we estimated MDES bounds.
   #
   # For now assuming only two tailed tests
   ss.raw <- pump_sample_raw(
@@ -398,12 +422,41 @@ pump_sample <- function(
     return(ss.BF)
   }
 
-
-
   # Like the MDES calculation, the sample size would be between raw and Bonferroni.
   # There is no adjustment and there is very conservative adjustment
   ss.low <- ss.raw
   ss.high <- ss.BF
+
+  pdef = parse_power_definition( power.definition, M )
+
+  if ( pdef$min ) {
+    # adjust bounds to capture needed range (assuming independence, so approximate)
+    need_pow = 1 - (1 - target.power)^(1/M)
+    ss.low <- pump_sample_raw(
+      design = design, MTP=MTP, typesample=typesample,
+      MDES=MDES, J=J, K=K,
+      target.power=need_pow,
+      nbar=nbar, Tbar=Tbar,
+      alpha=alpha / M, # change alpha for BF
+      two.tailed=two.tailed,
+      numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
+      R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
+      omega.2=omega.2, omega.3=omega.3 )
+
+    need_pow = (target.power^(1/M))
+    ss.high <- pump_sample_raw(
+      design = design, MTP=MTP, typesample=typesample,
+      MDES=MDES, J=J, K=K,
+      target.power=need_pow,
+      nbar=nbar, Tbar=Tbar,
+      alpha=alpha / M, # change alpha for BF
+      two.tailed=two.tailed,
+      numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
+      R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
+      omega.2=omega.2, omega.3=omega.3 )
+  }
+
+
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
@@ -411,6 +464,11 @@ pump_sample <- function(
     colnames(ss) <- output.colnames
     return(ss)
   }
+
+
+  ss.low = round( ss.low )
+  ss.high = round( ss.high )
+
 
 
   # sometimes we already know the answer!
@@ -442,7 +500,9 @@ pump_sample <- function(
   ss.results <- data.frame(
     MTP,
     typesample,
-    ifelse(is.na(test.pts$pt[nrow(test.pts)]), NA, ceiling(test.pts$pt[nrow(test.pts)])),
+    ifelse(is.na(test.pts$pt[nrow(test.pts)]),
+           NA,   # failed to find solution
+           ceiling(test.pts$pt[nrow(test.pts)])),  # round up to get nice sufficient sample size.
     test.pts$power[nrow(test.pts)]
   )
   colnames(ss.results) <- output.colnames
