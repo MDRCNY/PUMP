@@ -56,7 +56,7 @@ test_that("pump_sample_raw works", {
   calcnbar <- pump_sample_raw( design="simple_c2_2r",
                                typesample = "nbar",
                                J = 10,
-                               MDES = 0.05, target.power = 0.80, tol = 0.01,
+                               MDES = 0.05, target.power = 0.80,
                                Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -67,7 +67,7 @@ test_that("pump_sample_raw works", {
   calcJ <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "J",
                             nbar = 258,
-                            MDES = 0.05, target.power = 0.80, tol = 0.01,
+                            MDES = 0.05, target.power = 0.80,
                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -77,7 +77,7 @@ test_that("pump_sample_raw works", {
   calcn <- pump_sample_raw( design="blocked_i1_2c",
                                typesample = "nbar",
                                J = calcJ,
-                               MDES = 0.05, target.power = 0.80, tol = 0.01,
+                               MDES = 0.05, target.power = 0.80,
                                Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -87,7 +87,7 @@ test_that("pump_sample_raw works", {
   calcJ2 <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "J",
                             nbar = calcn,
-                            MDES = 0.05, target.power = 0.80, tol = 0.01,
+                            MDES = 0.05, target.power = 0.80,
                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
@@ -97,7 +97,7 @@ test_that("pump_sample_raw works", {
   calcn2 <- pump_sample_raw( design="blocked_i1_2c",
                             typesample = "nbar",
                             J = calcJ2,
-                            MDES = 0.05, target.power = 0.80, tol = 0.01,
+                            MDES = 0.05, target.power = 0.80,
                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
@@ -152,9 +152,158 @@ test_that("pump_sample 2 level/2 level", {
   p2
 
   expect_true( abs( p2[ 2, "indiv.mean" ] - 0.80) <= 0.01 )
+} )
 
+
+test_that("sample search when one end is missing", {
+
+  pow_ref <- pump_power( design="simple_c2_2r",
+                           MTP = "Holm",
+                           M = 4,
+                           J = 10,
+                          nbar = 10000,
+                           MDES = rep( 0.40, 4 ),
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                           rho = 0.2)
+
+  pow_ref
+
+  expect_warning( calcnbar <- pump_sample( design="simple_c2_2r",
+                           typesample = "nbar",
+                           power.definition = "min1",
+                           MTP = "Holm",
+                           M = 4,
+                               J = 10,
+                               MDES = 0.40, target.power = 0.80, tol = 0.01,
+                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                               R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                           rho = 0.2) )
+
+  calcnbar
+  expect_true( !is.na( calcnbar$ss.results$`Sample size` ) )
+
+  # Now an infeasible calculation where the correlation makes min1 not able to
+  # achieve power, even though independence would.
+  calcnbar <- pump_sample( design="simple_c2_2r",
+                           typesample = "nbar",
+                           power.definition = "min1",
+                           MTP = "Holm",
+                           M = 4,
+                           J = 10,
+                           MDES = 0.39, target.power = 0.80, tol = 0.01,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                           rho = 0.2)
+  calcnbar
+  expect_true( is.na( calcnbar$ss.results$`Sample size` ) )
 })
 
 
 
+
+
+
+test_that("further testing of simple_c2_2r", {
+
+
+  expect_warning( traw <- pump_sample_raw( design="simple_c2_2r",
+               typesample = "J",
+               nbar = 1000,
+               MDES = 0.40, target.power = 0.80,
+               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+               R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 ) )
+
+  traw <- pump_sample_raw( design="simple_c2_2r",
+                           typesample = "J",
+                           nbar = 10,
+                           MDES = 0.40, target.power = 0.80,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
+  traw
+
+  traw <- pump_sample_raw( design="simple_c2_2r",
+                           typesample = "J",
+                           nbar = 10,
+                           MDES = 0.01, target.power = 0.80,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
+  traw
+
+  traw <- pump_sample_raw( design="simple_c2_2r",
+                           typesample = "J",
+                           nbar = 1000,
+                           MDES = 0.001, target.power = 0.99,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
+  traw
+
+
+  traw <- pump_sample_raw( design="simple_c2_2r",
+                           typesample = "J",
+                           nbar = 1000,
+                           MDES = 0.1, target.power = 0.99,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 100, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
+  traw
+
+  calcJ <- pump_sample( design="simple_c2_2r",
+                           typesample = "J",
+                           power.definition = "min1",
+                           MTP = "Holm",
+                           M = 4,
+                           nbar = 1000,
+                           MDES = 0.40, target.power = 0.80, tol = 0.01,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                           rho = 0.2)
+
+  calcJ
+  expect_true( !is.na( calcJ$ss.results$`Sample size` ) )
+
+
+  pp = pump_power(design="simple_c2_2r",
+                  MTP = "Holm",
+                  M = 4,
+                  J = calcJ$ss.results$`Sample size` - 1,
+                  nbar = 1000,
+                  MDES = 0.40,
+                  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                  rho = 0.2,  tnum=1000)
+  pp
+  expect_true( pp[2,"min1"] <= 0.80 )
+
+  pp = pump_power(design="simple_c2_2r",
+                  MTP = "Holm",
+                  M = 4,
+                  J = calcJ$ss.results$`Sample size`,
+                  nbar = 1000,
+                  MDES = 0.40,
+                  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                  rho = 0.2, tnum=1000 )
+  pp
+  expect_true( pp[2,"min1"] >= 0.80 )
+})
+
+
+
+
+
+
+
+test_that("testing of blocked_c2_3r", {
+
+
+  traw <- pump_sample_raw( design="blocked_c2_3r",
+                                           typesample = "K",
+                                           nbar = 1000,
+                                           J = 10,
+                                           MDES = 0.40, target.power = 0.80,
+                                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.05, omega.3 = 0.5 )
+  expect_true( !is.na( traw ) )
+
+})
 

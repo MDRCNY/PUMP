@@ -4,16 +4,16 @@
 \alias{find_best}
 \title{Extract roots from quadratic curve based on given evaluated points}
 \usage{
-find_best(test.pts, start.low, start.high, gamma = 1.5, target.power)
+find_best(test.pts, gamma = 1.5, target.power)
 }
 \arguments{
 \item{test.pts}{power evaluated at different points}
 
+\item{target.power}{goal power}
+
 \item{start.low}{lower bound}
 
 \item{start.high}{upper bound}
-
-\item{target.power}{goal power}
 
 \item{alternate}{alternate point to return if quadratic fit fails}
 }

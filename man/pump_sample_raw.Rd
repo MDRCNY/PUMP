@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_sample.R
 \name{pump_sample_raw}
 \alias{pump_sample_raw}
-\title{Calculating Sample for Raw (Unadjusted)}
+\title{Calculating Needed Sample Size for Raw (Unadjusted) Power}
 \usage{
 pump_sample_raw(
   design,
@@ -26,7 +26,6 @@ pump_sample_raw(
   ICC.3 = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
-  tol = 0.1,
   max.steps = 100
 )
 }
@@ -84,20 +83,21 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{tol}{tolerance of how much our search can change the sample size before
-stopping.  (In number of units, so 0.1 is relatively precise.)}
-
 \item{max.steps}{how many steps allowed before terminating}
 }
 \value{
-raw sample returns
+Requisit sample size (as integer).
 }
 \description{
-This is a Helper function for getting Sample Size when no adjustments has
-been made to the test statistics.
+This is a Helper function for getting a needed Sample Size when no
+adjustments has been made to the test statistics.
 }
 \details{
 It requires iteration because we do not know the degrees of freedom, and so
 we guess and then calculate sample size, and then recalculate df based on
 sample size, until we converge.
+
+It is possible that the returned sample size will be the minimum sample size
+required to have at least 1 degree of freedom (even if this provides higher
+than target level power).
 }

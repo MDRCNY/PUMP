@@ -96,7 +96,7 @@ test_that("parameters that result in 80% power for raw D1indiv", {
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
-                    K = 24, # number RA blocks
+                    K = 22, # number RA blocks
                     nbar = 150,
                     Tbar = 0.50, # prop Tx
                     alpha = 0.05, # significance level
@@ -105,7 +105,7 @@ test_that("parameters that result in 80% power for raw D1indiv", {
                     ICC.2 = 0.05, ICC.3 = 0.4,
                     rho = 0.4, tnum = 10000
   )
-
+  pp
   expect_equal( pp[1,1], 0.8, tol = 0.05)
 })
 

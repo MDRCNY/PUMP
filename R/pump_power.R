@@ -6,14 +6,14 @@
 #' @export
 supported_designs <- function() {
   design = tibble::tribble( ~ Code, ~ Comment,
-                   "blocked_i1_2c", "Individual rand at level 1, constant impact model\n",
-                   "blocked_i1_2f", "Individual rand at level 1, fixed effects, constant impact model\n",
+                   "blocked_i1_2c", "Individual rand at level 1, constant impact model",
+                   "blocked_i1_2f", "Individual rand at level 1, fixed effects, constant impact model",
                    "blocked_i1_2r", "Individual rand at level 1, random effect for impact (RIRC)",
                    "blocked_i1_3r", "",
                    "simple_c2_2r", "",
                    "simple_c3_3r", "",
-                   "blocked_c2_3f", "Randomization at level 2, fixed effects for level 3\n",
-                   "blocked_c2_3r", "Randomization at level 2, random effects\n" )
+                   "blocked_c2_3f", "Randomization at level 2, fixed effects for level 3",
+                   "blocked_c2_3r", "Randomization at level 2, random effects" )
 
   adjust = tibble::tribble( ~ Code, ~ Comment,
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
@@ -98,10 +98,10 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
   if(design == 'blocked_i1_2c')
   {
-    df <- J * nbar - numCovar.1 - J - 1
+    df <- J * (nbar - 1) - numCovar.1 - 1
   } else if (design == 'blocked_i1_2f')
   {
-    df <- J * nbar - numCovar.1 - 2 * J
+    df <- J * (nbar - 2) - numCovar.1
   } else if (design == 'blocked_i1_2r')
   {
     df <- J - numCovar.1 - 1

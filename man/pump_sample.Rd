@@ -15,7 +15,6 @@ pump_sample(
   K = NULL,
   target.power,
   power.definition,
-  tol,
   alpha,
   two.tailed = TRUE,
   Tbar,
@@ -37,7 +36,9 @@ pump_sample(
   start.tnum = 200,
   final.tnum = 10000,
   cl = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  max_sample_size = 10000,
+  tol = 0.01
 )
 }
 \arguments{
@@ -62,8 +63,6 @@ options: Bonferroni, BH, Holm, WY-SS, WY-SD}
 
 \item{power.definition}{must be a valid power type output by power function,
 i.e. D1indiv, min1, etc.}
-
-\item{tol}{tolerance}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
@@ -116,6 +115,12 @@ variation).}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
+
+\item{max_sample_size}{If the initial bounds fail to capture a range of
+working values (e.g., for non-achievable power on one end of the search and
+not the other), default to this sample size in the search.}
+
+\item{tol}{tolerance of how close power should be to the target power.}
 }
 \value{
 sample size results

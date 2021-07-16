@@ -29,7 +29,8 @@ pump_power(
   tnum = 10000,
   B = 3000,
   cl = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  validate.inputs = TRUE
 )
 }
 \arguments{

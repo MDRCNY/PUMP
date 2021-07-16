@@ -49,27 +49,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
 {
 
-  # fit initial quadratic curve
-  # generate a series of points to try
-  test.pts <- data.frame(
-    step = 0,
-    pt = seq(start.low, start.high, length.out = 5),
-    power = NA,
-    w = start.tnum,
-    MTP = MTP,
-    target.power = target.power
-  )
-
-  # Ensure we have single MDES that is appropriate
-  if ( search.type != "mdes" ) {
-    stopifnot( !is.null( MDES ) )
-    stopifnot( length(MDES) == 1 && MDES > 0 )
-    MDES = rep( MDES, M )
-  }
-
-  # This will call pump_power for our search and give back the power results
+  # Helper function to call pump_power for our search and give back the power results
   # from the given set of parameters.
   power_check = function( test_point, test_tnum ) {
+
     if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
 
     # Hack code since ifelse() cannot allow a NULL value and K could be NULL for
@@ -98,6 +81,30 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     pt.power.results
   }
 
+
+  # Ensure we have single MDES that is appropriate
+  if ( search.type != "mdes" ) {
+    stopifnot( !is.null( MDES ) )
+    stopifnot( length(MDES) == 1 && MDES > 0 )
+    MDES = rep( MDES, M )
+  }
+
+
+
+
+  # Step 1: fit initial quadratic curve to start search
+
+  # generate a series of points to try (on quadradic scale, especially relevant
+  # for sample size)
+  test.pts <- data.frame(
+    step = 0,
+    pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2,
+    power = NA,
+    w = start.tnum,
+    MTP = MTP,
+    target.power = target.power
+  )
+
   # generate power for all the initial test points
   for(i in 1:nrow(test.pts))
   {
@@ -118,7 +125,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   stopifnot( all( !is.na( test.pts$power ) ) )
 
   # Based on initial grid, pick best guess for search.
-  current.try <- find_best(test.pts, start.low, start.high, target.power, gamma = 1.5)
+  current.try <- find_best(test.pts, target.power, gamma = 1.5)
   current.power <- 0
   current.tnum <- start.tnum
   step <- 0
@@ -171,13 +178,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       test.pts <- dplyr::bind_rows(test.pts, iter.results)
     }
 
-    if(current.power < target.power) {
-      current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               gamma = 1.5)
-    } else {
-      current.try <- find_best(test.pts, start.low, start.high, target.power,
-                               gamma = 1.5 )
-    }
+    current.try <- find_best(test.pts, target.power, gamma = 1.5)
   }
 
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
@@ -202,8 +203,12 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 #'
 #' @return root of quadratic curve
 
-find_best <- function(test.pts, start.low, start.high, gamma = 1.5, target.power )
+find_best <- function(test.pts, gamma = 1.5, target.power )
 {
+  # Get current range of search so far.
+  start.low = min( test.pts$pt )
+  start.high = max( test.pts$pt )
+
   # fit quadratic curve
   quad.mod <- lm( power ~ 1 + pt + I(pt^2), weights = w, data = test.pts)
 
@@ -265,6 +270,7 @@ find_best <- function(test.pts, start.low, start.high, gamma = 1.5, target.power
       try.pt <- start.high * gamma
     }
   }
+
 
 
   return(try.pt)
