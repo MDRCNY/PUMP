@@ -143,6 +143,11 @@ validate_inputs <- function( design, MTP, params.list,
                              mdes.call = FALSE,
                              single.MDES = FALSE )
 {
+    
+  #-------------------------------------------------------#
+  # basic checks of inputs
+  #-------------------------------------------------------#
+    
   if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
                      'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
                      'blocked_c2_3f', 'blocked_c2_3r')))
@@ -159,12 +164,17 @@ validate_inputs <- function( design, MTP, params.list,
   {
     stop('Invalid MTP.')
   }
+    
+  #-------------------------------------------------------#
+  # MDES
+  #-------------------------------------------------------#
 
   if ( mdes.call ) {
     if ( !is.null( params.list$MDES ) ) {
       stop( "You cannot provide MDES to pump_mdes()" )
     }
-  } else {
+  } else 
+  {
     if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
     {
       stop('If providing a number of zero outcomes, please provide a single MDES value.')
@@ -190,9 +200,12 @@ validate_inputs <- function( design, MTP, params.list,
                    MDES, 'M =', M))
       }
     }
-
   }
-
+    
+  #-------------------------------------------------------#
+  # Basic checks of data parameters
+  #-------------------------------------------------------#
+    
   if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
   {
     stop('Please provide positive values of J, K, and/or nbar')
@@ -211,7 +224,7 @@ validate_inputs <- function( design, MTP, params.list,
 
   if(params.list$alpha > 1 | params.list$alpha < 0)
   {
-    stop('Please provide alpha as a probability  between 0 and 1')
+    stop('Please provide alpha as a probability between 0 and 1')
   }
 
   if(any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
@@ -231,6 +244,16 @@ validate_inputs <- function( design, MTP, params.list,
     stop('Please provide rho as a correlation between -1 and 1')
   }
 
+  #-------------------------------------------------------#
+  # check for inconsistent user inputs
+  #-------------------------------------------------------#
+  
+  if(M == 1)
+  {
+    warning("Multiple testing corrections are not needed when M = 1.")
+    MTP <- "Bonferroni"
+  }
+    
   # two level models
   if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
   {
@@ -239,7 +262,8 @@ validate_inputs <- function( design, MTP, params.list,
        ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
        ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
     {
-      warning('The following parameters are not valid for two-level designs, and will be ignored: K, numCovar.3, R2.3, ICC.3, omega.3')
+      warning('The following parameters are not valid for two-level designs, and will be ignored:\n
+              K, numCovar.3, R2.3, ICC.3, omega.3')
       params.list$K <- NULL
       params.list$numCovar.3 <- NULL
       params.list$R2.3 <- NULL
@@ -253,12 +277,12 @@ validate_inputs <- function( design, MTP, params.list,
     if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
     {
-      warning('The following parameters are not valid for fixed effect designs, and will be ignored: numCovar.3, R2.3')
+      warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
+              numCovar.3, R2.3')
       params.list$numCovar.3 <- NULL
       params.list$R2.3 <- NULL
     }
   }
-
 
   # three level models
   if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
@@ -277,8 +301,6 @@ validate_inputs <- function( design, MTP, params.list,
       stop('You must specify both numCovar.3 and R2.3 for three-level designs with random effects')
     }
   }
-
-
 
   # ICC
   if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
