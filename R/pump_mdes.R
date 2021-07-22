@@ -78,7 +78,7 @@ pump_mdes <- function(
     rho = rho
   )
   ##
-  params.list <- validate_inputs(design, MTP, params.list, mdes_call = TRUE )
+  params.list <- validate_inputs(design, MTP, params.list, mdes.call = TRUE )
   ##
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
