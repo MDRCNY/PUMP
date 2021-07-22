@@ -140,8 +140,8 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 #' @return params.list
 #'
 validate_inputs <- function( design, MTP, params.list,
-                             mdes_call = FALSE,
-                             single_MDES = FALSE )
+                             mdes.call = FALSE,
+                             single.MDES = FALSE )
 {
   if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
                      'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
@@ -160,7 +160,7 @@ validate_inputs <- function( design, MTP, params.list,
     stop('Invalid MTP.')
   }
 
-  if ( mdes_call ) {
+  if ( mdes.call ) {
     if ( !is.null( params.list$MDES ) ) {
       stop( "You cannot provide MDES to pump_mdes()" )
     }
@@ -176,9 +176,9 @@ validate_inputs <- function( design, MTP, params.list,
       print(paste('Assumed full MDES vector:', params.list$MDES))
     }
 
-    if ( single_MDES ) {
+    if ( single.MDES ) {
       if ( length(params.list$MDES) != 1 ) {
-        stop( "Single MDES necessary" )
+        stop( "Please provide a single MDES value This function does not support vector MDES inputs." )
       }
     } else if(length(params.list$MDES) < params.list$M)
     {

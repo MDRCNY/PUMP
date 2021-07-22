@@ -17,8 +17,32 @@ midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
 }
 
-
-
+#' Parse the power definition
+#'
+#' @param power.definition i.e. D1indiv, min1, complete
+#' @param M number of outcomes
+#' @return information about power type
+parse_power_definition <- function( power.definition, M ) {
+    powertype = list( min = FALSE,
+                      complete = FALSE,
+                      indiv = FALSE )
+    
+    if ( stringr::str_detect( power.definition, "min" ) ) {
+        powertype$min = TRUE
+        powertype$min_k = readr::parse_number( power.definition )
+        stopifnot( is.numeric( powertype$min_k ) )
+    } else if ( stringr::str_detect( power.definition, "complete" ) ) {
+        powertype$min = TRUE
+        powertype$complete = TRUE
+        powertype$min_k = M
+    } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
+        powertype$indiv = TRUE
+        powertype$indiv_k = readr::parse_number( power.definition )
+        stopifnot( is.numeric( powertype$indiv_k ) )
+    }
+    
+    return( powertype )
+}
 
 #' Optimizes power to help in search for MDES or SS
 #'
@@ -46,7 +70,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
-                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
+                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000,
+                           give.warnings = FALSE)
 {
 
   # Helper function to call pump_power for our search and give back the power results
