@@ -469,30 +469,6 @@ pump_sample_raw_old <- function(
   }
 }
 
-
-parse_power_definition = function( power.definition, M ) {
-  powertype = list( min = FALSE,
-                    complete = FALSE,
-                    indiv = FALSE )
-
-  if ( stringr::str_detect( power.definition, "min" ) ) {
-    powertype$min = TRUE
-    powertype$min_k = readr::parse_number( power.definition )
-    stopifnot( is.numeric( powertype$min_k ) )
-  } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-    powertype$min = TRUE
-    powertype$complete = TRUE
-    powertype$min_k = M
-  } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-    powertype$indiv = TRUE
-    powertype$indiv_k = readr::parse_number( power.definition )
-    stopifnot( is.numeric( powertype$indiv_k ) )
-  }
-
-  return( powertype )
-}
-
-
 #' Calculate sample size
 #'
 #' Note: These currently only work if MDES is the same for all outcomes.
@@ -541,7 +517,7 @@ pump_sample <- function(
   max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
   cl = NULL, updateProgress = NULL,
   max_sample_size = 10000,
-  tol = 0.01
+  tol = 0.01, give.optimizer.warnings = FALSE
 )
 {
   # Give prelim values for the validation of parameters process.
@@ -572,7 +548,7 @@ pump_sample <- function(
     rho = rho
   )
   ##
-  params.list <- pum:::validate_inputs(design, MTP, params.list,single_MDES=TRUE)
+  params.list <- pum:::validate_inputs(design, MTP, params.list, single.MDES = TRUE)
   ##
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
@@ -622,8 +598,7 @@ pump_sample <- function(
 
   # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
   # estimating (potential) bounds like we estimated MDES bounds.
-  #
-  # For now assuming only two tailed tests
+ 
   ss.raw <- pump_sample_raw(
     design = design, MTP=MTP, typesample=typesample,
     MDES=MDES, J=J, K=K,
@@ -640,7 +615,7 @@ pump_sample <- function(
     return(raw.ss)
   }
 
-  # Now identify sample size for Bonferroni
+  # Identify sample size for Bonferroni
   ss.BF <- pump_sample_raw(
     design = design, MTP=MTP, typesample=typesample,
     MDES=MDES, J=J, K=K,
@@ -702,7 +677,6 @@ pump_sample <- function(
     return(ss)
   }
 
-
   if ( is.na( ss.high ) ) {
     ss.high <- max_sample_size
     warning( "Using default max sample size for one end of initial bounds of search." )
@@ -710,8 +684,6 @@ pump_sample <- function(
 
   ss.low = round( ss.low )
   ss.high = round( ss.high )
-
-
 
   # sometimes we already know the answer!
   if(ss.low == ss.high)
@@ -735,7 +707,8 @@ pump_sample <- function(
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
     B = B, cl = cl,
     max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-    final.tnum = final.tnum
+    final.tnum = final.tnum,
+    give.warnings = give.optimizer.warnings
   )
 
   # Assemble results
