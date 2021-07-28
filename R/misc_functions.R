@@ -13,38 +13,38 @@ validate_inputs <- function( design, MTP, params.list,
                              mdes.call = FALSE,
                              single.MDES = FALSE )
 {
-  
+
   #-------------------------------------------------------#
   # basic checks of inputs
   #-------------------------------------------------------#
-  
-  if(!(design %in% c('unblocked_i1_2c',
-                     'blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
-                     'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
-                     'blocked_c2_3f', 'blocked_c2_3r')))
+
+  if(!(design %in% c('d1.1_m2fc',
+                     'd2.1_m2fc', 'd2.1_m2ff', 'd2.1_m2fr',
+                     'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
+                     'd3.2_m3ff2rc', 'd3.2_m3rr2rc')))
   {
     stop('Invalid design.')
   }
-  
+
   if(length( MTP ) > 1)
   {
     stop( 'Please provide only a single MTP procedure.' )
   }
-  
+
   if(!(MTP %in% c('rawp', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
-  
+
   #-------------------------------------------------------#
   # MDES
   #-------------------------------------------------------#
-  
+
   if ( mdes.call ) {
     if ( !is.null( params.list$MDES ) ) {
       stop( "You cannot provide MDES to pump_mdes()" )
     }
-  } else 
+  } else
   {
     if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
     {
@@ -56,7 +56,7 @@ validate_inputs <- function( design, MTP, params.list,
       params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
       print(paste('Assumed full MDES vector:', params.list$MDES))
     }
-    
+
     if ( single.MDES ) {
       if ( length(params.list$MDES) != 1 ) {
         stop( "Please provide a single MDES value This function does not support vector MDES inputs." )
@@ -72,67 +72,67 @@ validate_inputs <- function( design, MTP, params.list,
       }
     }
   }
-  
+
   #-------------------------------------------------------#
   # Basic checks of data parameters
   #-------------------------------------------------------#
-  
+
   if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
   {
     stop('Please provide positive values of J, K, and/or nbar')
   }
-  
+
   if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  |
      ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
   {
     stop('Please provide non-negative values of your num.Covar parameters')
   }
-  
+
   if(params.list$Tbar >= 1 | params.list$Tbar <= 0)
   {
     stop('Please provide Tbar as a probability strictly between 0 and 1')
   }
-  
+
   if(params.list$alpha > 1 | params.list$alpha < 0)
   {
     stop('Please provide alpha as a probability between 0 and 1')
   }
-  
+
   if(any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
      any(params.list$R2.2 > 1) | any(params.list$R2.2 < 0) |
      any(params.list$R2.3 > 1) | any(params.list$R2.3 < 0))
   {
     stop('Please provide R2 as a probability between 0 and 1')
   }
-  
+
   if(params.list$omega.2 < 0 | (!is.null(params.list$omega.3) && params.list$omega.3 < 0))
   {
     stop('Please provide a non-negative value of Omega')
   }
-  
+
   if(params.list$rho > 1 | params.list$rho < -1)
   {
     stop('Please provide rho as a correlation between -1 and 1')
   }
-  
+
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#
-  
+
   if(M == 1)
   {
     warning("Multiple testing corrections are not needed when M = 1.")
     MTP <- "Bonferroni"
   }
-  
-  if(J == 1 & design != 'unblocked_i1_2c')
+
+  if(J == 1 & design != 'd1.1_m2fc')
   {
     message('Assuming unblocked design')
-    design <- 'unblocked_i1_2c'
+    design <- 'd1.1_m2fc'
   }
-  
+
   # two level models
-  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
+  if(startsWith(design, 'd2'))
   {
     if( (!is.null(params.list$K) && params.list$K > 1 )|
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
@@ -148,8 +148,8 @@ validate_inputs <- function( design, MTP, params.list,
       params.list$omega.3 <- NULL
     }
   }
-  
-  if(design == 'blocked_c2_3f')
+
+  if(design == 'd3.2_m3ff2rc')
   {
     if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
@@ -160,78 +160,64 @@ validate_inputs <- function( design, MTP, params.list,
       params.list$R2.3 <- NULL
     }
   }
-  
+
   # three level models
-  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  if(startsWith(design, 'd3'))
   {
     if(is.null(params.list$K) || params.list$K <= 1 )
     {
       stop('You must specify K, with K > 1 (number of units at level 3) for three-level designs' )
     }
   }
-  
+
   # three level models, continued.
-  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3r'))
+  if(design %in% c('d3.1_m3rr2rr', 'd3.3_m3rc2rc', 'd3.2_m3rr2rc'))
   {
     if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
     {
       stop('You must specify both numCovar.3 and R2.3 for three-level designs with random effects')
     }
   }
-  
+
   # ICC
   if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
   {
     stop('ICC.2 + ICC.3 must be <= 1')
   }
-  
-  # constant treatment effects models
-  if(design %in% c('blocked_i1_2c', 'simple_c2_2r', 'simple_c3_3r'))
+
+  # constant treatment effects models: level 2
+  if(design %in% c('d2.1_m2fc', 'd2.2_m2rc', 'd3.3_mrc2rc', 'd3.2_m3ff2rc'))
   {
     if(params.list$omega.2 > 0)
     {
       warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
       params.list$omega.2 <- 0
     }
+  }
+  # constant treatment effects models: level 3
+  if(design %in% c('d3.3_mrc2rc'))
+  {
     if(!is.null(params.list$omega.3) && params.list$omega.3 > 0)
     {
       warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
       params.list$omega.3 <- 0
     }
   }
-  
+
   # specific 3 level models
-  if(design %in% c('blocked_i1_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
+  if(design %in% c('d3.1_m3rr2rr', 'd3.2_m3ff2rc', 'd3.2_m3rr2rc'))
   {
     if(is.null(params.list$omega.3))
     {
       stop('Omega.3 is required for this design.')
     }
   }
-  if(design %in% c('blocked_i1_3r', 'blocked_c2_3r'))
+  if(design %in% c('d3.1_m3rr2rr', 'd3.2_m3rr2rc'))
   {
     if(is.null(params.list$ICC.3))
     {
       stop('ICC.3 is required for this design.')
     }
-  }
-  
-  if(design == 'blocked_c2_3f')
-  {
-    if(params.list$omega.2 > 0)
-    {
-      warning('Omega2 is assumed to be 0 for blocked_c2_3f model. Ignoring input omega.2 value')
-      params.list$omega.2 <- 0
-    }
-    
-    # NOTE: I believe we could have a ICC > 0, even if we do not model it.  This
-    # would force other variation down. -lwm
-    #
-    # if(params.list$ICC.3 > 0)
-    # {
-    #   warning('ICC.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input ICC.3 value')
-    #   params.list$ICC.3 <- 0
-    # }
   }
 
   #-------------------------------------------------------#
@@ -242,7 +228,7 @@ validate_inputs <- function( design, MTP, params.list,
     warning('Provided both rho and full rho matrix, using only rho.matrix')
     params.list$rho <- NULL
   }
-  
+
   if(!is.null(rho.matrix))
   {
     if(nrow(rho.matrix) != M | ncol(rho.matrix) != M)
@@ -250,9 +236,9 @@ validate_inputs <- function( design, MTP, params.list,
       stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
     }
   }
-  
+
   return(params.list)
-  
+
 }
 
 
@@ -265,7 +251,7 @@ parse_power_definition <- function( power.definition, M ) {
   powertype = list( min = FALSE,
                     complete = FALSE,
                     indiv = FALSE )
-  
+
   if ( stringr::str_detect( power.definition, "min" ) ) {
     powertype$min = TRUE
     powertype$min_k = readr::parse_number( power.definition )
@@ -279,6 +265,6 @@ parse_power_definition <- function( power.definition, M ) {
     powertype$indiv_k = readr::parse_number( power.definition )
     stopifnot( is.numeric( powertype$indiv_k ) )
   }
-  
+
   return( powertype )
 }
