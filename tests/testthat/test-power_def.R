@@ -53,6 +53,6 @@ exp.power.results <- data.frame(
 )
 power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
 
-test_that("Power matches when all outcomes are nonzero", {
+test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_equal(exp.power.results, power.results.out)
 })

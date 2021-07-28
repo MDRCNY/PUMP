@@ -114,7 +114,8 @@ pump_mdes <- function(
                 "power of", round(target.power, 4)))
 
   if (MTP == "WY-SD" && B < 1000){
-    warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
+    warning(paste("For the step-down Westfall-Young procedure,
+                  it is recommended that sample (B) be at least 1000. Current B:", B))
   }
 
   # Compute Q.m and df
@@ -142,9 +143,9 @@ pump_mdes <- function(
   mdes.bf   <- ifelse(target.power > 0.5,
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
-  
+
   pdef <- parse_power_definition( power.definition, M )
-  
+
   # MDES is alrady calculated for individual power for raw and Bonferroni
   if ( pdef$indiv ) {
     if (MTP == "rawp"){
@@ -157,7 +158,7 @@ pump_mdes <- function(
       return(list(mdes.results = mdes.results, tries = NULL))
     }
   }
-  
+
   # complete power
   if(pdef$complete)
   {
@@ -170,7 +171,7 @@ pump_mdes <- function(
                         Q.m * (crit.alphaxM + crit.beta),
                         Q.m * (crit.alphaxM - crit.beta))
   }
-  
+
   # min power
   if(pdef$min)
   {
@@ -204,7 +205,7 @@ pump_mdes <- function(
                              B = B, cl = cl,
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
                              final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
-  
+
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
