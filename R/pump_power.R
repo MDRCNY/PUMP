@@ -278,7 +278,7 @@ pump_power <- function(
     R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-    rho <- params.list$rho, rho.matrix <- params.list$rho.matrix
+    rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   }
 
   # compute test statistics for when null hypothesis is false
