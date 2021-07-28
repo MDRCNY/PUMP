@@ -75,7 +75,7 @@ pump_mdes <- function(
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho
+    rho = rho, rho.matrix = rho.matrix
   )
   ##
   params.list <- validate_inputs(design, MTP, params.list, mdes.call = TRUE )
@@ -88,7 +88,7 @@ pump_mdes <- function(
   R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
   ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-  rho <- params.list$rho
+  rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -159,36 +159,37 @@ pump_mdes <- function(
     }
   }
 
+  # MDES will be between raw and bonferroni for many power types
+  mdes.low <- mdes.raw
+  mdes.high <- mdes.bf
+  
   # complete power
   if(pdef$complete)
   {
-    # must detect all individual outcomes
-    target.indiv.power <- target.power^(1/M)
-    crit.beta <- ifelse(target.indiv.power > 0.5,
-                        qt(target.indiv.power, df = t.df),
-                        qt(1 - target.indiv.power, df = t.df))
-    mdes.bf   <- ifelse(target.indiv.power > 0.5,
-                        Q.m * (crit.alphaxM + crit.beta),
-                        Q.m * (crit.alphaxM - crit.beta))
+      # complete power will have a higher upper bound
+      # must detect all individual outcomes
+      target.indiv.power <- target.power^(1/M)
+      crit.beta <- ifelse(target.indiv.power > 0.5,
+                          qt(target.indiv.power, df = t.df),
+                          qt(1 - target.indiv.power, df = t.df))
+      mdes.high   <- ifelse(target.indiv.power > 0.5,
+                          Q.m * (crit.alphaxM + crit.beta),
+                          Q.m * (crit.alphaxM - crit.beta))
   }
-
+  
   # min power
   if(pdef$min)
   {
-    # min1 power is going to be a lower bound
-    # must detect at least one individual outcome
-    min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
-    crit.beta <- ifelse(min.target.indiv.power > 0.5,
-                        qt(min.target.indiv.power, df = t.df),
-                        qt(1 - min.target.indiv.power, df = t.df))
-    mdes.raw  <- ifelse(min.target.indiv.power > 0.5,
-                        Q.m * (crit.alpha + crit.beta),
-                        Q.m * (crit.alpha - crit.beta))
+      # min1 power will have a lower lower bound
+      # must detect at least one individual outcome
+      min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
+      crit.beta <- ifelse(min.target.indiv.power > 0.5,
+                          qt(min.target.indiv.power, df = t.df),
+                          qt(1 - min.target.indiv.power, df = t.df))
+      mdes.low  <- ifelse(min.target.indiv.power > 0.5,
+                          Q.m * (crit.alpha + crit.beta),
+                          Q.m * (crit.alpha - crit.beta))
   }
-
-  # MDES will be between raw and bonferroni
-  mdes.low <- mdes.raw
-  mdes.high <- mdes.bf
 
   test.pts <- optimize_power(design, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
