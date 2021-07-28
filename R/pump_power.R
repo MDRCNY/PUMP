@@ -45,7 +45,10 @@ supported_designs <- function() {
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
-  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
+  if(design %in% c('unblocked_i1_2c'))
+  {
+    Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
+  } else if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
   {
     Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
   } else if (design == 'blocked_i1_2r')
@@ -96,7 +99,10 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
-  if(design == 'blocked_i1_2c')
+  if(design == 'unblocked_i1_2c')
+  {
+    df <- J * (nbar - 1) - numCovar.1 - 1
+  } else if(design == 'blocked_i1_2c')
   {
     df <- J * (nbar - 1) - numCovar.1 - 1
   } else if (design == 'blocked_i1_2f')
@@ -128,216 +134,6 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 }
 
 
-#' Validates user inputs
-#'
-#' This functions takes in a list of user inputs. Depending on the inputs,
-#' it produces errors or warnings, and at times modifies inputs if necessary.
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest.
-#' @param params.list a list of parameters input by a user
-#'
-#' @return params.list
-#'
-validate_inputs <- function( design, MTP, params.list,
-                             mdes.call = FALSE,
-                             single.MDES = FALSE )
-{
-  if(!(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r',
-                     'blocked_i1_3r', 'simple_c2_2r', 'simple_c3_3r',
-                     'blocked_c2_3f', 'blocked_c2_3r')))
-  {
-    stop('Invalid design.')
-  }
-
-  if(length( MTP ) > 1)
-  {
-    stop( 'Please provide only a single MTP procedure.' )
-  }
-
-  if(!(MTP %in% c('rawp', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
-  {
-    stop('Invalid MTP.')
-  }
-
-  if ( mdes.call ) {
-    if ( !is.null( params.list$MDES ) ) {
-      stop( "You cannot provide MDES to pump_mdes()" )
-    }
-  } else {
-    if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
-    {
-      stop('If providing a number of zero outcomes, please provide a single MDES value.')
-    }
-    if(!is.null(params.list$numZero))
-    {
-      numNonzero <- params.list$M - params.list$numZero
-      params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
-      print(paste('Assumed full MDES vector:', params.list$MDES))
-    }
-
-    if ( single.MDES ) {
-      if ( length(params.list$MDES) != 1 ) {
-        stop( "Please provide a single MDES value This function does not support vector MDES inputs." )
-      }
-    } else if(length(params.list$MDES) < params.list$M)
-    {
-      if ( length(params.list$MDES) == 1 ) {
-        params.list$MDES <- rep( params.list$MDES, params.list$M )
-        warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
-      } else {
-        stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
-                   MDES, 'M =', M))
-      }
-    }
-
-  }
-
-  if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
-  {
-    stop('Please provide positive values of J, K, and/or nbar')
-  }
-
-  if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  |
-     ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
-  {
-    stop('Please provide non-negative values of your num.Covar parameters')
-  }
-
-  if(params.list$Tbar >= 1 | params.list$Tbar <= 0)
-  {
-    stop('Please provide Tbar as a probability strictly between 0 and 1')
-  }
-
-  if(params.list$alpha > 1 | params.list$alpha < 0)
-  {
-    stop('Please provide alpha as a probability  between 0 and 1')
-  }
-
-  if(any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
-     any(params.list$R2.2 > 1) | any(params.list$R2.2 < 0) |
-     any(params.list$R2.3 > 1) | any(params.list$R2.3 < 0))
-  {
-    stop('Please provide R2 as a probability between 0 and 1')
-  }
-
-  if(params.list$omega.2 < 0 | (!is.null(params.list$omega.3) && params.list$omega.3 < 0))
-  {
-    stop('Please provide a non-negative value of Omega')
-  }
-
-  if(params.list$rho > 1 | params.list$rho < -1)
-  {
-    stop('Please provide rho as a correlation between -1 and 1')
-  }
-
-  # two level models
-  if(design %in% c('blocked_i1_2c', 'blocked_i1_2f', 'blocked_i1_2r', 'simple_c2_2r'))
-  {
-    if( (!is.null(params.list$K) && params.list$K > 1 )|
-       ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-       ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
-       ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
-    {
-      warning('The following parameters are not valid for two-level designs, and will be ignored: K, numCovar.3, R2.3, ICC.3, omega.3')
-      params.list$K <- NULL
-      params.list$numCovar.3 <- NULL
-      params.list$R2.3 <- NULL
-      params.list$ICC.3 <- NULL
-      params.list$omega.3 <- NULL
-    }
-  }
-
-  if(design == 'blocked_c2_3f')
-  {
-    if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-        ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
-    {
-      warning('The following parameters are not valid for fixed effect designs, and will be ignored: numCovar.3, R2.3')
-      params.list$numCovar.3 <- NULL
-      params.list$R2.3 <- NULL
-    }
-  }
-
-
-  # three level models
-  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
-  {
-    if(is.null(params.list$K) || params.list$K <= 1 )
-    {
-      stop('You must specify K, with K > 1 (number of units at level 3) for three-level designs' )
-    }
-  }
-
-  # three level models, continued.
-  if(design %in% c('blocked_i1_3r', 'simple_c3_3r', 'blocked_c2_3r'))
-  {
-    if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
-    {
-      stop('You must specify both numCovar.3 and R2.3 for three-level designs with random effects')
-    }
-  }
-
-
-
-  # ICC
-  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
-  {
-    stop('ICC.2 + ICC.3 must be <= 1')
-  }
-
-  # constant treatment effects models
-  if(design %in% c('blocked_i1_2c', 'simple_c2_2r', 'simple_c3_3r'))
-  {
-    if(params.list$omega.2 > 0)
-    {
-      warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
-      params.list$omega.2 <- 0
-    }
-    if(!is.null(params.list$omega.3) && params.list$omega.3 > 0)
-    {
-      warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
-      params.list$omega.3 <- 0
-    }
-  }
-
-  # specific 3 level models
-  if(design %in% c('blocked_i1_3r', 'blocked_c2_3f', 'blocked_c2_3r'))
-  {
-    if(is.null(params.list$omega.3))
-    {
-      stop('Omega.3 is required for this design.')
-    }
-  }
-  if(design %in% c('blocked_i1_3r', 'blocked_c2_3r'))
-  {
-    if(is.null(params.list$ICC.3))
-    {
-      stop('ICC.3 is required for this design.')
-    }
-  }
-
-  if(design == 'blocked_c2_3f')
-  {
-    if(params.list$omega.2 > 0)
-    {
-      warning('Omega2 is assumed to be 0 for blocked_c2_3f model. Ignoring input omega.2 value')
-      params.list$omega.2 <- 0
-    }
-
-    # NOTE: I believe we could have a ICC > 0, even if we do not model it.  This
-    # would force other variation down. -lwm
-    #
-    # if(params.list$ICC.3 > 0)
-    # {
-    #   warning('ICC.3 is assumed to be 0 for blocked_c2_3f model. Ignoring input ICC.3 value')
-    #   params.list$ICC.3 <- 0
-    # }
-  }
-
-  return(params.list)
-
-}
 
 
 #' Calculates different definitions of power
@@ -373,7 +169,8 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # combine all power for all definitions
   all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"), "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                  "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
 
   return(all.power.results)
 }
@@ -437,7 +234,7 @@ pump_power <- function(
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
-  rho,
+  rho, rho.matrix = NULL,
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
@@ -468,7 +265,7 @@ pump_power <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-      rho = rho
+      rho = rho, rho.matrix = rho.matrix
     )
 
     params.list <- validate_inputs(design, MTP, params.list)
@@ -481,7 +278,7 @@ pump_power <- function(
     R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-    rho <- params.list$rho
+    rho <- params.list$rho, rho.matrix <- params.list$rho.matrix
   }
 
   # compute test statistics for when null hypothesis is false
@@ -500,11 +297,17 @@ pump_power <- function(
   t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum))
 
   # correlation between the test statistics
-  sigma <- matrix(rho, M, M)
-  diag(sigma) <- 1
+  if(is.null(rho.matrix))
+  {
+    Sigma <- matrix(rho, M, M)
+    diag(Sigma) <- 1
+  } else
+  {
+    Sigma <- rho.matrix
+  }
 
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
-  rawt.mat <- mvtnorm::rmvt(tnum, sigma = sigma, df = t.df) + t.shift.mat
+  rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
   rawp.mat <- pt(-abs(rawt.mat), df = t.df) * 2
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
@@ -534,11 +337,11 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B, sigma = sigma, t.df = t.df)
+    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B, Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B, sigma = sigma, t.df = t.df, cl = cl)
+    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B, Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else {
 

@@ -1,7 +1,3 @@
-
-
-
-
 #' Midpoint function
 #'
 #' Calculating the midpoint between the lower and upper bound by calculating
@@ -15,33 +11,6 @@
 #' @return returns midpoint value
 midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
-}
-
-#' Parse the power definition
-#'
-#' @param power.definition i.e. D1indiv, min1, complete
-#' @param M number of outcomes
-#' @return information about power type
-parse_power_definition <- function( power.definition, M ) {
-    powertype = list( min = FALSE,
-                      complete = FALSE,
-                      indiv = FALSE )
-    
-    if ( stringr::str_detect( power.definition, "min" ) ) {
-        powertype$min = TRUE
-        powertype$min_k = readr::parse_number( power.definition )
-        stopifnot( is.numeric( powertype$min_k ) )
-    } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-        powertype$min = TRUE
-        powertype$complete = TRUE
-        powertype$min_k = M
-    } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-        powertype$indiv = TRUE
-        powertype$indiv_k = readr::parse_number( power.definition )
-        stopifnot( is.numeric( powertype$indiv_k ) )
-    }
-    
-    return( powertype )
 }
 
 #' Optimizes power to help in search for MDES or SS
