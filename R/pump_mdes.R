@@ -61,7 +61,7 @@ pump_mdes <- function(
   rho, omega.2 = 0, omega.3 = 0,
   tnum = 10000, B = 1000,
   max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
-  cl = NULL, updateProgress = NULL
+  cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE
 )
 {
   if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
@@ -78,7 +78,7 @@ pump_mdes <- function(
     rho = rho
   )
   ##
-  params.list <- validate_inputs(design, MTP, params.list, mdes_call = TRUE )
+  params.list <- validate_inputs(design, MTP, params.list, mdes.call = TRUE )
   ##
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
@@ -89,7 +89,6 @@ pump_mdes <- function(
   ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho
-
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -115,7 +114,8 @@ pump_mdes <- function(
                 "power of", round(target.power, 4)))
 
   if (MTP == "WY-SD" && B < 1000){
-    warning(paste("For the step-down Westfall-Young procedure, it is recommended that sample (B) be at least 1000. Current B:", B))
+    warning(paste("For the step-down Westfall-Young procedure,
+                  it is recommended that sample (B) be at least 1000. Current B:", B))
   }
 
   # Compute Q.m and df
@@ -144,8 +144,10 @@ pump_mdes <- function(
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
 
-  ### raw or bonferroni for indiv powers can work ###
-  if ( endsWith( power.definition, "indiv" ) ) {
+  pdef <- parse_power_definition( power.definition, M )
+
+  # MDES is alrady calculated for individual power for raw and Bonferroni
+  if ( pdef$indiv ) {
     if (MTP == "rawp"){
       mdes.results <- data.frame(MTP, mdes.raw, target.power)
       colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
@@ -157,27 +159,59 @@ pump_mdes <- function(
     }
   }
 
-  # Some of the MDES will be between MDES.raw and MDES.BF
+  # complete power
+  if(pdef$complete)
+  {
+    # must detect all individual outcomes
+    target.indiv.power <- target.power^(1/M)
+    crit.beta <- ifelse(target.indiv.power > 0.5,
+                        qt(target.indiv.power, df = t.df),
+                        qt(1 - target.indiv.power, df = t.df))
+    mdes.bf   <- ifelse(target.indiv.power > 0.5,
+                        Q.m * (crit.alphaxM + crit.beta),
+                        Q.m * (crit.alphaxM - crit.beta))
+  }
+
+  # min power
+  if(pdef$min)
+  {
+    # min1 power is going to be a lower bound
+    # must detect at least one individual outcome
+    min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
+    crit.beta <- ifelse(min.target.indiv.power > 0.5,
+                        qt(min.target.indiv.power, df = t.df),
+                        qt(1 - min.target.indiv.power, df = t.df))
+    mdes.raw  <- ifelse(min.target.indiv.power > 0.5,
+                        Q.m * (crit.alpha + crit.beta),
+                        Q.m * (crit.alpha - crit.beta))
+  }
+
+  # MDES will be between raw and bonferroni
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
 
-
-  test.pts <- optimize_power(design, search.type = 'mdes', MTP, target.power, power.definition, tol,
-                             start.tnum, start.low = mdes.low, start.high = mdes.high,
+  test.pts <- optimize_power(design, search.type = 'mdes', MTP,
+                             target.power, power.definition, tol,
+                             start.tnum,
+                             start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
                              M = M, Tbar = Tbar, alpha = alpha,
-                             numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                             R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                             numCovar.1 = numCovar.1,
+                             numCovar.2 = numCovar.2,
+                             numCovar.3 = numCovar.3,
+                             R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                             ICC.2 = ICC.2, ICC.3 = ICC.3,
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                              B = B, cl = cl,
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
-                             final.tnum = final.tnum)
+                             final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
+
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
   return(list(mdes.results = mdes.results, test.pts = test.pts))
 
-} # MDES
+}
 
 
 

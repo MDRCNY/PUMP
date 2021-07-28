@@ -1,7 +1,3 @@
-
-
-
-
 #' Midpoint function
 #'
 #' Calculating the midpoint between the lower and upper bound by calculating
@@ -16,9 +12,6 @@
 midpoint <- function(lower, upper) {
   return(lower + dist(c(lower, upper))[[1]]/2)
 }
-
-
-
 
 #' Optimizes power to help in search for MDES or SS
 #'
@@ -46,7 +39,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
-                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000)
+                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000,
+                           give.warnings = FALSE)
 {
 
   # Helper function to call pump_power for our search and give back the power results
