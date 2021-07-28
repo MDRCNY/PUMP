@@ -119,13 +119,13 @@ validate_inputs <- function( design, MTP, params.list,
   # check for inconsistent user inputs
   #-------------------------------------------------------#
 
-  if(M == 1)
+  if(params.list$M == 1)
   {
     warning("Multiple testing corrections are not needed when M = 1.")
     MTP <- "Bonferroni"
   }
 
-  if(J == 1 & design != 'd1.1_m2fc')
+  if(params.list$J == 1 & design != 'd1.1_m2fc')
   {
     message('Assuming unblocked design')
     design <- 'd1.1_m2fc'
