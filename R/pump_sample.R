@@ -330,7 +330,7 @@ pump_sample_raw <- function(
   }
 
   if ( i >= max.steps ) {
-    warning( "Hit maximum iterations in pump_sample_raw()" )
+    error( "Hit maximum iterations in pump_sample_raw()" )
   }
 
   if (typesample == "J") {
