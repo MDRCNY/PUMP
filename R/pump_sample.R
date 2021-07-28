@@ -16,36 +16,36 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
-  if(design %in% c('d2.1/m2fc', 'd2.1/m2ff'))
+  if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     numr <- (1 - ICC.2) * (1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J
     nbar <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd2.1/m2fr')
+  } else if (design == 'd2.1_m2fr')
   {
     numr <- (1 - ICC.2)*(1 - R2.1)
     denom <- J * ((MDES/MT)^2) - ICC.2 * omega.2
     nbar <- numr / (Tbar*(1-Tbar)*denom)
-  } else if (design == 'd3.1/m3rr2rr') {
+  } else if (design == 'd3.1_m3rr2rr') {
     numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
     denom <- J*K*((MDES/MT)^2) - J*ICC.3*omega.3 - ICC.2*omega.2
     nbar <- numr / ( Tbar*(1-Tbar)*denom )
-  } else if (design == 'd2.2/m2rc')
+  } else if (design == 'd2.2_m2rc')
   {
     numr <- (1 - ICC.2)*(1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
-  } else if (design == 'd3.3/m3rc2rc')
+  } else if (design == 'd3.3_m3rc2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J * ((MDES/MT)^2) - J*ICC.3*(1 - R2.3)  - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
-  } else if (design == 'd3.2/m3ff2rc')
+  } else if (design == 'd3.2_m3ff2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
-  } else if (design == 'd3.2/m3rr2rc')
+  } else if (design == 'd3.2_m3rr2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) * ICC.3 * omega.3 - ICC.2 * (1 - R2.2)
@@ -76,37 +76,37 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 
 calc.J <- function(design, MT = 2.8, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
 
-  if(design %in% c('d2.1/m2fc', 'd2.1/m2ff'))
+  if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     numr <- (1 - ICC.2) * (1 - R2.1)
     denom <- (Tbar * (1 - Tbar) * nbar)
     J <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd2.1/m2fr')
+  } else if (design == 'd2.1_m2fr')
   {
     numr <- (1 - ICC.2) * (1 - R2.1)
     denom <- (Tbar * (1 - Tbar) * nbar)
     J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) + numr / denom)
-  } else if (design == 'd3.1/m3rr2rr')
+  } else if (design == 'd3.1_m3rr2rr')
   {
     numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) + Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
     denom <- K * (MDES/MT)^2 - ICC.3 * omega.3
     J <- (1 / (Tbar * (1 - Tbar) * nbar)) * numr/denom
-  } else if (design == 'd2.2/m2rc')
+  } else if (design == 'd2.2_m2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2) * (1 - R2.1)
     denom <- Tbar * (1 - Tbar) * nbar
     J <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd3.3/m3rc2rc')
+  } else if (design == 'd3.3_m3rc2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
     denom <- Tbar * (1 - Tbar) * K * (MDES/MT)^2 - ICC.3 * (1 - R2.3)
     J <- (1 / nbar) * numr/denom
-  } else if (design == 'd3.2/m3ff2rc')
+  } else if (design == 'd3.2_m3ff2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
     denom <- nbar * Tbar * (1 - Tbar) * K * (MDES/MT)^2
     J <- numr/denom
-  } else if (design == 'd3.2/m3rr2rc')
+  } else if (design == 'd3.2_m3rr2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
     denom <- nbar * K * (MDES/MT)^2 - nbar * ICC.3 * omega.3
@@ -145,21 +145,21 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar,
                    omega.2, omega.3) {
 
   K <- NA
-  if(design == 'd3.1/m3rr2rr')
+  if(design == 'd3.1_m3rr2rr')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
                            (ICC.2 * omega.2) / J +
                            ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.3/m3rc2rc')
+  } else if (design == 'd3.3_m3rc2rc')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
                            ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.2/m3ff2rc')
+  } else if (design == 'd3.2_m3ff2rc')
   {
     K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
                            ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.2/m3rr2rc')
+  } else if (design == 'd3.2_m3rr2rc')
   {
     K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
                            (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
