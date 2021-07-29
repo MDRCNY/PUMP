@@ -134,7 +134,7 @@ validate_inputs <- function( design, MTP, params.list,
   # two level models
   if(startsWith(design, 'd2'))
   {
-    if( (!is.null(params.list$K) && params.list$K > 1 )|
+    if( ( !is.null(params.list$K) && params.list$K > 1 ) |
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
         ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )

@@ -164,13 +164,13 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # rejected tests
   rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
-  rejects.nonzero <- rejects[,ind.nonzero]
+  rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
 
   # individual power
   power.ind <- apply(rejects.nonzero, 2, mean)
   power.ind.mean <- mean(power.ind)
 
-  # minimum power
+  # minimum and complete power
   power.min <- rep(NA, num.nonzero)
   for(m in 1:num.nonzero)
   {
@@ -180,8 +180,15 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # combine all power for all definitions
   all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                  "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+  if(num.nonzero > 1)
+  {
+    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                    "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+  } else
+  {
+    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                    "indiv.mean", "min1")
+  }
 
   return(all.power.results)
 }
