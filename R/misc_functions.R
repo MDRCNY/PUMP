@@ -223,15 +223,15 @@ validate_inputs <- function( design, MTP, params.list,
   #-------------------------------------------------------#
   #  rho
   #-------------------------------------------------------#
-  if(!is.null(rho.matrix) & !is.null(rho))
+  if(!is.null(params.list$rho.matrix) & !is.null(params.list$rho))
   {
     warning('Provided both rho and full rho matrix, using only rho.matrix')
     params.list$rho <- NULL
   }
 
-  if(!is.null(rho.matrix))
+  if(!is.null(params.list$rho.matrix))
   {
-    if(nrow(rho.matrix) != M | ncol(rho.matrix) != M)
+    if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)
     {
       stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
     }
