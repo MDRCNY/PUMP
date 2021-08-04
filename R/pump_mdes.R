@@ -75,7 +75,7 @@ pump_mdes <- function(
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho
+    rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
   params.list <- validate_inputs(design, MTP, params.list, mdes.call = TRUE )
@@ -88,7 +88,8 @@ pump_mdes <- function(
   R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
   ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
-  rho <- params.list$rho
+  rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
+  B <- params.list$B
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)

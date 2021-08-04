@@ -237,6 +237,23 @@ validate_inputs <- function( design, MTP, params.list,
     }
   }
 
+  #-------------------------------------------------------#
+  # check for WY
+  #-------------------------------------------------------#
+
+  if(MTP %in% c('WY-SS', 'WY-SD') &
+     design %in% c('d2.1_m2fr', 'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
+                   'd3.2_m3ff2rc', 'd3.2_m3rr2rc'))
+  {
+    if(params.list$B < 10000)
+    {
+      warning(paste(
+        'For models with random intercepts/impacts, B >= 10000 is recommended. Current B:',
+        params.list$B
+      ))
+    }
+  }
+
   return(params.list)
 
 }
