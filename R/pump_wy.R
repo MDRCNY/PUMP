@@ -1,9 +1,7 @@
-# for testing
 # if (!requireNamespace("BiocManager", quietly = TRUE))
 #   install.packages("BiocManager")
 # BiocManager::install("multtest")
-
-library(multtest)
+# library(multtest)
 
 #' Helper function for Westfall Young Single Step
 #'
@@ -118,6 +116,8 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
 
+    if(t == 1){ start.time = Sys.time() }
+
     # generate a bunch of null p values
     nullt <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
 
@@ -128,6 +128,13 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
     # calculating the p-value for each sample
     adjp[t,] <- colMeans(ind.B)
 
+    if(t == 10)
+    {
+      end.time = Sys.time()
+      iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
+      finish.time = round((iter.time * tnum)/60)
+      message(paste('Estimated time to finish WY iterations:', finish.time, 'minutes'))
+    }
   }
   return(adjp)
 }
@@ -175,10 +182,24 @@ adjp.wysd <- function(rawt.matrix, B, Sigma, t.df, cl = NULL) {
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
+    if(t == 1){ start.time = Sys.time() }
+
     # generate null t statistics
     nullt <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
+
+    # compare to raw statistics
     ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,]))
+
+    # calculate adjusted p value
     adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
+
+    if(t == 10)
+    {
+      end.time = Sys.time()
+      iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
+      finish.time = round((iter.time * tnum)/60)
+      message(paste('Estimated time to finish WY iterations:', finish.time, 'minutes'))
+    }
   }
   return(adjp)
 }
