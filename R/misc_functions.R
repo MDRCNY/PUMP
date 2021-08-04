@@ -223,12 +223,16 @@ validate_inputs <- function( design, MTP, params.list,
   #-------------------------------------------------------#
   #  rho
   #-------------------------------------------------------#
+    
   if(!is.null(params.list$rho.matrix) & !is.null(params.list$rho))
   {
-    warning('Provided both rho and full rho matrix, using only rho.matrix')
+    warning('Provided both rho and full rho matrix, using only rho.matrix.')
     params.list$rho <- NULL
   }
-
+  if(is.null(params.list$rho.matrix) & is.null(params.list$rho))
+  {
+    stop('Please provide either a rho matrix or default rho.')
+  }
   if(!is.null(params.list$rho.matrix))
   {
     if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)

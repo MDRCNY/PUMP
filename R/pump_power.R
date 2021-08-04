@@ -258,7 +258,7 @@ pump_power <- function(
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
-  rho, rho.matrix = NULL,
+  rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
