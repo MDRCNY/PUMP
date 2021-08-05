@@ -644,7 +644,11 @@ pump_sample <- function(
   pdef <- parse_power_definition( power.definition, M )
 
   # adjust bounds to capture needed range
+  # for minimum or complete power, expand bounds
+  # note: complete power is a special case of minimum power
   if ( pdef$min ) {
+     
+    # lower bound needs to be lower
     need_pow <- 1 - (1 - target.power)^(1/M)
     ss.low <- pump_sample_raw(
       design = design, MTP = MTP, typesample = typesample,
@@ -656,10 +660,8 @@ pump_sample <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3 )
-  }
-  
-  if( pdef$complete )
-  {
+    
+    # higher bound needs to be higher
     need_pow <- (target.power^(1/M))
     ss.high <- pump_sample_raw(
         design = design, MTP = MTP, typesample = typesample,

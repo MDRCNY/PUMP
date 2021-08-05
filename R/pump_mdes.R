@@ -164,8 +164,10 @@ pump_mdes <- function(
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
   
-  # complete power
-  if(pdef$complete)
+  # adjust bounds to capture needed range
+  # for minimum or complete power, expand bounds
+  # note: complete power is a special case of minimum power
+  if(pdef$min)
   {
       # complete power will have a higher upper bound
       # must detect all individual outcomes
@@ -176,11 +178,7 @@ pump_mdes <- function(
       mdes.high   <- ifelse(target.indiv.power > 0.5,
                           Q.m * (crit.alphaxM + crit.beta),
                           Q.m * (crit.alphaxM - crit.beta))
-  }
-  
-  # min power
-  if(pdef$min)
-  {
+      
       # min1 power will have a lower lower bound
       # must detect at least one individual outcome
       min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
