@@ -540,7 +540,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MDES = MDES, M = M, J = J, K = K,
+    M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -598,16 +598,17 @@ pump_sample <- function(
 
 
   # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
-  # estimating (potential) bounds like we estimated MDES bounds.
-
+  # estimating (potential) bounds
   ss.raw <- pump_sample_raw(
-    design = design, MTP=MTP, typesample=typesample,
-    MDES=MDES, J=J, K=K,
-    target.power=target.power,
-    nbar=nbar, Tbar=Tbar, alpha=alpha, two.tailed=two.tailed,
-    numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
-    R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
-    omega.2=omega.2, omega.3=omega.3 )
+      design = design, MTP = MTP, typesample = typesample,
+      MDES = MDES, J = J, K = K,
+      target.power = need_pow,
+      nbar = nbar, Tbar = Tbar,
+      alpha = alpha,
+      two.tailed = two.tailed,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      omega.2 = omega.2, omega.3 = omega.3 )
 
   # We are done if raw power is what we are looking for
   if (MTP == "rawp"){
@@ -618,15 +619,15 @@ pump_sample <- function(
 
   # Identify sample size for Bonferroni
   ss.BF <- pump_sample_raw(
-    design = design, MTP=MTP, typesample=typesample,
-    MDES=MDES, J=J, K=K,
-    target.power=target.power,
-    nbar=nbar, Tbar=Tbar,
-    alpha=alpha / M, # change alpha for BF
-    two.tailed=two.tailed,
-    numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
-    R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
-    omega.2=omega.2, omega.3=omega.3 )
+      design = design, MTP = MTP, typesample = typesample,
+      MDES = MDES, J = J, K = K,
+      target.power = need_pow,
+      nbar = nbar, Tbar = Tbar,
+      alpha = alpha / M, # adjust alpha for BF
+      two.tailed = two.tailed,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      omega.2 = omega.2, omega.3 = omega.3 )
 
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni") {
@@ -640,36 +641,39 @@ pump_sample <- function(
   ss.low <- ss.raw
   ss.high <- ss.BF
 
-  pdef = parse_power_definition( power.definition, M )
+  pdef <- parse_power_definition( power.definition, M )
 
+  # adjust bounds to capture needed range
+  # for minimum or complete power, expand bounds
+  # note: complete power is a special case of minimum power
   if ( pdef$min ) {
-    # adjust bounds to capture needed range (assuming independence, so approximate)
-    need_pow = 1 - (1 - target.power)^(1/M)
+     
+    # lower bound needs to be lower
+    need_pow <- 1 - (1 - target.power)^(1/M)
     ss.low <- pump_sample_raw(
-      design = design, MTP=MTP, typesample=typesample,
-      MDES=MDES, J=J, K=K,
-      target.power=need_pow,
-      nbar=nbar, Tbar=Tbar,
-      alpha=alpha / M, # change alpha for BF
-      two.tailed=two.tailed,
-      numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
-      R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
-      omega.2=omega.2, omega.3=omega.3 )
-
-    need_pow = (target.power^(1/M))
+      design = design, MTP = MTP, typesample = typesample,
+      MDES = MDES, J = J, K = K,
+      target.power = need_pow,
+      nbar = nbar, Tbar = Tbar,
+      alpha = alpha,
+      two.tailed = two.tailed,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+      omega.2 = omega.2, omega.3 = omega.3 )
+    
+    # higher bound needs to be higher
+    need_pow <- (target.power^(1/M))
     ss.high <- pump_sample_raw(
-      design = design, MTP=MTP, typesample=typesample,
-      MDES=MDES, J=J, K=K,
-      target.power=need_pow,
-      nbar=nbar, Tbar=Tbar,
-      alpha=alpha / M, # change alpha for BF
-      two.tailed=two.tailed,
-      numCovar.1=numCovar.1, numCovar.2=numCovar.2, numCovar.3=numCovar.3,
-      R2.1=R2.1, R2.2=R2.2, R2.3=R2.3, ICC.2=ICC.2, ICC.3=ICC.3,
-      omega.2=omega.2, omega.3=omega.3 )
+        design = design, MTP = MTP, typesample = typesample,
+        MDES = MDES, J = J, K = K,
+        target.power = need_pow,
+        nbar = nbar, Tbar = Tbar,
+        alpha = alpha / M, # adjust alpha for BF
+        two.tailed = two.tailed,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+        omega.2 = omega.2, omega.3 = omega.3 )
   }
-
-
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {

@@ -160,36 +160,35 @@ pump_mdes <- function(
     }
   }
 
-  # complete power
-  if(pdef$complete)
-  {
-    # must detect all individual outcomes
-    target.indiv.power <- target.power^(1/M)
-    crit.beta <- ifelse(target.indiv.power > 0.5,
-                        qt(target.indiv.power, df = t.df),
-                        qt(1 - target.indiv.power, df = t.df))
-    mdes.bf   <- ifelse(target.indiv.power > 0.5,
-                        Q.m * (crit.alphaxM + crit.beta),
-                        Q.m * (crit.alphaxM - crit.beta))
-  }
-
-  # min power
-  if(pdef$min)
-  {
-    # min1 power is going to be a lower bound
-    # must detect at least one individual outcome
-    min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
-    crit.beta <- ifelse(min.target.indiv.power > 0.5,
-                        qt(min.target.indiv.power, df = t.df),
-                        qt(1 - min.target.indiv.power, df = t.df))
-    mdes.raw  <- ifelse(min.target.indiv.power > 0.5,
-                        Q.m * (crit.alpha + crit.beta),
-                        Q.m * (crit.alpha - crit.beta))
-  }
-
-  # MDES will be between raw and bonferroni
+  # MDES will be between raw and bonferroni for many power types
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
+  
+  # adjust bounds to capture needed range
+  # for minimum or complete power, expand bounds
+  # note: complete power is a special case of minimum power
+  if(pdef$min)
+  {
+      # complete power will have a higher upper bound
+      # must detect all individual outcomes
+      target.indiv.power <- target.power^(1/M)
+      crit.beta <- ifelse(target.indiv.power > 0.5,
+                          qt(target.indiv.power, df = t.df),
+                          qt(1 - target.indiv.power, df = t.df))
+      mdes.high   <- ifelse(target.indiv.power > 0.5,
+                          Q.m * (crit.alphaxM + crit.beta),
+                          Q.m * (crit.alphaxM - crit.beta))
+      
+      # min1 power will have a lower lower bound
+      # must detect at least one individual outcome
+      min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
+      crit.beta <- ifelse(min.target.indiv.power > 0.5,
+                          qt(min.target.indiv.power, df = t.df),
+                          qt(1 - min.target.indiv.power, df = t.df))
+      mdes.low  <- ifelse(min.target.indiv.power > 0.5,
+                          Q.m * (crit.alpha + crit.beta),
+                          Q.m * (crit.alpha - crit.beta))
+  }
 
   test.pts <- optimize_power(design, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
