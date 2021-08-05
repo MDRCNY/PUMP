@@ -6,14 +6,25 @@
 #' @export
 supported_designs <- function() {
   design = tibble::tribble( ~ Code, ~ Comment,
-                   "blocked_i1_2c", "Individual rand at level 1, constant impact model",
-                   "blocked_i1_2f", "Individual rand at level 1, fixed effects, constant impact model",
-                   "blocked_i1_2r", "Individual rand at level 1, random effect for impact (RIRC)",
-                   "blocked_i1_3r", "",
-                   "simple_c2_2r", "",
-                   "simple_c3_3r", "",
-                   "blocked_c2_3f", "Randomization at level 2, fixed effects for level 3",
-                   "blocked_c2_3r", "Randomization at level 2, random effects" )
+                   # 1 level design
+                   "d1.1_m2fc", "",
+                   # 2 level designs, randomization at level 1
+                   "d2.1_m2fc", "2 levels, level 1 randomization / fixed intercepts, constant impacts model",
+                   "d2.1_m2ff", "2 levels, level 1 randomization / fixed intercepts, fixed impacts model",
+                   "d2.1_m2fr", "2 levels, level 1 randomization / fixed intercepts, random impacts model",
+                   # 3 level design, randomization at level 1
+                   "d3.1_m3rr2rr", "3 levels, level 1 randomization /
+                   level 3 random intercepts, random impacts model, level 2 random intercepts, random impacts model",
+                   # 2 level design, randomization at level 2
+                   "d2.2_m2rc", "2 levels, level 2 randomization / random intercepts, constant impacts model",
+                   # 3 level design, randomization at level 3
+                   "d3.3_m3rc2rc", "3 levels, level 3 randomization /
+                   level 3 random intercepts, constant impacts model, level 2 random intercepts, constant impacts model",
+                   # 3 level design, randomization at level 2
+                   "d3.2_m3ff2rc", "3 levels, level 2 randomization /
+                   level 3 fixed intercepts, fixed impacts model, level 2 random intercepts, constant impacts model",
+                   "d3.2_m3rr2rc", "3 levels, level 2 randomization /
+                   level 3 random intercepts, random impacts model, level 2 random intercepts, constant impacts model" )
 
   adjust = tibble::tribble( ~ Code, ~ Comment,
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
@@ -45,35 +56,35 @@ supported_designs <- function() {
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
-  if(design %in% c('unblocked_i1_2c'))
+  if(design %in% c('d1.1_m2fc'))
   {
     Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
-  } else if(design %in% c('blocked_i1_2c', 'blocked_i1_2f'))
+  } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
-  } else if (design == 'blocked_i1_2r')
+  } else if (design == 'd2.1_m2fr')
   {
     Q.m <- sqrt( (ICC.2 * omega.2)/J +
                 ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
-  } else if (design == 'blocked_i1_3r')
+  } else if (design == 'd3.1_m3rr2rr')
   {
     Q.m <- sqrt( (ICC.3 * omega.3) / K +
                  (ICC.2 * omega.2) / (J * K) +
                  ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
-  } else if (design == 'simple_c2_2r')
+  } else if (design == 'd2.2_m2rc')
   {
     Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
                  (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
-  } else if (design == 'simple_c3_3r')
+  } else if (design == 'd3.3_m3rc2rc')
   {
     Q.m <- sqrt( (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
                  (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
                  ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
-  } else if (design == 'blocked_c2_3f')
+  } else if (design == 'd3.2_m3ff2rc')
   {
     Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
                  ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
-  } else if (design == 'blocked_c2_3r')
+  } else if (design == 'd3.2_m3rr2rc')
   {
     Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +
                  ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
@@ -99,37 +110,43 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
-  if(design == 'unblocked_i1_2c')
+  if(design == 'd1.1_m2fc')
   {
     df <- J * (nbar - 1) - numCovar.1 - 1
-  } else if(design == 'blocked_i1_2c')
+  } else if(design == 'd2.1_m2fc')
   {
     df <- J * (nbar - 1) - numCovar.1 - 1
-  } else if (design == 'blocked_i1_2f')
+  } else if (design == 'd2.1_m2ff')
   {
     df <- J * (nbar - 2) - numCovar.1
-  } else if (design == 'blocked_i1_2r')
+  } else if (design == 'd2.1_m2fr')
   {
     df <- J - numCovar.1 - 1
-  } else if (design == 'blocked_i1_3r')
+  } else if (design == 'd3.1_m3rr2rr')
   {
     df <- K - numCovar.3 - 1
-  } else if (design == 'simple_c2_2r')
+  } else if (design == 'd2.2_m2rc')
   {
     df <- J - numCovar.1 - 2
-  } else if (design == 'simple_c3_3r')
+  } else if (design == 'd3.3_m3rc2rc')
   {
     df <- K - numCovar.3 - 2
-  } else if (design == 'blocked_c2_3f')
+  } else if (design == 'd3.2_m3ff2rc')
   {
     df <- K * (J - 2) - numCovar.2
-  }else if (design == 'blocked_c2_3r')
+  }else if (design == 'd3.2_m3rr2rc')
   {
     df <- K - numCovar.3 - 1
   } else
   {
     stop(paste('Design not implemented:', design))
   }
+
+  if(df <= 0)
+  {
+    stop('Invalid design parameters resulting in nonpositive degrees of freedom')
+  }
+
   return(df)
 }
 
@@ -153,13 +170,13 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # rejected tests
   rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
-  rejects.nonzero <- rejects[,ind.nonzero]
+  rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
 
   # individual power
   power.ind <- apply(rejects.nonzero, 2, mean)
   power.ind.mean <- mean(power.ind)
 
-  # minimum power
+  # minimum and complete power
   power.min <- rep(NA, num.nonzero)
   for(m in 1:num.nonzero)
   {
@@ -169,8 +186,15 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # combine all power for all definitions
   all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                  "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+  if(num.nonzero > 1)
+  {
+    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                    "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+  } else
+  {
+    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                    "indiv.mean", "min1")
+  }
 
   return(all.power.results)
 }
@@ -234,7 +258,7 @@ pump_power <- function(
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
-  rho, rho.matrix = NULL,
+  rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
@@ -265,7 +289,7 @@ pump_power <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-      rho = rho, rho.matrix = rho.matrix
+      rho = rho, rho.matrix = rho.matrix, B = B
     )
 
     params.list <- validate_inputs(design, MTP, params.list)
@@ -279,6 +303,7 @@ pump_power <- function(
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
+    B <- params.list$B
   }
 
   # compute test statistics for when null hypothesis is false

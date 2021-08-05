@@ -2,7 +2,7 @@
 # library( testthat )
 
 test_that("parameters that result in 80% power for raw D1indiv", {
-  pp <- pump_power( design="blocked_c2_3f",
+  pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
@@ -22,7 +22,7 @@ test_that("parameters that result in 80% power for raw D1indiv", {
 
 
 test_that("parameters that result in 80% power for Bonferroni D1indiv", {
-  pp <- pump_power( design="blocked_c2_3f",
+  pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
@@ -42,7 +42,7 @@ test_that("parameters that result in 80% power for Bonferroni D1indiv", {
 
 
 test_that("parameters that result in 80% power for Bonferroni min1", {
-  pp <- pump_power( design="blocked_c2_3f",
+  pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
@@ -61,7 +61,7 @@ test_that("parameters that result in 80% power for Bonferroni min1", {
 })
 
 test_that("parameters that result in 80% power for Bonferroni min2", {
-  pp <- pump_power( design="blocked_c2_3f",
+  pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
@@ -80,7 +80,7 @@ test_that("parameters that result in 80% power for Bonferroni min2", {
 })
 
 test_that("parameters that result in 80% power for Bonferroni complete", {
-  pp <- pump_power( design="blocked_c2_3f",
+  pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
