@@ -74,7 +74,10 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 #' @return J, the number of schools needed
 #' @export
 
-calc.J <- function(design, MT = 2.8, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2) {
+calc.J <- function(
+    design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
+    R2.1, R2.2, ICC.2, ICC.3, omega.2, omega.3
+) {
 
   if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
@@ -240,8 +243,10 @@ pump_sample_raw <- function(
   # Get initial size (will be low)
   MT = calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
-    J <- calc.J( design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
-                 R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2 )
+    J <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
+                 R2.1 = R2.1[1], R2.2 = R2.2[1],
+                 ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+                 omega.2 = omega.2, omega.3 = omega.3 )
     J = round(J)
   } else if (typesample == "K") {
     K <- calc.K(
@@ -285,8 +290,10 @@ pump_sample_raw <- function(
     MT = calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
-      J1 <- calc.J( design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
-                    R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2 )
+      J1 <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
+                    R2.1 = R2.1[1], R2.2 = R2.2[1],
+                    ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+                    omega.2 = omega.2, omega.3 = omega.3 )
       J1 = round( J1 )
 
       #cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
@@ -334,10 +341,13 @@ pump_sample_raw <- function(
   }
 
   if (typesample == "J") {
+    if(J <= 0){ J = NA }
     return(J)
   } else if (typesample == "K") {
+    if(K <= 0){ K = NA }
     return(K)
   } else if (typesample == "nbar") {
+    if(nbar <= 0){ nbar = NA }
     return(nbar)
   }
 }
@@ -413,8 +423,10 @@ pump_sample_raw_old <- function(
 
     if (typesample == "J") {
       J1 <- calc.J(
-        design, MT = MT, MDES = MDES[1], nbar = nbar, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1], ICC.2 = ICC.2[1], omega.2 = omega.2
+        design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
+        R2.1 = R2.1[1], R2.2 = R2.2[1],
+        ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
+        omega.2 = omega.2, omega.3 = omega.3
       )
       J1 = round( J1 )
       cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
@@ -540,7 +552,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    M = M, J = J, K = K,
+    MDES = MDES, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -602,7 +614,7 @@ pump_sample <- function(
   ss.raw <- pump_sample_raw(
       design = design, MTP = MTP, typesample = typesample,
       MDES = MDES, J = J, K = K,
-      target.power = need_pow,
+      target.power = target.power,
       nbar = nbar, Tbar = Tbar,
       alpha = alpha,
       two.tailed = two.tailed,
@@ -621,7 +633,7 @@ pump_sample <- function(
   ss.BF <- pump_sample_raw(
       design = design, MTP = MTP, typesample = typesample,
       MDES = MDES, J = J, K = K,
-      target.power = need_pow,
+      target.power = target.power,
       nbar = nbar, Tbar = Tbar,
       alpha = alpha / M, # adjust alpha for BF
       two.tailed = two.tailed,
