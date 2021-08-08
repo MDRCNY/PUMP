@@ -16,7 +16,12 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
-  if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+  if(design %in% c('d2.1_m2cc'))
+  {
+    numr <- (1 - R2.1)
+    denom <- Tbar * (1 - Tbar) * J
+    nbar <- (MT/MDES)^2 * numr/denom
+  } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     numr <- (1 - ICC.2) * (1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J
@@ -76,10 +81,15 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 
 calc.J <- function(
     design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
-    R2.1, R2.2, ICC.2, ICC.3, omega.2, omega.3
+    R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
 
-  if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+  if(design %in% c('d2.1_m2cc'))
+  {
+    numr <- (1 - R2.1)
+    denom <- (Tbar * (1 - Tbar) * nbar)
+    J <- (MT/MDES)^2 * numr/denom
+  } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     numr <- (1 - ICC.2) * (1 - R2.1)
     denom <- (Tbar * (1 - Tbar) * nbar)
@@ -244,7 +254,7 @@ pump_sample_raw <- function(
   MT = calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
     J <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
-                 R2.1 = R2.1[1], R2.2 = R2.2[1],
+                 R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                  omega.2 = omega.2, omega.3 = omega.3 )
     J = round(J)
@@ -294,7 +304,7 @@ pump_sample_raw <- function(
 
     if (typesample == "J") {
       J1 <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
-                    R2.1 = R2.1[1], R2.2 = R2.2[1],
+                    R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                     omega.2 = omega.2, omega.3 = omega.3 )
       J1 = round( J1 )
@@ -427,7 +437,7 @@ pump_sample_raw_old <- function(
     if (typesample == "J") {
       J1 <- calc.J(
         design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
-        R2.1 = R2.1[1], R2.2 = R2.2[1],
+        R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
@@ -662,7 +672,7 @@ pump_sample <- function(
   # for minimum or complete power, expand bounds
   # note: complete power is a special case of minimum power
   if ( pdef$min ) {
-     
+
     # lower bound needs to be lower
     need_pow <- 1 - (1 - target.power)^(1/M)
     ss.low <- pump_sample_raw(
@@ -675,7 +685,7 @@ pump_sample <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3 )
-    
+
     # higher bound needs to be higher
     need_pow <- (target.power^(1/M))
     ss.high <- pump_sample_raw(

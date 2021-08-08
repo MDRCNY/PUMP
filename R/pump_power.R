@@ -7,7 +7,7 @@
 supported_designs <- function() {
   design = tibble::tribble( ~ Code, ~ Comment,
                    # 1 level design
-                   "d1.1_m2fc", "",
+                   "d1.1_m2cc", "1 level, level 1 randomization / constant intercepts, constant impacts model",
                    # 2 level designs, randomization at level 1
                    "d2.1_m2fc", "2 levels, level 1 randomization / fixed intercepts, constant impacts model",
                    "d2.1_m2ff", "2 levels, level 1 randomization / fixed intercepts, fixed impacts model",
@@ -56,7 +56,7 @@ supported_designs <- function() {
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
-  if(design %in% c('d1.1_m2fc'))
+  if(design %in% c('d1.1_m2cc'))
   {
     Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
   } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
@@ -110,9 +110,9 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
 
-  if(design == 'd1.1_m2fc')
+  if(design == 'd1.1_m2cc')
   {
-    df <- J * (nbar - 1) - numCovar.1 - 1
+    df <- J * nbar - numCovar.1 - 1
   } else if(design == 'd2.1_m2fc')
   {
     df <- J * (nbar - 1) - numCovar.1 - 1
@@ -384,14 +384,6 @@ pump_power <- function(
   rownames(power.results.all) <- c('rawp', MTP)
 
   return(power.results.all)
-}
-
-
-
-
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
 }
 
 #' Run pump_power on combination of factors

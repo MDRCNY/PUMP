@@ -1,3 +1,7 @@
+scat = function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
+
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
@@ -18,7 +22,7 @@ validate_inputs <- function( design, MTP, params.list,
   # basic checks of inputs
   #-------------------------------------------------------#
 
-  if(!(design %in% c('d1.1_m2fc',
+  if(!(design %in% c('d1.1_m2cc',
                      'd2.1_m2fc', 'd2.1_m2ff', 'd2.1_m2fr',
                      'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
                      'd3.2_m3ff2rc', 'd3.2_m3rr2rc')))
@@ -70,6 +74,9 @@ validate_inputs <- function( design, MTP, params.list,
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
                    MDES, 'M =', M))
       }
+    } else if(length(params.list$MDES) > params.list$M)
+    {
+      stop('MDES vector length is inconsistent with M.')
     }
   }
 
@@ -125,10 +132,10 @@ validate_inputs <- function( design, MTP, params.list,
     MTP <- "Bonferroni"
   }
 
-  if(params.list$J == 1 & design != 'd1.1_m2fc')
+  if(params.list$J == 1 & design != 'd1.1_m2cc')
   {
     message('Assuming unblocked design')
-    design <- 'd1.1_m2fc'
+    design <- 'd1.1_m2cc'
   }
 
   # two level models
@@ -223,7 +230,7 @@ validate_inputs <- function( design, MTP, params.list,
   #-------------------------------------------------------#
   #  rho
   #-------------------------------------------------------#
-    
+
   if(!is.null(params.list$rho.matrix) & !is.null(params.list$rho))
   {
     warning('Provided both rho and full rho matrix, using only rho.matrix.')
