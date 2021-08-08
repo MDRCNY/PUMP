@@ -280,7 +280,10 @@ pump_sample_raw <- function(
       }
       df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
     }
-    warning('Nonnegative df requirement driving minimum sample size. Current sample size will give overpowered study.')
+    warning(
+      'Nonnegative df requirement driving minimum sample size.
+      Current sample size will give overpowered study.'
+    )
   }
 
 
@@ -341,13 +344,13 @@ pump_sample_raw <- function(
   }
 
   if (typesample == "J") {
-    if(J <= 0){ J = NA }
+    if(!is.na(J) & J <= 0){ J = NA }
     return(J)
   } else if (typesample == "K") {
-    if(K <= 0){ K = NA }
+    if(!is.na(K) & K <= 0){ K = NA }
     return(K)
   } else if (typesample == "nbar") {
-    if(nbar <= 0){ nbar = NA }
+    if(!is.na(nbar) & nbar <= 0){ nbar = NA }
     return(nbar)
   }
 }
@@ -533,7 +536,7 @@ pump_sample <- function(
 )
 {
   # Give prelim values for the validation of parameters process.
-  if ( typesample=="nbar" ) {
+  if ( typesample == "nbar" ) {
     stopifnot( is.null( nbar ) )
     nbar = 1000
   } else if ( typesample == "J" ) {
