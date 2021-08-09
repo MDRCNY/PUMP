@@ -117,6 +117,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
   # search going?)
+  # TODO: test if we should keep going?
   # stopifnot( all( !is.na( test.pts$power ) ) )
 
   # Based on initial grid, pick best guess for search.
