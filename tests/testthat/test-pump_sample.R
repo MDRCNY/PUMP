@@ -143,7 +143,7 @@ test_that("pump_sample 2 level/2 level", {
 
   p2 = pump_power( design = "d2.1_m2fc",
                    MTP = "Holm",
-                   J = pwr$ss.results$`Sample size`,
+                   J = pwr$ss.results$`Sample size`[2],
                    nbar = 200,
                    M = 3,
                    MDES = rep(0.05, 3),
@@ -183,7 +183,7 @@ test_that("sample search when one end is missing", {
                     rho = 0.2) )
 
   calcnbar
-  expect_true( !is.na( calcnbar$ss.results$`Sample size` ) )
+  expect_true( !is.na( calcnbar$ss.results$`Sample size`[2] ) )
 
   # Now an infeasible calculation where the correlation makes min1 not able to
   # achieve power, even though independence would.
@@ -198,7 +198,7 @@ test_that("sample search when one end is missing", {
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                            rho = 0.2)
   calcnbar
-  expect_true( is.na( calcnbar$ss.results$`Sample size` ) )
+  expect_true( is.na( calcnbar$ss.results$`Sample size`[2] ) )
 })
 
 
@@ -262,15 +262,15 @@ test_that("further testing of d2.2_m2rc", {
                         rho = 0.2)
 
   calcJ
-  expect_true( !is.na( calcJ$ss.results$`Sample size` ) )
+  expect_true( !is.na( calcJ$ss.results$`Sample size`[2] ) )
 
 
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$ss.results$`Sample size` - 1,
+                   J = calcJ$ss.results$`Sample size`[2] - 1,
                    nbar = 1000,
-                   MDES = 0.40,
+                   MDES = rep(0.40, 4),
                    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                    rho = 0.2,  tnum=1000)
@@ -280,9 +280,9 @@ test_that("further testing of d2.2_m2rc", {
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$ss.results$`Sample size`,
+                   J = calcJ$ss.results$`Sample size`[2],
                    nbar = 1000,
-                   MDES = 0.40,
+                   MDES = rep( 0.40, 4),
                    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                    rho = 0.2, tnum=1000 )
@@ -305,3 +305,18 @@ test_that("testing of d3.2_m3rr2rc", {
 
 })
 
+
+# test_that("different correlations work", {
+#     
+#     calcJ <- pump_sample( design = "d2.2_m2rc",
+#                              typesample = "J",
+#                              power.definition = "min1",
+#                              MTP = "Holm",
+#                              M = 4,
+#                              nbar = 100,
+#                              MDES = 0.39, target.power = 0.80, tol = 0.01,
+#                              Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 0,
+#                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+#                              rho = 0)
+#     
+# })
