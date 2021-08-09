@@ -83,9 +83,6 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     MDES = rep( MDES, M )
   }
 
-
-
-
   # Step 1: fit initial quadratic curve to start search
 
   # generate a series of points to try (on quadradic scale, especially relevant
@@ -264,8 +261,6 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
       try.pt <- start.high * gamma
     }
   }
-
-
 
   return(try.pt)
 }

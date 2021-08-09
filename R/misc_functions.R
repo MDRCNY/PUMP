@@ -35,7 +35,7 @@ validate_inputs <- function( design, MTP, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(MTP %in% c('rawp', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  if(!(MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }

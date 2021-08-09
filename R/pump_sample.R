@@ -289,7 +289,7 @@ pump_sample_raw <- function(
         K <- K + 1
         min_samp_size <- K
       }
-      df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+      df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     }
     warning(
       'Nonnegative df requirement driving minimum sample size.
@@ -636,13 +636,6 @@ pump_sample <- function(
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3)
 
-  # We are done if raw power is what we are looking for
-  if (MTP == "rawp"){
-    raw.ss <- data.frame(MTP, power.definition, ss.raw, typesample, target.power)
-    colnames(raw.ss) <- output.colnames
-    return(raw.ss)
-  }
-
   # Identify sample size for Bonferroni
   ss.BF <- pump_sample_raw(
       design = design, MTP = MTP, typesample = typesample,
@@ -655,11 +648,15 @@ pump_sample <- function(
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3 )
 
+  ss.results.raw = c('rawp', typesample, ss.raw, target.power)
+  
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni") {
-    ss.BF <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
-    colnames(ss.BF) <- output.colnames
-    return(ss.BF)
+    ss.results <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
+    ss.results <- rbind(ss.results.raw, ss.results)
+    colnames(ss.results) <- output.colnames
+    ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
+    return(ss.results)
   }
 
   # Like the MDES calculation, the sample size would be between raw and Bonferroni.
@@ -721,7 +718,9 @@ pump_sample <- function(
   {
     test.pts <- NULL
     ss.results <- data.frame(MTP, typesample, 1, target.power)
+    ss.results <- rbind(ss.results.raw, ss.results)
     colnames(ss.results) <- output.colnames
+    ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
     return(list(ss.results = ss.results, test.pts = test.pts))
   }
 
@@ -751,7 +750,9 @@ pump_sample <- function(
            ceiling(test.pts$pt[nrow(test.pts)])),  # round up to get nice sufficient sample size.
     test.pts$power[nrow(test.pts)]
   )
+  ss.results <- rbind(ss.results.raw, ss.results)
   colnames(ss.results) <- output.colnames
+  ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
 
   return(list(ss.results = ss.results, test.pts = test.pts))
 }

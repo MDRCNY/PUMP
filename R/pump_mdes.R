@@ -144,20 +144,18 @@ pump_mdes <- function(
   mdes.bf   <- ifelse(target.power > 0.5,
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
+  
+  mdes.results.raw <- c('rawp', mdes.raw, target.power)
 
   pdef <- parse_power_definition( power.definition, M )
 
   # MDES is alrady calculated for individual power for raw and Bonferroni
-  if ( pdef$indiv ) {
-    if (MTP == "rawp"){
-      mdes.results <- data.frame(MTP, mdes.raw, target.power)
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return (list(mdes.results = mdes.results, tries = NULL))
-    } else if (MTP == "Bonferroni"){
-      mdes.results <- data.frame(MTP, mdes.bf, target.power)
-      colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-      return(list(mdes.results = mdes.results, tries = NULL))
-    }
+  if ( pdef$indiv & MTP == "Bonferroni") {
+    mdes.results <- data.frame(MTP, mdes.bf, target.power)
+    mdes.results <- rbind(mdes.results.raw, mdes.results)
+    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+    mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
+    return(list(mdes.results = mdes.results, tries = NULL))
   }
 
   # MDES will be between raw and bonferroni for many power types
@@ -206,11 +204,13 @@ pump_mdes <- function(
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
                              final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
 
+  
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
+  mdes.results <- rbind(mdes.results.raw, mdes.results)
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
 
   return(list(mdes.results = mdes.results, test.pts = test.pts))
-
 }
 
 
