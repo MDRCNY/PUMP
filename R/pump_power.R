@@ -108,7 +108,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #'
 #' @export
 
-calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
+calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
 
   if(design == 'd1.1_m2cc')
   {
@@ -142,7 +142,7 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
     stop(paste('Design not implemented:', design))
   }
 
-  if(df <= 0)
+  if(validate & df <= 0)
   {
     stop('Invalid design parameters resulting in nonpositive degrees of freedom')
   }
