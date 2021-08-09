@@ -16,7 +16,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
-  if(design %in% c('d2.1_m2cc'))
+  if(design %in% c('d1.1_m2cc'))
   {
     numr <- (1 - R2.1)
     denom <- Tbar * (1 - Tbar) * J
@@ -84,7 +84,7 @@ calc.J <- function(
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
 
-  if(design %in% c('d2.1_m2cc'))
+  if(design %in% c('d1.1_m2cc'))
   {
     numr <- (1 - R2.1)
     denom <- (Tbar * (1 - Tbar) * nbar)
@@ -275,7 +275,8 @@ pump_sample_raw <- function(
     )
   }
 
-  df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+  
   if( df < 1 ) {
     while( df < 1 ) {
       if ( typesample=="nbar" ) {
@@ -633,7 +634,7 @@ pump_sample <- function(
       two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      omega.2 = omega.2, omega.3 = omega.3 )
+      omega.2 = omega.2, omega.3 = omega.3)
 
   # We are done if raw power is what we are looking for
   if (MTP == "rawp"){
