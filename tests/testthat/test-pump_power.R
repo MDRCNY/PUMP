@@ -122,7 +122,7 @@ test_that("unblocked designs", {
   )
 })
 
-test_that("reject rawp as MTP", {
+test_that("Correct MTP validation. ", {
     
     expect_error(pp <- pump_power(   design = "d2.1_m2fc",
                                        MTP = "rawp",
@@ -138,6 +138,56 @@ test_that("reject rawp as MTP", {
                                        ICC.2 = 0.05,
                                        rho = 0.4, tnum = 200
     ))
+    
+    expect_warning(pp <- pump_power( design = "d2.1_m2fc",
+                                     MDES = 0.1,
+                                     M = 1,
+                                     J = 3, # number of schools/block
+                                     nbar = 258,
+                                     Tbar = 0.50, # prop Tx
+                                     alpha = 0.05, # significance level
+                                     numCovar.1 = 5, numCovar.2 = 3,
+                                     R2.1 = 0.1, R2.2 = 0.7,
+                                     ICC.2 = 0.05,
+                                     rho = 0.4, tnum = 200
+    ))
 })
 
+
+test_that("different correlations", {
+    
+    pp.rhomin <- pump_power( design = "d2.2_m2rc",
+                             MTP = "Bonferroni",
+                             J = 10,
+                             M = 4,
+                             nbar = 100,
+                             MDES = rep( 0.2, 4 ),
+                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 0,
+                             R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                             rho = 0)
+    
+    pp.rhomed <- pump_power(   design = "d2.2_m2rc",
+                               MTP = "Bonferroni",
+                               J = 10,
+                               M = 4,
+                               nbar = 100,
+                               MDES = rep( 0.2, 4 ),
+                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 0,
+                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                               rho = 0.4)
+    
+    pp.rhomax <- pump_power(   design = "d2.2_m2rc",
+                               MTP = "Bonferroni",
+                               J = 10,
+                               M = 4,
+                               nbar = 100,
+                               MDES = rep( 0.2, 4 ),
+                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 0,
+                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                               rho = 1)
+    
+    pp.rhomin
+    pp.rhomed
+    pp.rhomax
+})
 

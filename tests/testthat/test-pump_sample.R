@@ -304,19 +304,3 @@ test_that("testing of d3.2_m3rr2rc", {
   expect_true( !is.na( traw ) )
 
 })
-
-
-# test_that("different correlations work", {
-#     
-#     calcJ <- pump_sample( design = "d2.2_m2rc",
-#                              typesample = "J",
-#                              power.definition = "min1",
-#                              MTP = "Holm",
-#                              M = 4,
-#                              nbar = 100,
-#                              MDES = 0.39, target.power = 0.80, tol = 0.01,
-#                              Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 0,
-#                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-#                              rho = 0)
-#     
-# })

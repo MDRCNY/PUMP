@@ -184,18 +184,24 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
     power.min[m] <- mean(min.rejects)
   }
 
-  # combine all power for all definitions
-  all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-  if(num.nonzero > 1)
+  if(num.nonzero == 0)
   {
-    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                    "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+    all.power.results <- data.frame('D1indiv' = NA)
   } else
   {
-    colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                    "indiv.mean", "min1")
+    # combine all power for all definitions
+    all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
+    if(num.nonzero > 1)
+    {
+      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                      "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+    } else
+    {
+      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                      "indiv.mean", "min1")
+    }
   }
-
+  
   return(all.power.results)
 }
 
@@ -251,7 +257,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 #'
 #'
 pump_power <- function(
-  design, MTP, MDES, numZero = NULL,
+  design, MTP = NULL, MDES, numZero = NULL,
   M, J, K = 1, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -284,6 +290,7 @@ pump_power <- function(
   {
     # validate input parameters
     params.list <- list(
+      MTP = MTP,
       MDES = MDES, numZero = numZero, M = M, J = J, K = K,
       nbar = nbar, Tbar = Tbar, alpha = alpha,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -292,8 +299,9 @@ pump_power <- function(
       rho = rho, rho.matrix = rho.matrix, B = B
     )
 
-    params.list <- validate_inputs(design, MTP, params.list)
+    params.list <- validate_inputs(design, params.list)
 
+    MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
     nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
