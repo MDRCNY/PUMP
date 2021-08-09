@@ -53,7 +53,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
   } else if (design == 'd3.2_m3rr2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) * ICC.3 * omega.3 - ICC.2 * (1 - R2.2)
+    denom <- Tbar * (1 - Tbar) * J * ( K * ((MDES/MT)^2) - ICC.3 * omega.3 ) - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
   } else
   {
