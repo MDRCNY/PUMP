@@ -43,7 +43,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
   } else if (design == 'd3.3_m3rc2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * ((MDES/MT)^2) - J*ICC.3*(1 - R2.3)  - ICC.2 * (1 - R2.2)
+    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - J * ICC.3*(1 - R2.3)  - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
   } else if (design == 'd3.2_m3ff2rc')
   {
@@ -233,15 +233,15 @@ pump_sample_raw <- function(
   omega.2 = NULL, omega.3 = NULL, max.steps = 100
 )
 {
-  if ( typesample=="nbar" ) {
+  if ( typesample == "nbar" ) {
     stopifnot( is.null( nbar ) )
-    nbar = Inf
+    nbar <- Inf
   } else if ( typesample == "J" ) {
     stopifnot( is.null( J ) )
-    J = Inf
+    J <- Inf
   } else if ( typesample == "K" ) {
     stopifnot( is.null( K ) )
-    K = Inf
+    K <- Inf
   }
 
   initial_df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
@@ -251,13 +251,13 @@ pump_sample_raw <- function(
   conv <- FALSE
 
   # Get initial size (will be low)
-  MT = calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
+  MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
     J <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                  omega.2 = omega.2, omega.3 = omega.3 )
-    J = round(J)
+    J <- round(J)
   } else if (typesample == "K") {
     K <- calc.K(
       design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
@@ -265,7 +265,7 @@ pump_sample_raw <- function(
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
       omega.2 = omega.2, omega.3 = omega.3
     )
-    K = round(K)
+    K <- round(K)
   } else if (typesample == "nbar") {
     nbar <- calc.nbar(
       design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
@@ -279,14 +279,14 @@ pump_sample_raw <- function(
   if( df < 1 ) {
     while( df < 1 ) {
       if ( typesample=="nbar" ) {
-        nbar = nbar + 1
-        min_samp_size = nbar
+        nbar <- nbar + 1
+        min_samp_size <- nbar
       } else if ( typesample == "J" ) {
-        J = J + 1
-        min_samp_size = J
+        J <- J + 1
+        min_samp_size <- J
       } else if ( typesample == "K" ) {
-        K = K + 1
-        min_samp_size = K
+        K <- K + 1
+        min_samp_size <- K
       }
       df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
     }
@@ -300,21 +300,21 @@ pump_sample_raw <- function(
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
     df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
-    MT = calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
+    MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
       J1 <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                     omega.2 = omega.2, omega.3 = omega.3 )
-      J1 = round( J1 )
+      J1 <- round( J1 )
 
       #cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
 
       if ( is.na(J1) || (J1 <= J) ) {
         conv <- TRUE
       } else {
-        J = J + 1
+        J <- J + 1
       }
 
     } else if (typesample == "K") {
@@ -324,7 +324,7 @@ pump_sample_raw <- function(
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2, omega.3 = omega.3
       )
-      K1 = round( K1 )
+      K1 <- round( K1 )
       if ( is.na(K1) || (K1 <= K) ) {
         conv <- TRUE
       } else {
@@ -354,13 +354,13 @@ pump_sample_raw <- function(
   }
 
   if (typesample == "J") {
-    if(!is.na(J) & J <= 0){ J = NA }
+    if(!is.na(J) & J <= 0){ J <- NA }
     return(J)
   } else if (typesample == "K") {
-    if(!is.na(K) & K <= 0){ K = NA }
+    if(!is.na(K) & K <= 0){ K <- NA }
     return(K)
   } else if (typesample == "nbar") {
-    if(!is.na(nbar) & nbar <= 0){ nbar = NA }
+    if(!is.na(nbar) & nbar <= 0){ nbar <- NA }
     return(nbar)
   }
 }
@@ -587,12 +587,12 @@ pump_sample <- function(
   B <- params.list$B
 
   # Delete parameter we are actually going to search over.
-  if ( typesample=="nbar" ) {
-    nbar = NULL
+  if ( typesample == "nbar" ) {
+    nbar <- NULL
   } else if ( typesample == "J" ) {
-    J = NULL
+    J <- NULL
   } else if ( typesample == "K" ) {
-    K = NULL
+    K <- NULL
   }
 
   output.colnames <- c("MTP", "Sample type", "Sample size",
