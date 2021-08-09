@@ -56,3 +56,35 @@ power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
 test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_equal(exp.power.results, power.results.out)
 })
+
+
+#----------------------------------------------------#
+# perfectly correlated outcomes
+#----------------------------------------------------#
+
+pval.mat <- matrix(
+    rbind(c(0,    0,     0,    0  ),
+          c(0.2,  0.2,   0.2,  0.2),
+          c(0.2,  0.2,   0.2,  0.2),
+          c(0.2,  0.2,   0.2,  0.2)),
+    nrow = 4, ncol = 4
+)
+ind.nonzero <- c(TRUE, TRUE, TRUE, TRUE)
+alpha <- 0.05
+
+exp.power.results <- data.frame(
+    D1indiv = 0.25,
+    D2indiv = 0.25,
+    D3indiv = 0.25,
+    D4indiv = 0.25,
+    indiv.mean = 0.25,
+    min1 = 0.25,
+    min2 = 0.25,
+    min3 = 0.25,
+    complete = 0.25
+)
+power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
+
+test_that("Power matches with perfectly correlated outcomes", {
+    expect_equal(exp.power.results, power.results.out)
+})

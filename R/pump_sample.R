@@ -528,7 +528,7 @@ pump_sample_raw_old <- function(
 #' @export
 
 pump_sample <- function(
-  design, MTP, typesample,
+  design, MTP = NULL, typesample,
   MDES, M,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
@@ -566,7 +566,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MDES = MDES, M = M, J = J, K = K,
+    MTP = MTP, MDES = MDES, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -574,8 +574,9 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- pum:::validate_inputs(design, MTP, params.list, single.MDES = TRUE)
+  params.list <- pum:::validate_inputs(design, params.list, single.MDES = TRUE)
   ##
+  MTP <- params.list$MTP
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
   nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha

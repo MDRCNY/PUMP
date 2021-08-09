@@ -13,7 +13,7 @@ scat = function( str, ... ) {
 #'
 #' @return params.list
 #'
-validate_inputs <- function( design, MTP, params.list,
+validate_inputs <- function( design, params.list,
                              mdes.call = FALSE,
                              single.MDES = FALSE )
 {
@@ -30,12 +30,21 @@ validate_inputs <- function( design, MTP, params.list,
     stop('Invalid design.')
   }
 
-  if(length( MTP ) > 1)
+  if(params.list$M == 1)
+  {
+    warning("Multiple testing corrections are not needed when M = 1.")
+    params.list$MTP <- "Bonferroni"
+  } else if(is.null(params.list$MTP))
+  {
+    stop('Please provide a multiple test procedure (MTP).')
+  }
+    
+  if(length( params.list$MTP ) > 1)
   {
     stop( 'Please provide only a single MTP procedure.' )
   }
-
-  if(!(MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+    
+  if(!(params.list$MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -126,12 +135,7 @@ validate_inputs <- function( design, MTP, params.list,
   # check for inconsistent user inputs
   #-------------------------------------------------------#
 
-  if(params.list$M == 1)
-  {
-    warning("Multiple testing corrections are not needed when M = 1.")
-    MTP <- "Bonferroni"
-  }
-
+    
   if(params.list$J == 1 & design != 'd1.1_m2cc')
   {
     message('Assuming unblocked design')

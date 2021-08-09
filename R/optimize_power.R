@@ -100,20 +100,25 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   for(i in 1:nrow(test.pts))
   {
     pt.power.results = power_check( test.pts$pt[i], start.tnum )
-
-    # Sanity check that we are getting power for a given metric.
-    if(!(power.definition %in% colnames(pt.power.results)))
+    if(is.na(pt.power.results$D1indiv[1]))
     {
-      stop(paste0(
-        'Please provide a valid power definition. Provided definition: ', power.definition,
-        '. Available options: ', paste(colnames(pt.power.results), collapse = ', ')))
+      test.pts$power[i] <- 0
+    } else
+    {
+      # Sanity check that we are getting power for a given metric.
+      if(!(power.definition %in% colnames(pt.power.results)))
+      {
+        stop(paste0('Please provide a valid power definition. Provided definition: ', power.definition,
+             '. Available options: ', paste(colnames(pt.power.results), collapse = ', ')))
+      }
+      test.pts$power[i] <- pt.power.results[MTP, power.definition]
     }
-    test.pts$power[i] <- pt.power.results[MTP, power.definition]
   }
 
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
   # search going?)
-  stopifnot( all( !is.na( test.pts$power ) ) )
+  # TODO: test if we should keep going?
+  # stopifnot( all( !is.na( test.pts$power ) ) )
 
   # Based on initial grid, pick best guess for search.
   current.try <- find_best(test.pts, target.power, gamma = 1.5)
