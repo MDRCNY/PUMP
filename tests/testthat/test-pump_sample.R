@@ -304,3 +304,30 @@ test_that("testing of d3.2_m3rr2rc", {
   expect_true( !is.na( traw ) )
 
 })
+
+test_that("testing of d2.2_m2rc", {
+    
+    pp1 <- pump_power(
+      design = "d2.2_m2rc",
+      MTP = 'Bonferroni',
+      nbar = 50,
+      J = 60,
+      M = 3,
+      MDES = rep(0.125, 3),
+      Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    
+    nbar1 <- pump_sample(
+      design = "d2.2_m2rc",
+      MTP = 'Bonferroni',
+      power.definition = 'D1indiv',
+      typesample = 'nbar',
+      target.power = pp1$D1indiv[2],
+      J = 60,
+      M = 3,
+      MDES = 0.125,
+      Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    
+    expect_equal(50, nbar1[1,3], tol = 1)
+})
