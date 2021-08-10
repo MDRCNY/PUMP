@@ -574,7 +574,7 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- pum:::validate_inputs(design, params.list, single.MDES = TRUE)
+  params.list <- validate_inputs(design, params.list, single.MDES = TRUE)
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES
@@ -653,7 +653,7 @@ pump_sample <- function(
   
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni") {
-    ss.results <- data.frame(MTP, power.definition, ss.BF, typesample, target.power)
+    ss.results <- data.frame(MTP, typesample, ss.BF, target.power)
     ss.results <- rbind(ss.results.raw, ss.results)
     colnames(ss.results) <- output.colnames
     ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
@@ -701,7 +701,7 @@ pump_sample <- function(
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
-    ss <- data.frame(MTP, power.definition, NA, typesample, target.power, typesample)
+    ss <- data.frame(MTP, NA, typesample, target.power)
     colnames(ss) <- output.colnames
     return(ss)
   }

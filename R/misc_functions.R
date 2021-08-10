@@ -8,7 +8,6 @@ scat = function( str, ... ) {
 #' it produces errors or warnings, and at times modifies inputs if necessary.
 #'
 #' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest.
 #' @param params.list a list of parameters input by a user
 #'
 #' @return params.list
@@ -134,7 +133,6 @@ validate_inputs <- function( design, params.list,
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#
-
     
   if(params.list$J == 1 & design != 'd1.1_m2cc')
   {
@@ -230,6 +228,23 @@ validate_inputs <- function( design, params.list,
       stop('ICC.3 is required for this design.')
     }
   }
+    
+  # number covariates
+  if(params.list$R2.1 != 0 & params.list$numCovar.1 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.1 = 1')
+    params.list$numCovar.1 <- 1
+  }
+  if(params.list$R2.2 != 0 & params.list$numCovar.2 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.2 = 1')
+    params.list$numCovar.2 <- 1
+  }
+  if(params.list$R2.3 != 0 & params.list$numCovar.3 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.3 = 1')
+    params.list$numCovar.3 <- 1
+  }
 
   #-------------------------------------------------------#
   #  rho
@@ -256,7 +271,7 @@ validate_inputs <- function( design, params.list,
   # check for WY
   #-------------------------------------------------------#
 
-  if(MTP %in% c('WY-SS', 'WY-SD') &
+  if(params.list$MTP %in% c('WY-SS', 'WY-SD') &
      design %in% c('d2.1_m2fr', 'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
                    'd3.2_m3ff2rc', 'd3.2_m3rr2rc'))
   {
