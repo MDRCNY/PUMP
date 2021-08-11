@@ -49,7 +49,8 @@ test_that("pump_sample_raw works", {
                             typesample = "nbar",
                             J = 5,
                             MDES = 0.05, target.power = 0.80, tol = 0.01,
-                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                            numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   )
@@ -58,7 +59,8 @@ test_that("pump_sample_raw works", {
                                typesample = "nbar",
                                J = 10,
                                MDES = 0.05, target.power = 0.80,
-                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                               Tbar = 0.50, alpha = 0.05,
+                               numCovar.1 = 5, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcnbar
@@ -69,7 +71,8 @@ test_that("pump_sample_raw works", {
                             typesample = "J",
                             nbar = 258,
                             MDES = 0.05, target.power = 0.80,
-                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                            Tbar = 0.50, alpha = 0.05,
+                            numCovar.1 = 5, numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcJ
@@ -79,7 +82,8 @@ test_that("pump_sample_raw works", {
                             typesample = "nbar",
                             J = calcJ,
                             MDES = 0.05, target.power = 0.80,
-                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                            Tbar = 0.50, alpha = 0.05,
+                            numCovar.1 = 5, numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcn
@@ -89,7 +93,8 @@ test_that("pump_sample_raw works", {
                              typesample = "J",
                              nbar = calcn,
                              MDES = 0.05, target.power = 0.80,
-                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                             Tbar = 0.50, alpha = 0.05,
+                             numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcJ2
@@ -99,7 +104,8 @@ test_that("pump_sample_raw works", {
                              typesample = "nbar",
                              J = calcJ2,
                              MDES = 0.05, target.power = 0.80,
-                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                             Tbar = 0.50, alpha = 0.05,
+                             numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcn2
@@ -116,7 +122,7 @@ test_that( "optimize_power solves", {
     start.tnum = 200,
     M = 3,
     MDES = 0.05, target.power = 0.80, tol = 0.01,
-    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
     rho = 0.4, max.cum.tnum = 1000, final.tnum = 2000
   )
@@ -136,7 +142,8 @@ test_that("pump_sample 2 level/2 level", {
                         power.definition = "D1indiv",
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                         rho = 0.4 )
   pwr
@@ -147,7 +154,8 @@ test_that("pump_sample 2 level/2 level", {
                    nbar = 200,
                    M = 3,
                    MDES = rep(0.05, 3),
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05,
+                   numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )
   p2
@@ -164,7 +172,8 @@ test_that("sample search when one end is missing", {
                          J = 10,
                          nbar = 10000,
                          MDES = rep( 0.40, 4 ),
-                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                         Tbar = 0.50, alpha = 0.05,
+                         numCovar.1 = 5, numCovar.2 = 1,
                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                          rho = 0.2)
 
@@ -178,7 +187,8 @@ test_that("sample search when one end is missing", {
                     M = 4,
                     J = 10,
                     MDES = 0.40, target.power = 0.80, tol = 0.01,
-                    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                    Tbar = 0.50, alpha = 0.05,
+                    numCovar.1 = 5, numCovar.2 = 1,
                     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                     rho = 0.2) )
 
@@ -194,7 +204,8 @@ test_that("sample search when one end is missing", {
                            M = 4,
                            J = 10,
                            MDES = 0.39, target.power = 0.80, tol = 0.01,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                            rho = 0.2)
   calcnbar
@@ -214,14 +225,16 @@ test_that("further testing of d2.2_m2rc", {
                typesample = "J",
                nbar = 1000,
                MDES = 0.40, target.power = 0.80,
-               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+               Tbar = 0.50, alpha = 0.05,
+               numCovar.1 = 5, numCovar.2 = 1,
                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 ) )
 
   traw <- pump_sample_raw( design = "d2.2_m2rc",
                            typesample = "J",
                            nbar = 10,
                            MDES = 0.40, target.power = 0.80,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
@@ -229,7 +242,8 @@ test_that("further testing of d2.2_m2rc", {
                            typesample = "J",
                            nbar = 10,
                            MDES = 0.01, target.power = 0.80,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
@@ -237,7 +251,8 @@ test_that("further testing of d2.2_m2rc", {
                            typesample = "J",
                            nbar = 1000,
                            MDES = 0.001, target.power = 0.99,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
@@ -246,7 +261,8 @@ test_that("further testing of d2.2_m2rc", {
                            typesample = "J",
                            nbar = 1000,
                            MDES = 0.1, target.power = 0.99,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 100, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 100, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
@@ -257,7 +273,8 @@ test_that("further testing of d2.2_m2rc", {
                         M = 4,
                         nbar = 1000,
                         MDES = 0.40, target.power = 0.80, tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                         rho = 0.2)
 
@@ -271,7 +288,8 @@ test_that("further testing of d2.2_m2rc", {
                    J = calcJ$ss.results$`Sample size`[2] - 1,
                    nbar = 1000,
                    MDES = rep(0.40, 4),
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05,
+                   numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                    rho = 0.2,  tnum=1000)
   pp
@@ -283,7 +301,8 @@ test_that("further testing of d2.2_m2rc", {
                    J = calcJ$ss.results$`Sample size`[2],
                    nbar = 1000,
                    MDES = rep( 0.40, 4),
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05,
+                   numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                    rho = 0.2, tnum=1000 )
   pp
@@ -299,14 +318,15 @@ test_that("testing of d3.2_m3rr2rc", {
                            nbar = 1000,
                            J = 10,
                            MDES = 0.40, target.power = 0.80,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                           Tbar = 0.50, alpha = 0.05,
+                           numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.05, omega.3 = 0.5 )
   expect_true( !is.na( traw ) )
 
 })
 
 test_that("testing of d2.2_m2rc", {
-    
+
     pp1 <- pump_power(
       design = "d2.2_m2rc",
       MTP = 'Bonferroni',
@@ -314,9 +334,10 @@ test_that("testing of d2.2_m2rc", {
       J = 60,
       M = 3,
       MDES = rep(0.125, 3),
-      Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+      Tbar = 0.5, alpha = 0.05,
+      numCovar.1 = 1, numCovar.2 = 1,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
-    
+
     nbar1 <- pump_sample(
       design = "d2.2_m2rc",
       MTP = 'Bonferroni',
@@ -328,6 +349,6 @@ test_that("testing of d2.2_m2rc", {
       MDES = 0.125,
       Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
-    
+
     expect_equal(50, nbar1[1,3], tol = 1)
 })

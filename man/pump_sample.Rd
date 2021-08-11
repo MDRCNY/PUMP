@@ -6,7 +6,7 @@
 \usage{
 pump_sample(
   design,
-  MTP,
+  MTP = NULL,
   typesample,
   MDES,
   M,
@@ -26,7 +26,8 @@ pump_sample(
   R2.3 = 0,
   ICC.2 = 0,
   ICC.3 = 0,
-  rho,
+  rho = NULL,
+  rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
   tnum = 10000,
@@ -38,7 +39,8 @@ pump_sample(
   cl = NULL,
   updateProgress = NULL,
   max_sample_size = 10000,
-  tol = 0.01
+  tol = 0.01,
+  give.optimizer.warnings = FALSE
 )
 }
 \arguments{

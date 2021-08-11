@@ -36,7 +36,8 @@ optimize_power(
   cl = NULL,
   max.steps = 20,
   max.cum.tnum = 5000,
-  final.tnum = 10000
+  final.tnum = 10000,
+  give.warnings = FALSE
 )
 }
 \arguments{

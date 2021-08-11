@@ -5,7 +5,21 @@
 \title{This function calculates needed J to achieve a given power (as represented by
 a difference in t-statistic) for all implemented designs}
 \usage{
-calc.J(design, MT = 2.8, MDES, nbar, Tbar, R2.1, R2.2, ICC.2, omega.2)
+calc.J(
+  design,
+  MT = 2.8,
+  MDES,
+  K = NULL,
+  nbar,
+  Tbar,
+  R2.1,
+  R2.2,
+  R2.3,
+  ICC.2,
+  ICC.3,
+  omega.2,
+  omega.3
+)
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
@@ -15,6 +29,8 @@ freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
 2.8 for normal theory.}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome}
+
+\item{K}{scalar; the number of districts}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -27,10 +43,19 @@ Level 1 covariates for each outcome. Defaults to 0.}
 \item{R2.2}{scalar, or vector of length M; percent of variation explained by
 Level 2 covariates for each outcome. Defaults to 0.}
 
+\item{R2.3}{scalar, or vector of length M; percent of variation explained by
+Level 3 covariates for each outcome. Defaults to 0.}
+
 \item{ICC.2}{scalar; school intraclass correlation}
+
+\item{ICC.3}{scalar; district intraclass correlation}
 
 \item{omega.2}{scalar; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
+variation).}
+
+\item{omega.3}{scalar; ratio of variance of district-average impacts to
+variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 }
 \value{

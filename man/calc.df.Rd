@@ -4,7 +4,16 @@
 \alias{calc.df}
 \title{Calculate the degrees of freedom for a particular design}
 \usage{
-calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+calc.df(
+  design,
+  J,
+  K,
+  nbar,
+  numCovar.1,
+  numCovar.2,
+  numCovar.3,
+  validate = TRUE
+)
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}

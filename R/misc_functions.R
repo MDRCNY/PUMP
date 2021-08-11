@@ -29,21 +29,23 @@ validate_inputs <- function( design, params.list,
     stop('Invalid design.')
   }
 
-  if(params.list$M == 1)
-  {
-    warning("Multiple testing corrections are not needed when M = 1.")
-    params.list$MTP <- "Bonferroni"
+  if(params.list$M == 1) {
+    if ( !is.null( params.list$MTP ) && (params.list$MTP != "none" ) )
+    {
+      warning("Multiple testing corrections are not needed when M = 1.")
+    }
+    params.list$MTP <- "none"
   } else if(is.null(params.list$MTP))
   {
     stop('Please provide a multiple test procedure (MTP).')
   }
-    
+
   if(length( params.list$MTP ) > 1)
   {
     stop( 'Please provide only a single MTP procedure.' )
   }
-    
-  if(!(params.list$MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+
+  if(!(params.list$MTP %in% c('none', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -133,7 +135,7 @@ validate_inputs <- function( design, params.list,
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#
-    
+
   if(params.list$J == 1 & design != 'd1.1_m2cc')
   {
     message('Assuming unblocked design')
@@ -228,44 +230,32 @@ validate_inputs <- function( design, params.list,
       stop('ICC.3 is required for this design.')
     }
   }
-    
+
   # number covariates
-  if(params.list$R2.1 != 0 & params.list$numCovar.1 == 0)
+  if(!is.null( params.list$R2.1) && params.list$R2.1 != 0 && params.list$numCovar.1 == 0)
   {
-    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.1 = 1')
+    warning('If nonzero R2 (R2.1, level 1), at least one covariate is assumed. Setting numCovar.1 = 1')
     params.list$numCovar.1 <- 1
   }
-  if(params.list$R2.2 != 0 & params.list$numCovar.2 == 0)
+  if(!is.null( params.list$R2.2) && params.list$R2.2 != 0 && params.list$numCovar.2 == 0)
   {
-    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.2 = 1')
+    warning('If nonzero R2 (R2.2, level 2), at least one covariate is assumed. Setting numCovar.2 = 1')
     params.list$numCovar.2 <- 1
   }
-  if(params.list$R2.3 != 0 & params.list$numCovar.3 == 0)
+  if(!is.null( params.list$R2.3) && params.list$R2.3 != 0 && params.list$numCovar.3 == 0)
   {
-    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.3 = 1')
+    warning('If nonzero R2 (R2.3, level 3), at least one covariate is assumed. Setting numCovar.3 = 1')
     params.list$numCovar.3 <- 1
   }
 
   #-------------------------------------------------------#
   #  rho
   #-------------------------------------------------------#
-<<<<<<< HEAD
-=======
-
->>>>>>> 45522517f027dbd4e256bab21b4357c4478b2a43
-  if(!is.null(params.list$rho.matrix) & !is.null(params.list$rho))
-  {
-    warning('Provided both rho and full rho matrix, using only rho.matrix.')
-    params.list$rho <- NULL
-  }
-<<<<<<< HEAD
-
-=======
   if(is.null(params.list$rho.matrix) & is.null(params.list$rho))
   {
     stop('Please provide either a rho matrix or default rho.')
   }
->>>>>>> 45522517f027dbd4e256bab21b4357c4478b2a43
+
   if(!is.null(params.list$rho.matrix))
   {
     if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)

@@ -11,7 +11,7 @@ test_that("pump_mdes runs for Bonferroni", {
                        power.definition = "D2indiv",
                        M = 3,
                        target.power = 0.80, tol = 0.01,
-                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                        tnum = 300,
                        rho = 0.4 )
@@ -27,7 +27,7 @@ test_that("pump_mdes runs for Bonferroni", {
                       power.definition = "min1",
                       M = 3,
                       target.power = 0.80, tol = 0.01,
-                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                       tnum = 300,
                       rho = 0.4 )
@@ -41,7 +41,7 @@ test_that("pump_mdes runs for Bonferroni", {
                       power.definition = "complete",
                       M = 3,
                       target.power = 0.80, tol = 0.01,
-                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                       tnum = 300,
                       rho = 0.4 )
@@ -54,7 +54,7 @@ test_that("pump_mdes runs for Bonferroni", {
                    MDES = rep( pmdes_comp$mdes.results$`Adjusted MDES`[2], 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )
   pp
@@ -66,7 +66,7 @@ test_that("pump_mdes runs for Bonferroni", {
                    MDES = rep( pmdes$mdes.results$`Adjusted MDES`[2], 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )
   pp
@@ -82,7 +82,7 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                power.definition = "D1indiv",
                M = 3,
                target.power = 0.80, tol = 0.01,
-               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+               Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                tnum = 300,
                rho = 0.4 )
@@ -96,7 +96,7 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                    MDES = rep( pmdes$mdes.results$`Adjusted MDES`[2], 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )
   pp

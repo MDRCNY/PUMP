@@ -152,7 +152,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
       # Overwrite results with our bonus step.
       iter.results <- data.frame(
-        step = step, pt = current.try, power = current.power, w = current.tnum + check.power.tnum,
+        step = step, pt = current.try, power = current.power,
+        w = current.tnum + check.power.tnum,
         MTP = MTP, target.power = target.power
       )
     } # end if within tolerance
@@ -178,7 +179,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   }
 
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
-    message("Reached maximum iterations without converging on MDES estimate within tolerance.")
+    warning("Reached maximum iterations without converging on MDES estimate within tolerance.")
     iter.results <- data.frame(
       step = step, pt = NA, power = NA, w = NA,
       MTP = MTP, target.power = target.power )
@@ -244,7 +245,9 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
         }
       }
 
-      warning( ifelse( hits == 2, "Both roots in range concerns\n", "No roots in range concerns\n" ) )
+      warning( ifelse( hits == 2,
+                       "Both roots in range concerns\n",
+                       "No roots in range concerns\n" ) )
     }
   } else {
     warning( "No root in quadratic model fit" )

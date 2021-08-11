@@ -30,6 +30,8 @@ freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome}
 
+\item{K}{scalar; the number of districts}
+
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
 
@@ -43,6 +45,15 @@ Level 2 covariates for each outcome. Defaults to 0.}
 
 \item{omega.2}{scalar; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
+variation).}
+
+\item{R2.3}{scalar, or vector of length M; percent of variation explained by
+Level 3 covariates for each outcome. Defaults to 0.}
+
+\item{ICC.3}{scalar; district intraclass correlation}
+
+\item{omega.3}{scalar; ratio of variance of district-average impacts to
+variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 }
 \value{

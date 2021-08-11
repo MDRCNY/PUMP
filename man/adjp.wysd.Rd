@@ -4,27 +4,27 @@
 \alias{adjp.wysd}
 \title{Westfall Young Step Down Function}
 \usage{
-adjp.wysd(rawt.matrix, B, sigma, t.df, cl = NULL)
+adjp.wysd(rawt.matrix, B, Sigma, t.df, cl = NULL)
 }
 \arguments{
+\item{rawt.matrix}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
+
 \item{B}{the number of samples for which test statistics under the alternative hypothesis
 are compared with the distribution (matrix) of test statistics under the complete null (this distribution
 is obtained through drawing test values under H0 with a default of 10,000)}
 
-\item{abs.Zs.H0}{a matrix of test statistics under the complete null}
+\item{Sigma}{correlation matrix of null test statistics}
 
-\item{abs.Zs.H1}{a matrix of raw test statistics under the alternative}
+\item{t.df}{degrees of freedom of null test statistics}
 
-\item{order.matrix}{Order matrix of test statistics in descending order}
-
-\item{ncl}{number of clusters to be made for parallelization. The default is 2.}
+\item{cl}{cluster}
 }
 \value{
-a matrix of adjusted test statistics values
+a matrix of adjusted p-values
 }
 \description{
-This adjustment function utilizes the comp.rawt.SD helper function to compare
+This adjustment function utilizes the comp.rawt.ss helper function to compare
 each row of the matrix sample test statistics under
-alternative hypothesis to all the rows in the matrix of the test statistics under the complete null (i.e think a distribution).
-Furthermore, it carries out the comparison for all the samples of raw test statistics under the alternative.
+alternative hypothesis to all the rows in the matrix of the test statistics
+under the complete null.
 }

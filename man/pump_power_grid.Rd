@@ -25,6 +25,7 @@ pump_power_grid(
   rho,
   omega.2 = NULL,
   omega.3 = NULL,
+  verbose = FALSE,
   ...
 )
 }
@@ -32,7 +33,7 @@ pump_power_grid(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
 automatically re-run for each procedure on the list.}
 
 \item{MDES}{This is *not* a list of MDES for each outcome, but rather a list
@@ -82,6 +83,8 @@ variation).}
 \item{omega.3}{scalar; ratio of variance of district-average impacts to
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
+
+\item{verbose}{TRUE means print out some text as calls processed.  FALSE do not.}
 }
 \description{
 This extenstion of `pump_power()` will take lists of parameter values and run

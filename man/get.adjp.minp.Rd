@@ -7,12 +7,13 @@
 get.adjp.minp(ind.B, rawt.order)
 }
 \arguments{
-\item{ind.B}{FILL IN (Matrix)}
+\item{ind.B}{matrix of indicator variables for if each raw test statistic exceeds
+the null test statistics. dimensions: nrow = tnum, ncol = M.}
 
-\item{rawt.order}{FILL IN}
+\item{rawt.order}{order of raw test statistics in descending order}
 }
 \value{
-returns adjp matrix
+returns adjusted p-value matrix
 }
 \description{
 enforces monotonicity in p-values.

@@ -6,7 +6,7 @@
 \usage{
 pump_mdes(
   design,
-  MTP,
+  MTP = NULL,
   M,
   J,
   K = 1,
@@ -24,7 +24,8 @@ pump_mdes(
   R2.3 = 0,
   ICC.2 = 0,
   ICC.3 = 0,
-  rho,
+  rho = NULL,
+  rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
   tnum = 10000,
@@ -34,7 +35,8 @@ pump_mdes(
   start.tnum = 200,
   final.tnum = 10000,
   cl = NULL,
-  updateProgress = NULL
+  updateProgress = NULL,
+  give.optimizer.warnings = FALSE
 )
 }
 \arguments{

@@ -7,9 +7,9 @@
 comp.rawt.ss(nullt, rawt)
 }
 \arguments{
-\item{abs.Zs.H0.1row}{A vector of permuted test statistics values under H0}
+\item{nullt}{a vector of permuted test statistic values under H0}
 
-\item{abs.Zs.H1.1samp}{One sample of raw statistics}
+\item{rawt}{a vector of raw test statistic values under H1}
 }
 \value{
 returns a vector of 1s and 0s with length of M outcomes
@@ -17,4 +17,6 @@ returns a vector of 1s and 0s with length of M outcomes
 \description{
 The  function  comp.rawt.SS is  needed  to  implement  the  Westfall-Young single-step multiple
 testing procedure (MTP). It operates on one row of null test statistics.
+It compares whether any of the null values across outcomes
+exceeds each raw value for each outcome
 }

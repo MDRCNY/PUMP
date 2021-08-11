@@ -22,14 +22,14 @@ supported_designs <- function() {
                    "d3.2_m3ff2rc", "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
                    "d3.2_m3rr2rc", "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
 
-  adjust = tibble::tribble( ~ Code, ~ Comment,
+  adjust = tibble::tribble( ~ Method, ~ Comment,
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
                             "Holm", "Bonferroni improved!",
                             "BH", "Benjamini-Hochberg (False Discovery Rate)",
                             "WY-SS", "Westfall-Young, Single Step",
                             "WY-SD", "Westfall-Young, Step Down" )
 
-  dplyr::bind_rows( Design=design, Adjustment=adjust, .id="Group")
+  list( Design=design, Adjustment=adjust )
 }
 
 
@@ -197,7 +197,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
                                       "indiv.mean", "min1")
     }
   }
-  
+
   return(all.power.results)
 }
 
@@ -205,12 +205,12 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual,
-#' d-minimal, complete) for all the different MTPs (Bonferroni, Holms,
+#' d-minimal, complete) for all the different MTPs (none, Bonferroni, Holms,
 #' Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
 #'   automatically re-run for each procedure on the list.
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome.
 #' @param numZero if MDES is scalar, number of outcomes assumed to be zero.
@@ -345,6 +345,7 @@ pump_power <- function(
 
   grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
 
+  adjp = NULL
   if (MTP == "Bonferroni"){
 
     adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
@@ -372,7 +373,7 @@ pump_power <- function(
 
     adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B, Sigma = Sigma, t.df = t.df, cl = cl)
 
-  } else {
+  } else if ( MTP != "none") {
 
     stop(paste("Unknown MTP:", MTP))
   }
@@ -383,11 +384,17 @@ pump_power <- function(
 
   ind.nonzero <- MDES > 0
   power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha)
-  power.results.proc <- get.power.results(adjp, ind.nonzero, alpha)
-  power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
-  rownames(power.results.all) <- c('rawp', MTP)
 
-  return(power.results.all)
+  if ( !is.null( adjp ) ) {
+    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha)
+    power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
+    rownames(power.results.all) <- c('rawp', MTP)
+
+    return(power.results.all)
+  } else {
+    rownames(power.results.rawp) = "rawp"
+    return(power.results.rawp)
+  }
 }
 
 #' Run pump_power on combination of factors
@@ -404,13 +411,16 @@ pump_power <- function(
 #' @param MDES This is *not* a list of MDES for each outcome, but rather a list
 #'   of MDES to explore. Each value will be assumed held constant across all M
 #'   outcomes.
+#' @param verbose TRUE means print out some text as calls processed.  FALSE do not.
 #'
 #' @export
 pump_power_grid <- function( design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha,
                              numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                              R2.1, R2.2 = NULL, R2.3 = NULL,
                              ICC.2, ICC.3 = NULL,
-                             rho, omega.2 = NULL, omega.3 = NULL, ... ) {
+                             rho, omega.2 = NULL, omega.3 = NULL,
+                             verbose = FALSE,
+                             ... ) {
 
   args = list( M = M, J = J, K = K, nbar = nbar,
                Tbar = Tbar, alpha = alpha,
@@ -421,7 +431,10 @@ pump_power_grid <- function( design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha,
   args = args[ !nulls ]
 
   grid = do.call( expand.grid, args )
-  scat( "Processing %d calls\n", nrow(grid) )
+  if ( verbose ) {
+    scat( "Processing %d calls\n", nrow(grid) )
+  }
+
   grid$res = purrr::pmap( grid, pump_power,
                           design = design,
                           MTP = MTP,

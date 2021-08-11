@@ -2,20 +2,20 @@
 % Please edit documentation in R/pump_wy.R
 \name{comp.rawt.sd}
 \alias{comp.rawt.sd}
-\title{Helper Functions for WestFallYoung Step down}
+\title{Helper function for Westfall Young Step Down}
 \usage{
 comp.rawt.sd(nullt, rawt, rawt.order)
 }
 \arguments{
-\item{abs.Zs.H0.1row}{A vector of permutated test statistics values under H0}
+\item{nullt}{a vector of permuted test statistic values under H0}
 
-\item{abs.Zs.H1.1samp}{One sample of raw statistics}
+\item{rawt}{a vector of raw test statistic values under H1}
 
-\item{oo}{Order matrix of test statistics in descending order}
+\item{rawt.order}{order of raw test statistics in descending order}
 }
 \value{
 returns a vector of 1s and 0s with lengths of M outcomes
 }
 \description{
-Helper Functions for WestFallYoung Step down
+Helper function for Westfall Young Step Down
 }

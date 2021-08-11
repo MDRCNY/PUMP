@@ -6,7 +6,7 @@
 \usage{
 pump_power(
   design,
-  MTP,
+  MTP = NULL,
   MDES,
   numZero = NULL,
   M,
@@ -25,7 +25,8 @@ pump_power(
   ICC.3 = 0,
   omega.2 = 0,
   omega.3 = 0,
-  rho,
+  rho = NULL,
+  rho.matrix = NULL,
   tnum = 10000,
   B = 3000,
   cl = NULL,
@@ -37,7 +38,7 @@ pump_power(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
 automatically re-run for each procedure on the list.}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
@@ -102,6 +103,6 @@ power results for MTP and unadjusted across all definitions of power
 }
 \description{
 This functions calculates power for all definitions of power (individual,
-d-minimal, complete) for all the different MTPs (Bonferroni, Holms,
+d-minimal, complete) for all the different MTPs (none, Bonferroni, Holms,
 Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
 }

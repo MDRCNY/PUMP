@@ -2,25 +2,27 @@
 % Please edit documentation in R/pump_wy.R
 \name{adjp.wyss}
 \alias{adjp.wyss}
-\title{WestFallYoung Single Step Adjustment Function}
+\title{Westfall-Young Single Step Adjustment Function}
 \usage{
-adjp.wyss(rawt.matrix, B, sigma, t.df)
+adjp.wyss(rawt.matrix, B, Sigma, t.df)
 }
 \arguments{
+\item{rawt.matrix}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
+
 \item{B}{the number of samples for which test statistics under the alternative hypothesis
 are compared with the distribution (matrix) of test statistics under the complete null (this distribution
 is obtained through drawing test values under H0 with a default of 10,000)}
 
-\item{abs.Zs.H0}{a matrix of test statistics under the complete null}
+\item{Sigma}{correlation matrix of null test statistics}
 
-\item{abs.Zs.H1}{a matrix of raw test statistics under the alternative}
+\item{t.df}{degrees of freedom of null test statistics}
 }
 \value{
-a matrix of adjusted test statistics values
+a matrix of adjusted p-values
 }
 \description{
-This adjustment function utilizes the comp.rawt.SS helper function to compare
+This adjustment function utilizes the comp.rawt.ss helper function to compare
 each row of the matrix sample test statistics under
-alternative hypothesis to all the rows in the matrix of the test statistics under the complete null (i.e think a distribution).
-Furthermore, it carries out the comparison for all the samples of raw test statistics under the alternative.
+alternative hypothesis to all the rows in the matrix of the test statistics
+under the complete null.
 }
