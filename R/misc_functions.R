@@ -1,15 +1,18 @@
+scat = function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
+
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
 #' it produces errors or warnings, and at times modifies inputs if necessary.
 #'
 #' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest.
 #' @param params.list a list of parameters input by a user
 #'
 #' @return params.list
 #'
-validate_inputs <- function( design, MTP, params.list,
+validate_inputs <- function( design, params.list,
                              mdes.call = FALSE,
                              single.MDES = FALSE )
 {
@@ -18,7 +21,7 @@ validate_inputs <- function( design, MTP, params.list,
   # basic checks of inputs
   #-------------------------------------------------------#
 
-  if(!(design %in% c('d1.1_m2fc',
+  if(!(design %in% c('d1.1_m2cc',
                      'd2.1_m2fc', 'd2.1_m2ff', 'd2.1_m2fr',
                      'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
                      'd3.2_m3ff2rc', 'd3.2_m3rr2rc')))
@@ -26,12 +29,21 @@ validate_inputs <- function( design, MTP, params.list,
     stop('Invalid design.')
   }
 
-  if(length( MTP ) > 1)
+  if(params.list$M == 1)
+  {
+    warning("Multiple testing corrections are not needed when M = 1.")
+    params.list$MTP <- "Bonferroni"
+  } else if(is.null(params.list$MTP))
+  {
+    stop('Please provide a multiple test procedure (MTP).')
+  }
+    
+  if(length( params.list$MTP ) > 1)
   {
     stop( 'Please provide only a single MTP procedure.' )
   }
-
-  if(!(MTP %in% c('rawp', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+    
+  if(!(params.list$MTP %in% c('Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -70,6 +82,9 @@ validate_inputs <- function( design, MTP, params.list,
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
                    MDES, 'M =', M))
       }
+    } else if(length(params.list$MDES) > params.list$M)
+    {
+      stop('MDES vector length is inconsistent with M.')
     }
   }
 
@@ -118,23 +133,17 @@ validate_inputs <- function( design, MTP, params.list,
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#
-
-  if(params.list$M == 1)
-  {
-    warning("Multiple testing corrections are not needed when M = 1.")
-    MTP <- "Bonferroni"
-  }
-
-  if(params.list$J == 1 & design != 'd1.1_m2fc')
+    
+  if(params.list$J == 1 & design != 'd1.1_m2cc')
   {
     message('Assuming unblocked design')
-    design <- 'd1.1_m2fc'
+    design <- 'd1.1_m2cc'
   }
 
   # two level models
   if(startsWith(design, 'd2'))
   {
-    if( (!is.null(params.list$K) && params.list$K > 1 )|
+    if( ( !is.null(params.list$K) && params.list$K > 1 ) |
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
         ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
@@ -219,21 +228,66 @@ validate_inputs <- function( design, MTP, params.list,
       stop('ICC.3 is required for this design.')
     }
   }
+    
+  # number covariates
+  if(params.list$R2.1 != 0 & params.list$numCovar.1 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.1 = 1')
+    params.list$numCovar.1 <- 1
+  }
+  if(params.list$R2.2 != 0 & params.list$numCovar.2 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.2 = 1')
+    params.list$numCovar.2 <- 1
+  }
+  if(params.list$R2.3 != 0 & params.list$numCovar.3 == 0)
+  {
+    warning('If nonzero R2, at least one covariate is assumed. Setting numCovar.3 = 1')
+    params.list$numCovar.3 <- 1
+  }
 
   #-------------------------------------------------------#
   #  rho
   #-------------------------------------------------------#
+<<<<<<< HEAD
+=======
+
+>>>>>>> 45522517f027dbd4e256bab21b4357c4478b2a43
   if(!is.null(params.list$rho.matrix) & !is.null(params.list$rho))
   {
-    warning('Provided both rho and full rho matrix, using only rho.matrix')
+    warning('Provided both rho and full rho matrix, using only rho.matrix.')
     params.list$rho <- NULL
   }
+<<<<<<< HEAD
 
+=======
+  if(is.null(params.list$rho.matrix) & is.null(params.list$rho))
+  {
+    stop('Please provide either a rho matrix or default rho.')
+  }
+>>>>>>> 45522517f027dbd4e256bab21b4357c4478b2a43
   if(!is.null(params.list$rho.matrix))
   {
     if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)
     {
       stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
+    }
+  }
+
+  #-------------------------------------------------------#
+  # check for WY
+  #-------------------------------------------------------#
+
+  if(params.list$MTP %in% c('WY-SS', 'WY-SD') &
+     design %in% c('d2.1_m2fr', 'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
+                   'd3.2_m3ff2rc', 'd3.2_m3rr2rc'))
+  {
+    if(params.list$B < 10000)
+    {
+      warning(paste(
+        'For models with random intercepts/impacts, B >= 10000 is recommended. Current B:',
+        params.list$B
+      ))
     }
   }
 

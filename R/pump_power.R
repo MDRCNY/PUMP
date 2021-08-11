@@ -7,7 +7,7 @@
 supported_designs <- function() {
   design = tibble::tribble( ~ Code, ~ Comment,
                    # 1 level design
-                   "d1.1_m2fc", "",
+                   "d1.1_m2cc", "1 level, level 1 randomization / constant intercepts, constant impacts model",
                    # 2 level designs, randomization at level 1
                    "d2.1_m2fc", "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
                    "d2.1_m2ff", "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
@@ -52,7 +52,7 @@ supported_designs <- function() {
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
-  if(design %in% c('d1.1_m2fc'))
+  if(design %in% c('d1.1_m2cc'))
   {
     Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
   } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
@@ -104,11 +104,11 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #'
 #' @export
 
-calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
+calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
 
-  if(design == 'd1.1_m2fc')
+  if(design == 'd1.1_m2cc')
   {
-    df <- J * (nbar - 1) - numCovar.1 - 1
+    df <- J * nbar - numCovar.1 - 1
   } else if(design == 'd2.1_m2fc')
   {
     df <- J * (nbar - 1) - numCovar.1 - 1
@@ -137,6 +137,12 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3) {
   {
     stop(paste('Design not implemented:', design))
   }
+
+  if(validate & df <= 0)
+  {
+    stop('Invalid design parameters resulting in nonpositive degrees of freedom')
+  }
+
   return(df)
 }
 
@@ -160,13 +166,13 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # rejected tests
   rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
-  rejects.nonzero <- rejects[,ind.nonzero]
+  rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
 
   # individual power
   power.ind <- apply(rejects.nonzero, 2, mean)
   power.ind.mean <- mean(power.ind)
 
-  # minimum power
+  # minimum and complete power
   power.min <- rep(NA, num.nonzero)
   for(m in 1:num.nonzero)
   {
@@ -174,11 +180,24 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
     power.min[m] <- mean(min.rejects)
   }
 
-  # combine all power for all definitions
-  all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-  colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                  "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
-
+  if(num.nonzero == 0)
+  {
+    all.power.results <- data.frame('D1indiv' = NA)
+  } else
+  {
+    # combine all power for all definitions
+    all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
+    if(num.nonzero > 1)
+    {
+      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                      "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
+    } else
+    {
+      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
+                                      "indiv.mean", "min1")
+    }
+  }
+  
   return(all.power.results)
 }
 
@@ -234,14 +253,14 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 #'
 #'
 pump_power <- function(
-  design, MTP, MDES, numZero = NULL,
+  design, MTP = NULL, MDES, numZero = NULL,
   M, J, K = 1, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
-  rho, rho.matrix = NULL,
+  rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
@@ -267,16 +286,18 @@ pump_power <- function(
   {
     # validate input parameters
     params.list <- list(
+      MTP = MTP,
       MDES = MDES, numZero = numZero, M = M, J = J, K = K,
       nbar = nbar, Tbar = Tbar, alpha = alpha,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-      rho = rho, rho.matrix = rho.matrix
+      rho = rho, rho.matrix = rho.matrix, B = B
     )
 
-    params.list <- validate_inputs(design, MTP, params.list)
+    params.list <- validate_inputs(design, params.list)
 
+    MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
     nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
@@ -286,6 +307,7 @@ pump_power <- function(
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
+    B <- params.list$B
   }
 
   # compute test statistics for when null hypothesis is false
@@ -366,14 +388,6 @@ pump_power <- function(
   rownames(power.results.all) <- c('rawp', MTP)
 
   return(power.results.all)
-}
-
-
-
-
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
 }
 
 #' Run pump_power on combination of factors
