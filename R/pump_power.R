@@ -9,22 +9,18 @@ supported_designs <- function() {
                    # 1 level design
                    "d1.1_m2fc", "",
                    # 2 level designs, randomization at level 1
-                   "d2.1_m2fc", "2 levels, level 1 randomization / fixed intercepts, constant impacts model",
-                   "d2.1_m2ff", "2 levels, level 1 randomization / fixed intercepts, fixed impacts model",
-                   "d2.1_m2fr", "2 levels, level 1 randomization / fixed intercepts, random impacts model",
-                   # 3 level design, randomization at level 1
-                   "d3.1_m3rr2rr", "3 levels, level 1 randomization /
-                   level 3 random intercepts, random impacts model, level 2 random intercepts, random impacts model",
-                   # 2 level design, randomization at level 2
-                   "d2.2_m2rc", "2 levels, level 2 randomization / random intercepts, constant impacts model",
-                   # 3 level design, randomization at level 3
-                   "d3.3_m3rc2rc", "3 levels, level 3 randomization /
-                   level 3 random intercepts, constant impacts model, level 2 random intercepts, constant impacts model",
-                   # 3 level design, randomization at level 2
-                   "d3.2_m3ff2rc", "3 levels, level 2 randomization /
-                   level 3 fixed intercepts, fixed impacts model, level 2 random intercepts, constant impacts model",
-                   "d3.2_m3rr2rc", "3 levels, level 2 randomization /
-                   level 3 random intercepts, random impacts model, level 2 random intercepts, constant impacts model" )
+                   "d2.1_m2fc", "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
+                   "d2.1_m2ff", "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
+                   "d2.1_m2fr", "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
+                   # 3 lvl design, rand at lvl 1
+                   "d3.1_m3rr2rr", "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
+                   # 2 lvl design, rand at lvl 2
+                   "d2.2_m2rc", "2 lvls, lvl 2 rand / random intercepts, constant impacts",
+                   # 3 lvl design, rand at lvl 3
+                   "d3.3_m3rc2rc", "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
+                   # 3 lvl design, rand at lvl 2
+                   "d3.2_m3ff2rc", "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
+                   "d3.2_m3rr2rc", "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
 
   adjust = tibble::tribble( ~ Code, ~ Comment,
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
