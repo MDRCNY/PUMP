@@ -1,6 +1,28 @@
 # library( pum )
 # library( testthat )
 
+test_that("pump_power works without crashing", {
+  pp <- pump_power( design = "d3.2_m3ff2rc",
+                    MTP = "Bonferroni",
+                    MDES = rep( 0.10, 3 ),
+                    M = 3,
+                    J = 3, # number of schools/block
+                    K = 21, # number RA blocks
+                    nbar = 258,
+                    Tbar = 0.50, # prop Tx
+                    alpha = 0.05, # significance level
+                    numCovar.1 = 5, numCovar.2 = 3,
+                    R2.1 = 0.1, R2.2 = 0.7,
+                    ICC.2 = 0.05, ICC.3 = 0.4,
+                    rho = 0.4, # how correlated outcomes are
+                    tnum = 200
+  )
+
+  expect_equal( dim( pp ), c(2,7) )
+
+  expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
+})
+
 test_that("skipping level three inputs for level 2 works", {
 
   expect_warning(pp <- pump_power(   design = "d2.1_m2fc",
@@ -23,30 +45,21 @@ test_that("skipping level three inputs for level 2 works", {
   expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
 })
 
-
-test_that("pump_power works without crashing", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
-                    MDES = rep( 0.10, 3 ),
-                    M = 3,
-                    J = 3, # number of schools/block
-                    K = 21, # number RA blocks
-                    nbar = 258,
-                    Tbar = 0.50, # prop Tx
-                    alpha = 0.05, # significance level
-                    numCovar.1 = 5, numCovar.2 = 3,
-                    R2.1 = 0.1, R2.2 = 0.7,
-                    ICC.2 = 0.05, ICC.3 = 0.4,
-                    rho = 0.4, # how correlated outcomes are
-                    tnum = 200
-              )
+test_that("having no covariates is fine", {
+  pp <- pump_power(   design = "d2.1_m2fc",
+                                     MTP = "Bonferroni",
+                                     MDES = rep( 0.10, 3 ),
+                                     M = 3,
+                                     J = 3, # number of schools/block
+                                     nbar = 258,
+                                     Tbar = 0.50, # prop Tx
+                                     alpha = 0.05, # significance level
+                                     ICC.2 = 0.05,
+                                     rho = 0.4, tnum = 200
+  )
 
   expect_equal( dim( pp ), c(2,7) )
-
-  expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
 })
-
-
 
 test_that("pump_power works with multiple MTP", {
   pp <- pump_power( design = "d3.2_m3ff2rc",
@@ -126,7 +139,7 @@ test_that("unblocked designs", {
   ES
   R2.2 = 0.6102
   pump_power(design = "d1.1_m2cc", MTP = "Holm", MDES = ES,
-             R2.2 = R2.2,
+             R2.2 = R2.2, numCovar.2 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 
 
@@ -224,6 +237,34 @@ test_that("different correlations", {
     # complete power is the reverse
     expect_true( all( pp.rhomin$complete <  pp.rhomed$complete ) )
     expect_true( all( pp.rhomed$complete < pp.rhomax$complete ) )
+
+})
+
+
+test_that("numZero has expected behavior", {
+
+  pp <- pump_power( design = "d2.2_m2rc",
+                    MTP = "Bonferroni",
+                    J = 10,
+                    M = 5,
+                    nbar = 100,
+                    MDES = rep( 0.2, 2 ),
+                    numZero = 3,
+                    Tbar = 0.50,
+                    rho = 1)
+
+
+
+  expect_error(pp <- pump_power( design = "d2.2_m2rc",
+                    MTP = "Bonferroni",
+                    J = 10,
+                    M = 4,
+                    nbar = 100,
+                    MDES = rep( 0.2, 2 ),
+                    numZero = 3,
+                    Tbar = 0.50,
+                    rho = 1)
+  )
 
 })
 
