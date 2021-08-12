@@ -120,8 +120,15 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   # TODO: test if we should keep going?
   # stopifnot( all( !is.na( test.pts$power ) ) )
 
+  optimizer.warnings <- NULL
+
   # Based on initial grid, pick best guess for search.
-  current.try <- find_best(test.pts, target.power, gamma = 1.5)
+  tryCatch(
+    current.try <- find_best(test.pts, target.power, gamma = 1.5),
+    warning = function(w) {
+      optimizer.warnings <<- c(optimizer.warnings, w$message)
+    }
+  )
   current.power <- 0
   current.tnum <- start.tnum
   step <- 0
@@ -175,7 +182,17 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       test.pts <- dplyr::bind_rows(test.pts, iter.results)
     }
 
-    current.try <- find_best(test.pts, target.power, gamma = 1.5)
+    tryCatch(
+      current.try <- find_best(test.pts, target.power, gamma = 1.5),
+      warning = function(w) {
+        optimizer.warnings <<- c(optimizer.warnings, w$message)
+      }
+    )
+  }
+
+  if(!is.null(optimizer.warnings))
+  {
+    warning(unique(optimizer.warnings))
   }
 
   if( (step == max.steps) & abs(current.power - target.power) > tol) {

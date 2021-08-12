@@ -197,7 +197,7 @@ test_that("sample search when one end is missing", {
 
   # Now an infeasible calculation where the correlation makes min1 not able to
   # achieve power, even though independence would.
-  calcnbar <- pump_sample( design = "d2.2_m2rc",
+  expect_warning(calcnbar <- pump_sample( design = "d2.2_m2rc",
                            typesample = "nbar",
                            power.definition = "min1",
                            MTP = "Holm",
@@ -207,7 +207,7 @@ test_that("sample search when one end is missing", {
                            Tbar = 0.50, alpha = 0.05,
                            numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                           rho = 0.2)
+                           rho = 0.2))
   calcnbar
   expect_true( is.na( calcnbar$ss.results$`Sample size`[2] ) )
 })
