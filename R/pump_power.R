@@ -22,6 +22,8 @@ supported_designs <- function() {
                    "d3.2_m3ff2rc", "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
                    "d3.2_m3rr2rc", "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
 
+  design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
+
   adjust = tibble::tribble( ~ Method, ~ Comment,
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
                             "Holm", "Bonferroni improved!",
@@ -54,7 +56,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 
   if(design %in% c('d1.1_m2cc'))
   {
-    Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
+    Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * nbar) )
   } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
   {
     Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
@@ -254,7 +256,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 #'
 pump_power <- function(
   design, MTP = NULL, MDES, numZero = NULL,
-  M, J, K = 1, nbar, Tbar,
+  M, J = 1, K = 1, nbar, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,

@@ -110,9 +110,8 @@ test_that("unblocked designs", {
 
   pp <- pump_power(   design = "d1.1_m2cc",
                       MTP = "Bonferroni",
-                      MDES = rep( 0.10, 3 ),
+                      MDES = rep( 0.50, 3 ),
                       M = 3,
-                      J = 3, # number of schools/block
                       nbar = 258,
                       Tbar = 0.50, # prop Tx
                       alpha = 0.05, # significance level
@@ -121,6 +120,16 @@ test_that("unblocked designs", {
                       ICC.2 = 0.05,
                       rho = 0.4, tnum = 200
   )
+
+
+  ES = log( 2 ) / 0.66
+  ES
+  R2.2 = 0.6102
+  pump_power(design = "d1.1_m2cc", MTP = "Holm", MDES = ES,
+             R2.2 = R2.2,
+             M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
+
+
   expect_true( nrow( pp ) == 2 )
 
 })

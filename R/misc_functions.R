@@ -94,12 +94,12 @@ validate_inputs <- function( design, params.list,
   # Basic checks of data parameters
   #-------------------------------------------------------#
 
-  if( (!is.null( params.list$K ) && params.list$K <= 0) | params.list$J <= 0 | params.list$nbar <= 0)
+  if( (!is.null( params.list$K ) && params.list$K <= 0) | ( !is.null( params.list$J) && params.list$J <= 0) | params.list$nbar <= 0)
   {
-    stop('Please provide positive values of J, K, and/or nbar')
+    stop('Pasted values of J, K, and/or nbar need to be positive.')
   }
 
-  if(params.list$numCovar.1 < 0 | params.list$numCovar.2 < 0  |
+  if(params.list$numCovar.1 < 0 | ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |
      ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
   {
     stop('Please provide non-negative values of your num.Covar parameters')
@@ -136,15 +136,26 @@ validate_inputs <- function( design, params.list,
   # check for inconsistent user inputs
   #-------------------------------------------------------#
 
-  if(params.list$J == 1 & design != 'd1.1_m2cc')
-  {
-    message('Assuming unblocked design')
-    design <- 'd1.1_m2cc'
+  if( design == 'd1.1_m2cc' ) {
+    if ( !is.null( params.list$J ) && params.list$J != 1 ) {
+      stop( "Can't have multiple units at 2nd level for the d1.1_m2cc design" )
+    }
+
+  #  if ( !is.null( params.list$numCovar.2 ) || !is.null( params.list$numCovar.3 ) || !is.null( params.list$R2.2 ) || !is.null( params.list$ICC.2 ) ) {
+   #   stop( "Can't have numCovar.2, numCovar.3, R2.2, or ICC.2 for d1.1_m2cc design (single level design" )
+  #  }
+
   }
+
 
   # two level models
   if(startsWith(design, 'd2'))
   {
+    if ( params.list$J == 1 )
+    {
+      warning('Two level design with single unit at level 2')
+    }
+
     if( ( !is.null(params.list$K) && params.list$K > 1 ) |
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |

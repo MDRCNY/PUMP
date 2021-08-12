@@ -228,3 +228,5 @@ adjp.wysd <- function(rawt.matrix, B, Sigma, t.df, cl = NULL) {
 #     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
 #   }
 # }
+
+
