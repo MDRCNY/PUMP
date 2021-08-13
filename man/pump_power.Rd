@@ -10,9 +10,9 @@ pump_power(
   MDES,
   numZero = NULL,
   M,
-  J,
-  K = 1,
   nbar,
+  J = 1,
+  K = 1,
   Tbar,
   alpha = 0.05,
   numCovar.1 = 0,
@@ -47,11 +47,11 @@ automatically re-run for each procedure on the list.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes)}
 
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
+
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
-
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

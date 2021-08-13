@@ -86,7 +86,7 @@ variation).}
 \item{max.steps}{how many steps allowed before terminating}
 }
 \value{
-Requisit sample size (as integer).
+Requisit sample size (as integer) and associated degreess of freedom.
 }
 \description{
 This is a Helper function for getting a needed Sample Size when no

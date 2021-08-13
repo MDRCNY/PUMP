@@ -6,45 +6,21 @@
 #' The goal is to find the MDES value that satisfies the tolerance set in the
 #' parameter in the power value.
 #'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP a single multiple adjustment procedure of interest. Supported
-#'   options: Bonferroni, BH, Holm, WY-SS, WY-SD
+#' @inheritParams pump_power
+#'
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power
 #'   function, i.e. D1indiv, min1, etc.
 #' @param tol tolerance for target power
-#' @param M scalar; the number of hypothesis tests (outcomes)
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the
-#'   treatment
-#' @param alpha scalar; the family wise error rate (FWER)
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
-#'   including block dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by
-#'   Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by
-#'   Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by
-#'   Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random
-#'   effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random
-#'   effects variability
-#' @param rho scalar; correlation between outcomes
-#' @param tnum scalar; the number of test statistics (samples)
-#' @param B scalar; the number of samples/permutations for Westfall-Young
+#'
 #' @param max.steps how many steps allowed before terminating
-#' @param max.cum.tnum maximum cumulative number of samples
+#' @param max.tnum maximum cumulative number of samples
 #' @param final.tnum number of samples for final draw
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
+#' @param just.result.table TRUE means only return final answer, FALSE means
+#'   return search path information.
 #'
 #' @importFrom stats qt
 #' @return mdes results
@@ -59,9 +35,10 @@ pump_mdes <- function(
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   rho = NULL, rho.matrix = NULL, omega.2 = 0, omega.3 = 0,
-  tnum = 10000, B = 1000,
-  max.steps = 20, max.cum.tnum = 5000, start.tnum = 200, final.tnum = 10000,
-  cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE
+  B = 1000,
+  max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
+  cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE,
+  just.result.table = TRUE
 )
 {
   if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
@@ -146,7 +123,7 @@ pump_mdes <- function(
   mdes.bf   <- ifelse(target.power > 0.5,
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
-  
+
   mdes.results.raw <- c('rawp', mdes.raw, target.power)
 
   pdef <- parse_power_definition( power.definition, M )
@@ -163,7 +140,7 @@ pump_mdes <- function(
   # MDES will be between raw and bonferroni for many power types
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
-  
+
   # adjust bounds to capture needed range
   # for minimum or complete power, expand bounds
   # note: complete power is a special case of minimum power
@@ -178,7 +155,7 @@ pump_mdes <- function(
     mdes.high   <- ifelse(target.indiv.power > 0.5,
                   Q.m * (crit.alphaxM + crit.beta),
                   Q.m * (crit.alphaxM - crit.beta))
-    
+
 
 
     # min1 power will have a lower lower bound
@@ -193,7 +170,7 @@ pump_mdes <- function(
 
 
   }
-  
+
   # unlikely, but just in case
   if(mdes.high < 0)
   {
@@ -218,17 +195,22 @@ pump_mdes <- function(
                              ICC.2 = ICC.2, ICC.3 = ICC.3,
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                              B = B, cl = cl,
-                             max.steps = max.steps, max.cum.tnum = max.cum.tnum,
+                             max.steps = max.steps, max.tnum = max.tnum,
                              final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
 
-  
+
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   mdes.results <- rbind(mdes.results.raw, mdes.results)
   colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
   mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
 
-  return(list(mdes.results = mdes.results, test.pts = test.pts))
-}
+  if ( just.result.table ) {
+    return( mdes.results )
+  } else {
+    return(list(mdes.results = mdes.results, test.pts = test.pts))
+  }
+  }
+
 
 
 

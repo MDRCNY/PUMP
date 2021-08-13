@@ -133,7 +133,7 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
       end.time = Sys.time()
       iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
       finish.time = round((iter.time * tnum)/60)
-      message(paste('Estimated time to finish WY iterations:', finish.time, 'minutes'))
+      message(paste('Estimated time to finish ', tnum, ' WY iterations:', finish.time, 'minutes'))
     }
   }
   return(adjp)

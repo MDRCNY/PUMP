@@ -30,26 +30,28 @@ pump_sample(
   rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
-  tnum = 10000,
   B = 1000,
   max.steps = 20,
-  max.cum.tnum = 5000,
+  max.tnum = 2000,
   start.tnum = 200,
-  final.tnum = 10000,
+  final.tnum = 4 * max.tnum,
   cl = NULL,
   updateProgress = NULL,
   max_sample_size = 10000,
   tol = 0.01,
-  give.optimizer.warnings = FALSE
+  give.optimizer.warnings = FALSE,
+  just.result.table = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
-\item{MTP}{a single multiple adjustment procedure of interest. Supported
-options: Bonferroni, BH, Holm, WY-SS, WY-SD}
+\item{MTP}{Multiple adjustment procedure of interest. Supported options:
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
+automatically re-run for each procedure on the list.}
 
-\item{typesample}{type of sample size to calculate: "J", "K", or "nbar".}
+\item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
 
@@ -61,14 +63,12 @@ options: Bonferroni, BH, Holm, WY-SS, WY-SD}
 
 \item{K}{scalar; the number of districts}
 
-\item{target.power}{target power to arrive at}
+\item{target.power}{Target power to arrive at}
 
-\item{power.definition}{must be a valid power type output by power function,
-i.e. D1indiv, min1, etc.}
+\item{power.definition}{must be a valid power type outputted by power
+function, i.e. D1indiv, min1, etc.}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
-
-\item{two.tailed}{whether to calculate two-tailed or one-tailed power}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
@@ -93,7 +93,8 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar; district intraclass correlation}
 
-\item{rho}{scalar; correlation between outcomes}
+\item{rho}{scalar; assumed correlation between the test statistics of the
+tests.}
 
 \item{omega.2}{scalar; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
@@ -103,13 +104,11 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{tnum}{scalar; the number of test statistics (samples)}
-
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.cum.tnum}{maximum cumulative number of samples}
+\item{max.tnum}{maximum cumulative number of samples}
 
 \item{final.tnum}{number of samples for final draw}
 
@@ -118,15 +117,15 @@ variation).}
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
 
-\item{max_sample_size}{If the initial bounds fail to capture a range of
-working values (e.g., for non-achievable power on one end of the search and
-not the other), default to this sample size in the search.}
+\item{tol}{tolerance for target power}
 
-\item{tol}{tolerance of how close power should be to the target power.}
+\item{just.result.table}{TRUE means only return final answer, FALSE means
+return search path information.}
 }
 \value{
 sample size results
 }
 \description{
-Note: These currently only work if MDES is the same for all outcomes.
+Given other design parameters, do a search to find the needed sample size to
+achieve given target level of power to detect specified effect size.
 }

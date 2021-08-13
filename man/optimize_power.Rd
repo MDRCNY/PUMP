@@ -35,9 +35,10 @@ optimize_power(
   B = NULL,
   cl = NULL,
   max.steps = 20,
-  max.cum.tnum = 5000,
-  final.tnum = 10000,
-  give.warnings = FALSE
+  max.tnum = 2000,
+  final.tnum = 4 * max.tnum,
+  give.warnings = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -105,8 +106,7 @@ tests.}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.cum.tnum}{maximum cumulative number of samples for testing a given
-point (max samples per step.)}
+\item{max.tnum}{maximum number of samples for a single step (other than the final check step).}
 
 \item{final.tnum}{number of samples for final draw}
 }

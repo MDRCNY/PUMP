@@ -79,7 +79,7 @@ validate_inputs <- function( design, params.list,
     {
       if ( length(params.list$MDES) == 1 ) {
         params.list$MDES <- rep( params.list$MDES, params.list$M )
-        warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
+        #warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
                    MDES, 'M =', M))

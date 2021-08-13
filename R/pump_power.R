@@ -256,7 +256,8 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 #'
 pump_power <- function(
   design, MTP = NULL, MDES, numZero = NULL,
-  M, J = 1, K = 1, nbar, Tbar,
+  M,
+  nbar, J = 1, K = 1, Tbar,
   alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
@@ -399,52 +400,3 @@ pump_power <- function(
   }
 }
 
-#' Run pump_power on combination of factors
-#'
-#' This extenstion of `pump_power()` will take lists of parameter values and run
-#' `pump_power()` on all combinations of these values.
-#'
-#' It can only assume the same MDES value for all outcomes due to this.
-#'
-#' Each parameter in the parameter list can be a list, not scalar.
-#'
-#' @inheritParams pump_power
-#'
-#' @param MDES This is *not* a list of MDES for each outcome, but rather a list
-#'   of MDES to explore. Each value will be assumed held constant across all M
-#'   outcomes.
-#' @param verbose TRUE means print out some text as calls processed.  FALSE do not.
-#'
-#' @export
-pump_power_grid <- function( design, MTP, MDES, M, J, K = 1, nbar, Tbar, alpha,
-                             numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-                             R2.1, R2.2 = NULL, R2.3 = NULL,
-                             ICC.2, ICC.3 = NULL,
-                             rho, omega.2 = NULL, omega.3 = NULL,
-                             verbose = FALSE,
-                             ... ) {
-
-  args = list( M = M, J = J, K = K, nbar = nbar,
-               Tbar = Tbar, alpha = alpha,
-               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
-  nulls = purrr::map_lgl( args, is.null )
-  args = args[ !nulls ]
-
-  grid = do.call( expand.grid, args )
-  if ( verbose ) {
-    scat( "Processing %d calls\n", nrow(grid) )
-  }
-
-  grid$res = purrr::pmap( grid, pump_power,
-                          design = design,
-                          MTP = MTP,
-                          MDES = MDES, ... )
-
-  grid$res = purrr::map( grid$res, as.data.frame )
-  grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid = tidyr::unnest( grid, res )
-
-  grid
-}

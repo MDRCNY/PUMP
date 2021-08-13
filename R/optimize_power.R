@@ -26,8 +26,7 @@ midpoint <- function(lower, upper) {
 #'
 #' @param cl cluster object to use for parallel processing
 #' @param max.steps how many steps allowed before terminating
-#' @param max.cum.tnum maximum cumulative number of samples for testing a given
-#'   point (max samples per step.)
+#' @param max.tnum maximum number of samples for a single step (other than the final check step).
 #' @param final.tnum number of samples for final draw
 #'
 #' @return power
@@ -39,15 +38,18 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
-                           max.steps = 20, max.cum.tnum = 5000, final.tnum = 10000,
-                           give.warnings = FALSE)
+                           max.steps = 20, max.tnum = 2000, final.tnum = 4*max.tnum,
+                           give.warnings = FALSE,
+                           verbose = FALSE )
 {
 
   # Helper function to call pump_power for our search and give back the power results
   # from the given set of parameters.
   power_check = function( test_point, test_tnum ) {
 
-    if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
+    if ( verbose ) {
+      print( test_point )
+    }
 
     # Hack code since ifelse() cannot allow a NULL value and K could be NULL for
     # 2 level designs.
@@ -56,12 +58,14 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       myK = test_point
     }
 
+    if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
+
     pt.power.results <- pump_power(
       design, MTP = MTP,
       MDES = MDES,
+      nbar = ifelse(search.type == 'nbar', test_point, nbar),
       J = ifelse(search.type == 'J', test_point, J),
       K = myK,
-      nbar = ifelse(search.type == 'nbar', test_point, nbar),
       tnum = test_tnum,
       # fixed params
       M = M, Tbar = Tbar, alpha = alpha,
@@ -126,13 +130,60 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   current.tnum <- start.tnum
   step <- 0
 
+  # Flag if our next point to test is a valid (df > 0) point.  (Assume true
+  # until we find otherwise.)
+  current.try.ok = TRUE
+
   # Iteratively search by checking best point and then updating our curve.
   while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
   {
     step <- step + 1
-    current.tnum <- pmin(max.cum.tnum, round(current.tnum * 1.1))
+    current.tnum <- pmin(max.tnum, round(current.tnum * 1.1))
+
+
+    # what is smallest tested point?
+    min_limit = min( test.pts$pt )
+
+    # This is a catch for running out of degrees of freedom if we are hugely overpowered.
+    if ( current.try <= min_limit ) {
+      # we are going lower than we have ever gone before.  Need to check if
+      # degrees of freedom is still defined.
+
+      if ( !current.try.ok ) {
+        # we still want to go low.  We have hit a wall.
+        break
+      }
+
+      current.try.ok = FALSE
+      while( !current.try.ok && (min_limit - current.try) > 0.5 ) {
+
+        myK = K
+        if ( search.type == 'K' ) {
+          myK = current.try
+        }
+        t.df <- calc.df(
+          design = design,
+          nbar = ifelse(search.type == 'nbar', current.try, nbar),
+          J = ifelse(search.type == 'J', current.try, J),
+          K = myK,
+          numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3, validate=FALSE )
+
+        if ( t.df > 1 ) {
+          current.try.ok = TRUE
+        } else {
+          current.try = (current.try + min_limit) / 2
+        }
+      }
+    } else {
+      current.try.ok = TRUE
+    }
+
+    if ( !current.try.ok ) {
+      current.try = min_limit
+    }
 
     current.power.results <- power_check( current.try, current.tnum )
+
     current.power <- current.power.results[MTP, power.definition]
 
     iter.results <- data.frame(
@@ -143,7 +194,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     # If we are close, check with more iterations
     if(abs(current.power - target.power) < tol)
     {
-      check.power.tnum <- pmin(10 * current.tnum, max.cum.tnum)
+      check.power.tnum <- pmin(10 * current.tnum, max.tnum)
 
       check.power.results <- power_check( current.try, check.power.tnum )
       check.power <- check.power.results[MTP, power.definition]
@@ -178,6 +229,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     current.try <- find_best(test.pts, target.power, gamma = 1.5)
   }
 
+  if ( !current.try.ok ) {
+    warning( "Hit lower limit of what is allowed by degrees of freedom.  Likely overpowered." )
+  }
+
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
     warning("Reached maximum iterations without converging on MDES estimate within tolerance.")
     iter.results <- data.frame(
@@ -188,6 +243,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   return(test.pts)
 }
+
+
+
+
 
 
 #' Extract roots from quadratic curve based on given evaluated points
@@ -209,19 +268,18 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
   # fit quadratic curve
   quad.mod <- lm( power ~ 1 + pt + I(pt^2), weights = w, data = test.pts)
 
-  # extract point where it crosses target power
-  cc <- rev( coef( quad.mod ) )
-
+  # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - target.power)
   # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
   # first check if root exists
+  cc <- rev( coef( quad.mod ) )
   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
 
   happy = FALSE
   if ( rt.check > 0 ) {
-    # We have a place where our quad crosses target.power
+    # We have a place where our quad line crosses target.power
 
-    # calculate the two points to try
+    # calculate the two points to try (our two roots)
     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
     hits <- (start.low <= try.pt) & (try.pt <= start.high)
 
@@ -229,25 +287,26 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
       try.pt <- try.pt[hits]
       happy = TRUE
     } else if ( sum( hits ) == 2 ) {
-      # pick one root at random.
+      # both roots in our range.  pick one root at random.
       try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+      happy = TRUE
     } else {
-      # No roots in the original range.  Try extrapolation, if we can stay
-      # within gamma of the original range
-      try.pt = sort( try.pt )
-      if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
-        if ( try.pt[[1]] < start.low / gamma ) {
-          try.pt <- try.pt[[2]]
-        } else if ( try.pt[[2]] > start.high * gamma ) {
-          try.pt <- try.pt[[1]]
-        } else {
-          try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
-        }
-      }
+      happy = FALSE
+      # Go to linear
 
-      warning( ifelse( hits == 2,
-                       "Both roots in range concerns\n",
-                       "No roots in range concerns\n" ) )
+      # # No roots in the original range.  Try extrapolation, if we can stay
+      # # within gamma of the original range
+      # try.pt = sort( try.pt )
+      # if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
+      #   if ( try.pt[[1]] < start.low / gamma ) {
+      #     try.pt <- try.pt[[2]]
+      #   } else if ( try.pt[[2]] > start.high * gamma ) {
+      #     try.pt <- try.pt[[1]]
+      #   } else {
+      #     try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+      #   }
+      #   happy = TRUE
+      # }
     }
   } else {
     warning( "No root in quadratic model fit" )
@@ -256,8 +315,8 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
 
 
 
-  # If no roots in the original range, try linear extrapolation, but stay within
-  # gamma of the original range
+  # If no roots in the original range, and quad extrapolation failed, try linear
+  # extrapolation, but stay within gamma of the original range.
   if ( !happy ) {
     lin.mod <- lm( power ~ 1 + pt, data = test.pts)
     cc <- rev( coef( lin.mod ) )

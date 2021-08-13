@@ -85,26 +85,6 @@ test_that("M = 1 runs successfully", {
   expect_true( nrow( pp ) == 1 )
 })
 
-test_that("pump_power_grid works", {
-  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
-                            MTP = "Holm",
-                            MDES = rep( 0.10, 3 ),
-                            M = 3,
-                            J = c( 3, 5, 9), # number of schools/block
-                            K = 21, # number RA blocks
-                            nbar = 258,
-                            Tbar = 0.50, # prop Tx
-                            alpha = 0.15, # significance level
-                            numCovar.1 = 1, numCovar.2 = 1,
-                            R2.1 = 0.1, R2.2 = 0.7,
-                            ICC.2 = 0.05, ICC.3 = 0.9,
-                            rho = 0.4, # how correlated outcomes are
-                            tnum = 200
-  )
-  pp
-  expect_equal( nrow(pp), 3 * 2 )
-
-})
 
 test_that("unblocked designs", {
 
@@ -126,7 +106,7 @@ test_that("unblocked designs", {
   ES
   R2.2 = 0.6102
   pump_power(design = "d1.1_m2cc", MTP = "Holm", MDES = ES,
-             R2.2 = R2.2,
+             R2.2 = R2.2, numCovar.2 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 
 
