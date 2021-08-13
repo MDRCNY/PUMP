@@ -14,7 +14,7 @@ scat = function( str, ... ) {
 #'
 validate_inputs <- function( design, params.list,
                              mdes.call = FALSE,
-                             single.MDES = FALSE )
+                             single.MDES = FALSE)
 {
 
   #-------------------------------------------------------#
@@ -46,7 +46,7 @@ validate_inputs <- function( design, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(params.list$MTP %in% c('none', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  if(!(params.list$MTP %in% c('None', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -130,6 +130,24 @@ validate_inputs <- function( design, params.list,
     stop('Please provide rho as a correlation between -1 and 1')
   }
 
+  if(!(length(params.list$R2.1) %in% c(1, params.list$M))  |
+     !(length(params.list$R2.2) %in% c(1, params.list$M)) |
+     !(length(params.list$R2.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide R2 as a scalar or vector of length M.')
+  }
+
+  if(!(length(params.list$ICC.2) %in% c(1, params.list$M))  |
+     !(length(params.list$ICC.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide ICC as a scalar or vector of length M.')
+  }
+
+  if(!(length(params.list$omega.2) %in% c(1, params.list$M))  |
+     !(length(params.list$omega.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide omega as a scalar or vector of length M.')
+  }
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#

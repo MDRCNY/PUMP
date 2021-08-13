@@ -93,6 +93,18 @@ pump_mdes <- function(
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
 
+  # extract power definition
+  pdef <- parse_power_definition( power.definition, M )
+
+  # validate MTP
+  if(MTP == 'None' & !pdef$indiv )
+  {
+    stop('For minimum or complete power, you must provide a MTP.')
+  }
+
+  # information that will be returned to the user
+  mdes.cols <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
   {
@@ -146,24 +158,27 @@ pump_mdes <- function(
   mdes.bf   <- ifelse(target.power > 0.5,
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
-  
-  mdes.results.raw <- c('rawp', mdes.raw, target.power)
 
-  pdef <- parse_power_definition( power.definition, M )
+
 
   # MDES is alrady calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {
     mdes.results <- data.frame(MTP, mdes.bf, target.power)
-    mdes.results <- rbind(mdes.results.raw, mdes.results)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
+    colnames(mdes.results) <- mdes.cols
+    return(list(mdes.results = mdes.results, tries = NULL))
+  }
+
+  # MDES is alrady calculated for individual power for raw and Bonferroni
+  if ( MTP == "None") {
+    mdes.results <- data.frame(MTP, mdes.raw, target.power)
+    colnames(mdes.results) <- mdes.cols
     return(list(mdes.results = mdes.results, tries = NULL))
   }
 
   # MDES will be between raw and bonferroni for many power types
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
-  
+
   # adjust bounds to capture needed range
   # for minimum or complete power, expand bounds
   # note: complete power is a special case of minimum power
@@ -178,7 +193,7 @@ pump_mdes <- function(
     mdes.high   <- ifelse(target.indiv.power > 0.5,
                   Q.m * (crit.alphaxM + crit.beta),
                   Q.m * (crit.alphaxM - crit.beta))
-    
+
 
 
     # min1 power will have a lower lower bound
@@ -193,7 +208,7 @@ pump_mdes <- function(
 
 
   }
-  
+
   # unlikely, but just in case
   if(mdes.high < 0)
   {
@@ -221,11 +236,9 @@ pump_mdes <- function(
                              max.steps = max.steps, max.cum.tnum = max.cum.tnum,
                              final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
 
-  
+
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
-  mdes.results <- rbind(mdes.results.raw, mdes.results)
-  colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
+  colnames(mdes.results) <- mdes.cols
 
   return(list(mdes.results = mdes.results, test.pts = test.pts))
 }

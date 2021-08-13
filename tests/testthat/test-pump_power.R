@@ -20,7 +20,7 @@ test_that("pump_power works without crashing", {
 
   expect_equal( dim( pp ), c(2,7) )
 
-  expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
+  expect_true( pp[2,"min1"] >= pp[2,"D1indiv"] )
 })
 
 test_that("skipping level three inputs for level 2 works", {
@@ -42,7 +42,7 @@ test_that("skipping level three inputs for level 2 works", {
 
   expect_equal( dim( pp ), c(2,7) )
 
-  expect_true( all( pp[,"min1"] >= pp[,"D1indiv"] ) )
+  expect_true( pp[2,"min1"] >= pp[2,"D1indiv"] )
 })
 
 test_that("having no covariates is fine", {
@@ -231,12 +231,12 @@ test_that("different correlations", {
     pp.rhomed
     pp.rhomax
     # lower correlation means higher min1 power (more chances to hit one out of the park)
-    expect_true( all( pp.rhomin$min1 > pp.rhomed$min1 ) )
-    expect_true( all( pp.rhomed$min1 > pp.rhomax$min1 ) )
+    expect_true( pp.rhomin$min1[2] > pp.rhomed$min1[2] )
+    expect_true( pp.rhomed$min1[2] > pp.rhomax$min1[2]  )
 
     # complete power is the reverse
-    expect_true( all( pp.rhomin$complete <  pp.rhomed$complete ) )
-    expect_true( all( pp.rhomed$complete < pp.rhomax$complete ) )
+    expect_true( pp.rhomin$complete[2] <  pp.rhomed$complete[2] )
+    expect_true( pp.rhomed$complete[2] < pp.rhomax$complete[2] )
 
 })
 
@@ -268,3 +268,19 @@ test_that("numZero has expected behavior", {
 
 })
 
+
+test_that("do not report invalid power values", {
+
+  pp <- pump_power( design = "d2.2_m2rc",
+                    MTP = "Bonferroni",
+                    J = 10,
+                    M = 3,
+                    nbar = 100,
+                    MDES = 0.2,
+                    Tbar = 0.50,
+                    rho = 0.4)
+
+  expect_true(is.na(pp$min1[1]))
+  expect_true(is.na(pp$min2[1]))
+  expect_true(is.na(pp$complete[1]))
+})
