@@ -149,8 +149,6 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 }
 
 
-
-
 #' Calculates different definitions of power
 #'
 #' This function takes in a matrix of adjusted p-values and outputs different types of power
@@ -158,10 +156,11 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 #' @param pval.mat matrix of p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
+#' @param unadj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results = function(pval.mat, ind.nonzero, alpha)
+get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
   M <- ncol(pval.mat)
   num.nonzero <- sum(ind.nonzero)
@@ -176,11 +175,17 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
 
   # minimum and complete power
   power.min <- rep(NA, num.nonzero)
-  for(m in 1:num.nonzero)
+
+  # if unadjusted, don't report minimum or complete power
+  if(adj)
   {
-    min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
-    power.min[m] <- mean(min.rejects)
+    for(m in 1:num.nonzero)
+    {
+      min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
+      power.min[m] <- mean(min.rejects)
+    }
   }
+
 
   if(num.nonzero == 0)
   {
@@ -189,6 +194,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha)
   {
     # combine all power for all definitions
     all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
+
     if(num.nonzero > 1)
     {
       colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
@@ -386,10 +392,10 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha)
+  power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( !is.null( adjp ) ) {
-    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha)
+    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
     power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
     rownames(power.results.all) <- c('rawp', MTP)
 

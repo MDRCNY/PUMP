@@ -1,17 +1,17 @@
-#' Midpoint function
-#'
-#' Calculating the midpoint between the lower and upper bound by calculating
-#' half the distance between the two and adding the lower bound to it. The
-#' function is a helper function in determining the MDES that falls within
-#' acceptable power range.
-#'
-#' @param lower lower bound
-#' @param upper upper bound
-#' @importFrom stats dist
-#' @return returns midpoint value
-midpoint <- function(lower, upper) {
-  return(lower + dist(c(lower, upper))[[1]]/2)
-}
+#' #' Midpoint function
+#' #'
+#' #' Calculating the midpoint between the lower and upper bound by calculating
+#' #' half the distance between the two and adding the lower bound to it. The
+#' #' function is a helper function in determining the MDES that falls within
+#' #' acceptable power range.
+#' #'
+#' #' @param lower lower bound
+#' #' @param upper upper bound
+#' #' @importFrom stats dist
+#' #' @return returns midpoint value
+#' midpoint <- function(lower, upper) {
+#'   return(lower + dist(c(lower, upper))[[1]]/2)
+#' }
 
 #' Optimizes power to help in search for MDES or SS
 #'
