@@ -64,7 +64,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
                              ... ) {
 
 
-  args = list( M = M, MDES = MDES, J = J, K = K, nbar = nbar,
+  args = list( M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
                Tbar = Tbar, alpha = alpha,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -105,7 +105,7 @@ pump_mdes_grid <- function( design, MTP, M,
 
 
   args = list( M = M, J = J, K = K, nbar = nbar, target.power = target.power,
-               Tbar = Tbar, alpha = alpha,
+               Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
@@ -149,7 +149,7 @@ pump_sample_grid <- function( design, MTP, M,
 
 
   args = list( M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
-               Tbar = Tbar, alpha = alpha,
+               Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )

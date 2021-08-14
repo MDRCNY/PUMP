@@ -28,7 +28,7 @@
 #'
 
 pump_mdes <- function(
-  design, MTP = NULL, M, J, K = 1,
+  design, MTP = NULL, M, J, K = 1, numZero = NULL,
   target.power, power.definition, tol,
   nbar, Tbar, alpha,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -47,7 +47,7 @@ pump_mdes <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP,
+    MTP = MTP, numZero = numZero,
     M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -69,6 +69,18 @@ pump_mdes <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
+
+  # extract power definition
+  pdef <- parse_power_definition( power.definition, M )
+
+  # validate MTP
+  if(MTP == 'None' & !pdef$indiv )
+  {
+    stop('For minimum or complete power, you must provide a MTP.')
+  }
+
+  # information that will be returned to the user
+  mdes.cols <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -124,16 +136,19 @@ pump_mdes <- function(
                       Q.m * (crit.alphaxM + crit.beta),
                       Q.m * (crit.alphaxM - crit.beta))
 
-  mdes.results.raw <- c('rawp', mdes.raw, target.power)
 
-  pdef <- parse_power_definition( power.definition, M )
 
   # MDES is alrady calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {
     mdes.results <- data.frame(MTP, mdes.bf, target.power)
-    mdes.results <- rbind(mdes.results.raw, mdes.results)
-    colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-    mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
+    colnames(mdes.results) <- mdes.cols
+    return(list(mdes.results = mdes.results, tries = NULL))
+  }
+
+  # MDES is alrady calculated for individual power for raw and Bonferroni
+  if ( MTP == "None") {
+    mdes.results <- data.frame(MTP, mdes.raw, target.power)
+    colnames(mdes.results) <- mdes.cols
     return(list(mdes.results = mdes.results, tries = NULL))
   }
 
@@ -150,11 +165,11 @@ pump_mdes <- function(
     # must detect all individual outcomes
     target.indiv.power <- target.power^(1/M)
     crit.beta <- ifelse(target.indiv.power > 0.5,
-                  qt(target.indiv.power, df = t.df),
-                  qt(1 - target.indiv.power, df = t.df))
+                        qt(target.indiv.power, df = t.df),
+                        qt(1 - target.indiv.power, df = t.df))
     mdes.high   <- ifelse(target.indiv.power > 0.5,
-                  Q.m * (crit.alphaxM + crit.beta),
-                  Q.m * (crit.alphaxM - crit.beta))
+                          Q.m * (crit.alphaxM + crit.beta),
+                          Q.m * (crit.alphaxM - crit.beta))
 
 
 
@@ -162,11 +177,11 @@ pump_mdes <- function(
     # must detect at least one individual outcome
     min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
     crit.beta <- ifelse(min.target.indiv.power > 0.5,
-                  qt(min.target.indiv.power, df = t.df),
-                  qt(1 - min.target.indiv.power, df = t.df))
+                        qt(min.target.indiv.power, df = t.df),
+                        qt(1 - min.target.indiv.power, df = t.df))
     mdes.low  <- ifelse(min.target.indiv.power > 0.5,
-                  Q.m * (crit.alpha + crit.beta),
-                  Q.m * (crit.alpha - crit.beta))
+                        Q.m * (crit.alpha + crit.beta),
+                        Q.m * (crit.alpha - crit.beta))
 
 
   }
@@ -200,16 +215,14 @@ pump_mdes <- function(
 
 
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
-  mdes.results <- rbind(mdes.results.raw, mdes.results)
-  colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
-  mdes.results[,2:3] = apply(mdes.results[,2:3], 2, as.numeric)
+  colnames(mdes.results) <- mdes.cols
 
   if ( just.result.table ) {
     return( mdes.results )
   } else {
     return(list(mdes.results = mdes.results, test.pts = test.pts))
   }
-  }
+}
 
 
 

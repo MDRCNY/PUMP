@@ -41,11 +41,12 @@ pump_power(
 none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
 automatically re-run for each procedure on the list.}
 
-\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
+\item{MDES}{scalar or vector:  t he MDES values for each outcome.
+Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.}
 
-\item{numZero}{if MDES is scalar, number of outcomes assumed to be zero.}
+\item{numZero}{Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes)}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

@@ -30,6 +30,7 @@ pump_sample(
   rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
+  tnum = 10000,
   B = 1000,
   max.steps = 20,
   max.tnum = 2000,
@@ -37,7 +38,8 @@ pump_sample(
   final.tnum = 4 * max.tnum,
   cl = NULL,
   updateProgress = NULL,
-  max_sample_size = 10000,
+  max_sample_size_nbar = 10000,
+  max_sample_size_JK = 1000,
   tol = 0.01,
   give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
@@ -55,7 +57,7 @@ automatically re-run for each procedure on the list.}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes)}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

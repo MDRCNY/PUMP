@@ -26,7 +26,8 @@ pump_sample_raw(
   ICC.3 = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
-  max.steps = 100
+  max.steps = 100,
+  warn.small = FALSE
 )
 }
 \arguments{
@@ -38,7 +39,8 @@ automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: J, K, or nbar}
 
-\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
+\item{MDES}{scalar or vector:  t he MDES values for each outcome.
+Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -84,6 +86,9 @@ variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
 \item{max.steps}{how many steps allowed before terminating}
+
+\item{warn.small}{Warn if degrees of freedom issues are causing inability to
+achieve target power for sample size.}
 }
 \value{
 Requisit sample size (as integer) and associated degreess of freedom.

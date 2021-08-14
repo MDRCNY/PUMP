@@ -42,7 +42,7 @@ automatically re-run for each procedure on the list.}
 of MDES to explore. Each value will be assumed held constant across all M
 outcomes.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes)}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -50,7 +50,7 @@ outcomes.}
 
 \item{K}{scalar; the number of districts}
 
-\item{numZero}{if MDES is scalar, number of outcomes assumed to be zero.}
+\item{numZero}{Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

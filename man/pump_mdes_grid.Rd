@@ -40,7 +40,7 @@ pump_mdes_grid(
 none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
 automatically re-run for each procedure on the list.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes)}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
 
 \item{target.power}{Target power to arrive at}
 

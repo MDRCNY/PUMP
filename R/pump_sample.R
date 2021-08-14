@@ -112,8 +112,8 @@ calc.J <- function(
   } else if (design == 'd3.3_m3rc2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * K * (MDES/MT)^2 - ICC.3 * (1 - R2.3)
-    J <- (1 / nbar) * numr/denom
+    denom <- nbar * ( Tbar * (1 - Tbar) * K * (MDES/MT)^2 - ICC.3 * (1 - R2.3) )
+    J <- numr/denom
   } else if (design == 'd3.2_m3ff2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
@@ -122,8 +122,8 @@ calc.J <- function(
   } else if (design == 'd3.2_m3rr2rc')
   {
     numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- nbar * K * (MDES/MT)^2 - nbar * ICC.3 * omega.3
-    J <- 1 / (Tbar * (1 - Tbar)) * numr/denom
+    denom <- nbar * Tbar * (1 - Tbar) * ( K * (MDES/MT)^2 - ICC.3 * omega.3 )
+    J <- numr/denom
   } else
   {
     stop(paste('Design not implemented:', design))
@@ -390,7 +390,7 @@ pump_sample_raw <- function(
 
 pump_sample <- function(
   design, MTP = NULL, typesample,
-  MDES, M,
+  MDES, M, numZero = NULL,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
   alpha, two.tailed = TRUE,
@@ -400,14 +400,14 @@ pump_sample <- function(
   ICC.2 = 0, ICC.3 = 0,
   rho = NULL, rho.matrix = NULL,
   omega.2 = 0, omega.3 = 0,
-  B = 1000,
+  tnum = 10000, B = 1000,
   max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL,
-  max_sample_size = 10000,
-  tol = 0.01, give.optimizer.warnings = FALSE,  just.result.table = TRUE,
-  verbose = FALSE
-)
-{
+  max_sample_size_nbar = 10000,
+  max_sample_size_JK = 1000,
+  tol = 0.01, give.optimizer.warnings = FALSE,
+  just.result.table = TRUE,
+  verbose = FALSE )  {
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
     stopifnot( is.null( nbar ) )
@@ -428,7 +428,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, MDES = MDES, M = M, J = J, K = K,
+    MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -449,6 +449,15 @@ pump_sample <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
+
+  # power definition type
+  pdef <- parse_power_definition( power.definition, M )
+
+  # validate MTP
+  if(MTP == 'None' & !pdef$indiv )
+  {
+    stop('For minimum or complete power, you must provide a MTP.')
+  }
 
   # Delete parameter we are actually going to search over.
   if ( typesample == "nbar" ) {
@@ -572,14 +581,24 @@ pump_sample <- function(
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
-    ss <- data.frame(MTP, NA, typesample, target.power)
-    colnames(ss) <- output.colnames
-    return(ss)
+    ss.results <- data.frame(MTP, typesample, NA, target.power)
+    colnames(ss.results) <- output.colnames
+    return(list(ss.results = ss.results, test.pts = NULL))
   }
 
   if ( is.na( ss.high ) ) {
-    ss.high <- max_sample_size
-    warning( "Using default max sample size for one end of initial bounds of search." )
+    if( typesample == 'nbar')
+    {
+      ss.high <- max_sample_size_nbar
+    } else
+    {
+      ss.high <- max_sample_size_JK
+    }
+    warning( "Using default max sample size for one end of initial bounds of search.\n
+             Estimation may take more time." )
+
+    # Why is this here?   It shouldn't be?
+    # start.tnum <- 2000
   }
 
   ss.low = round( ss.low )
@@ -588,19 +607,16 @@ pump_sample <- function(
   # sometimes we already know the answer!
   if(ss.low == ss.high)
   {
-    test.pts <- NULL
     ss.results <- data.frame(MTP, typesample, 1, target.power)
-    ss.results <- rbind(ss.results.raw, ss.results)
     colnames(ss.results) <- output.colnames
-    ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
-    return(list(ss.results = ss.results, test.pts = test.pts))
+    return(list(ss.results = ss.results, test.pts = NULL))
   }
 
   # search in the grid from min to max.
   test.pts <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
-    start.tnum, start.low = ss.low, start.high = ss.high,
+    start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = J, K = K, nbar = nbar,
     M = M, Tbar = Tbar, alpha = alpha,
@@ -622,9 +638,7 @@ pump_sample <- function(
            ceiling(test.pts$pt[nrow(test.pts)])),  # round up to get nice sufficient sample size.
     test.pts$power[nrow(test.pts)]
   )
-  ss.results <- rbind(ss.results.raw, ss.results)
   colnames(ss.results) <- output.colnames
-  ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
 
   if ( just.result.table ) {
     return( ss.results )

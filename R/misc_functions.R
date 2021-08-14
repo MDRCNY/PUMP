@@ -14,7 +14,7 @@ scat = function( str, ... ) {
 #'
 validate_inputs <- function( design, params.list,
                              mdes.call = FALSE,
-                             single.MDES = FALSE )
+                             single.MDES = FALSE)
 {
 
   #-------------------------------------------------------#
@@ -29,12 +29,13 @@ validate_inputs <- function( design, params.list,
     stop('Invalid design.')
   }
 
-  if(params.list$M == 1) {
-    if ( !is.null( params.list$MTP ) && (params.list$MTP != "none" ) )
+  if(params.list$M == 1)
+  {
+    if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
     {
       warning("Multiple testing corrections are not needed when M = 1.")
     }
-    params.list$MTP <- "none"
+    params.list$MTP <- "None"
   } else if(is.null(params.list$MTP))
   {
     stop('Please provide a multiple test procedure (MTP).')
@@ -45,7 +46,7 @@ validate_inputs <- function( design, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(params.list$MTP %in% c('none', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  if(!(params.list$MTP %in% c('None', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
   {
     stop('Invalid MTP.')
   }
@@ -60,33 +61,37 @@ validate_inputs <- function( design, params.list,
     }
   } else
   {
-    if(!is.null(params.list$numZero) & length(params.list$MDES) != 1)
-    {
-      stop('If providing a number of zero outcomes, please provide a single MDES value.')
-    }
     if(!is.null(params.list$numZero))
     {
-      numNonzero <- params.list$M - params.list$numZero
-      params.list$MDES <- c(rep(params.list$MDES, numNonzero), rep(0, params.list$numZero))
-      print(paste('Assumed full MDES vector:', params.list$MDES))
+      if( ( length(params.list$MDES) > 1 ) &&
+          ( params.list$numZero + length(params.list$MDES) != params.list$M ) )
+      {
+        stop('Please provide an MDES vector + numZero that add up to M.\n
+             Example: MDES = c(0.1, 0.1), numZero = 3, M = 5.\n
+             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
+      }
+      if ( length(params.list$MDES) == 1 ) {
+        params.list$MDES <- c(rep( params.list$MDES, params.list$M - params.list$numZero),
+                              rep(0, params.list$numZero) )
+      } else {
+        params.list$MDES <- c(params.list$MDES, rep(0, params.list$numZero))
+      }
+      message('Assumed full MDES vector:', 'c(', paste(params.list$MDES, collapse = ', '), ')')
     }
-
     if ( single.MDES ) {
       if ( length(params.list$MDES) != 1 ) {
-        stop( "Please provide a single MDES value This function does not support vector MDES inputs." )
+        stop( "Please provide a single MDES value. This function does not support vector MDES inputs." )
       }
-    } else if(length(params.list$MDES) < params.list$M)
+    } else if(length(params.list$MDES) != params.list$M)
     {
       if ( length(params.list$MDES) == 1 ) {
         params.list$MDES <- rep( params.list$MDES, params.list$M )
         #warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
+        #message('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
                    MDES, 'M =', M))
       }
-    } else if(length(params.list$MDES) > params.list$M)
-    {
-      stop('MDES vector length is inconsistent with M.')
     }
   }
 
@@ -132,6 +137,24 @@ validate_inputs <- function( design, params.list,
     stop('Please provide rho as a correlation between -1 and 1')
   }
 
+  if(!(length(params.list$R2.1) %in% c(1, params.list$M))  |
+     !(length(params.list$R2.2) %in% c(1, params.list$M)) |
+     !(length(params.list$R2.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide R2 as a scalar or vector of length M.')
+  }
+
+  if(!(length(params.list$ICC.2) %in% c(1, params.list$M))  |
+     !(length(params.list$ICC.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide ICC as a scalar or vector of length M.')
+  }
+
+  if(!(length(params.list$omega.2) %in% c(1, params.list$M))  |
+     !(length(params.list$omega.3) %in% c(1, params.list$M)) )
+  {
+    stop('Please provide omega as a scalar or vector of length M.')
+  }
   #-------------------------------------------------------#
   # check for inconsistent user inputs
   #-------------------------------------------------------#
@@ -149,9 +172,9 @@ validate_inputs <- function( design, params.list,
 
 
   # two level models
-  if(startsWith(design, 'd2'))
+  if(startsWith(design, 'd2') | startsWith(design, 'd1'))
   {
-    if ( params.list$J == 1 )
+    if ( startsWith(design, 'd2') & params.list$J == 1 )
     {
       warning('Two level design with single unit at level 2')
     }
@@ -161,7 +184,7 @@ validate_inputs <- function( design, params.list,
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
         ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
     {
-      warning('The following parameters are not valid for two-level designs, and will be ignored:\n
+      warning('The following parameters are only valid for three-level designs, and will be ignored:\n
               K, numCovar.3, R2.3, ICC.3, omega.3')
       params.list$K <- NULL
       params.list$numCovar.3 <- NULL

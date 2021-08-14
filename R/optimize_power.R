@@ -1,17 +1,17 @@
-#' Midpoint function
-#'
-#' Calculating the midpoint between the lower and upper bound by calculating
-#' half the distance between the two and adding the lower bound to it. The
-#' function is a helper function in determining the MDES that falls within
-#' acceptable power range.
-#'
-#' @param lower lower bound
-#' @param upper upper bound
-#' @importFrom stats dist
-#' @return returns midpoint value
-midpoint <- function(lower, upper) {
-  return(lower + dist(c(lower, upper))[[1]]/2)
-}
+#' #' Midpoint function
+#' #'
+#' #' Calculating the midpoint between the lower and upper bound by calculating
+#' #' half the distance between the two and adding the lower bound to it. The
+#' #' function is a helper function in determining the MDES that falls within
+#' #' acceptable power range.
+#' #'
+#' #' @param lower lower bound
+#' #' @param upper upper bound
+#' #' @importFrom stats dist
+#' #' @return returns midpoint value
+#' midpoint <- function(lower, upper) {
+#'   return(lower + dist(c(lower, upper))[[1]]/2)
+#' }
 
 #' Optimizes power to help in search for MDES or SS
 #'
@@ -124,8 +124,15 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   # TODO: test if we should keep going?
   # stopifnot( all( !is.na( test.pts$power ) ) )
 
+  optimizer.warnings <- NULL
+
   # Based on initial grid, pick best guess for search.
-  current.try <- find_best(test.pts, target.power, gamma = 1.5)
+  tryCatch(
+    current.try <- find_best(test.pts, target.power, gamma = 1.5),
+    warning = function(w) {
+      optimizer.warnings <<- c(optimizer.warnings, w$message)
+    }
+  )
   current.power <- 0
   current.tnum <- start.tnum
   step <- 0
@@ -226,7 +233,17 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       test.pts <- dplyr::bind_rows(test.pts, iter.results)
     }
 
-    current.try <- find_best(test.pts, target.power, gamma = 1.5)
+    tryCatch(
+      current.try <- find_best(test.pts, target.power, gamma = 1.5),
+      warning = function(w) {
+        optimizer.warnings <<- c(optimizer.warnings, w$message)
+      }
+    )
+  }
+
+  if(!is.null(optimizer.warnings))
+  {
+    warning(unique(optimizer.warnings))
   }
 
   if ( !current.try.ok ) {
@@ -266,7 +283,8 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
   start.high = max( test.pts$pt )
 
   # fit quadratic curve
-  quad.mod <- lm( power ~ 1 + pt + I(pt^2), weights = w, data = test.pts)
+  test.pts$sq_pt = sqrt( test.pts$pt )
+  quad.mod <- lm( power ~ 1 + sq_pt + I(sq_pt^2), weights = w, data = test.pts)
 
   # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - target.power)
@@ -280,15 +298,15 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
     # We have a place where our quad line crosses target.power
 
     # calculate the two points to try (our two roots)
-    try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )
+    try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )^2
     hits <- (start.low <= try.pt) & (try.pt <= start.high)
 
     if ( sum( hits ) == 1 ) {
       try.pt <- try.pt[hits]
       happy = TRUE
     } else if ( sum( hits ) == 2 ) {
-      # both roots in our range.  pick one root at random.
-      try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+      # both roots in our range.  Probably flat.  Pick center
+      try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
       happy = TRUE
     } else {
       happy = FALSE
@@ -318,9 +336,9 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
   # If no roots in the original range, and quad extrapolation failed, try linear
   # extrapolation, but stay within gamma of the original range.
   if ( !happy ) {
-    lin.mod <- lm( power ~ 1 + pt, data = test.pts)
+    lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
     cc <- rev( coef( lin.mod ) )
-    try.pt = (target.power - cc[[2]]) / cc[[1]]
+    try.pt = ( (target.power - cc[[2]]) / cc[[1]] )^2
 
     if ( try.pt < start.low / gamma ) {
       try.pt <- start.low / gamma
