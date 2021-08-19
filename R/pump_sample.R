@@ -558,26 +558,18 @@ pump_sample <- function(
       warn.small = FALSE)
   }
 
-  ss.low.df = ss.low$df
-  ss.low = ss.low[[1]]
+  ss.low.df <- ss.low$df
+  ss.low <- ss.low[[1]]
 
-
-  ss.high.df=ss.high$sf
-  ss.high = ss.high[[1]]
-
-  ss.results.raw = c('rawp', typesample, ss.low, target.power)
+  ss.high.df <- ss.high$sf
+  ss.high <- ss.high[[1]]
 
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni") {
     ss.results <- data.frame(MTP, typesample, ss.high, target.power)
-    ss.results <- rbind(ss.results.raw, ss.results)
     colnames(ss.results) <- output.colnames
-    ss.results[,3:4] = apply(ss.results[,3:4], 2, as.numeric)
     return(ss.results)
   }
-
-
-
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
@@ -601,8 +593,8 @@ pump_sample <- function(
     # start.tnum <- 2000
   }
 
-  ss.low = round( ss.low )
-  ss.high = round( ss.high )
+  ss.low <- round( ss.low )
+  ss.high <- round( ss.high )
 
   # sometimes we already know the answer!
   if(ss.low == ss.high)
