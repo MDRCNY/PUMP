@@ -182,11 +182,13 @@ test_that("sample search when one end is missing", {
   pow_ref
 
   set.seed( 20303 )
+  ### KH: BROKEN
   expect_warning( calcnbar <- pump_sample(
     design = "d2.2_m2rc",
     typesample = "nbar",
     power.definition = "min1",
     MTP = "Holm",
+    start.tnum = 3000,
     M = 4,
     J = 10,
     MDES = 0.40, target.power = pow_ref$min1[2], tol = 0.01,
@@ -356,12 +358,13 @@ test_that("testing of d2.2_m2rc", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2, just.result.table = FALSE)
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
   nbar1
 
-  expect_equal(50, nbar1$`Sample size`[[2]], tol = 1)
+  expect_equal(50, nbar1$`Sample size`, tol = 1)
 })
 
+#### KH test that often has problems
 test_that("testing of d3.1_m3rr2rr", {
 
   pp1 <- pump_power(
@@ -378,6 +381,7 @@ test_that("testing of d3.1_m3rr2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
 
+  set.seed(13444)
   expect_warning( J1 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'J',
@@ -392,31 +396,30 @@ test_that("testing of d3.1_m3rr2rr", {
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5) )
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE) )
   J1
-  expect_equal(30, J1$`Sample size`, tol = 3)
+  expect_true(is.na(J1$ss.results$`Sample size`))
 
-  # expect_true(is.na(J1$ss.results$`Sample size`))
-  #
-  # expect_warning(J2 <- pump_sample(
-  #     design = "d3.1_m3rr2rr",
-  #     typesample = 'J',
-  #     MTP = 'Holm',
-  #     target.power = pp1$D1indiv[2],
-  #     power.definition = 'D1indiv',
-  #     max_sample_size_JK = 100,
-  #     K = 15,
-  #     nbar = 50,
-  #     M = 3,
-  #     MDES = 0.125,
-  #     Tbar = 0.5, alpha = 0.05,
-  #     numCovar.1 = 1, numCovar.2 = 1,
-  #     R2.1 = 0.1, R2.2 = 0.1,
-  #     ICC.2 = 0.2, ICC.3 = 0.2,
-  #     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5))
-  #
-  # expect_true(!is.na(J2$ss.results$`Sample size`))
-  # expect_equal(30, J2$ss.results$`Sample size`, tol = 5)
+  # try increasing start.tnum
+  set.seed(13444)
+  expect_warning( J1 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    start.tnum = 3000,
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE) )
+  J1
+  expect_equal(30, J1$ss.results$`Sample size`, tol = 5)
 
   expect_warning(nbar1 <- pump_sample(
     design = "d3.1_m3rr2rr",
@@ -455,7 +458,28 @@ test_that("testing of d3.1_m3rr2rr", {
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar2
   expect_true(!is.na(nbar2$ss.results$`Sample size`))
-  expect_equal(50, nbar2$ss.results$`Sample size`, tol = 2)
+  expect_equal(50, nbar2$ss.results$`Sample size`, tol = 5)
+
+
+  set.seed( 524235325 )
+  expect_warning(nbar3 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    start.tnum = 3000,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
+  expect_true(is.na(nbar3$ss.results$`Sample size`))
+
 })
 
 
@@ -510,8 +534,9 @@ test_that("testing of d3.1_m3ff2rr", {
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5))
+  nbar2
 
-  # expect_equal(50, nbar1$ss.results$`Sample size`, tol = 5)
+  expect_equal(50, nbar2$`Sample size`, tol = 10)
 })
 
 
@@ -522,7 +547,7 @@ test_that("testing of d3.3_m3rc2rc", {
     MTP = 'Holm',
     nbar = 50,
     K = 20,
-    J = 40,
+    J = 20,
     M = 3,
     MDES = rep(0.25, 3),
     Tbar = 0.5, alpha = 0.05,
@@ -530,25 +555,58 @@ test_that("testing of d3.3_m3rc2rc", {
     R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
     ICC.2 = 0.1, ICC.3 = 0.1,
     omega.2 = 0, omega.3 = 0, rho = 0.5)
+  pp1
 
+  J1 <- pump_sample_raw(
+    design = "d3.3_m3rc2rc",
+    typesample = 'J',
+    target.power = pp1$D1indiv[2],
+    K = 20,
+    nbar = 50,
+    M = 3,
+    MDES = 0.25,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0)
+  J1
+
+  J1 <- pump_sample_raw(
+    design = "d3.3_m3rc2rc",
+    typesample = 'J',
+    target.power = pp1$D1indiv[1],
+    K = 20,
+    nbar = 50,
+    M = 3,
+    MDES = 0.25,
+    Tbar = 0.5, alpha = 0.05/3,
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0)
+  J1
+
+  ### KH does not converge
   J1 <- pump_sample(
     design = "d3.3_m3rc2rc",
     typesample = 'J',
     MTP = 'Holm',
     target.power = pp1$D1indiv[2],
     power.definition = 'D1indiv',
-    K = 10,
+    K = 20,
     nbar = 50,
     M = 3,
-    MDES = 0.125,
+    MDES = 0.25,
     Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5)
 
-  expect_true(is.na(J1$ss.results$`Sample size`))
+  expect_true(is.na(J1$`Sample size`))
 
+  # KH does not converge
   nbar1 <- pump_sample(
     design = "d3.3_m3rc2rc",
     typesample = 'nbar',

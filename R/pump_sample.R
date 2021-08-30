@@ -401,7 +401,7 @@ pump_sample <- function(
   rho = NULL, rho.matrix = NULL,
   omega.2 = 0, omega.3 = 0,
   tnum = 10000, B = 1000,
-  max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
+  max.steps = 20, max.tnum = 2000, start.tnum = 1000, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL,
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
@@ -475,10 +475,9 @@ pump_sample <- function(
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
-    test.pts <- NULL
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = test.pts))
+    return(list(ss.results = ss.results, test.pts = NULL))
   }
 
   # Checks on what we are estimating, sample size
@@ -575,7 +574,7 @@ pump_sample <- function(
   if ( is.na( ss.low ) ) {
     ss.results <- data.frame(MTP, typesample, NA, target.power)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    return(ss.results)
   }
 
   if ( is.na( ss.high ) ) {
@@ -601,7 +600,7 @@ pump_sample <- function(
   {
     ss.results <- data.frame(MTP, typesample, 1, target.power)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    return(ss.results)
   }
 
   # search in the grid from min to max.
@@ -636,7 +635,6 @@ pump_sample <- function(
     return( ss.results )
   } else {
     return(list(ss.results = ss.results, test.pts = test.pts))
-
   }
 }
 
