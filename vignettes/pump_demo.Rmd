@@ -26,30 +26,30 @@ As taken from the above site, Diplomas Now "is a secondary school model focused 
 
 Diplomas Now, with MDRC as a partner, was one of the first validation grants awarded as part of the i3 competition (administered by the federal Department of Education and was created by the American Recovery and Reinvestment Act of 2009).
 
-For the actual experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Details quoted from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
+For the experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Details quoted from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
 
 The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, they were left with 29 high schools and 29 middle schools across 21 random assignment blocks.
 
-The levels of this design are the random assignment (RA) blocks at level 3, schools as clusters at level 2, and students nested within the schools at level 1.  RA blocks are nested in districts, but if we use fixed effects for the RA blocks, then we can ignore this 4th level of nesting.
+The levels of this design are the random assignment (RA) blocks at level 3, schools as clusters at level 2, and students nested within the schools at level 1.  RA blocks are nested in districts, but if we use fixed effects for the RA blocks, as the authors of the published report did, then we can ignore this 4th level of nesting.
 
+(KP comment: moved this text up from section below and added footnote (copied from my first paper) although we may want to make the point in the footnote earlier in the paper - but repeat here since vignette will also stand alone (is that right?).)
+The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance (the "ABC's"), and an ABC composite measure of an indicator of whether a student is above given thresholds on the first three measures). Given this, we might do power analysis separately for each group to control family-wise error.^[We note that there are different guidelines for when to adjust for multiple outcomes in education studies. For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains. Our methods apply to either case. In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes.] 
 
 
 # Power and MDES of the original design
 
-The above specifies the design of our RCT.  Power analysis packages typically assume experiments with equal size blocks and clusters. For the above, we have about 3 clusters per block.  The report states there were 14,950 students, giving around 258 students per school (normally we would want the geometric means of clusters per block and students per cluster, but that information is not available in the report).
+The above specifies the design of our example RCT.  Power analysis packages typically assume experiments with equal size blocks and clusters. For the above, we have about 3 clusters per block. The report states there were 14,950 students, giving around 258 students per school (normally we would want the geometric means of clusters per block and students per cluster, but that information is not available in the report).
 
-We also have to select the $R^2$ of our covariates we use for adjustment.  The report does not report these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$.
+We also have to select the $R^2$ of our covariates we use for adjustment. The report does not report these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$ for all outcomes.
 
 At this point we also need to specify the method of analysis. The report calls their model a "two-level" model, but this is not quite in alignment with the language of this package. In particular, the report analysis include fixed effects for the randomization block in their second level.
 In our package, this is a third level of nesting.  In particular, they fit a model with fixed effects at level 3 and cluster randomization.
 
-The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance (the ABCs), and an ABC composite measure of an indicator of whether a student is above given thresholds on the first three measures).  Given this, we might do power analysis separately for each group to control family-wise error.  
+Let's focus on attendance. Within the attendance group of outcomes, we have to specify how correlated our test statistics are likely to be. As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level. The attendance measures are fairly related, so we select `rho = 0.40` for all pairs.
 
-# KP should we add a sentence or two about the adjustment strategy here and the use of domain composites as recommened by Schochet (2008) and mentionin footnote 2 of my 2017 paper?
+KP comment: I'm wondering how much to expand the discussion of the considersations that go into the assumptions here in the example walthrough or elsewhere in the paper. We could maybe walk through the considerations (see recommendations at end of my first paper).
 
-Let's focus on attendance. Within the attendance group of outcomes, we have to specify how correlated out test statistics are likely to be.
-As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level. 
-The attendance measures are fairly related, so we select `rho = 0.40`. 
+KP question: I'm confused why we are passing in single values for R2, ICC and rho rather than a vectors (or matrix for rho). 
 
 Putting this all together, we might have:
 
@@ -78,6 +78,8 @@ The top row are powers without any multiple testing correction.  The `min1` and 
 
 The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is more powered than we might expect to detect some effect, even when using the very conservative correction procedure of Bonferroni.
 
+KP comment: I wonder if one slight modification to the set-up is to walk through the recommendations for how an analyst should make decisions about assumptions and run one scenario that they might come to - which you have done above but then illustrate the impact of other assumptions. You've done this but we perhaps spell it out more and include more discussion of the impact different values of different parameters can have. 
+
 
 # Examining other correction procedures
 
@@ -101,6 +103,8 @@ pump_power( design="blocked_c2_3f",
 ```
 
 Due to the correlation in our outcomes (`rho = 0.4`), we see elevated power if we use this more sophisticated (and less conservative) correction approach for each individual test.  We do not see elevated rates for min1, interestingly.
+
+KP comment: We can insert lessons learned from earlier paper. I think all the lessons about correlations - once specified are the same for all designs - is that right? 
 
 
 # Choosing the method of estimation
@@ -128,6 +132,8 @@ pump_power( design="blocked_c2_3r",
 With random effects models we might also have level 3 covariates.  We need to specify how many, and how predictive they are of outcomes.
 
 # Exploring parameter combinations
+
+KP comment: As note earlier, I am wondering if we might expand this section more, looking at the impact of different assumptions across (1) R2; (2) ICC; (3) rho; (4) number of outcomes with impacts; and maybe (5) adjustment procedures. We can include plots from the plot functions we add to our package (or to the grid functions). 
 
 If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations. For example, we might not be sure what 
 

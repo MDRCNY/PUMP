@@ -477,7 +477,7 @@ pump_sample <- function(
     message('Target power of 0 requested')
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    return(ss.results)
   }
 
   # Checks on what we are estimating, sample size
