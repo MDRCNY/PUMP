@@ -407,6 +407,7 @@ pump_sample <- function(
   max_sample_size_JK = 1000,
   tol = 0.01, give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
+  use.logit = FALSE,
   verbose = FALSE )  {
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
@@ -572,9 +573,10 @@ pump_sample <- function(
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
-    ss.results <- data.frame(MTP, typesample, NA, target.power)
-    colnames(ss.results) <- output.colnames
-    return(ss.results)
+    # ss.results <- data.frame(MTP, typesample, NA, target.power)
+    # colnames(ss.results) <- output.colnames
+    # return(ss.results)
+    ss.low <- 1
   }
 
   if ( is.na( ss.high ) ) {
@@ -617,7 +619,9 @@ pump_sample <- function(
     B = B, cl = cl,
     max.steps = max.steps, max.tnum = max.tnum,
     final.tnum = final.tnum,
-    give.warnings = give.optimizer.warnings, verbose = verbose
+    use.logit = use.logit,
+    give.warnings = give.optimizer.warnings,
+    verbose = verbose
   )
 
   # Assemble results

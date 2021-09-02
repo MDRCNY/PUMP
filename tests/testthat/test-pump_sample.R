@@ -182,10 +182,10 @@ test_that("sample search when one end is missing", {
 
   pow_ref
 
-  # NOTE: this converges, but not to the correct value
+  # this converges, but not to the correct value
   # because the power curve is too flat
   set.seed( 20303 )
-  expect_warning( calcnbar <- pump_sample(
+  expect_warning( nbar1 <- pump_sample(
     design = "d2.2_m2rc",
     typesample = "nbar",
     power.definition = "min1",
@@ -197,14 +197,31 @@ test_that("sample search when one end is missing", {
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
     rho = 0.2, just.result.table = FALSE ) )
+  nbar1
+  expect_true( !is.na( nbar1$ss.results$`Sample size` ) )
 
-  calcnbar
-  expect_true( !is.na( calcnbar$ss.results$`Sample size` ) )
+
+  # same problem happens with logit
+  set.seed( 20303 )
+  expect_warning( nbar2 <- pump_sample(
+    design = "d2.2_m2rc",
+    typesample = "nbar",
+    power.definition = "min1",
+    MTP = "Holm",
+    M = 4,
+    J = 10,
+    MDES = 0.40, target.power = pow_ref$min1[2], tol = 0.01,
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+    rho = 0.2, just.result.table = FALSE, use.logit = TRUE ) )
+  nbar2
+  expect_true( !is.na( nbar2$ss.results$`Sample size` ) )
 
   # Now an infeasible calculation where the correlation makes min1 not able to
   # achieve power, even though independence would.
   set.seed( 443434344 )
-  expect_warning(calcnbar <- pump_sample( design = "d2.2_m2rc",
+  expect_warning(nbar3 <- pump_sample( design = "d2.2_m2rc",
                                           typesample = "nbar",
                                           power.definition = "min1",
                                           MTP = "Holm",
@@ -215,8 +232,26 @@ test_that("sample search when one end is missing", {
                                           numCovar.1 = 5, numCovar.2 = 1,
                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                                           rho = 0.2, max.tnum = 200, just.result.table = FALSE ) )
-  calcnbar
-  expect_true( is.na( calcnbar$ss.results$`Sample size` ) )
+  nbar3
+  expect_true( is.na( nbar3$ss.results$`Sample size` ) )
+
+  # same happens with logit
+  set.seed( 443434344 )
+  expect_warning(nbar4 <- pump_sample( design = "d2.2_m2rc",
+                                       typesample = "nbar",
+                                       power.definition = "min1",
+                                       MTP = "Holm",
+                                       M = 4,
+                                       J = 10,
+                                       MDES = 0.39, target.power = 0.80, tol = 0.01,
+                                       Tbar = 0.50, alpha = 0.05,
+                                       numCovar.1 = 5, numCovar.2 = 1,
+                                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+                                       rho = 0.2, max.tnum = 200,
+                                       use.logit = TRUE,
+                                       just.result.table = FALSE ) )
+  nbar4
+  expect_true( is.na( nbar4$ss.results$`Sample size` ) )
 })
 
 
@@ -400,7 +435,6 @@ test_that("testing of d3.1_m3rr2rr", {
   J1
   expect_equal(30, J1$`Sample size`, tol = 5)
 
-
   # increasing start.tnum produces results closer to the truth
   set.seed( 524235325 )
   expect_warning( J2 <- pump_sample(
@@ -420,7 +454,48 @@ test_that("testing of d3.1_m3rr2rr", {
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
     start.tnum = 1000) )
   J2
-  expect_equal(30, J1$`Sample size`, tol = 1)
+  expect_equal(30, J2$`Sample size`, tol = 1)
+
+  # comparing to logit
+  set.seed( 524235325 )
+  expect_warning( J3 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    use.logit = TRUE) )
+  J3
+  expect_equal(30, J3$`Sample size`, tol = 2)
+
+  set.seed( 524235326 )
+  expect_warning( J4 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    use.logit = TRUE) )
+  J4
+  expect_equal(30, J4$`Sample size`, tol = 2)
 
   # sometimes this converges
   set.seed( 524235325 )
@@ -463,9 +538,32 @@ test_that("testing of d3.1_m3rr2rr", {
   nbar2
   expect_true(is.na(nbar2$ss.results$`Sample size`))
 
-  # but more iterations fixes it
+
+  # also does not converge with logit
   set.seed( 524235330 )
   expect_warning(nbar3 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    use.logit = TRUE,
+    just.result.table = FALSE))
+  nbar3
+  expect_true(is.na(nbar3$ss.results$`Sample size`))
+
+  # but more iterations fixes it
+  set.seed( 524235330 )
+  expect_warning(nbar4 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
     MTP = 'Holm',
@@ -481,13 +579,37 @@ test_that("testing of d3.1_m3rr2rr", {
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
-  nbar3
-  expect_true(!is.na(nbar3$ss.results$`Sample size`))
-  expect_equal(50, nbar3$ss.results$`Sample size`, tol = 2)
+  nbar4
+  expect_true(!is.na(nbar4$ss.results$`Sample size`))
+  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 2)
 
-  # so does decreasing the maximum sample size
+  # more iterations does not fix for logit
   set.seed( 524235330 )
-  expect_warning(nbar4 <- pump_sample(
+  expect_warning(nbar5 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    start.tnum = 1000,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    use.logit = TRUE))
+  nbar5
+  expect_true(!is.na(nbar5$ss.results$`Sample size`))
+  expect_equal(50, nbar5$ss.results$`Sample size`, tol = 2)
+
+  # decreasing the maximum sample size fixes it
+  set.seed( 524235330 )
+  expect_warning(nbar6 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
     MTP = 'Holm',
@@ -503,9 +625,59 @@ test_that("testing of d3.1_m3rr2rr", {
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
-  nbar4
-  expect_true(!is.na(nbar4$ss.results$`Sample size`))
-  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 10)
+  nbar6
+  expect_true(!is.na(nbar6$ss.results$`Sample size`))
+  expect_equal(50, nbar6$ss.results$`Sample size`, tol = 10)
+
+  # decreasing max sample size for logit makes it converge
+  # to the wrong value!
+  set.seed( 524235330 )
+  expect_warning(nbar7 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    max_sample_size_nbar = 1000,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    use.logit = TRUE))
+  nbar7
+  expect_true(!is.na(nbar7$ss.results$`Sample size`))
+  expect_equal(50, nbar7$ss.results$`Sample size`, tol = 30)
+
+  # decreasing max sample size and increasing start.tnum does not help
+  set.seed( 524235330 )
+  expect_warning(nbar8 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    max_sample_size_nbar = 1000,
+    start.tnum = 1000,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    use.logit = TRUE))
+  nbar8
+  expect_true(!is.na(nbar8$ss.results$`Sample size`))
+  expect_equal(50, nbar8$ss.results$`Sample size`, tol = 30)
 })
 
 
@@ -546,8 +718,7 @@ test_that("testing of d3.1_m3ff2rr", {
   nbar1
   expect_true(is.na(nbar1$ss.results$`Sample size`))
 
-  # decreasing max sample size helps, but it is
-  # still pretty far from the true value!
+  # logit doesn't converge either
   set.seed( 245444 )
   expect_warning(nbar2 <- pump_sample(
     design = "d3.2_m3ff2rc",
@@ -555,7 +726,6 @@ test_that("testing of d3.1_m3ff2rr", {
     MTP = 'Holm',
     target.power = pp1$D1indiv[2],
     power.definition = 'D1indiv',
-    max_sample_size_nbar = 1000,
     K = 10,
     J = 30,
     M = 3,
@@ -564,11 +734,14 @@ test_that("testing of d3.1_m3ff2rr", {
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    use.logit = TRUE))
   nbar2
-  expect_equal(50, nbar2$ss.results$`Sample size`, tol = 15)
+  expect_true(is.na(nbar2$ss.results$`Sample size`))
 
-  # increasing start.tnum is not enough
+  # decreasing max sample size helps, but it is
+  # still pretty far from the true value!
   set.seed( 245444 )
   expect_warning(nbar3 <- pump_sample(
     design = "d3.2_m3ff2rc",
@@ -576,7 +749,7 @@ test_that("testing of d3.1_m3ff2rr", {
     MTP = 'Holm',
     target.power = pp1$D1indiv[2],
     power.definition = 'D1indiv',
-    start.tnum = 1000,
+    max_sample_size_nbar = 1000,
     K = 10,
     J = 30,
     M = 3,
@@ -587,12 +760,56 @@ test_that("testing of d3.1_m3ff2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar3
-  expect_true(is.na(nbar3$ss.results$`Sample size`))
+  expect_equal(50, nbar3$ss.results$`Sample size`, tol = 15)
+
+  # logit has the same pattern
+  set.seed( 245444 )
+  expect_warning(nbar4 <- pump_sample(
+    design = "d3.2_m3ff2rc",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    max_sample_size_nbar = 1000,
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    use.logit = TRUE))
+  nbar4
+  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 20)
+
+  # increasing start.tnum is not enough
+  set.seed( 245444 )
+  expect_warning(nbar5 <- pump_sample(
+    design = "d3.2_m3ff2rc",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    start.tnum = 1000,
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
+  nbar5
+  expect_true(is.na(nbar5$ss.results$`Sample size`))
 
 
   # trying both doesn't improve the closeness to the truth
   set.seed( 245444 )
-  expect_warning(nbar4 <- pump_sample(
+  expect_warning(nbar6 <- pump_sample(
     design = "d3.2_m3ff2rc",
     typesample = 'nbar',
     MTP = 'Holm',
@@ -609,8 +826,8 @@ test_that("testing of d3.1_m3ff2rr", {
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
-  nbar4
-  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 12)
+  nbar6
+  expect_equal(50, nbar6$ss.results$`Sample size`, tol = 12)
 
 
 })
@@ -650,6 +867,25 @@ test_that("testing of d3.3_m3rc2rc", {
     omega.2 = 0, omega.3 = 0.1, rho = 0.5)
 
   expect_true(is.na(J1$`Sample size`))
+
+  # does not converge with logit
+  J2 <- pump_sample(
+    design = "d3.3_m3rc2rc",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = pp1$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 10,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    use.logit = TRUE)
+  expect_true(is.na(J2$`Sample size`))
 
   # does not converge
   nbar1 <- pump_sample(
