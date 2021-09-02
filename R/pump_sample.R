@@ -475,10 +475,9 @@ pump_sample <- function(
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
-    test.pts <- NULL
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = test.pts))
+    return(ss.results = ss.results)
   }
 
   # Checks on what we are estimating, sample size
@@ -575,7 +574,7 @@ pump_sample <- function(
   if ( is.na( ss.low ) ) {
     ss.results <- data.frame(MTP, typesample, NA, target.power)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    return(ss.results = ss.results)
   }
 
   if ( is.na( ss.high ) ) {
@@ -636,7 +635,6 @@ pump_sample <- function(
     return( ss.results )
   } else {
     return(list(ss.results = ss.results, test.pts = test.pts))
-
   }
 }
 
