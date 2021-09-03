@@ -1,9 +1,7 @@
 # library( pum )
 # library( testthat )
 
-# note: these tests take about 30 minutes to run
-
-default.tol = 0.05
+small.B = 1000
 
 test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
 
@@ -19,7 +17,7 @@ test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
                        R2.1 = 0.1, R2.2 = 0.4,
                        ICC.2 = 0.05,
                        rho = 0.4, tnum = 1000,
-                       B = 3000
+                       B = small.B
   )
 
   pp2 <- pump_power( design = "d2.1_m2fc",
@@ -34,7 +32,7 @@ test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
                           R2.1 = 0.1, R2.2 = 0.4,
                           ICC.2 = 0.05,
                           rho = 0.4, tnum = 1000,
-                          B = 3000
+                          B = small.B
   )
 
   pp1
@@ -57,7 +55,7 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
                      R2.1 = 0.1, R2.2 = 0.4,
                      ICC.2 = 0.05,
                      rho = 0.4, tnum = 1000,
-                     B = 3000
+                     B = small.B
   )
 
   pp2 <- pump_power( design = "d2.1_m2fc",
@@ -72,7 +70,7 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
                      R2.1 = 0.1, R2.2 = 0.4,
                      ICC.2 = 0.05,
                      rho = 0.4, tnum = 1000,
-                     B = 3000
+                     B = small.B
   )
 
   pp1
@@ -80,8 +78,6 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
 
   expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
 })
-
-
 
 test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random)", {
 
@@ -94,12 +90,12 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.1, R2.2 = 0.4, R2.3 = 0.3,
                      ICC.2 = 0.05, ICC.3 = 0.2,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -112,12 +108,12 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.1, R2.2 = 0.4, R2.3 = 0.3,
                      ICC.2 = 0.05, ICC.3 = 0.2,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
@@ -137,12 +133,12 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.1, R2.2 = 0.4, R2.3 = 0.3,
                      ICC.2 = 0.05, ICC.3 = 0.2,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -155,12 +151,12 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.1, R2.2 = 0.4, R2.3 = 0.3,
                      ICC.2 = 0.05, ICC.3 = 0.2,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
@@ -181,12 +177,12 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random), small num
                      nbar = 500,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.5, R2.2 = 0.5, R2.3 = 0.5,
                      ICC.2 = 0.05, ICC.3 = 0.05,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -199,12 +195,12 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random), small num
                      nbar = 500,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.5, R2.2 = 0.5, R2.3 = 0.5,
                      ICC.2 = 0.05, ICC.3 = 0.05,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
@@ -212,6 +208,7 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random), small num
 
   expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
 })
+
 
 test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random), small number of blocks/clusters", {
 
@@ -224,12 +221,12 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random), small num
                      nbar = 500,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.5, R2.2 = 0.5, R2.3 = 0.5,
                      ICC.2 = 0.05, ICC.3 = 0.05,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -242,12 +239,12 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random), small num
                      nbar = 500,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
+                     numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1,
                      R2.1 = 0.5, R2.2 = 0.5, R2.3 = 0.5,
                      ICC.2 = 0.05, ICC.3 = 0.05,
                      omega.3 = 0.1, omega.2 = 0.1,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
@@ -271,7 +268,7 @@ test_that("WY-SS results are stable for design: d2.2_m2rc", {
                      R2.1 = 0.1, R2.2 = 0.1,
                      ICC.2 = 0.01,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -287,7 +284,7 @@ test_that("WY-SS results are stable for design: d2.2_m2rc", {
                      R2.1 = 0.1, R2.2 = 0.1,
                      ICC.2 = 0.01,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
@@ -311,7 +308,7 @@ test_that("WY-SD results are stable for design: d2.2_m2rc", {
                      R2.1 = 0.1, R2.2 = 0.1,
                      ICC.2 = 0.01,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
 
@@ -327,7 +324,7 @@ test_that("WY-SD results are stable for design: d2.2_m2rc", {
                      R2.1 = 0.1, R2.2 = 0.1,
                      ICC.2 = 0.01,
                      rho = 0.4, tnum = 1000,
-                     B = 10000
+                     B = small.B
   )
 
   pp1
