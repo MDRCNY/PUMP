@@ -1,7 +1,8 @@
 # library( pum )
 # library( testthat )
 
-small.B = 1000
+small.B <- 1000
+default.tol <- 0.05
 
 test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
 
