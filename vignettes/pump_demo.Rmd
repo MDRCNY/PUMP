@@ -12,7 +12,8 @@ editor_options:
 ```{r initialize, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  cache = TRUE
 )
 library( tidyverse )
 ```
@@ -56,7 +57,7 @@ Putting this all together, we might have:
 ```{r setup}
 library(pum)
 
-pump_power( design="blocked_c2_3f",
+pump_power( design="d3.2_m3ff2rc",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -86,7 +87,7 @@ KP comment: I wonder if one slight modification to the set-up is to walk through
 It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, it is rerunning the simulation behind the scenes, so it can get computationally intensive:
 
 ```{r othercorrections, cache=TRUE}
-pump_power( design="blocked_c2_3f",
+pump_power( design="d3.2_m3ff2rc",
             MTP = c("Bonferroni", "Holm", "WY-SD"),
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -112,7 +113,7 @@ KP comment: We can insert lessons learned from earlier paper. I think all the le
 For a given design, one might analyze the resulting data differently.  For example, we could use a fixed effect model, as above, or possibly a random effects model. We specify this with the `design` parameter:
 
 ```{r}
-pump_power( design="blocked_c2_3r",
+pump_power( design="d3.2_m3rr2rc",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -138,7 +139,7 @@ KP comment: As note earlier, I am wondering if we might expand this section more
 If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations. For example, we might not be sure what 
 
 ```{r}
-grid <- pump_power_grid( design="blocked_c2_3f",
+grid <- pump_power_grid( design="d3.2_m3ff2rc",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -176,7 +177,7 @@ To identify the MDES of a given design we use the `pump_mdes` method. Along with
 Here, for example, we find the MDES for obtaining 80% individual power using the Holm procedure if we had 4 schools per block instead of 3:
 
 ```{r MDEScalc, cache=TRUE}
-pump_mdes( design="blocked_c2_3f",
+pump_mdes( design="d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "D1indiv", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
@@ -188,7 +189,7 @@ This method does a search, looking for the impact (assumed shared across all out
 Note if we are looking for MDES for "min1" power (i.e., what effect do we have to assume across all observations such that we will find some significant result with 80% power), we have a much smaller MDES:
 
 ```{r MDEScalcmin1, cache=TRUE}
-pump_mdes( design="blocked_c2_3f",
+pump_mdes( design="d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "min1", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
@@ -203,28 +204,29 @@ For our design we might want to determine the needed number of students/school, 
 
 Here we see how many schools are needed to achieve a MDES of 0.05 for min1 power (so how many schools are needed to have 80% chance of finding at least 1 outcome significant, if all outcomes had a true effect size of 0.05).
 
-**NOTE: Need to implement formula to allow for blocked_c2_3f design here**
+**NOTE: Need to implement formula to allow for d3.2_m3ff2rc design here**
 
 ```{r samplesizecalc, cache=TRUE}
-smp <- pump_sample( design="blocked_i1_2c",
-            MTP = "Holm",
-            typesample = "J",
-           target.power = 0.80, power.definition = "min1", tol = 0.01,
-           MDES = 0.05, M = 3, nbar = 258, K = 21,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
-           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+smp <- pump_sample(
+  design="d2.1_m2fc",
+  MTP = "Holm",
+  typesample = "J",
+  target.power = 0.80, power.definition = "min1", tol = 0.01,
+  MDES = 0.05, M = 3, nbar = 258, K = 21,
+  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4
+)
 smp
 ```
 
 We can check as so:
 
 ```{r samplesizeverify, cache=TRUE}
-
-pump_power( design="blocked_i1_2c",
+pump_power( design="d2.1_m2fc",
             MTP = "Holm", MDES = 0.05, 
-           M = 3, nbar = 258, J = smp$ss.results$`Sample size`, K = 21,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
-           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+            M = 3, nbar = 258, J = smp$`Sample size`, K = 21,
+            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
+            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
 
 
