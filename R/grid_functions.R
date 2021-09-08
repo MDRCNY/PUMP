@@ -63,6 +63,9 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
                              drop_unique_columns = TRUE,
                              ... ) {
 
+  if ( sum( duplicated( MDES ) ) > 0 ) {
+    stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
+  }
 
   args = list( M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
                Tbar = Tbar, alpha = alpha,

@@ -20,20 +20,23 @@ library( tidyverse )
 # Demo of using the pum-p package for a simple power calculation
 
 
-To illustrate the pum-p package we conduct a power analysis for a blocked cluster-randomized RCT (KP comment: insert corresponding design name - with our newest naming convention). In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview).
+To illustrate the `pum-p` package we conduct a power analysis for a blocked cluster-randomized RCT (KP comment: insert corresponding design name - with our newest naming convention). In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview).
 
 As taken from the above site, Diplomas Now "is a secondary school model focused on meeting the holistic needs of all students in grades six through twelve. It is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle grade and high schools attended by many students who fall off the path to high school graduation. Diplomas Now combines programming developed by each of the three organizations that created it: Talent Development, City Year, and Communities In Schools."
-
 Diplomas Now, with MDRC as a partner, was one of the first validation grants awarded as part of the i3 competition (administered by the federal Department of Education and was created by the American Recovery and Reinvestment Act of 2009).
 
 For the experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Details quoted from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
 
-The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, they were left with 29 high schools and 29 middle schools across 21 random assignment blocks.
+The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, the evaluators were left with 29 high schools and 29 middle schools grouped in 21 random assignment blocks.
 
-The levels of this design are the random assignment (RA) blocks at level 3, schools as clusters at level 2, and students nested within the schools at level 1.  RA blocks are nested in districts, but if we use fixed effects for the RA blocks, as the authors of the published report did, then we can ignore this 4th level of nesting.
+The levels of this design are the random assignment (RA) blocks at level 3, schools as clusters at level 2, and students nested within the schools at level 1.
+Under our naming, this would give a three level design with randomization at level two, or a "d3.2" design.
+RA blocks are further nested in districts, but if we use fixed effects for the RA blocks, as the authors of the published report did, then we can ignore this 4th level of nesting.
+In this case our _model_ would be fixed effects at level 3, including a treatment by block interaction term, a random intercept at level 2, and a constant treatment coefficient at level 2 (varying by level 3 blocks).
+We represent this as "m3ff2rc".
 
 (KP comment: moved this text up from section below and added footnote (copied from my first paper) although we may want to make the point in the footnote earlier in the paper - but repeat here since vignette will also stand alone (is that right?).)
-The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance (the "ABC's"), and an ABC composite measure of an indicator of whether a student is above given thresholds on the first three measures). Given this, we might do power analysis separately for each group to control family-wise error.^[We note that there are different guidelines for when to adjust for multiple outcomes in education studies. For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains. Our methods apply to either case. In this paper, the word “outcome” refers to either a single outcome or an outcome domain, and the paper focuses on any situation in which an analyst would apply adjustments to account for multiple outcomes.] 
+The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behavior, Course performance (the "ABC's"), and an ABC composite measure of an indicator of whether a student is above given thresholds on the first three measures). Given this, we might do power analysis separately for each group to control family-wise error.^[We note that there are different guidelines for when to adjust for multiple outcomes in education studies. For example, Schochet (2008) recommends organizing primary outcomes into domains, conducting tests on composite domain outcomes, and applying multiplicity corrections to composites across domains. The What Works Clearinghouse applies multiplicity corrections to findings within the same domain rather than across different domains. Our methods apply to either case.] 
 
 
 # Power and MDES of the original design
@@ -43,9 +46,10 @@ The above specifies the design of our example RCT.  Power analysis packages typi
 We also have to select the $R^2$ of our covariates we use for adjustment. The report does not report these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$ for all outcomes.
 
 At this point we also need to specify the method of analysis. The report calls their model a "two-level" model, but this is not quite in alignment with the language of this package. In particular, the report analysis include fixed effects for the randomization block in their second level.
-In our package, this is a third level of nesting.  In particular, they fit a model with fixed effects at level 3 and cluster randomization.
+In our package, this is a third level of nesting.
+The fixed effects for randomization block correspond to a model with fixed effects at level 3
 
-Let's focus on attendance. Within the attendance group of outcomes, we have to specify how correlated our test statistics are likely to be. As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level. The attendance measures are fairly related, so we select `rho = 0.40` for all pairs.
+Let's focus on attendance as our outcome. Within the attendance group of outcomes, we have to specify how correlated our test statistics are likely to be. As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level. The attendance measures are fairly related, so we select `rho = 0.40` for all pairs.
 
 KP comment: I'm wondering how much to expand the discussion of the considersations that go into the assumptions here in the example walthrough or elsewhere in the paper. We could maybe walk through the considerations (see recommendations at end of my first paper).
 
@@ -56,7 +60,7 @@ Putting this all together, we might have:
 ```{r setup}
 library(pum)
 
-pump_power( design="blocked_c2_3f",
+pump_power( design="d3.2_m3ff2rc",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -73,20 +77,24 @@ pump_power( design="blocked_c2_3f",
 
 
 *Results.* The first columns are the individual power for the 3 outcomes---they are the same since we assumed the same effect sizes for all three (MDES).  We are seeing around 80% power for this particular configuration for a MDES of 0.10. The `indiv.mean` is just the mean power across our 3 outcomes.
+The first row is power without adjustment, and the second row has our power with the listed testing correction.
 
-The top row are powers without any multiple testing correction.  The `min1` and `min2` columns show the chance of rejecting at least 1 or 2 of our hypotheses.  The `complete` is rejecting all 3.
+The next columns show our different multi-outcome definitions of power.
+In particular, `min1` and `min2` show the chance of rejecting at least 1 or 2 of our hypotheses, respectively.
+The `complete` is rejecting all 3.
+The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and is meaningless.
 
-The second row has our power with the testing correction.  We see power is substantially deminished, but we still have 86% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is more powered than we might expect to detect some effect, even when using the very conservative correction procedure of Bonferroni.
+While a testing correction substantially diminishes individual power, we still have more than an 80% chance of rejecting at least 1 null of our 3 outcomes: while our study will not be well powered for any individual effect, it is more powered than we might expect to detect _some_ effect, even when using the very conservative correction procedure of Bonferroni.
 
 KP comment: I wonder if one slight modification to the set-up is to walk through the recommendations for how an analyst should make decisions about assumptions and run one scenario that they might come to - which you have done above but then illustrate the impact of other assumptions. You've done this but we perhaps spell it out more and include more discussion of the impact different values of different parameters can have. 
 
 
 # Examining other correction procedures
 
-It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, it is rerunning the simulation behind the scenes, so it can get computationally intensive:
+It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, the package will re-run the simulation for each item on the list behind the scenes, so the overall method call can get computationally intensive:
 
 ```{r othercorrections, cache=TRUE}
-pump_power( design="blocked_c2_3f",
+pump_power( design="d3.2_m3ff2rc",
             MTP = c("Bonferroni", "Holm", "WY-SD"),
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -98,8 +106,8 @@ pump_power( design="blocked_c2_3f",
             numCovar.1 = 5, numCovar.2 = 3,
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
-            rho = 0.4,
-            tnum = 500 ) # how correlated outcomes are
+            rho = 0.4, B = 10000,
+            tnum = 500 ) 
 ```
 
 Due to the correlation in our outcomes (`rho = 0.4`), we see elevated power if we use this more sophisticated (and less conservative) correction approach for each individual test.  We do not see elevated rates for min1, interestingly.
@@ -109,10 +117,10 @@ KP comment: We can insert lessons learned from earlier paper. I think all the le
 
 # Choosing the method of estimation
 
-For a given design, one might analyze the resulting data differently.  For example, we could use a fixed effect model, as above, or possibly a random effects model. We specify this with the `design` parameter:
+For a given design, one might analyze the resulting data differently.  For example, we could use a random effects model at level 3 instead of a fixed effects model. We specify this by tweaking the model component of the `design` parameter. Random effects models also allow for level 3 covariates, which we would need to specify via `numCovar.3` and `R2.3` to capture how many there are and how predictive they are:
 
 ```{r}
-pump_power( design="blocked_c2_3r",
+pump_power( design="d3.2_m3rr2rc",
             MTP = "Bonferroni",
             MDES = rep( 0.10, 3 ),
             M = 3,
@@ -126,21 +134,29 @@ pump_power( design="blocked_c2_3r",
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
             rho = 0.4 ) # how correlated outcomes are
-
 ```
 
-With random effects models we might also have level 3 covariates.  We need to specify how many, and how predictive they are of outcomes.
+
 
 # Exploring parameter combinations
 
 KP comment: As note earlier, I am wondering if we might expand this section more, looking at the impact of different assumptions across (1) R2; (2) ICC; (3) rho; (4) number of outcomes with impacts; and maybe (5) adjustment procedures. We can include plots from the plot functions we add to our package (or to the grid functions). 
 
-If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations. For example, we might not be sure what 
+If uncertain about specific design parameters, one can call `pump_power_grid` on different configurations to see how the various powers can change. For some discussion of what parameters will affect power more generally, see <<PowerUp paper?>>.
+For discussion of how design parameters can affect the overall power, such as min1 power and so forth, see the discussion in <<Kristen paper>>; the findings there are general, as they are a function of the final distribution of test statistics.
+The driver of power is simply the individual-level standard error and degrees of freedom, and how correlated the test statistics are.
+
+To illustrate, we consider two common areas of exploration: Intraclass Correlation Coefficients (ICCs), and the correlation of test statistics.
+
+## Exploring the impact of the ICC
+
+We might be sure what our ICCs are at level 2 and level 3, and want to ensure our power is sufficient across a range of plausible values.
+We can explore a range of options as so (note we can only give a constant MDES with the grid methods):
 
 ```{r}
-grid <- pump_power_grid( design="blocked_c2_3f",
+grid <- pump_power_grid( design="d3.2_m3ff2rc",
             MTP = "Bonferroni",
-            MDES = rep( 0.10, 3 ),
+            MDES = 0.10,
             M = 3,
             J = 3, # number of schools/block
             K = 21, # number RA blocks
@@ -154,18 +170,46 @@ grid <- pump_power_grid( design="blocked_c2_3f",
             rho = 0.4,
             tnum = 500 ) 
 
-
 grid$ICC.3 = as.factor( grid$ICC.3 )
+grid = filter( grid, adjustment == "Bonferroni" )
 ggplot( grid, aes( ICC.2, min1, group=ICC.3, col=ICC.3 ) ) +
-  facet_wrap( ~ adjustment ) +
   geom_line() + geom_point()
 ```
 
 We see that higher ICC.2 radically reduces power to detect anything (this makes sense: we are putting the variation right at the level of treatment assignment).
 
-The ICC.3 parameter appears to do nothing.
+The ICC.3 parameter, by contrast, appears to do nothing.
 
 Note we radically reduce the number of permutations (from 10000 to 500 via `tnum`) to speed up computation.
+This will give us rough estimates of power, but even these rough estimates can help us determine trends.
+
+
+The correlation of test statistics, $\rho$, is a critical parameter for how power will play out across the multiple tests.  For example, if we use Westfall-Young, the correlation will improve our individual power, and reduce our min1 power.  We might not know what will happen to min2 power: on one hand, correlated statistics make individual adjustment less sever, and on the other correlation means we succeed or fail all together.  We can explore this relatively easily by letting `rho` vary as so:
+
+```{r, cache=TRUE}
+grid <- pump_power_grid( design="d3.2_m3ff2rc",
+            MTP = c( "Bonferroni", "WY-SS" ),
+            MDES = 0.10,
+            M = 3, alpha = 0.05,
+            J = 3, K = 21, nbar = 258, Tbar = 0.50,
+            numCovar.1 = 5, numCovar.2 = 3,
+            R2.1 = 0.1, R2.2 = 0.7,
+            ICC.2 = 0.05, ICC.3 = 0.40,
+            rho = c( 0, 0.15, 0.3, 0.45, 0.6 ),
+            tnum = 500, B = 10000 ) 
+gridL = filter( grid, adjustment != "rawp" ) %>%
+  pivot_longer( cols=c(indiv.mean, min1, min2, complete),
+                names_to="definition", values_to="power" ) %>%
+  mutate( definition = factor( definition, levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
+
+ggplot( gridL, aes( rho, power ) ) +
+  facet_grid( adjustment ~ definition ) +
+  geom_line() + geom_point() +
+  geom_hline( yintercept =0.80 ) + theme_minimal()
+```
+
+Across a very broad range of rho, we will still have good min1 power.  The impact on individual adjustment is flat
+
 
 
  
@@ -176,7 +220,7 @@ To identify the MDES of a given design we use the `pump_mdes` method. Along with
 Here, for example, we find the MDES for obtaining 80% individual power using the Holm procedure if we had 4 schools per block instead of 3:
 
 ```{r MDEScalc, cache=TRUE}
-pump_mdes( design="blocked_c2_3f",
+pump_mdes( design="d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "D1indiv", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,

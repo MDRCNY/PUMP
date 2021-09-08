@@ -359,7 +359,7 @@ test_that("testing of d2.2_m2rc", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2, just.result.table = FALSE)
   nbar1
 
-  expect_equal(50, nbar1$`Sample size`[[2]], tol = 1)
+  expect_equal(50, nbar1$`Sample size`, tol = 1)
 })
 
 test_that("testing of d3.1_m3rr2rr", {

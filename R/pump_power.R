@@ -5,22 +5,22 @@
 #'
 #' @export
 supported_designs <- function() {
-  design = tibble::tribble( ~ Code, ~ Comment,
+  design = tibble::tribble( ~ Code, ~PowerUp, ~ Comment,
                    # 1 level design
-                   "d1.1_m2cc", "1 level, level 1 randomization / constant intercepts, constant impacts model",
+                   "d1.1_m2cc", "", "1 level, level 1 randomization / constant intercepts, constant impacts model",
                    # 2 level designs, randomization at level 1
-                   "d2.1_m2fc", "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
-                   "d2.1_m2ff", "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
-                   "d2.1_m2fr", "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
+                   "d2.1_m2fc", "",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
+                   "d2.1_m2ff", "",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
+                   "d2.1_m2fr", "",  "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
                    # 3 lvl design, rand at lvl 1
-                   "d3.1_m3rr2rr", "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
+                   "d3.1_m3rr2rr", "",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
                    # 2 lvl design, rand at lvl 2
-                   "d2.2_m2rc", "2 lvls, lvl 2 rand / random intercepts, constant impacts",
+                   "d2.2_m2rc", "",  "2 lvls, lvl 2 rand / random intercepts, constant impacts",
                    # 3 lvl design, rand at lvl 3
-                   "d3.3_m3rc2rc", "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
+                   "d3.3_m3rc2rc", "",  "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
                    # 3 lvl design, rand at lvl 2
-                   "d3.2_m3ff2rc", "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
-                   "d3.2_m3rr2rc", "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
+                   "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
+                   "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
 
   design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
 
@@ -37,20 +37,30 @@ supported_designs <- function() {
 
 #' Computes Q_m, the standard error of the effect size estimate
 #'
+#' Function to calculate the theoretical true standard error of a given design
+#' and model, in effect size units.
+#'
 #' @param design a single RCT design (see list/naming convention)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param R2.1 vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param Tbar scalar; the proportion of samples that are assigned to the
+#'   treatment
+#' @param R2.1 vector of length M; percent of variation explained by Level 1
+#'   covariates for each outcome
+#' @param R2.2 vector of length M; percent of variation explained by Level 2
+#'   covariates for each outcome
+#' @param R2.3 vector of length M; percent of variation explained by Level 3
+#'   covariates for each outcome
 #' @param ICC.2 scalar; school intraclass correlation
 #' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects variability
+#' @param omega.2 scalar; ratio of school effect size variability to random
+#'   effects variability
+#' @param omega.3 scalar; ratio of district effect size variability to random
+#'   effects variability
 #'
 #' @return Q_m, the standard error of the effect size estimate
+#' @export
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 

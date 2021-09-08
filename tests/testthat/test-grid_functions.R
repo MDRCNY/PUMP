@@ -63,6 +63,28 @@ test_that("pump_power_grid works", {
   pp
   expect_equal( nrow(pp), 2 * 3 * 2)
 
+
+
+  grid <- pump_power_grid( design="d3.2_m3ff2rc",
+                           MTP = "Bonferroni",
+                           MDES = 0.1,
+                           M = 3,
+                           J = 3, # number of schools/block
+                           K = 21, # number RA blocks
+                           nbar = 258,
+                           Tbar = 0.50, # prop Tx
+                           alpha = 0.05, # significance level
+                           numCovar.1 = 5, numCovar.2 = 3,
+                           R2.1 = 0.1, R2.2 = 0.7,
+                           ICC.2 = seq( 0, 0.3, 0.05 ),
+                           ICC.3 = seq( 0, 0.45, 0.15 ),
+                           rho = 0.4,
+                           tnum = 100 )
+  a = length( unique( grid$ICC.2 ) )
+  b = length( unique( grid$ICC.3 ) )
+  expect_equal( nrow( grid ), a * b * 2 )
+
+
 })
 
 
