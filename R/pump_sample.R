@@ -401,12 +401,13 @@ pump_sample <- function(
   rho = NULL, rho.matrix = NULL,
   omega.2 = 0, omega.3 = 0,
   tnum = 10000, B = 1000,
-  max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
+  max.steps = 20, max.tnum = 2000, start.tnum = 1000, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL,
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
   tol = 0.01, give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
+  use.logit = FALSE,
   verbose = FALSE )  {
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
@@ -475,10 +476,9 @@ pump_sample <- function(
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
-    test.pts <- NULL
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = test.pts))
+    return(ss.results)
   }
 
   # Checks on what we are estimating, sample size
@@ -573,9 +573,10 @@ pump_sample <- function(
 
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
-    ss.results <- data.frame(MTP, typesample, NA, target.power)
-    colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    # ss.results <- data.frame(MTP, typesample, NA, target.power)
+    # colnames(ss.results) <- output.colnames
+    # return(ss.results)
+    ss.low <- 1
   }
 
   if ( is.na( ss.high ) ) {
@@ -601,7 +602,7 @@ pump_sample <- function(
   {
     ss.results <- data.frame(MTP, typesample, 1, target.power)
     colnames(ss.results) <- output.colnames
-    return(list(ss.results = ss.results, test.pts = NULL))
+    return(ss.results)
   }
 
   # search in the grid from min to max.
@@ -618,7 +619,9 @@ pump_sample <- function(
     B = B, cl = cl,
     max.steps = max.steps, max.tnum = max.tnum,
     final.tnum = final.tnum,
-    give.warnings = give.optimizer.warnings, verbose = verbose
+    use.logit = use.logit,
+    give.warnings = give.optimizer.warnings,
+    verbose = verbose
   )
 
   # Assemble results
@@ -636,7 +639,6 @@ pump_sample <- function(
     return( ss.results )
   } else {
     return(list(ss.results = ss.results, test.pts = test.pts))
-
   }
 }
 

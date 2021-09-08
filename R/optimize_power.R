@@ -39,6 +39,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
                            max.steps = 20, max.tnum = 2000, final.tnum = 4*max.tnum,
+                           use.logit = FALSE,
                            give.warnings = FALSE,
                            verbose = FALSE )
 {
@@ -128,7 +129,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   # Based on initial grid, pick best guess for search.
   tryCatch(
-    current.try <- find_best(test.pts, target.power, gamma = 1.5),
+    current.try <- find_best(
+      test.pts = test.pts, target.power = target.power,
+      use.logit = use.logit, gamma = 1.5
+    ),
     warning = function(w) {
       optimizer.warnings <<- c(optimizer.warnings, w$message)
     }
@@ -234,7 +238,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     }
 
     tryCatch(
-      current.try <- find_best(test.pts, target.power, gamma = 1.5),
+      current.try <- find_best(
+        test.pts = test.pts, target.power = target.power,
+        use.logit = use.logit, gamma = 1.5
+      ),
       warning = function(w) {
         optimizer.warnings <<- c(optimizer.warnings, w$message)
       }
@@ -261,9 +268,112 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   return(test.pts)
 }
 
+#' Extract roots from quadratic curve based on given evaluated points
+#'
+#' @param test.pts power evaluated at different points
+#' @param start.low lower bound
+#' @param start.high upper bound
+#' @param target.power goal power
+#' @param alternate alternate point to return if quadratic fit fails
+#'
+#' @return root of quadratic curve
 
+find_best <- function(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
+{
+  start.low <- min( test.pts$pt )
+  start.high <- max( test.pts$pt )
 
+  if(use.logit)
+  {
+    logit <- function(p){ return(log(p/(1-p))) }
 
+    # fit logistic curve
+    test.pts$success <- test.pts$power * test.pts$w
+    test.pts$fail <- (1 - test.pts$power) * test.pts$w
+
+    fit <- glm(
+      cbind(success, fail) ~ pt + I(pt^2),
+      data = test.pts,
+      family = binomial(link = 'logit'),
+      weights = w
+    )
+  } else
+  {
+    # fit quadratic curve
+    test.pts$sq_pt = sqrt( test.pts$pt )
+    fit <- lm(
+      power ~ 1 + sq_pt + I(sq_pt^2),
+      data = test.pts,
+      weights = w
+    )
+  }
+
+  # extract point where it crosses target power.
+  # Our curve is now a x^2 + b x + (c - logit(target.power))
+  # Using x = [ -b \pm sqrt( b^2 - 4a(c- logit(y))  ] / [2a]
+  # first check if root exists
+  cc <- rev( coef( fit ) )
+
+  if(use.logit)
+  {
+    rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - logit(target.power))
+  } else
+  {
+    rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
+  }
+
+  happy <- FALSE
+
+  # We have a place where our quad line crosses target.power
+  if ( rt.check > 0 ) {
+
+    # calculate the two points to try (our two roots)
+    try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / 2 * cc[1]
+    hits <- (start.low <= try.pt) & (try.pt <= start.high)
+
+    if ( sum( hits ) == 1 ) {
+      try.pt <- try.pt[hits]
+      happy <- TRUE
+    } else if ( sum( hits ) == 2 ) {
+      # both roots in our range.  Probably flat.  Pick center
+      try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
+      happy <- TRUE
+    } else {
+      happy <- FALSE
+    }
+  } else {
+    warning( "No root in logistic model fit" )
+  }
+
+  if ( !happy ) {
+
+    if(use.logit)
+    {
+      lin.mod <- glm(
+        cbind(success, fail) ~ pt,
+        data = test.pts,
+        family = binomial(link = 'logit')
+      )
+
+      cc <- rev( coef( lin.mod ) )
+      try.pt <- (logit(target.power) - cc[2]) / cc[1]
+
+    } else
+    {
+      lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
+      cc <- rev( coef( lin.mod ) )
+      try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
+    }
+
+    if ( try.pt < start.low / gamma ) {
+      try.pt <- start.low / gamma
+    } else if ( try.pt > start.high * gamma ) {
+      try.pt <- start.high * gamma
+    }
+  }
+
+  return(unname(try.pt))
+}
 
 
 #' Extract roots from quadratic curve based on given evaluated points
@@ -276,7 +386,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 #'
 #' @return root of quadratic curve
 
-find_best <- function(test.pts, gamma = 1.5, target.power )
+find_best_old <- function(test.pts, gamma = 1.5, target.power )
 {
   # Get current range of search so far.
   start.low = min( test.pts$pt )
@@ -329,9 +439,6 @@ find_best <- function(test.pts, gamma = 1.5, target.power )
   } else {
     warning( "No root in quadratic model fit" )
   }
-
-
-
 
   # If no roots in the original range, and quad extrapolation failed, try linear
   # extrapolation, but stay within gamma of the original range.
