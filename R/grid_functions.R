@@ -8,16 +8,16 @@ scat = function( str, ... ) {
 }
 
 
-run_grid = function( args, method, verbose, drop_unique_columns, ... ) {
-  grid = do.call( expand.grid, args )
+run_grid = function( args, pum_function, verbose = FALSE, drop_unique_columns, ... ) {
+  grid = do.call( tidyr::expand_grid, args )
   if ( verbose ) {
     scat( "Processing %d calls\n", nrow(grid) )
   }
 
-  grid$res = purrr::pmap( grid, method, ... )
+  grid$res = purrr::pmap( grid, pum_function, ... )
 
   if ( drop_unique_columns ) {
-    grid = dplyr::select( grid, where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+    grid = dplyr::select( grid, any_of( "MDES" ) | where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
 
   grid$res = purrr::map( grid$res, as.data.frame )
@@ -67,7 +67,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
     stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
   }
 
-  args = list( M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
+  args = list( design=design, M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
                Tbar = Tbar, alpha = alpha,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -75,8 +75,9 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
   nulls = purrr::map_lgl( args, is.null )
   args = args[ !nulls ]
 
-  grid = run_grid( args, method=pump_power, verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   design = design, MTP = MTP, ... )
+  grid = run_grid( args, pum_function=pump_power, verbose=verbose,
+                   drop_unique_columns = drop_unique_columns,
+                   MTP = MTP, ... )
 
   grid
 }
@@ -107,7 +108,7 @@ pump_mdes_grid <- function( design, MTP, M,
                              ... ) {
 
 
-  args = list( M = M, J = J, K = K, nbar = nbar, target.power = target.power,
+  args = list( design=design, M = M, J = J, K = K, nbar = nbar, target.power = target.power,
                Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -115,9 +116,9 @@ pump_mdes_grid <- function( design, MTP, M,
   nulls = purrr::map_lgl( args, is.null )
   args = args[ !nulls ]
 
-  grid = run_grid( args, method = pump_mdes, power.definition = power.definition,
+  grid = run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, design=design, MTP = MTP, just.result.table = TRUE )
+                   tol = tol, MTP = MTP, just.result.table = TRUE )
 
   grid
 }
@@ -151,7 +152,7 @@ pump_sample_grid <- function( design, MTP, M,
                             ... ) {
 
 
-  args = list( M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
+  args = list( design=design, M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
                Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -159,10 +160,10 @@ pump_sample_grid <- function( design, MTP, M,
   nulls = purrr::map_lgl( args, is.null )
   args = args[ !nulls ]
 
-  grid = run_grid( args, method = pump_sample, power.definition = power.definition,
+  grid = run_grid( args, pum_function = pump_sample, power.definition = power.definition,
                    typesample = typesample,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, design=design, MTP = MTP, just.result.table = TRUE )
+                   tol = tol, MTP = MTP, just.result.table = TRUE )
 
   grid
 }

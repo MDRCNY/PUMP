@@ -2,6 +2,7 @@
 # library( testthat )
 
 test_that("pump_power works without crashing", {
+
   pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
@@ -15,12 +16,16 @@ test_that("pump_power works without crashing", {
                     R2.1 = 0.1, R2.2 = 0.7,
                     ICC.2 = 0.05, ICC.3 = 0.4,
                     rho = 0.4, # how correlated outcomes are
-                    tnum = 200
+                    tnum = 200,
+                    long.table = TRUE
   )
+  pp
+  expect_equal( dim( pp ), c(7,3) )
 
-  expect_equal( dim( pp ), c(2,7) )
-
-  expect_true( pp[2,"min1"] >= pp[2,"D1indiv"] )
+  expect_true( is.na( pp$rawp[[1]] ) )
+  expect_true( pp$Bonferroni[1] < pp$Bonferroni[4] )
+  expect_true( pp$Bonferroni[3] > pp$Bonferroni[4] )
+  expect_true( all ( ( pp$rawp >= pp$Bonferroni )[4:7] ) )
 })
 
 test_that("skipping level three inputs for level 2 works", {
@@ -127,7 +132,7 @@ test_that("unblocked designs", {
 
 })
 
-test_that("Correct MTP parameter validation. ", {
+test_that("Correct MTP parameter validation.", {
 
     expect_error(pp <- pump_power(   design = "d2.1_m2fc",
                                        MTP = "rawp",

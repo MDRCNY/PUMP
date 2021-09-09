@@ -3,8 +3,10 @@
 #'
 #' List all supported designs, with brief descriptions.
 #'
+#' @param comment = TRUE prints out description of each design or method.  FALSE does not.
+#'
 #' @export
-supported_designs <- function() {
+supported_designs <- function( comment = TRUE) {
   design = tibble::tribble( ~ Code, ~PowerUp, ~ Comment,
                    # 1 level design
                    "d1.1_m2cc", "", "1 level, level 1 randomization / constant intercepts, constant impacts model",
@@ -31,8 +33,36 @@ supported_designs <- function() {
                             "WY-SS", "Westfall-Young, Single Step",
                             "WY-SD", "Westfall-Young, Step Down" )
 
+  if ( !comment ) {
+    design$Comment = NULL
+    adjust$Comment = NULL
+  }
+
   list( Design=design, Adjustment=adjust )
 }
+
+
+#' Convert power table from wide to long
+#'
+#' Transform table returned from pump_power to a long format table.
+#'
+transpose_power_table = function( power_table ) {
+
+  pp = t( power_table )
+  #if ( ncol( pp ) > 1 ) {
+  #  pp = pp[ , ncol(pp):1 ]
+  #}
+  pows = rownames(pp)
+  pp = pp[ nrow(pp):1, ] %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column( var="power" )
+
+  pp$power = stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
+  pp$power = stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
+  pp$power = stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+  pp
+}
+
 
 
 #' Computes Q_m, the standard error of the effect size estimate
@@ -228,12 +258,15 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-#'   automatically re-run for each procedure on the list.
-#' @param MDES scalar or vector:  t he MDES values for each outcome.
-#' Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.
-#' @param numZero Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M
-#' @param M scalar; the number of hypothesis tests (outcomes), including zero outcomes
+#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+#'   to automatically re-run for each procedure on the list.
+#' @param MDES scalar or vector:  t he MDES values for each outcome. Please
+#'   provide a scalar, a vector of length M, or vector of values for non-zero
+#'   outcomes.
+#' @param numZero Additional number of outcomes assumed to be zero. Please
+#'   provide NumZero + length(MDES) = M
+#' @param M scalar; the number of hypothesis tests (outcomes), including zero
+#'   outcomes
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
@@ -265,6 +298,8 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
+#' @param long.table TRUE for table with power as rows, correction as columns,
+#'   and with more verbose names.  See `transpose_power_table`.
 #'
 #' @importFrom multtest mt.rawp2adjp
 #' @return power results for MTP and unadjusted across all definitions of power
@@ -284,7 +319,8 @@ pump_power <- function(
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
-  validate.inputs = TRUE
+  validate.inputs = TRUE,
+  long.table = FALSE
 )
 {
   # Call self for each element on MTP list.
@@ -403,17 +439,18 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( !is.null( adjp ) ) {
     power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
-    power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
-    rownames(power.results.all) <- c('rawp', MTP)
-
-    return(power.results.all)
+    power.results <- data.frame(rbind(power.results, power.results.proc))
+    rownames(power.results) <- c('rawp', MTP)
   } else {
-    rownames(power.results.rawp) = "rawp"
-    return(power.results.rawp)
+    rownames(power.results) = "rawp"
   }
+  if ( long.table ) {
+    power.results = transpose_power_table( power.results )
+  }
+  return(power.results)
 }
 
