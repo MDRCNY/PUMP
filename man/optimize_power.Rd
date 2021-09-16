@@ -51,6 +51,7 @@ optimize_power(
   max.steps = 20,
   max.tnum = 2000,
   final.tnum = 4 * max.tnum,
+  use.logit = FALSE,
   give.warnings = FALSE,
   verbose = FALSE
 )
@@ -68,8 +69,9 @@ options: Bonferroni, BH, Holm, WY-SS, WY-SD}
 \item{power.definition}{must be a valid power type outputted by power
 function, i.e. D1indiv, min1, etc.}
 
-\item{MDES}{scalar or vector:  t he MDES values for each outcome.
-Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.}
+\item{MDES}{scalar or vector:  t he MDES values for each outcome. Please
+provide a scalar, a vector of length M, or vector of values for non-zero
+outcomes.}
 
 \item{J}{scalar; the number of schools}
 
@@ -77,7 +79,8 @@ Please provide a scalar, a vector of length M, or vector of values for non-zero 
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
+outcomes}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

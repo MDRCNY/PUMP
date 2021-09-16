@@ -27,6 +27,7 @@ supported_designs <- function( comment = TRUE) {
   design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
 
   adjust = tibble::tribble( ~ Method, ~ Comment,
+                            "rawp", "No adjustment",
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
                             "Holm", "Bonferroni improved!",
                             "BH", "Benjamini-Hochberg (False Discovery Rate)",
@@ -53,7 +54,7 @@ transpose_power_table = function( power_table ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
   pows = rownames(pp)
-  pp = pp[ nrow(pp):1, ] %>%
+  pp =pp %>% # pp[ nrow(pp):1, ] %>%
     as.data.frame() %>%
     tibble::rownames_to_column( var="power" )
 

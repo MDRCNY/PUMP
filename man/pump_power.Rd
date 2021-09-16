@@ -31,22 +31,26 @@ pump_power(
   B = 3000,
   cl = NULL,
   updateProgress = NULL,
-  validate.inputs = TRUE
+  validate.inputs = TRUE,
+  long.table = FALSE
 )
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-automatically re-run for each procedure on the list.}
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+to automatically re-run for each procedure on the list.}
 
-\item{MDES}{scalar or vector:  t he MDES values for each outcome.
-Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.}
+\item{MDES}{scalar or vector:  t he MDES values for each outcome. Please
+provide a scalar, a vector of length M, or vector of values for non-zero
+outcomes.}
 
-\item{numZero}{Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M}
+\item{numZero}{Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
+outcomes}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -98,6 +102,9 @@ tests.}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
+
+\item{long.table}{TRUE for table with power as rows, correction as columns,
+and with more verbose names.  See `transpose_power_table`.}
 }
 \value{
 power results for MTP and unadjusted across all definitions of power

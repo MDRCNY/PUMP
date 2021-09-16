@@ -51,7 +51,7 @@ run_grid = function( args, pum_function, verbose = FALSE, drop_unique_columns, .
 #'   not.
 #' @param drop_unique_columns Drop all parameter colunms that did not vary
 #'   across the grid.
-#'
+#' @importFrom magrittr %>%
 #' @export
 pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero = NULL, Tbar, alpha,
                              numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
