@@ -135,6 +135,38 @@ test_that( "optimize_power solves", {
 
 })
 
+test_that("Bonferroni for non individual power", {
+
+  p <- pump_power(  design = "d2.1_m2fc",
+                    MTP = "Bonferroni",
+                    J = 10,
+                    nbar = 200,
+                    M = 3,
+                    MDES = rep(0.05, 3),
+                    Tbar = 0.50, alpha = 0.05,
+                    numCovar.1 = 5, numCovar.2 = 1,
+                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                    rho = 0.4 )
+  p
+
+  ss <- pump_sample(    design = "d2.1_m2fc",
+                        MTP = "Bonferroni",
+                        typesample = "J",
+                        nbar = 200,
+                        power.definition = "min1",
+                        M = 3,
+                        MDES = 0.05, target.power = p$min1[2],
+                        tol = 0.01,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
+                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        rho = 0.4 )
+
+
+  expect_equal(ss$`Sample size`, 10, tol = 1)
+} )
+
+
 
 test_that("pump_sample 2 level/2 level", {
   ss2 <- pump_sample(   design = "d2.1_m2fc",

@@ -565,7 +565,7 @@ pump_sample <- function(
   ss.high <- ss.high[[1]]
 
   # Done if Bonferroni is what we are looking for
-  if (MTP == "Bonferroni") {
+  if (MTP == "Bonferroni" & pdef$indiv ) {
     ss.results <- data.frame(MTP, typesample, ss.high, target.power)
     colnames(ss.results) <- output.colnames
     return(ss.results)
@@ -597,13 +597,13 @@ pump_sample <- function(
   ss.low <- round( ss.low )
   ss.high <- round( ss.high )
 
-  # sometimes we already know the answer!
-  if(ss.low == ss.high)
-  {
-    ss.results <- data.frame(MTP, typesample, 1, target.power)
-    colnames(ss.results) <- output.colnames
-    return(ss.results)
-  }
+  # # sometimes we already know the answer!
+  # if(ss.low == ss.high)
+  # {
+  #   ss.results <- data.frame(MTP, typesample, 1, target.power)
+  #   colnames(ss.results) <- output.colnames
+  #   return(ss.results)
+  # }
 
   # search in the grid from min to max.
   test.pts <- optimize_power(
