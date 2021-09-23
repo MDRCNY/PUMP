@@ -8,13 +8,16 @@ scat = function( str, ... ) {
 }
 
 
-run_grid = function( args, pum_function, verbose = FALSE, drop_unique_columns, ... ) {
+run_grid = function( args, pum_function, verbose = FALSE,
+                     drop_unique_columns, ... ) {
   grid = do.call( tidyr::expand_grid, args )
   if ( verbose ) {
     scat( "Processing %d calls\n", nrow(grid) )
   }
 
-  grid$res = purrr::pmap( grid, pum_function, ... )
+  
+  grid$res = purrr::pmap( grid, pum_function, ..., 
+                          progress.bar = verbose )
 
   if ( drop_unique_columns ) {
     grid = dplyr::select( grid, any_of( "MDES" ) | where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )

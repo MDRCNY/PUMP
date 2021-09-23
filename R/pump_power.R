@@ -326,17 +326,39 @@ pump_power <- function(
 {
   # Call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
+
     des = purrr::map( MTP,
-                     pum::pump_power, design=design, MDES=MDES, M=M, J=J, K = K, nbar=nbar,
+                     pum::pump_power, design=design, MDES=MDES, 
+                     M=M, J=J, K = K, nbar=nbar,
                      Tbar=Tbar,
-                     alpha=alpha, numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                     numCovar.3 = numCovar.3, R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                     alpha=alpha, 
+                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                     numCovar.3 = numCovar.3, 
+                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
                      ICC.2 = ICC.2, ICC.3 = ICC.3,
                      rho=rho, omega.2=omega.2, omega.3 = omega.3,
-                     tnum = tnum, B = B, cl = cl, updateProgress = updateProgress )
-    des = do.call( rbind, des )
-    des = des[ -seq( 3, nrow(des), by=2 ), ]
-    return( des )
+                     long.table = long.table,
+                     tnum = tnum, B = B, cl = cl, 
+                     updateProgress = updateProgress )
+    
+    if ( long.table ) {
+      ftable = des[[1]]
+      for ( i in 2:length(des) ) {
+        ftable = dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
+      }
+      return( ftable )
+
+    } else {
+      ftable = des[[1]]
+      for ( i in 2:length(des) ) {
+        ftable = dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
+      }
+      return( ftable )
+      
+      #des = map( des, ~ .x[nrow(.x),] ) %>%
+      #  dplyr::bind_rows()
+      #return( des )
+    }
   }
 
   if(validate.inputs)
