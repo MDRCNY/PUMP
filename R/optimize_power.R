@@ -128,6 +128,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   optimizer.warnings <- NULL
 
   # Based on initial grid, pick best guess for search.
+  current.try = median( test.pts$pt )
   tryCatch(
     current.try <- find_best(
       test.pts = test.pts, target.power = target.power,

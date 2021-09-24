@@ -15,7 +15,7 @@
 calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
-
+  
   if(design %in% c('d1.1_m2cc'))
   {
     numr <- (1 - R2.1)
@@ -83,7 +83,7 @@ calc.J <- function(
   design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
   R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
-
+  
   if(design %in% c('d1.1_m2cc'))
   {
     numr <- (1 - R2.1)
@@ -156,7 +156,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
                    omega.2, omega.3) {
-
+  
   K <- NA
   if(design == 'd3.1_m3rr2rr')
   {
@@ -190,10 +190,10 @@ calc_MT = function( df, alpha, two.tailed, target.power ) {
   # t statistics
   T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
   T2 <- abs(qt(target.power, df))
-
+  
   # number of SEs we need for MDES
   MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
-
+  
   return(MT)
 }
 
@@ -247,13 +247,13 @@ pump_sample_raw <- function(
     stopifnot( is.null( K ) )
     K <- Inf
   }
-
+  
   initial_df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
   stopifnot( initial_df > 0 )
-
+  
   i <- 0
   conv <- FALSE
-
+  
   # Get initial size (will be low)
   MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
@@ -278,9 +278,9 @@ pump_sample_raw <- function(
       omega.2 = omega.2, omega.3 = omega.3
     )
   }
-
+  
   df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
-
+  
   if( df < 1 ) {
     while( df < 1 ) {
       if ( typesample=="nbar" ) {
@@ -302,28 +302,28 @@ pump_sample_raw <- function(
       )
     }
   }
-
-
+  
+  
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
     df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
-
+    
     if (typesample == "J") {
       J1 <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                     omega.2 = omega.2, omega.3 = omega.3 )
       J1 <- round( J1 )
-
+      
       #cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
-
+      
       if ( is.na(J1) || (J1 <= J) ) {
         conv <- TRUE
       } else {
         J <- J + 1
       }
-
+      
     } else if (typesample == "K") {
       K1 <- calc.K(
         design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
@@ -345,21 +345,21 @@ pump_sample_raw <- function(
         omega.2 = omega.2, omega.3 = omega.3
       )
       #cat( "nbar=", nbar, "\tdf=", df, "\tnbar1=", nbar1, "\n" )
-
+      
       if (is.na( nbar1 ) || (nbar1 <= nbar) ) {
         conv <- TRUE
       } else {
         nbar <- nbar + 1
       }
     }
-
+    
     i <- i + 1
   }
-
+  
   if ( i >= max.steps ) {
     error( "Hit maximum iterations in pump_sample_raw()" )
   }
-
+  
   if (typesample == "J") {
     if(!is.na(J) & J <= 0){ J <- NA }
     return( list( J=J, df=df ) )
@@ -371,6 +371,8 @@ pump_sample_raw <- function(
     return( list( nbar=nbar, df=df ) )
   }
 }
+
+
 
 
 
@@ -409,6 +411,13 @@ pump_sample <- function(
   just.result.table = TRUE,
   use.logit = FALSE,
   verbose = FALSE )  {
+  
+  if ( verbose ) {
+    scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations.\n\tMax steps %d\n\t%d perms for WY if used\n", 
+          max.tnum, start.tnum, final.tnum, max.steps, B )
+  }
+  
+  
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
     stopifnot( is.null( nbar ) )
@@ -420,13 +429,13 @@ pump_sample <- function(
     stopifnot( is.null( K ) )
     K = 1000
   }
-
+  
   # validation
   if(length(MDES) > 1 & length(unique(MDES)) > 1)
   {
     stop('Procedure assumes MDES is the same for all outcomes.')
   }
-
+  
   # validate input parameters
   params.list <- list(
     MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero,
@@ -450,16 +459,16 @@ pump_sample <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
-
+  
   # power definition type
   pdef <- parse_power_definition( power.definition, M )
-
+  
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
   {
     stop('For minimum or complete power, you must provide a MTP.')
   }
-
+  
   # Delete parameter we are actually going to search over.
   if ( typesample == "nbar" ) {
     nbar <- NULL
@@ -468,24 +477,28 @@ pump_sample <- function(
   } else if ( typesample == "K" ) {
     K <- NULL
   }
-
+  
   output.colnames <- c("MTP", "Sample type", "Sample size",
                        paste(power.definition, "power") )
-
+  
   # check if zero power
   if(round(target.power, 2) == 0)
   {
     message('Target power of 0 requested')
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return(ss.results)
+    return( make.pumpresult( ss.results, type="sample", params.list=params.list,
+                             tries = NULL,
+                             just.result.table = just.result.table ) )
   }
-
+  
   # Checks on what we are estimating, sample size
-  message(paste("Estimating sample size of type", typesample, "for",
-                MTP, "for target",
-                power.definition, "power of", round(target.power, 4)))
-
+  if ( verbose ) {
+    message(paste("Estimating sample size of type", typesample, "for",
+                  MTP, "for target",
+                  power.definition, "power of", round(target.power, 4)))
+  }
+  
   # Progress Message for the Type of Sample we are estimating, the type of power
   # and the targeted power value
   if (is.function(updateProgress)) {
@@ -493,10 +506,10 @@ pump_sample <- function(
                   "power of",round(power,4)))
     updateProgress(message = msg)
   }
-
-
+  
+  
   pdef <- parse_power_definition( power.definition, M )
-
+  
   # adjust bounds to capture needed range
   # for minimum or complete power, expand bounds
   # note: complete power is a special case of minimum power
@@ -514,7 +527,7 @@ pump_sample <- function(
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3,
       warn.small = FALSE)
-
+    
     # Identify sample size for Bonferroni
     ss.high <- pump_sample_raw(
       design = design, MTP = MTP, typesample = typesample,
@@ -527,7 +540,7 @@ pump_sample <- function(
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3,
       warn.small = FALSE)
-
+    
   } else {
     # lower bound needs to be lower for min type power
     need_pow <- 1 - (1 - target.power)^(1/M)
@@ -542,7 +555,7 @@ pump_sample <- function(
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       omega.2 = omega.2, omega.3 = omega.3,
       warn.small = FALSE)
-
+    
     # higher bound needs to be higher for min type power (including comlpete)
     need_pow <- (target.power^(1/M))
     ss.high <- pump_sample_raw(
@@ -557,20 +570,22 @@ pump_sample <- function(
       omega.2 = omega.2, omega.3 = omega.3,
       warn.small = FALSE)
   }
-
+  
   ss.low.df <- ss.low$df
   ss.low <- ss.low[[1]]
-
+  
   ss.high.df <- ss.high$sf
   ss.high <- ss.high[[1]]
-
+  
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni" & pdef$indiv ) {
     ss.results <- data.frame(MTP, typesample, ss.high, target.power)
     colnames(ss.results) <- output.colnames
-    return(ss.results)
+    return( make.pumpresult( ss.results, tries = NULL, 
+                             type="sample", params.list=params.list,
+                             just.result.table = just.result.table ) )
   }
-
+  
   # If we can't make it work with raw, then we can't make it work.
   if ( is.na( ss.low ) ) {
     # ss.results <- data.frame(MTP, typesample, NA, target.power)
@@ -578,7 +593,7 @@ pump_sample <- function(
     # return(ss.results)
     ss.low <- 1
   }
-
+  
   if ( is.na( ss.high ) ) {
     if( typesample == 'nbar')
     {
@@ -587,16 +602,15 @@ pump_sample <- function(
     {
       ss.high <- max_sample_size_JK
     }
-    warning( "Using default max sample size for one end of initial bounds of search.\n
-             Estimation may take more time." )
-
+    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
+    
     # Why is this here?   It shouldn't be?
     # start.tnum <- 2000
   }
-
+  
   ss.low <- round( ss.low )
   ss.high <- round( ss.high )
-
+  
   # # sometimes we already know the answer!
   # if(ss.low == ss.high)
   # {
@@ -604,7 +618,7 @@ pump_sample <- function(
   #   colnames(ss.results) <- output.colnames
   #   return(ss.results)
   # }
-
+  
   # search in the grid from min to max.
   test.pts <- optimize_power(
     design = design, search.type = typesample,
@@ -623,7 +637,7 @@ pump_sample <- function(
     give.warnings = give.optimizer.warnings,
     verbose = verbose
   )
-
+  
   # Assemble results
   ss.results <- data.frame(
     MTP,
@@ -634,12 +648,10 @@ pump_sample <- function(
     test.pts$power[nrow(test.pts)]
   )
   colnames(ss.results) <- output.colnames
-
-  if ( just.result.table ) {
-    return( ss.results )
-  } else {
-    return(list(ss.results = ss.results, test.pts = test.pts))
-  }
+  
+  return( make.pumpresult( ss.results, type="sample", params.list=params.list,
+                           just.result.table = just.result.table,
+                           tries = test.pts ) )
 }
 
 

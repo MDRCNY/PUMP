@@ -32,7 +32,8 @@ pump_power(
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
-  long.table = FALSE
+  long.table = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -105,6 +106,8 @@ does not have to input anything)}
 
 \item{long.table}{TRUE for table with power as rows, correction as columns,
 and with more verbose names.  See `transpose_power_table`.}
+
+\item{verbose}{Print out diagnostics of time, etc.}
 }
 \value{
 power results for MTP and unadjusted across all definitions of power

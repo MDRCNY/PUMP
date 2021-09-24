@@ -129,6 +129,8 @@ does not have to input anything)}
 
 \item{just.result.table}{TRUE means only return final answer, FALSE means
 return search path information.}
+
+\item{verbose}{Print out diagnostics of time, etc.}
 }
 \value{
 sample size results

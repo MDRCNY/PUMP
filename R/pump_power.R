@@ -251,6 +251,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 }
 
 
+
 #' Calculate power using PUMP method
 #'
 #' This functions calculates power for all definitions of power (individual,
@@ -301,7 +302,7 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #'   does not have to input anything)
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
-#'
+#' @param verbose Print out diagnostics of time, etc.
 #' @importFrom multtest mt.rawp2adjp
 #' @return power results for MTP and unadjusted across all definitions of power
 #' @export
@@ -321,12 +322,15 @@ pump_power <- function(
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
-  long.table = FALSE
+  long.table = FALSE,
+  verbose = FALSE
 )
 {
   # Call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
-
+    if ( verbose ) {
+      scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
+    }
     des = purrr::map( MTP,
                      pum::pump_power, design=design, MDES=MDES, 
                      M=M, J=J, K = K, nbar=nbar,
@@ -339,26 +343,30 @@ pump_power <- function(
                      rho=rho, omega.2=omega.2, omega.3 = omega.3,
                      long.table = long.table,
                      tnum = tnum, B = B, cl = cl, 
-                     updateProgress = updateProgress )
+                     updateProgress = updateProgress,
+                     verbose = verbose )
     
+    plist = attr( des[[1]], "params.list" )
+    plist$MTP = MTP
     if ( long.table ) {
       ftable = des[[1]]
       for ( i in 2:length(des) ) {
         ftable = dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
       }
-      return( ftable )
-
     } else {
       ftable = des[[1]]
       for ( i in 2:length(des) ) {
         ftable = dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
-      return( ftable )
-      
-      #des = map( des, ~ .x[nrow(.x),] ) %>%
-      #  dplyr::bind_rows()
-      #return( des )
     }
+    return( make.pumpresult( ftable, "power", 
+                             params.list = plist,
+                             multiple_MTP = TRUE,
+                             long.table=long.table ) )
+    
+    #des = map( des, ~ .x[nrow(.x),] ) %>%
+    #  dplyr::bind_rows()
+    #return( des )
   }
 
   if(validate.inputs)
@@ -387,6 +395,8 @@ pump_power <- function(
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
     B <- params.list$B
+  } else {
+    params.list = NULL
   }
 
   # compute test statistics for when null hypothesis is false
@@ -474,6 +484,8 @@ pump_power <- function(
   if ( long.table ) {
     power.results = transpose_power_table( power.results )
   }
-  return(power.results)
+  return( make.pumpresult( power.results, "power", 
+                           params.list = params.list,
+                           long.table = long.table ) )
 }
 
