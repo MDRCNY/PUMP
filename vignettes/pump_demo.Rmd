@@ -12,9 +12,13 @@ editor_options:
 ```{r initialize, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  cache = TRUE,
+  warning = FALSE,
+  message = FALSE
 )
 library( tidyverse )
+library( knitr )
 ```
 
 # Demo of using the pum-p package for a simple power calculation
@@ -27,8 +31,11 @@ Diplomas Now, with MDRC as a partner, was one of the first validation grants awa
 
 For the experiment, "62 secondary schools in 11 school districts agreed to participate in this study between 2011 and 2013. 32 of these schools were randomly assigned to implement the Diplomas Now model while the other 30 schools were assigned to a control group, continuing their existing school programs or implementing other reform strategies of their choosing." (Details quoted from the "Addressing Early Warning Indicators: Interim Impact Findings from the Investing in Innovation (i3) Evaluation of DIPLOMAS NOW" report.)
 
-The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years. Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, the evaluators were left with 29 high schools and 29 middle schools grouped in 21 random assignment blocks.
+The Diplomas Now study covered both middle and high schools, and was rolled out over a series of years.
+<!-- KH comment: this what? -->
+Due to this, the designers blocked the schools by district, but also by school type and year of roll-out.  After having to drop some schools due to various reasons, the evaluators were left with 29 high schools and 29 middle schools grouped in 21 random assignment blocks.
 
+<!-- KH comment: this seems to assume a decent level of familiarity with multi-level designs. I assume that is our audience, but would it be helpful to provide a quick review just in case? For example, do non-education fields talk about hierarchical designs with the same terminology? I still get confused as to the difference for example between a block and a cluster.-->
 The levels of this design are the random assignment (RA) blocks at level 3, schools as clusters at level 2, and students nested within the schools at level 1.
 Under our naming, this would give a three level design with randomization at level two, or a "d3.2" design.
 RA blocks are further nested in districts, but if we use fixed effects for the RA blocks, as the authors of the published report did, then we can ignore this 4th level of nesting.
@@ -41,38 +48,51 @@ The report has 12 outcomes of interest, grouped into 4 groups (Attendance, Behav
 
 # Power and MDES of the original design
 
+<!-- KH comment: clarify that we are also following the assumption of equal sized blocks and clusters, right now it seems like you are setting up to say we are doing somethign different.-->
 The above specifies the design of our example RCT.  Power analysis packages typically assume experiments with equal size blocks and clusters. For the above, we have about 3 clusters per block. The report states there were 14,950 students, giving around 258 students per school (normally we would want the geometric means of clusters per block and students per cluster, but that information is not available in the report).
 
-We also have to select the $R^2$ of our covariates we use for adjustment. The report does not report these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$ for all outcomes.
+<!--KH comment: I find this transition a bit abrupt. Up until now, we haven't really had any choices--the number of students, schools, etc. is fixed. Maybe make it more clear that we are now transitioning into territory where choices are less clear? -->
+We also have to select the $R^2$ of the covariates we use for adjustment.
+<!--KH comment: can we avoid double report?-->
+The report does not report these quantities, but it does mention covariate adjustment in the presentation of the model. Given the outcomes, it is unlikely there are very predictive individual level covariates, but lagged attendance, etc., is likely to be highly predictive of school level rates. We thus set $R^2_1 = 0.1$ and $R^2_2 = 0.5$ for all outcomes.
 
+<!-- KH comment: this paragraph again assumes a fair amount of background knowledge, but probably OK -->
 At this point we also need to specify the method of analysis. The report calls their model a "two-level" model, but this is not quite in alignment with the language of this package. In particular, the report analysis include fixed effects for the randomization block in their second level.
+<!-- KH comment: maybe state what model this is in our terminology? Also clarify whether we plan to fit the same model that they do, or whether we plan to fit a different model.-->
 In our package, this is a third level of nesting.
 The fixed effects for randomization block correspond to a model with fixed effects at level 3
 
 Let's focus on attendance as our outcome. Within the attendance group of outcomes, we have to specify how correlated our test statistics are likely to be. As a rough proxy, we can use our guess as the correlation of the outcomes at the cluster level. The attendance measures are fairly related, so we select `rho = 0.40` for all pairs.
 
+<!-- KH comment: what about ICC discussion? -->
+
 KP comment: I'm wondering how much to expand the discussion of the considersations that go into the assumptions here in the example walthrough or elsewhere in the paper. We could maybe walk through the considerations (see recommendations at end of my first paper).
 
 KP question: I'm confused why we are passing in single values for R2, ICC and rho rather than a vectors (or matrix for rho). 
 
+<!-- KH comment: clarify what you mean by might.  Do you mean these parameters might be good choices for the actual data? Because once we choose parameters, the power is not uncertain, we definitely have a certain power given the input parameters.-->
 Putting this all together, we might have:
 
 ```{r setup}
 library(pum)
 
-pump_power( design="d3.2_m3ff2rc",
-            MTP = "Bonferroni",
-            MDES = rep( 0.10, 3 ),
-            M = 3,
+p <- pump_power( design = "d3.2_m3ff2rc", # choice of design and analysis strategy
+            MTP = "Bonferroni", # multiple testing procedure
+            MDES = rep( 0.10, 3 ), # assumed effect size
+            M = 3, # number of outcomes
             J = 3, # number of schools/block
             K = 21, # number RA blocks
-            nbar = 258,
+            nbar = 258, # average number of students per school
             Tbar = 0.50, # prop Tx
             alpha = 0.05, # significance level
-            numCovar.1 = 5, numCovar.2 = 3,
+            numCovar.1 = 5, numCovar.2 = 3, # number of covariates per level
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
             rho = 0.4 ) # how correlated outcomes are
+```
+
+```{r echo = FALSE}
+kable(p)
 ```
 
 
@@ -91,6 +111,7 @@ KP comment: I wonder if one slight modification to the set-up is to walk through
 
 # Examining other correction procedures
 
+<!-- KH comment: as a standalone vignette, the user does not know how these things are being calculated, i.e. that these values are generated via simulation, so that might be a bit surprising ot them!-->
 It is easy to rerun the above using the Westfall-Young Stepdown procedure (this procedure is much more computationally intensive to run), or the other procedures of interest.  In fact, you can provide a list of procedures to compare everything easily.  If you provide a list, the package will re-run the simulation for each item on the list behind the scenes, so the overall method call can get computationally intensive:
 
 ```{r othercorrections, cache=TRUE}
@@ -108,6 +129,10 @@ pump_power( design="d3.2_m3ff2rc",
             ICC.2 = 0.05, ICC.3 = 0.4,
             rho = 0.4, B = 10000,
             tnum = 500 ) 
+```
+
+```{r echo = FALSE}
+kable(p)
 ```
 
 Due to the correlation in our outcomes (`rho = 0.4`), we see elevated power if we use this more sophisticated (and less conservative) correction approach for each individual test.  We do not see elevated rates for min1, interestingly.
@@ -129,14 +154,18 @@ pump_power( design="d3.2_m3rr2rc",
             nbar = 258,
             Tbar = 0.50, # prop Tx
             alpha = 0.05, # significance level
-            numCovar.1 = 5, numCovar.2 = 3,
-            numCovar.3 = 1, R2.3 = 0.10,
-            R2.1 = 0.1, R2.2 = 0.7,
+            numCovar.1 = 5, numCovar.2 = 3, numCovar.3 = 1, 
+            R2.1 = 0.1, R2.2 = 0.7, R2.3 = 0.10,
             ICC.2 = 0.05, ICC.3 = 0.4,
             rho = 0.4 ) # how correlated outcomes are
 ```
 
 
+```{r echo = FALSE}
+kable(p)
+```
+
+With random effects models we might also have level 3 covariates.  We need to specify how many, and how predictive they are of outcomes.
 
 # Exploring parameter combinations
 
@@ -154,7 +183,8 @@ We might be sure what our ICCs are at level 2 and level 3, and want to ensure ou
 We can explore a range of options as so (note we can only give a constant MDES with the grid methods):
 
 ```{r}
-grid <- pump_power_grid( design="d3.2_m3ff2rc",
+grid <- pump_power_grid(
+            design="d3.2_m3ff2rc",
             MTP = "Bonferroni",
             MDES = 0.10,
             M = 3,
@@ -172,7 +202,7 @@ grid <- pump_power_grid( design="d3.2_m3ff2rc",
 
 grid$ICC.3 = as.factor( grid$ICC.3 )
 grid = filter( grid, adjustment == "Bonferroni" )
-ggplot( grid, aes( ICC.2, min1, group=ICC.3, col=ICC.3 ) ) +
+ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
   geom_line() + geom_point()
 ```
 
@@ -215,24 +245,30 @@ Across a very broad range of rho, we will still have good min1 power.  The impac
  
 # MDES of the original design
 
-To identify the MDES of a given design we use the `pump_mdes` method. Along with the correction procedure and the design parameters discussed above, you also need to specify the target power, the type of power, and the tolerance of the search algorith. 
+To identify the MDES of a given design we use the `pump_mdes` method. Along with the correction procedure and the design parameters discussed above, you also need to specify the target power, the type of power, and the tolerance of the search algorithm. 
 
 Here, for example, we find the MDES for obtaining 80% individual power using the Holm procedure if we had 4 schools per block instead of 3:
 
 ```{r MDEScalc, cache=TRUE}
-pump_mdes( design="d3.2_m3ff2rc",
+m <- pump_mdes(
+           design = "d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "D1indiv", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
+
+```{r echo = FALSE}
+kable(m)
+```
+
 This method does a search, looking for the impact (assumed shared across all outcomes) to achieve the desired level of power. The top prints out the estimated MDES and the corresponding estimated power.  The tolerance controls how close the final power should be to the target power.
 
 Note if we are looking for MDES for "min1" power (i.e., what effect do we have to assume across all observations such that we will find some significant result with 80% power), we have a much smaller MDES:
 
 ```{r MDEScalcmin1, cache=TRUE}
-pump_mdes( design="blocked_c2_3f",
+mdes <- pump_mdes( design = "d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "min1", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
@@ -240,6 +276,9 @@ pump_mdes( design="blocked_c2_3f",
            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
 
+```{r echo = FALSE}
+kable(mdes)
+```
 
 # Determining necessary sample size
 
@@ -247,28 +286,36 @@ For our design we might want to determine the needed number of students/school, 
 
 Here we see how many schools are needed to achieve a MDES of 0.05 for min1 power (so how many schools are needed to have 80% chance of finding at least 1 outcome significant, if all outcomes had a true effect size of 0.05).
 
-**NOTE: Need to implement formula to allow for blocked_c2_3f design here**
+**NOTE: Need to implement formula to allow for d3.2_m3ff2rc design here**
 
 ```{r samplesizecalc, cache=TRUE}
-smp <- pump_sample( design="blocked_i1_2c",
-            MTP = "Holm",
-            typesample = "J",
-           target.power = 0.80, power.definition = "min1", tol = 0.01,
-           MDES = 0.05, M = 3, nbar = 258, K = 21,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
-           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
-smp
+smp <- pump_sample(
+  design = "d2.1_m2fc",
+  MTP = "Holm",
+  typesample = "J",
+  target.power = 0.80, power.definition = "min1", tol = 0.01,
+  MDES = 0.05, M = 3, nbar = 258, K = 21,
+  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4
+)
+```
+
+```{r echo = FALSE}
+kable(smp)
 ```
 
 We can check as so:
 
 ```{r samplesizeverify, cache=TRUE}
-
-pump_power( design="blocked_i1_2c",
+p <- pump_power( design = "d2.1_m2fc",
             MTP = "Holm", MDES = 0.05, 
-           M = 3, nbar = 258, J = smp$ss.results$`Sample size`, K = 21,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
-           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+            M = 3, nbar = 258, J = smp$`Sample size`, K = 21,
+            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
+            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+```
+
+```{r echo = FALSE}
+kable(p)
 ```
 
 
