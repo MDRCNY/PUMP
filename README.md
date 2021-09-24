@@ -1,5 +1,11 @@
 # PUMP package
 
-### Folder Structure
+Please see the vignette for examples of how to use this package.
 
-* __blocked_i1_2cfr.R:__ power estimation function, mdes and sample size is here.
+Last updated: September 24, 2021.
+
+Authors:
+* Zarni Htet
+* Kristen Hunter
+* Luke Miratrix
+* Kristin Porter
