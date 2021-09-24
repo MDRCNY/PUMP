@@ -1,3 +1,49 @@
+
+#' List all the supported designs of the `pum` package.
+#'
+#' List all supported designs, with brief descriptions.
+#'
+#' @param comment = TRUE prints out description of each design or method.  FALSE does not.
+#'
+#' @export
+supported_designs <- function( comment = TRUE) {
+  design = tibble::tribble(
+    ~ Code, ~PowerUp, ~ Comment,
+    # 1 level design
+    "d1.1_m2cc",    "n/a",            "1 level, level 1 randomization / constant intercepts, constant impacts model",
+    # 2 level designs, randomization at level 1
+    "d2.1_m2fc",    "blocked_i1_2c",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
+    "d2.1_m2ff",    "blocked_i1_2f",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
+    "d2.1_m2fr",    "blocked_i1_2r",  "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
+    # 3 lvl design, rand at lvl 1
+    "d3.1_m3rr2rr", "blocked_i1_3r",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
+    # 2 lvl design, rand at lvl 2
+    "d2.2_m2rc",    "simple_2c_2r",   "2 lvls, lvl 2 rand / random intercepts, constant impacts",
+    # 3 lvl design, rand at lvl 3
+    "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
+    # 3 lvl design, rand at lvl 2
+    "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
+    "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts"
+  )
+    
+    design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
+    
+    adjust = tibble::tribble( ~ Method, ~ Comment,
+                              "rawp", "No adjustment",
+                              "Bonferroni", "The classic (and conservative) multiple testing correction",
+                              "Holm", "Bonferroni improved!",
+                              "BH", "Benjamini-Hochberg (False Discovery Rate)",
+                              "WY-SS", "Westfall-Young, Single Step",
+                              "WY-SD", "Westfall-Young, Step Down" )
+    
+    if ( !comment ) {
+        design$Comment = NULL
+        adjust$Comment = NULL
+    }
+    
+    list( Design=design, Adjustment=adjust )
+}
+
 scat = function( str, ... ) {
   cat( sprintf( str, ... ) )
 }
@@ -17,16 +63,22 @@ validate_inputs <- function( design, params.list,
                              single.MDES = FALSE)
 {
 
+ 
   #-------------------------------------------------------#
   # basic checks of inputs
   #-------------------------------------------------------#
 
-  if(!(design %in% c('d1.1_m2cc',
-                     'd2.1_m2fc', 'd2.1_m2ff', 'd2.1_m2fr',
-                     'd3.1_m3rr2rr', 'd2.2_m2rc', 'd3.3_m3rc2rc',
-                     'd3.2_m3ff2rc', 'd3.2_m3rr2rc')))
+  # allow either supported design names or PowerUp equivalents
+  designs = supported_designs()
+  if(!(design %in% designs$Design$Code))
   {
-    stop('Invalid design.')
+    if(design %in% designs$Design$PowerUp)
+    {
+      design <- designs$Design$Code[designs$Design$PowerUp == design]
+    } else
+    {
+      stop('Invalid design.')
+    }
   }
 
   if(params.list$M == 1)
@@ -101,7 +153,7 @@ validate_inputs <- function( design, params.list,
 
   if( (!is.null( params.list$K ) && params.list$K <= 0) | ( !is.null( params.list$J) && params.list$J <= 0) | params.list$nbar <= 0)
   {
-    stop('Pasted values of J, K, and/or nbar need to be positive.')
+    stop('Provided values of J, K, and/or nbar need to be positive.')
   }
 
   if(params.list$numCovar.1 < 0 | ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |

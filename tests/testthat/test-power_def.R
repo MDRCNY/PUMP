@@ -1,5 +1,5 @@
 # library(testthat)
-# source(here::here("R", "pump_power.R"))
+# library(pum)
 
 #--------------------------------------------------------------------------#
 # all outcomes are nonzero
