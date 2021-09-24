@@ -3,11 +3,13 @@ Type: Package
 Title: Power Under Multiplicity
 Version: 0.1.0
 Authors@R: c(
-  person("Kristin", "Porter", , "kristin.porter@mdrc.org", c("aut", "cre")),
+  person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("aut", "cre")),
+  person("Luke", "Miratrix",, "luke_miratrix@gse.harvard.edu", c("aut")),
+  person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut")),
   person("Deni", "Chen",, "deni.chen@mdrc.org", c("aut")),
   person("Zarni", "Htet",,"zarni.htet@mdrc.org", c("aut"))
   )
-Maintainer: The package maintainer <deni.chen@mdrc.org>
+Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
 Description: This package details provides functions for power calculation, minimum detectable effect size and sample size
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
 Depends:
@@ -18,6 +20,7 @@ Imports:
      multtest,
      mvtnorm,
      doParallel,
+     tidyverse,
      foreach,
      parallel,
      snow,

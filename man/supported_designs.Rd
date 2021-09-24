@@ -4,7 +4,10 @@
 \alias{supported_designs}
 \title{List all the supported designs of the `pum` package.}
 \usage{
-supported_designs()
+supported_designs(comment = TRUE)
+}
+\arguments{
+\item{comment}{= TRUE prints out description of each design or method.  FALSE does not.}
 }
 \description{
 List all supported designs, with brief descriptions.

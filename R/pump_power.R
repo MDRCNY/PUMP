@@ -3,54 +3,95 @@
 #'
 #' List all supported designs, with brief descriptions.
 #'
+#' @param comment = TRUE prints out description of each design or method.  FALSE does not.
+#'
 #' @export
-supported_designs <- function() {
-  design = tibble::tribble( ~ Code, ~ Comment,
+supported_designs <- function( comment = TRUE) {
+  design = tibble::tribble( ~ Code, ~PowerUp, ~ Comment,
                    # 1 level design
-                   "d1.1_m2cc", "1 level, level 1 randomization / constant intercepts, constant impacts model",
+                   "d1.1_m2cc", "", "1 level, level 1 randomization / constant intercepts, constant impacts model",
                    # 2 level designs, randomization at level 1
-                   "d2.1_m2fc", "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
-                   "d2.1_m2ff", "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
-                   "d2.1_m2fr", "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
+                   "d2.1_m2fc", "",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
+                   "d2.1_m2ff", "",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
+                   "d2.1_m2fr", "",  "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
                    # 3 lvl design, rand at lvl 1
-                   "d3.1_m3rr2rr", "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
+                   "d3.1_m3rr2rr", "",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
                    # 2 lvl design, rand at lvl 2
-                   "d2.2_m2rc", "2 lvls, lvl 2 rand / random intercepts, constant impacts",
+                   "d2.2_m2rc", "",  "2 lvls, lvl 2 rand / random intercepts, constant impacts",
                    # 3 lvl design, rand at lvl 3
-                   "d3.3_m3rc2rc", "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
+                   "d3.3_m3rc2rc", "",  "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
                    # 3 lvl design, rand at lvl 2
-                   "d3.2_m3ff2rc", "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
-                   "d3.2_m3rr2rc", "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
+                   "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
+                   "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts" )
 
   design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
 
   adjust = tibble::tribble( ~ Method, ~ Comment,
+                            "rawp", "No adjustment",
                             "Bonferroni", "The classic (and conservative) multiple testing correction",
                             "Holm", "Bonferroni improved!",
                             "BH", "Benjamini-Hochberg (False Discovery Rate)",
                             "WY-SS", "Westfall-Young, Single Step",
                             "WY-SD", "Westfall-Young, Step Down" )
 
+  if ( !comment ) {
+    design$Comment = NULL
+    adjust$Comment = NULL
+  }
+
   list( Design=design, Adjustment=adjust )
 }
 
 
+#' Convert power table from wide to long
+#'
+#' Transform table returned from pump_power to a long format table.
+#'
+transpose_power_table = function( power_table ) {
+
+  pp = t( power_table )
+  #if ( ncol( pp ) > 1 ) {
+  #  pp = pp[ , ncol(pp):1 ]
+  #}
+  pows = rownames(pp)
+  pp =pp %>% # pp[ nrow(pp):1, ] %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column( var="power" )
+
+  pp$power = stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
+  pp$power = stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
+  pp$power = stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+  pp
+}
+
+
+
 #' Computes Q_m, the standard error of the effect size estimate
+#'
+#' Function to calculate the theoretical true standard error of a given design
+#' and model, in effect size units.
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param R2.1 vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 vector of length M; percent of variation explained by Level 3 covariates for each outcome
+#' @param Tbar scalar; the proportion of samples that are assigned to the
+#'   treatment
+#' @param R2.1 vector of length M; percent of variation explained by Level 1
+#'   covariates for each outcome
+#' @param R2.2 vector of length M; percent of variation explained by Level 2
+#'   covariates for each outcome
+#' @param R2.3 vector of length M; percent of variation explained by Level 3
+#'   covariates for each outcome
 #' @param ICC.2 scalar; school intraclass correlation
 #' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects variability
+#' @param omega.2 scalar; ratio of school effect size variability to random
+#'   effects variability
+#' @param omega.3 scalar; ratio of district effect size variability to random
+#'   effects variability
 #'
 #' @return Q_m, the standard error of the effect size estimate
+#' @export
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
@@ -218,12 +259,15 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-#'   automatically re-run for each procedure on the list.
-#' @param MDES scalar or vector:  t he MDES values for each outcome.
-#' Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.
-#' @param numZero Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M
-#' @param M scalar; the number of hypothesis tests (outcomes), including zero outcomes
+#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+#'   to automatically re-run for each procedure on the list.
+#' @param MDES scalar or vector:  t he MDES values for each outcome. Please
+#'   provide a scalar, a vector of length M, or vector of values for non-zero
+#'   outcomes.
+#' @param numZero Additional number of outcomes assumed to be zero. Please
+#'   provide NumZero + length(MDES) = M
+#' @param M scalar; the number of hypothesis tests (outcomes), including zero
+#'   outcomes
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
@@ -255,6 +299,8 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
+#' @param long.table TRUE for table with power as rows, correction as columns,
+#'   and with more verbose names.  See `transpose_power_table`.
 #'
 #' @importFrom multtest mt.rawp2adjp
 #' @return power results for MTP and unadjusted across all definitions of power
@@ -274,7 +320,8 @@ pump_power <- function(
   tnum = 10000, B = 3000,
   cl = NULL,
   updateProgress = NULL,
-  validate.inputs = TRUE
+  validate.inputs = TRUE,
+  long.table = FALSE
 )
 {
   # Call self for each element on MTP list.
@@ -393,17 +440,18 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.rawp <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( !is.null( adjp ) ) {
     power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
-    power.results.all <- data.frame(rbind(power.results.rawp, power.results.proc))
-    rownames(power.results.all) <- c('rawp', MTP)
-
-    return(power.results.all)
+    power.results <- data.frame(rbind(power.results, power.results.proc))
+    rownames(power.results) <- c('rawp', MTP)
   } else {
-    rownames(power.results.rawp) = "rawp"
-    return(power.results.rawp)
+    rownames(power.results) = "rawp"
   }
+  if ( long.table ) {
+    power.results = transpose_power_table( power.results )
+  }
+  return(power.results)
 }
 

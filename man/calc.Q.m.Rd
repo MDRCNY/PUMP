@@ -28,25 +28,32 @@ calc.Q.m(
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{Tbar}{scalar; the proportion of samples that are assigned to the treatment}
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
 
-\item{R2.1}{vector of length M; percent of variation explained by Level 1 covariates for each outcome}
+\item{R2.1}{vector of length M; percent of variation explained by Level 1
+covariates for each outcome}
 
-\item{R2.2}{vector of length M; percent of variation explained by Level 2 covariates for each outcome}
+\item{R2.2}{vector of length M; percent of variation explained by Level 2
+covariates for each outcome}
 
-\item{R2.3}{vector of length M; percent of variation explained by Level 3 covariates for each outcome}
+\item{R2.3}{vector of length M; percent of variation explained by Level 3
+covariates for each outcome}
 
 \item{ICC.2}{scalar; school intraclass correlation}
 
 \item{ICC.3}{scalar; district intraclass correlation}
 
-\item{omega.2}{scalar; ratio of school effect size variability to random effects variability}
+\item{omega.2}{scalar; ratio of school effect size variability to random
+effects variability}
 
-\item{omega.3}{scalar; ratio of district effect size variability to random effects variability}
+\item{omega.3}{scalar; ratio of district effect size variability to random
+effects variability}
 }
 \value{
 Q_m, the standard error of the effect size estimate
 }
 \description{
-Computes Q_m, the standard error of the effect size estimate
+Function to calculate the theoretical true standard error of a given design
+and model, in effect size units.
 }

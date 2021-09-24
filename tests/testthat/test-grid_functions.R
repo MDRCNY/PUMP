@@ -43,6 +43,11 @@ test_that("pump_power_grid works", {
 
 
 
+
+
+
+
+
   pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
                             MTP = "Holm",
                             MDES = c( 0.05, 0.2 ),
@@ -62,6 +67,67 @@ test_that("pump_power_grid works", {
   )
   pp
   expect_equal( nrow(pp), 2 * 3 * 2)
+
+
+
+  grid <- pump_power_grid( design="d3.2_m3ff2rc",
+                           MTP = "Bonferroni",
+                           MDES = 0.1,
+                           M = 3,
+                           J = 3, # number of schools/block
+                           K = 21, # number RA blocks
+                           nbar = 258,
+                           Tbar = 0.50, # prop Tx
+                           alpha = 0.05, # significance level
+                           numCovar.1 = 5, numCovar.2 = 3,
+                           R2.1 = 0.1, R2.2 = 0.7,
+                           ICC.2 = seq( 0, 0.3, 0.05 ),
+                           ICC.3 = seq( 0, 0.45, 0.15 ),
+                           rho = 0.4,
+                           tnum = 100 )
+  a = length( unique( grid$ICC.2 ) )
+  b = length( unique( grid$ICC.3 ) )
+  expect_equal( nrow( grid ), a * b * 2 )
+  expect_true( "MDES" %in% names(grid) )
+
+
+  grid2 <- pump_power_grid( design="d3.2_m3ff2rc", drop_unique_columns = FALSE,
+                           MTP = "Bonferroni",
+                           MDES = 0.1,
+                           M = 3,
+                           J = c( 3, 4 ), # number of schools/block
+                           K = 21, # number RA blocks
+                           nbar = 258,
+                           Tbar = 0.50, # prop Tx
+                           alpha = 0.05, # significance level
+                           numCovar.1 = 5, numCovar.2 = 3,
+                           R2.1 = 0.1, R2.2 = 0.7,
+                           ICC.2 = 0,
+                           ICC.3 = 0,
+                           rho = 0.4,
+                           tnum = 100 )
+  grid2
+  expect_true( "rho" %in% names( grid2 ) )
+
+  grid3 <- pump_power_grid( design=c( "d3.2_m3ff2rc", "d3.2_m3rr2rc" ), drop_unique_columns = FALSE,
+                            MTP = "Bonferroni",
+                            MDES = 0.1,
+                            M = 3,
+                            J = 3, # number of schools/block
+                            K = 21, # number RA blocks
+                            nbar = 258,
+                            Tbar = 0.50, # prop Tx
+                            alpha = 0.05, # significance level
+                            numCovar.1 = 5, numCovar.2 = 3,
+                            R2.1 = c( 0.1, 0.2 ), R2.2 = 0.7,
+                            ICC.2 = 0,
+                            ICC.3 = 0,
+                            rho = c( 0, 0.4 ),
+                            tnum = 100 )
+  grid3
+  expect_true( length( unique( grid3$design ) ) == 2 )
+
+
 
 })
 

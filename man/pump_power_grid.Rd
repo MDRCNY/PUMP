@@ -35,14 +35,15 @@ pump_power_grid(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-automatically re-run for each procedure on the list.}
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+to automatically re-run for each procedure on the list.}
 
 \item{MDES}{This is *not* a list of MDES for each outcome, but rather a list
 of MDES to explore. Each value will be assumed held constant across all M
 outcomes.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
+outcomes}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -50,7 +51,8 @@ outcomes.}
 
 \item{K}{scalar; the number of districts}
 
-\item{numZero}{Additional number of outcomes assumed to be zero. Please provide NumZero + length(MDES) = M}
+\item{numZero}{Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

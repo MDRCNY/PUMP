@@ -34,13 +34,14 @@ pump_sample_raw(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-automatically re-run for each procedure on the list.}
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: J, K, or nbar}
 
-\item{MDES}{scalar or vector:  t he MDES values for each outcome.
-Please provide a scalar, a vector of length M, or vector of values for non-zero outcomes.}
+\item{MDES}{scalar or vector:  t he MDES values for each outcome. Please
+provide a scalar, a vector of length M, or vector of values for non-zero
+outcomes.}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

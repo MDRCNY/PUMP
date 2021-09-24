@@ -10,6 +10,7 @@ pump_sample(
   typesample,
   MDES,
   M,
+  numZero = NULL,
   nbar = NULL,
   J = NULL,
   K = NULL,
@@ -34,7 +35,7 @@ pump_sample(
   B = 1000,
   max.steps = 20,
   max.tnum = 2000,
-  start.tnum = 200,
+  start.tnum = 1000,
   final.tnum = 4 * max.tnum,
   cl = NULL,
   updateProgress = NULL,
@@ -43,6 +44,7 @@ pump_sample(
   tol = 0.01,
   give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
+  use.logit = FALSE,
   verbose = FALSE
 )
 }
@@ -50,14 +52,18 @@ pump_sample(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list to
-automatically re-run for each procedure on the list.}
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
 
 \item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
+outcomes}
+
+\item{numZero}{Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

@@ -1,4 +1,15 @@
 
+
+
+make_mdes_result = function( mdes.results, tries, just.result.table ) {
+  if ( just.result.table ) {
+    return( mdes.results )
+  } else {
+    return( list( mdes.results = mdes.results, tries = tries ) )
+  }
+}
+
+
 #' MDES (minimum detectable effect size) function
 #'
 #' The minimum detectable effect size function calculates the most feasible
@@ -123,7 +134,7 @@ pump_mdes <- function(
 
   # For raw and BF, compute critical values
   crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-  crit.alphaxM <- qt(p = (1-alpha/M/2), df = t.df)
+  crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
 
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(target.power > 0.5,
@@ -138,27 +149,27 @@ pump_mdes <- function(
 
 
 
-  # MDES is alrady calculated for individual power for raw and Bonferroni
+  # MDES is already calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {
     mdes.results <- data.frame(MTP, mdes.bf, target.power)
     colnames(mdes.results) <- mdes.cols
-    return(list(mdes.results = mdes.results, tries = NULL))
+    return( make_mdes_result( mdes.results = mdes.results, tries = NULL, 
+                              just.result.table = just.result.table ) )
   }
 
-  # MDES is alrady calculated for individual power for raw and Bonferroni
   if ( MTP == "None") {
     mdes.results <- data.frame(MTP, mdes.raw, target.power)
     colnames(mdes.results) <- mdes.cols
-    return(list(mdes.results = mdes.results, tries = NULL))
+    return( make_mdes_result( mdes.results = mdes.results, tries = NULL, 
+                              just.result.table = just.result.table ) )
   }
 
   # MDES will be between raw and bonferroni for many power types
   mdes.low <- mdes.raw
   mdes.high <- mdes.bf
 
-  # adjust bounds to capture needed range
-  # for minimum or complete power, expand bounds
-  # note: complete power is a special case of minimum power
+  # adjust bounds to capture needed range for minimum or complete power.
+  # bounds note: complete power is a special case of minimum power
   if(pdef$min)
   {
     # complete power will have a higher upper bound
@@ -217,11 +228,8 @@ pump_mdes <- function(
   mdes.results <- data.frame(MTP, test.pts$pt[nrow(test.pts)], test.pts$power[nrow(test.pts)])
   colnames(mdes.results) <- mdes.cols
 
-  if ( just.result.table ) {
-    return( mdes.results )
-  } else {
-    return(list(mdes.results = mdes.results, test.pts = test.pts))
-  }
+  return( make_mdes_result( mdes.results = mdes.results, tries = test.pts,
+                           just.result.table = just.result.table  ) )
 }
 
 
