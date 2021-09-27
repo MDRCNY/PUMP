@@ -29,7 +29,7 @@ supported_designs <- function( comment = TRUE) {
     design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
 
     adjust = tibble::tribble( ~ Method, ~ Comment,
-                              "rawp", "No adjustment",
+                              "None", "No adjustment",
                               "Bonferroni", "The classic (and conservative) multiple testing correction",
                               "Holm", "Bonferroni improved!",
                               "BH", "Benjamini-Hochberg (False Discovery Rate)",
@@ -59,6 +59,7 @@ scat = function( str, ... ) {
 #' @return params.list
 #'
 validate_inputs <- function( design, params.list,
+                             power.call = FALSE,
                              mdes.call = FALSE,
                              single.MDES = FALSE)
 {
@@ -88,7 +89,7 @@ validate_inputs <- function( design, params.list,
       warning("Multiple testing corrections are not needed when M = 1.")
     }
     params.list$MTP <- "None"
-  } else if(is.null(params.list$MTP))
+  } else if( power.call & (is.null(params.list$MTP) | params.list$MTP == 'None') )
   {
     stop('Please provide a multiple test procedure (MTP).')
   }
@@ -98,7 +99,7 @@ validate_inputs <- function( design, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(params.list$MTP %in% c('None', 'Bonferroni', 'BH', 'Holm', 'WY-SS', 'WY-SD')))
+  if(!(params.list$MTP %in% designs$Adjustment$Method))
   {
     stop('Invalid MTP.')
   }

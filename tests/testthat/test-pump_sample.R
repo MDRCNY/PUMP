@@ -120,7 +120,7 @@ test_that( "optimize_power solves", {
   set.seed( 3042424 )
   op_pow <- pum:::optimize_power(
     MTP = "Holm", nbar=200,
-    power.definition="D1indiv",
+    power.definition = "D1indiv",
     design = "d2.1_m2fc", search.type = "J",
     start.low = 56, start.high = 75,
     start.tnum = 200,
