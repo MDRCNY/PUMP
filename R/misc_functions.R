@@ -25,9 +25,9 @@ supported_designs <- function( comment = TRUE) {
     "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
     "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts"
   )
-    
+
     design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
-    
+
     adjust = tibble::tribble( ~ Method, ~ Comment,
                               "rawp", "No adjustment",
                               "Bonferroni", "The classic (and conservative) multiple testing correction",
@@ -35,12 +35,12 @@ supported_designs <- function( comment = TRUE) {
                               "BH", "Benjamini-Hochberg (False Discovery Rate)",
                               "WY-SS", "Westfall-Young, Single Step",
                               "WY-SD", "Westfall-Young, Step Down" )
-    
+
     if ( !comment ) {
         design$Comment = NULL
         adjust$Comment = NULL
     }
-    
+
     list( Design=design, Adjustment=adjust )
 }
 
@@ -63,7 +63,7 @@ validate_inputs <- function( design, params.list,
                              single.MDES = FALSE)
 {
 
- 
+
   #-------------------------------------------------------#
   # basic checks of inputs
   #-------------------------------------------------------#
@@ -261,9 +261,13 @@ validate_inputs <- function( design, params.list,
   # three level models
   if(startsWith(design, 'd3'))
   {
-    if(is.null(params.list$K) || params.list$K <= 1 )
+    if(is.null(params.list$K) || params.list$K < 1 )
     {
-      stop('You must specify K, with K > 1 (number of units at level 3) for three-level designs' )
+      stop('You must specify K, with K >= 1 (number of units at level 3) for three-level designs' )
+    }
+    if(params.list$K == 1)
+    {
+      warning('Running a 3-level model with K = 1')
     }
   }
 
