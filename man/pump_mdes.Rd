@@ -37,7 +37,8 @@ pump_mdes(
   cl = NULL,
   updateProgress = NULL,
   give.optimizer.warnings = FALSE,
-  just.result.table = TRUE
+  just.result.table = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -117,6 +118,8 @@ does not have to input anything)}
 
 \item{just.result.table}{TRUE means only return final answer, FALSE means
 return search path information.}
+
+\item{verbose}{Print out diagnostics of time, etc.}
 }
 \value{
 mdes results

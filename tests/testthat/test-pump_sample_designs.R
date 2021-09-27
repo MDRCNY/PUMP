@@ -69,13 +69,13 @@ test_that("testing of d2.2_m2rc", {
                         rho = 0.2, just.result.table = FALSE)
 
   calcJ
-  expect_true( !is.na( calcJ$ss.results$`Sample size` ) )
+  expect_true( !is.na( calcJ$`Sample size` ) )
 
 
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$ss.results$`Sample size` - 1,
+                   J = calcJ$`Sample size` - 1,
                    nbar = 1000,
                    MDES = rep(0.40, 4),
                    Tbar = 0.50, alpha = 0.05,
@@ -88,7 +88,7 @@ test_that("testing of d2.2_m2rc", {
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$ss.results$`Sample size`,
+                   J = calcJ$`Sample size`,
                    nbar = 1000,
                    MDES = rep( 0.40, 4),
                    Tbar = 0.50, alpha = 0.05,
@@ -263,8 +263,8 @@ test_that("testing of d3.1_m3rr2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar1
-  expect_true(!is.na(nbar1$ss.results$`Sample size`))
-  expect_equal(50, nbar1$ss.results$`Sample size`, tol = 2)
+  expect_true(!is.na(nbar1$`Sample size`))
+  expect_equal(50, nbar1$`Sample size`, tol = 2)
 
   # sometimes it doesn't (only difference is a new seed)
   set.seed( 524235330 )
@@ -284,7 +284,7 @@ test_that("testing of d3.1_m3rr2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar2
-  expect_true(is.na(nbar2$ss.results$`Sample size`))
+  expect_true(is.na(nbar2$`Sample size`))
 
 
   # also does not converge with logit
@@ -307,7 +307,7 @@ test_that("testing of d3.1_m3rr2rr", {
     use.logit = TRUE,
     just.result.table = FALSE))
   nbar3
-  expect_true(is.na(nbar3$ss.results$`Sample size`))
+  expect_true(is.na(nbar3$`Sample size`))
 
   # but more iterations fixes it
   set.seed( 524235330 )
@@ -328,8 +328,8 @@ test_that("testing of d3.1_m3rr2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar4
-  expect_true(!is.na(nbar4$ss.results$`Sample size`))
-  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 2)
+  expect_true(!is.na(nbar4$`Sample size`))
+  expect_equal(50, nbar4$`Sample size`, tol = 2)
 
   # more iterations does not fix for logit
   set.seed( 524235330 )
@@ -352,8 +352,8 @@ test_that("testing of d3.1_m3rr2rr", {
     just.result.table = FALSE,
     use.logit = TRUE))
   nbar5
-  expect_true(!is.na(nbar5$ss.results$`Sample size`))
-  expect_equal(50, nbar5$ss.results$`Sample size`, tol = 2)
+  expect_true(!is.na(nbar5$`Sample size`))
+  expect_equal(50, nbar5$`Sample size`, tol = 2)
 
   # decreasing the maximum sample size fixes it
   set.seed( 524235330 )
@@ -374,8 +374,8 @@ test_that("testing of d3.1_m3rr2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar6
-  expect_true(!is.na(nbar6$ss.results$`Sample size`))
-  expect_equal(50, nbar6$ss.results$`Sample size`, tol = 10)
+  expect_true(!is.na(nbar6$`Sample size`))
+  expect_equal(50, nbar6$`Sample size`, tol = 10)
 
   # decreasing max sample size for logit makes it converge
   # to the wrong value!
@@ -399,8 +399,8 @@ test_that("testing of d3.1_m3rr2rr", {
     just.result.table = FALSE,
     use.logit = TRUE))
   nbar7
-  expect_true(!is.na(nbar7$ss.results$`Sample size`))
-  expect_equal(50, nbar7$ss.results$`Sample size`, tol = 30)
+  expect_true(!is.na(nbar7$`Sample size`))
+  expect_equal(50, nbar7$`Sample size`, tol = 30)
 
   # decreasing max sample size and increasing start.tnum does not help
   set.seed( 524235330 )
@@ -424,8 +424,8 @@ test_that("testing of d3.1_m3rr2rr", {
     just.result.table = FALSE,
     use.logit = TRUE))
   nbar8
-  expect_true(!is.na(nbar8$ss.results$`Sample size`))
-  expect_equal(50, nbar8$ss.results$`Sample size`, tol = 30)
+  expect_true(!is.na(nbar8$`Sample size`))
+  expect_equal(50, nbar8$`Sample size`, tol = 30)
 })
 
 
@@ -464,7 +464,7 @@ test_that("testing of d3.1_m3ff2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar1
-  expect_true(is.na(nbar1$ss.results$`Sample size`))
+  expect_true(is.na(nbar1$`Sample size`))
 
   # logit doesn't converge either
   set.seed( 245444 )
@@ -486,7 +486,7 @@ test_that("testing of d3.1_m3ff2rr", {
     just.result.table = FALSE,
     use.logit = TRUE))
   nbar2
-  expect_true(is.na(nbar2$ss.results$`Sample size`))
+  expect_true(is.na(nbar2$`Sample size`))
 
   # decreasing max sample size helps, but it is
   # still pretty far from the true value!
@@ -508,7 +508,7 @@ test_that("testing of d3.1_m3ff2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar3
-  expect_equal(50, nbar3$ss.results$`Sample size`, tol = 15)
+  expect_equal(50, nbar3$`Sample size`, tol = 15)
 
   # logit has the same pattern
   set.seed( 245444 )
@@ -531,7 +531,7 @@ test_that("testing of d3.1_m3ff2rr", {
     just.result.table = FALSE,
     use.logit = TRUE))
   nbar4
-  expect_equal(50, nbar4$ss.results$`Sample size`, tol = 20)
+  expect_equal(50, nbar4$`Sample size`, tol = 20)
 
   # increasing start.tnum is not enough
   set.seed( 245444 )
@@ -552,7 +552,7 @@ test_that("testing of d3.1_m3ff2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar5
-  expect_true(is.na(nbar5$ss.results$`Sample size`))
+  expect_true(is.na(nbar5$`Sample size`))
 
 
   # trying both doesn't improve the closeness to the truth
@@ -575,7 +575,7 @@ test_that("testing of d3.1_m3ff2rr", {
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0, omega.3 = 0.1, rho = 0.5, just.result.table = FALSE))
   nbar6
-  expect_equal(50, nbar6$ss.results$`Sample size`, tol = 12)
+  expect_equal(50, nbar6$`Sample size`, tol = 12)
 
 
 })
@@ -678,5 +678,5 @@ test_that( "testing pump_sample for d3.2_m3ff2rc", {
                                         max.tnum = 200, just.result.table = FALSE ) )
   pp
   expect_true( !is.null( pp ) )
-  expect_true( pp$ss.results$`min1 power` > 0.50 )
+  expect_true( pp$`min1 power` > 0.50 )
 } )

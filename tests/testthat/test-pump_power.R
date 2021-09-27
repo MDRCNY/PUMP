@@ -20,12 +20,14 @@ test_that("pump_power works without crashing", {
                     long.table = TRUE
   )
   pp
+  expect_true( is.pumpresult( pp ) )
+  
   expect_equal( dim( pp ), c(7,3) )
 
-  expect_true( is.na( pp$rawp[[1]] ) )
-  expect_true( pp$Bonferroni[1] < pp$Bonferroni[4] )
-  expect_true( pp$Bonferroni[3] > pp$Bonferroni[4] )
-  expect_true( all ( ( pp$rawp >= pp$Bonferroni )[4:7] ) )
+  expect_true( is.na( pp$rawp[[5]] ) )
+  expect_true( pp$Bonferroni[4] < pp$Bonferroni[5] )
+  expect_true( pp$Bonferroni[4] > pp$Bonferroni[7] )
+  expect_true( all ( ( pp$rawp >= pp$Bonferroni )[1:4] ) )
 })
 
 test_that("skipping level three inputs for level 2 works", {

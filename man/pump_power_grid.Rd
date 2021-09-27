@@ -27,6 +27,7 @@ pump_power_grid(
   omega.3 = NULL,
   rho,
   verbose = FALSE,
+  use_furrr = FALSE,
   drop_unique_columns = TRUE,
   ...
 )
@@ -107,4 +108,8 @@ pump_power, one for each MDES value given).
 
 Each parameter in the parameter list can be a list, not scalar.  It will
 cross all combinations of the list.
+
+These calls use furrr's future_pmap package to allow for parallel
+computation.  You can use the `setup_default_parallel_plan()` method or your
+own.  If you do nothing, it will default to single session.
 }

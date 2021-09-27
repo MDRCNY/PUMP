@@ -29,6 +29,7 @@ pump_mdes_grid(
   omega.3 = NULL,
   rho,
   verbose = FALSE,
+  use_furrr = FALSE,
   drop_unique_columns = TRUE,
   ...
 )
@@ -94,6 +95,8 @@ variation).}
 
 \item{rho}{scalar; assumed correlation between the test statistics of the
 tests.}
+
+\item{verbose}{Print out diagnostics of time, etc.}
 }
 \description{
 Run pump_mdes on combination of factors
