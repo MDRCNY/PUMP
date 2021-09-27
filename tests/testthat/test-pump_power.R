@@ -21,7 +21,7 @@ test_that("pump_power works without crashing", {
   )
   pp
   expect_true( is.pumpresult( pp ) )
-  
+
   expect_equal( dim( pp ), c(7,3) )
 
   expect_true( is.na( pp$rawp[[5]] ) )
@@ -103,6 +103,42 @@ test_that("M = 1 runs successfully", {
                       rho = 0.4, tnum = 200
   )
   expect_true( nrow( pp ) == 1 )
+})
+
+test_that("J = 1 runs successfully", {
+
+    expect_warning(pp <- pump_power(   design = "d2.1_m2fc",
+                        MTP = "None",
+                        MDES = 0.10,
+                        M = 1,
+                        J = 1, # number of schools/block
+                        nbar = 258,
+                        Tbar = 0.50, # prop Tx
+                        alpha = 0.05, # significance level
+                        numCovar.1 = 5, numCovar.2 = 3,
+                        R2.1 = 0.1, R2.2 = 0.7,
+                        ICC.2 = 0.05,
+                        rho = 0.4, tnum = 200
+    ))
+    expect_true( nrow( pp ) == 1 )
+})
+
+test_that("K = 1 runs successfully", {
+    expect_warning(pp <- pump_power( design = "d3.2_m3ff2rc",
+                      MTP = "Bonferroni",
+                      MDES = rep( 0.10, 3 ),
+                      M = 3,
+                      J = 10, # number of schools/block
+                      K = 1, # number RA blocks
+                      nbar = 150,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 0, numCovar.2 = 0,
+                      R2.1 = 0, R2.2 = 0,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, tnum = 10000
+    ))
+    pp
 })
 
 

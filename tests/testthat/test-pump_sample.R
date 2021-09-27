@@ -293,5 +293,109 @@ test_that("sample search when one end is missing", {
 
 
 
+test_that("Sample with different correlations", {
 
+    # zero correlation
+    p <- pump_power(  design = "d2.1_m2fc",
+                      MTP = "Holm",
+                      J = 10,
+                      nbar = 200,
+                      M = 20,
+                      MDES = rep(0.05, 20),
+                      Tbar = 0.50, alpha = 0.05,
+                      numCovar.1 = 5, numCovar.2 = 1,
+                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0 )
+    p
+
+    ss <- pump_sample(    design = "d2.1_m2fc",
+                          MTP = "Holm",
+                          typesample = "J",
+                          nbar = 200,
+                          power.definition = "min1",
+                          M = 20,
+                          MDES = 0.05, target.power = p$min1[2],
+                          tol = 0.01,
+                          Tbar = 0.50, alpha = 0.05,
+                          numCovar.1 = 5, numCovar.2 = 1,
+                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                          rho = 0 )
+
+
+    expect_equal(ss$`Sample size`, 10, tol = 1)
+
+
+    # high correlation
+    p <- pump_power(  design = "d2.1_m2fc",
+                      MTP = "Holm",
+                      J = 10,
+                      nbar = 200,
+                      M = 20,
+                      MDES = rep(0.05, 20),
+                      Tbar = 0.50, alpha = 0.05,
+                      numCovar.1 = 5, numCovar.2 = 1,
+                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.95 )
+    p
+
+    ss <- pump_sample(    design = "d2.1_m2fc",
+                          MTP = "Holm",
+                          typesample = "J",
+                          nbar = 200,
+                          power.definition = "min1",
+                          M = 20,
+                          MDES = 0.05, target.power = p$min1[2],
+                          tol = 0.01,
+                          Tbar = 0.50, alpha = 0.05,
+                          numCovar.1 = 5, numCovar.2 = 1,
+                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                          rho = 0.95 )
+
+
+    expect_equal(ss$`Sample size`, 10, tol = 1)
+
+} )
+
+test_that("No adjustment", {
+
+  nbar <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = 'Bonferroni',
+    power.definition = 'D1indiv',
+    typesample = 'nbar',
+    target.power = 0.8,
+    J = 60,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
+  )
+
+  nbar <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = 'None',
+    power.definition = 'D1indiv',
+    typesample = 'nbar',
+    target.power = 0.8,
+    J = 60,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
+  )
+
+  expect_error(nbar <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = 'None',
+    power.definition = 'complete',
+    typesample = 'nbar',
+    target.power = 0.8,
+    J = 60,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
+  ))
+
+})
 
