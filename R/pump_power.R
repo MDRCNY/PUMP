@@ -258,7 +258,6 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
 #' @param verbose Print out diagnostics of time, etc.
-#' @importFrom multtest mt.rawp2adjp
 #' @return power results for MTP and unadjusted across all definitions of power
 #' @export
 #'
@@ -287,20 +286,20 @@ pump_power <- function(
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
     des = purrr::map( MTP,
-                     pum::pump_power, design=design, MDES=MDES, 
+                     pum::pump_power, design=design, MDES=MDES,
                      M=M, J=J, K = K, nbar=nbar,
                      Tbar=Tbar,
-                     alpha=alpha, 
+                     alpha=alpha,
                      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                     numCovar.3 = numCovar.3, 
+                     numCovar.3 = numCovar.3,
                      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
                      ICC.2 = ICC.2, ICC.3 = ICC.3,
                      rho=rho, omega.2=omega.2, omega.3 = omega.3,
                      long.table = long.table,
-                     tnum = tnum, B = B, cl = cl, 
+                     tnum = tnum, B = B, cl = cl,
                      updateProgress = updateProgress,
                      verbose = verbose )
-    
+
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
     if ( long.table ) {
@@ -314,11 +313,11 @@ pump_power <- function(
         ftable = dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
     }
-    return( make.pumpresult( ftable, "power", 
+    return( make.pumpresult( ftable, "power",
                              params.list = plist,
                              multiple_MTP = TRUE,
                              long.table=long.table ) )
-    
+
     #des = map( des, ~ .x[nrow(.x),] ) %>%
     #  dplyr::bind_rows()
     #return( des )
@@ -392,34 +391,29 @@ pump_power <- function(
   adjp = NULL
   if (MTP == "Bonferroni"){
 
-    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = "Bonferroni", alpha = alpha)
-    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Bonferroni"))
+    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "bonferroni"))
 
   } else if (MTP == "Holm") {
 
-    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = "Holm", alpha = alpha)
-    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "Holm"))
+    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "holm"))
 
   } else if (MTP == "BH") {
 
-    adjp <- apply(rawp.mat, 1, multtest::mt.rawp2adjp, proc = c("BH"), alpha = alpha)
-    adjp <- do.call(rbind, lapply(adjp, grab.pval, proc = "BH"))
+    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "hochberg"))
+
+  } else if (MTP == "WY-SS"){
+
+    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B,
+                      Sigma = Sigma, t.df = t.df)
+
+  } else if (MTP == "WY-SD"){
+
+    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B,
+                      Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else if(MTP == "rawp") {
 
     adjp <- rawp.mat
-
-  } else if (MTP == "WY-SS"){
-
-    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B, Sigma = Sigma, t.df = t.df)
-
-  } else if (MTP == "WY-SD"){
-
-    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B, Sigma = Sigma, t.df = t.df, cl = cl)
-
-  } else if ( MTP != "None") {
-
-    stop(paste("Unknown MTP:", MTP))
   }
 
   if (is.function(updateProgress) & !is.null(adjp)){
@@ -439,7 +433,7 @@ pump_power <- function(
   if ( long.table ) {
     power.results = transpose_power_table( power.results )
   }
-  return( make.pumpresult( power.results, "power", 
+  return( make.pumpresult( power.results, "power",
                            params.list = params.list,
                            long.table = long.table ) )
 }
