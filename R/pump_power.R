@@ -1,3 +1,5 @@
+library( tidyverse )
+
 #' Convert power table from wide to long
 #'
 #' Transform table returned from pump_power to a long format table.
@@ -5,11 +7,13 @@
 transpose_power_table = function( power_table ) {
 
   pp = t( power_table )
+  colnames(pp) = pp[1,]
+  pp = pp[-1,]
   #if ( ncol( pp ) > 1 ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
   pows = rownames(pp)
-  pp =pp %>% # pp[ nrow(pp):1, ] %>%
+  pp = pp %>% # pp[ nrow(pp):1, ] %>%
     as.data.frame() %>%
     tibble::rownames_to_column( var="power" )
 
@@ -286,19 +290,18 @@ pump_power <- function(
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
     des = purrr::map( MTP,
-                     pum::pump_power, design=design, MDES=MDES,
-                     M=M, J=J, K = K, nbar=nbar,
-                     Tbar=Tbar,
-                     alpha=alpha,
+                     pump_power, design = design, MDES = MDES,
+                     M = M, J = J, K = K, nbar = nbar,
+                     Tbar = Tbar,
+                     alpha = alpha,
                      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
                      numCovar.3 = numCovar.3,
                      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
                      ICC.2 = ICC.2, ICC.3 = ICC.3,
-                     rho=rho, omega.2=omega.2, omega.3 = omega.3,
+                     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                      long.table = long.table,
                      tnum = tnum, B = B, cl = cl,
-                     updateProgress = updateProgress,
-                     verbose = verbose )
+                     updateProgress = updateProgress )
 
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
@@ -336,7 +339,7 @@ pump_power <- function(
       rho = rho, rho.matrix = rho.matrix, B = B
     )
 
-    params.list <- validate_inputs(design, params.list)
+    params.list <- validate_inputs(design, params.list, power.call = TRUE)
 
     MTP <- params.list$MTP
     MDES <- params.list$MDES
@@ -386,9 +389,6 @@ pump_power <- function(
     updateProgress(message = "P-values have been generated!")
   }
 
-  grab.pval <- function(...,proc) {return(...$adjp[order(...$index),proc])}
-
-  adjp = NULL
   if (MTP == "Bonferroni"){
 
     adjp <- t(apply(rawp.mat, 1, p.adjust, method = "bonferroni"))
@@ -411,9 +411,9 @@ pump_power <- function(
     adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B,
                       Sigma = Sigma, t.df = t.df, cl = cl)
 
-  } else if(MTP == "rawp") {
-
-    adjp <- rawp.mat
+  } else
+  {
+    adjp <- NULL
   }
 
   if (is.function(updateProgress) & !is.null(adjp)){
@@ -421,17 +421,17 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
-  if ( !is.null( adjp ) ) {
+  if ( MTP != 'None' ) {
     power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
-    power.results <- data.frame(rbind(power.results, power.results.proc))
-    rownames(power.results) <- c('rawp', MTP)
+    power.results <- data.frame(rbind(power.results.raw, power.results.proc))
+    power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
-    rownames(power.results) = "rawp"
+    power.results <- cbind('MTP' = 'None', power.results.raw)
   }
   if ( long.table ) {
-    power.results = transpose_power_table( power.results )
+    power.results <- transpose_power_table( power.results )
   }
   return( make.pumpresult( power.results, "power",
                            params.list = params.list,
