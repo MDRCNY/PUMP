@@ -4,7 +4,7 @@
 \alias{print.pumpresult}
 \title{Pretty print pump result}
 \usage{
-\method{print}{pumpresult}(x, ...)
+\method{print}{pumpresult}(x, n = 10, ...)
 }
 \arguments{
 \item{x}{A pumpresult object.}
