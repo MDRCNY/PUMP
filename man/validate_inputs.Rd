@@ -9,7 +9,6 @@ validate_inputs(
   params.list,
   power.call = FALSE,
   mdes.call = FALSE,
-  ss.call = FALSE,
   single.MDES = FALSE
 )
 }
