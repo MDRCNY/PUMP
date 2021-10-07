@@ -61,7 +61,6 @@ scat = function( str, ... ) {
 validate_inputs <- function( design, params.list,
                              power.call = FALSE,
                              mdes.call = FALSE,
-                             ss.call = FALSE,
                              single.MDES = FALSE)
 {
 
@@ -147,14 +146,6 @@ validate_inputs <- function( design, params.list,
                    MDES, 'M =', M))
       }
     }
-  }
-
-  #-------------------------------------------------------#
-  # sample size
-  #-------------------------------------------------------#
-  if(ss.call)
-  {
-
   }
 
   #-------------------------------------------------------#
