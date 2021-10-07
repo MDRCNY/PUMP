@@ -255,7 +255,7 @@ m <- pump_mdes(
            MTP = "Holm",
            target.power = 0.80, power.definition = "D1indiv", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 3,
            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
 
@@ -272,7 +272,7 @@ mdes <- pump_mdes( design = "d3.2_m3ff2rc",
            MTP = "Holm",
            target.power = 0.80, power.definition = "min1", tol = 0.01,
            M = 3, J = 4, K = 21, nbar = 258,
-           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 0,
+           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
 ```
 
@@ -294,9 +294,9 @@ smp <- pump_sample(
   MTP = "Holm",
   typesample = "J",
   target.power = 0.80, power.definition = "min1", tol = 0.01,
-  MDES = 0.05, M = 3, nbar = 258, K = 21,
+  MDES = 0.05, M = 3, nbar = 258,
   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.4
 )
 ```
 
@@ -309,9 +309,9 @@ We can check as so:
 ```{r samplesizeverify, cache=TRUE}
 p <- pump_power( design = "d2.1_m2fc",
             MTP = "Holm", MDES = 0.05, 
-            M = 3, nbar = 258, J = smp$`Sample size`, K = 21,
+            M = 3, nbar = 258, J = smp$`Sample size`,
             Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4, rho = 0.4 )
+            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.4 )
 ```
 
 ```{r echo = FALSE}

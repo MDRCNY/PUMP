@@ -10,20 +10,20 @@ supported_designs <- function( comment = TRUE) {
   design = tibble::tribble(
     ~ Code, ~PowerUp, ~ Comment,
     # 1 level design
-    "d1.1_m2cc",    "n/a",            "1 level, level 1 randomization / constant intercepts, constant impacts model",
+    "d1.1_m2cc",    "n/a",            "1 lvl, lvl 1 rand / constant intercepts, constant impacts model",
     # 2 level designs, randomization at level 1
     "d2.1_m2fc",    "blocked_i1_2c",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
     "d2.1_m2ff",    "blocked_i1_2f",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
     "d2.1_m2fr",    "blocked_i1_2r",  "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
-    # 3 lvl design, rand at lvl 1
-    "d3.1_m3rr2rr", "blocked_i1_3r",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
     # 2 lvl design, rand at lvl 2
     "d2.2_m2rc",    "simple_2c_2r",   "2 lvls, lvl 2 rand / random intercepts, constant impacts",
-    # 3 lvl design, rand at lvl 3
-    "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
+    # 3 lvl design, rand at lvl 1
+    "d3.1_m3rr2rr", "blocked_i1_3r",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
     # 3 lvl design, rand at lvl 2
     "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
-    "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts"
+    "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts",
+    # 3 lvl design, rand at lvl 3
+    "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts"
   )
 
     design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
