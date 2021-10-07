@@ -25,7 +25,10 @@ Imports:
      RcppEigen,
      lme4,
      stats,
-     here
+     here,
+     furrr,
+     future,
+     magrittr
 Additional_repositories: 
 License: MIT + file LICENSE
 Encoding: UTF-8
