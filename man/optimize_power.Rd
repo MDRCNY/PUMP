@@ -51,9 +51,7 @@ optimize_power(
   max.steps = 20,
   max.tnum = 2000,
   final.tnum = 4 * max.tnum,
-  use.logit = FALSE,
-  give.warnings = FALSE,
-  verbose = FALSE
+  give.warnings = FALSE
 )
 }
 \arguments{
@@ -127,8 +125,6 @@ tests.}
 \item{max.tnum}{maximum number of samples for a single step (other than the final check step).}
 
 \item{final.tnum}{number of samples for final draw}
-
-\item{verbose}{Print out diagnostics of time, etc.}
 }
 \value{
 power

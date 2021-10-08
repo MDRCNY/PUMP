@@ -127,7 +127,11 @@ pump_power( design="d3.2_m3ff2rc",
             numCovar.1 = 5, numCovar.2 = 3,
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.4,
-            rho = 0.4, B = 10000,
+            #### TODO
+            # B = 10000,
+            B = 1000,
+            #####
+            rho = 0.4, 
             tnum = 500 ) 
 ```
 
@@ -226,7 +230,11 @@ grid <- pump_power_grid( design="d3.2_m3ff2rc",
             R2.1 = 0.1, R2.2 = 0.7,
             ICC.2 = 0.05, ICC.3 = 0.40,
             rho = c( 0, 0.15, 0.3, 0.45, 0.6 ),
-            tnum = 500, B = 10000 ) 
+            tnum = 500,
+            #### TODO
+            # B = 10000
+            B = 1000
+            ) 
 gridL = filter( grid, adjustment != "rawp" ) %>%
   pivot_longer( cols=c(indiv.mean, min1, min2, complete),
                 names_to="definition", values_to="power" ) %>%

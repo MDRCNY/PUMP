@@ -1,0 +1,399 @@
+---
+title: "pump_sample_demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{pump_sample_demo}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r initialize, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  cache = TRUE,
+  warning = FALSE,
+  message = FALSE
+)
+library( tidyverse )
+library( knitr )
+library( pum )
+
+set.seed( 524235326 )
+```
+
+# Intepreting sample size calculations
+
+Let's start with a case of calculating the sample size for a 3-level model.
+To demonstrate some of the challenges of calculating sample size, we start with calculating power for a given set of parameters, and then try to recover those parameters.
+
+
+```{r}
+p <- pump_power(
+    design = "d3.1_m3rr2rr",
+    MTP = 'Holm',
+    nbar = 50,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = rep(0.125, 3),
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1,
+    rho = 0.5
+)
+```
+
+```{r echo = FALSE}
+print(p)
+# kable(p)
+```
+
+First, let's try to recover $K$, the number of districts, given the power we just found.
+
+```{r}
+K <- pump_sample(
+  design = "d3.1_m3rr2rr",
+  typesample = 'K',
+  MTP = 'Holm',
+  target.power = p$D1indiv[2],
+  power.definition = 'D1indiv',
+  J = 30,
+  nbar = 50,
+  M = 3,
+  MDES = 0.125,
+  Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1,
+  ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5
+)
+```
+
+```{r, echo = FALSE}
+print(K)
+```
+
+We recover a similar value K = `K`, but it is not surprising that we do not recover exactly the same value.
+There are two reasons for this discrepancy.
+First, our power calculations rely on simulations, so they are estimates--the randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
+Second, the search algorithm finds a sample size which is within a certain tolerance of the target power.
+The default tolerance is $0.01$, so $K = 16$ will be returned if it is within 1\% of our target power.
+
+This discrepancy highlights how the output should be interpreted.
+The output of `pump_sample` is  one possible sample size which would result in a power within the given tolerance of our target power, also taking into account estimation error.
+Given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
+We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
+
+# Exploring a range of sample size values
+
+Now let's turn to calculating the number of schools $J$, given a fixed $K$.
+
+```{r}
+J1 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1,
+    rho = 0.5,
+    just.result.table = FALSE
+)
+```
+
+```{r}
+print(J1)
+```
+
+Our $J$ is a bit larger than our original input of `30`.
+Let's examine the source of this discrepancy.
+First, we can use the power curve function, which calculates power over a range of possible $J$ values.
+
+```{r}
+power_curve(J1)
+```
+
+From this curve, we can see that we might have a combination of estimation randomness and flatness of the power curve contributing to the result.
+For example, a sample size of 29 results in a power of `0.769`, even though we initially input a sample size of 30 to get our target power of `0.7964.`
+This jump between 29 and 30 is likely larger than reality, and is probably due to estimation error.
+
+We can try running the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
+The parameter `start.tnum` sets the number of iterations we start with, and `max.tnum` controls the number of test statistics drawn during later iterations as the algorithm refines its estimate.
+
+```{r}
+J2 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1,
+    rho = 0.5,
+    start.tnum = 2000,
+    max.tnum = 5000,
+    just.result.table = FALSE
+)
+```
+
+```{r, echo = FALSE}
+print(J2)
+```
+
+With greater precision, we have achieved a sample size closer to our original sample size of 30.
+
+```{r}
+power_curve(J2)
+```
+
+We can get a bit closer by decreasing our default tolerance from $0.01$:
+
+```{r}
+J3 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'J',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    nbar = 50,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1,
+    rho = 0.5,
+    start.tnum = 2000,
+    max.tnum = 5000,
+    tol = 0.005,
+    just.result.table = FALSE
+)
+```
+
+```{r, echo = FALSE}
+print(J3)
+```
+
+By decreasing the tolerance, we are enforcing a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
+Now we are even closer to the input value of 30!
+
+# Non-convergence
+
+Sometimes, the algorithm does not converge on a sample size value.
+If we try the same scenario but try to find `nbar`, it is a more difficult problem, and we are more likely to face convergence issues.
+
+```{r, echo = FALSE}
+set.seed( 524235325 )
+```
+
+```{r}
+nbar1 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE
+)
+```
+
+```{r, echo = FALSE}
+print(nbar1)
+```
+
+We can examine the search path to see what happened.
+
+```{r}
+search_path(nbar1)
+```
+
+Remember that our original nbar value was 50.
+We can see from this search that the power curve is very flat.
+Values of nbar ranging from around 60 to above 1000 all result in very similar power values!
+
+Because the power curve is so flat in the region we are interested in, it can sometimes help to increase the precision of our estimates to get a better sense of the curve in that region.
+
+```{r}
+nbar2 <- pump_sample(
+    design = "d3.1_m3rr2rr",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    start.tnum = 10000,
+    K = 15,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE
+)
+```
+
+```{r}
+print(nbar2)
+```
+
+Now we see that our algorithm has converged! 
+
+Let's consider a different scenario to diagnose a different way of fixing convergence issues.
+We will try a different design and model.
+Again, we begin with a power calculation.
+
+```{r}
+p <- pump_power(
+    design = "d3.2_m3ff2rc",
+    MTP = 'Holm',
+    nbar = 50,
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = rep(0.125, 3),
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5
+)
+```
+
+And we again try calculating the nbar necessary to achieve this power.
+
+```{r, echo = FALSE}
+set.seed( 245444 )
+```
+
+```{r}
+nbar1 <- pump_sample(
+    design = "d3.2_m3ff2rc",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE
+)
+```
+
+```{r, echo = FALSE}
+print(nbar1)
+```
+
+We again see a lack of convergence.
+Let's take a look at the search path.
+
+```{r}
+search_path(nbar1)
+```
+
+Our region of interest is below a sample size of 742, so we can try focusing our efforts in this region.
+We can change the argument `max_sample_size_nbar`, which bounds the upper end of our search region.
+
+```{r}
+nbar2 <- pump_sample(
+    design = "d3.2_m3ff2rc",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    max_sample_size_nbar = 742
+)
+```
+
+```{r, echo = FALSE}
+print(nbar2)
+```
+
+The algorithm has now converged, but it is a much larger sample size than expected! 
+Let's take a look at the power curve.
+
+```{r}
+power_curve(nbar2)
+```
+
+We again see both estimation error, and a very flat power curve.
+To try and see if there is a smaller sample size that is valid, we can (1) further limit the max sample size, (2) increase precision, and (3) decrease tolerance.
+We can decrease the upper bound to be our current sample size estimate.
+These changes will slightly slow down the search algorithm.
+
+```{r}
+nbar3 <- pump_sample(
+    design = "d3.2_m3ff2rc",
+    typesample = 'nbar',
+    MTP = 'Holm',
+    target.power = p$D1indiv[2],
+    power.definition = 'D1indiv',
+    K = 10,
+    J = 30,
+    M = 3,
+    MDES = 0.125,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.1,
+    ICC.2 = 0.2, ICC.3 = 0.2,
+    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    just.result.table = FALSE,
+    start.tnum = 2000, max.tnum = 5000,
+    tol = 0.005,
+    max_sample_size_nbar = 101
+)
+```
+
+```{r, echo = FALSE}
+print(nbar3)
+```
+
+Now we see a parameter very close to our original value of 50.

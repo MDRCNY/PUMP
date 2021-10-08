@@ -4,7 +4,7 @@
 \alias{find_best}
 \title{Extract roots from quadratic curve based on given evaluated points}
 \usage{
-find_best(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
+find_best(test.pts, target.power, gamma = 1.5)
 }
 \arguments{
 \item{test.pts}{power evaluated at different points}

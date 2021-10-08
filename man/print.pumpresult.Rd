@@ -20,6 +20,7 @@ Other pumpresult:
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},
+\code{\link{power_curve}()},
 \code{\link{search_path}()}
 }
 \concept{pumpresult}
