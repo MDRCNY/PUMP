@@ -121,9 +121,8 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                    rho = 0.4 )
   pp
-  expect_true( abs( pp[2,1] - 0.80 ) <= 0.02)
+  expect_true( abs( pp[2,2] - 0.80 ) <= 0.02)
 })
-
 
 
 test_that("pump_mdes runs for d1.1_m2cc", {

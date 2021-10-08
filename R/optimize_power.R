@@ -39,24 +39,18 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
                            max.steps = 20, max.tnum = 2000, final.tnum = 4*max.tnum,
-                           use.logit = FALSE,
-                           give.warnings = FALSE,
-                           verbose = FALSE )
+                           give.warnings = FALSE)
 {
 
   # Helper function to call pump_power for our search and give back the power results
   # from the given set of parameters.
-  power_check = function( test_point, test_tnum ) {
-
-    if ( verbose ) {
-      print( test_point )
-    }
+  power_check <- function( test_point, test_tnum ) {
 
     # Hack code since ifelse() cannot allow a NULL value and K could be NULL for
     # 2 level designs.
-    myK = K
+    myK <- K
     if ( search.type == 'K' ) {
-      myK = test_point
+      myK <- test_point
     }
 
     if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
@@ -77,50 +71,56 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       validate.inputs = FALSE
     )
 
-    pt.power.results
+    return(pt.power.results)
   }
 
+  gen_test_pts <- function(start.low, start.high, tnum)
+  {
+    # generate a series of points to try (on quadradic scale, especially relevant
+    # for sample size)
+    test.pts <- data.frame(
+      step = 0,
+      pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2,
+      power = NA,
+      w = tnum,
+      MTP = MTP,
+      target.power = target.power
+    )
+
+    # generate power for all the initial test points
+    for(i in 1:nrow(test.pts))
+    {
+      pt.power.results <- power_check( test.pts$pt[i], start.tnum )
+      if(is.na(pt.power.results$D1indiv[1]))
+      {
+        test.pts$power[i] <- 0
+      } else
+      {
+        # Sanity check that we are getting power for a given metric.
+        if(!(power.definition %in% colnames(pt.power.results)))
+        {
+          stop(paste0('Please provide a valid power definition. Provided definition: ', power.definition,
+                      '. Available options: ', paste(colnames(pt.power.results), collapse = ', ')))
+        }
+        test.pts$power[i] <- pt.power.results[
+          pt.power.results$MTP == MTP, power.definition
+        ]
+      }
+    }
+
+    return(test.pts)
+  }
 
   # Ensure we have single MDES that is appropriate
   if ( search.type != "mdes" ) {
     stopifnot( !is.null( MDES ) )
     stopifnot( length(MDES) == 1 && MDES > 0 )
-    MDES = rep( MDES, M )
+    MDES <- rep( MDES, M )
   }
 
   # Step 1: fit initial quadratic curve to start search
+  test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum)
 
-  # generate a series of points to try (on quadradic scale, especially relevant
-  # for sample size)
-  test.pts <- data.frame(
-    step = 0,
-    pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2,
-    power = NA,
-    w = start.tnum,
-    MTP = MTP,
-    target.power = target.power
-  )
-
-  # generate power for all the initial test points
-  for(i in 1:nrow(test.pts))
-  {
-    pt.power.results = power_check( test.pts$pt[i], start.tnum )
-    if(is.na(pt.power.results$D1indiv[1]))
-    {
-      test.pts$power[i] <- 0
-    } else
-    {
-      # Sanity check that we are getting power for a given metric.
-      if(!(power.definition %in% colnames(pt.power.results)))
-      {
-        stop(paste0('Please provide a valid power definition. Provided definition: ', power.definition,
-             '. Available options: ', paste(colnames(pt.power.results), collapse = ', ')))
-      }
-      test.pts$power[i] <- pt.power.results[
-        pt.power.results$MTP == MTP, power.definition
-      ]
-    }
-  }
 
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
   # search going?)
@@ -130,11 +130,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   optimizer.warnings <- NULL
 
   # Based on initial grid, pick best guess for search.
-  current.try = median( test.pts$pt )
+  current.try <- median( test.pts$pt )
   tryCatch(
     current.try <- find_best(
-      test.pts = test.pts, target.power = target.power,
-      use.logit = use.logit, gamma = 1.5
+      test.pts = test.pts, target.power = target.power, gamma = 1.5
     ),
     warning = function(w) {
       optimizer.warnings <<- c(optimizer.warnings, w$message)
@@ -146,7 +145,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   # Flag if our next point to test is a valid (df > 0) point.  (Assume true
   # until we find otherwise.)
-  current.try.ok = TRUE
+  current.try.ok <- TRUE
 
   # Iteratively search by checking best point and then updating our curve.
   while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
@@ -154,9 +153,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     step <- step + 1
     current.tnum <- pmin(max.tnum, round(current.tnum * 1.1))
 
-
     # what is smallest tested point?
-    min_limit = min( test.pts$pt )
+    min_limit <- min( test.pts$pt )
 
     # This is a catch for running out of degrees of freedom if we are hugely overpowered.
     if ( current.try <= min_limit ) {
@@ -189,11 +187,11 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
         }
       }
     } else {
-      current.try.ok = TRUE
+      current.try.ok <- TRUE
     }
 
     if ( !current.try.ok ) {
-      current.try = min_limit
+      current.try <- min_limit
     }
 
     current.power.results <- power_check( current.try, current.tnum )
@@ -248,8 +246,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
     tryCatch(
       current.try <- find_best(
-        test.pts = test.pts, target.power = target.power,
-        use.logit = use.logit, gamma = 1.5
+        test.pts = test.pts, target.power = target.power, gamma = 1.5
       ),
       warning = function(w) {
         optimizer.warnings <<- c(optimizer.warnings, w$message)
@@ -257,7 +254,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     )
   }
 
-  if(!is.null(optimizer.warnings))
+  # collect all warnings
+  if(!is.null(optimizer.warnings) & give.warnings)
   {
     warning(unique(optimizer.warnings))
   }
@@ -267,15 +265,28 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   }
 
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
-    warning("Reached maximum iterations without converging on MDES estimate within tolerance.")
+    msg <- "Reached maximum iterations without converging on estimate within tolerance.\n"
+    msg <- paste(msg, "See sample size vignette for suggestions.")
+    warning(msg)
     iter.results <- data.frame(
       step = step, pt = NA, power = NA, w = NA,
-      MTP = MTP, target.power = target.power )
+      MTP = MTP, target.power = target.power
+    )
     test.pts <- dplyr::bind_rows(test.pts, iter.results )
+    final.pts <- NULL
+  } else
+  {
+    final.pts <- gen_test_pts(
+      start.low = start.low,
+      start.high = ceiling(test.pts$pt[nrow(test.pts)]),
+      tnum = max.tnum
+    )
+    final.pts <- final.pts[,c('pt', 'power', 'MTP', 'target.power')]
   }
 
-  return(test.pts)
+  return(list(test.pts = test.pts, final.pts = final.pts))
 }
+
 
 #' Extract roots from quadratic curve based on given evaluated points
 #'
@@ -287,35 +298,18 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 #'
 #' @return root of quadratic curve
 
-find_best <- function(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
+find_best <- function(test.pts, target.power, gamma = 1.5)
 {
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
 
-  if(use.logit)
-  {
-    logit <- function(p){ return(log(p/(1-p))) }
-
-    # fit logistic curve
-    test.pts$success <- test.pts$power * test.pts$w
-    test.pts$fail <- (1 - test.pts$power) * test.pts$w
-
-    fit <- glm(
-      cbind(success, fail) ~ pt + I(pt^2),
-      data = test.pts,
-      family = binomial(link = 'logit'),
-      weights = w
-    )
-  } else
-  {
-    # fit quadratic curve
-    test.pts$sq_pt = sqrt( test.pts$pt )
-    fit <- lm(
-      power ~ 1 + sq_pt + I(sq_pt^2),
-      data = test.pts,
-      weights = w
-    )
-  }
+  # fit quadratic curve
+  test.pts$sq_pt = sqrt( test.pts$pt )
+  fit <- lm(
+    power ~ 1 + sq_pt + I(sq_pt^2),
+    data = test.pts,
+    weights = w
+  )
 
   # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - logit(target.power))
@@ -323,13 +317,8 @@ find_best <- function(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
   # first check if root exists
   cc <- rev( coef( fit ) )
 
-  if(use.logit)
-  {
-    rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - logit(target.power))
-  } else
-  {
-    rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-  }
+
+  rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
 
   happy <- FALSE
 
@@ -356,23 +345,9 @@ find_best <- function(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
 
   if ( !happy ) {
 
-    if(use.logit)
-    {
-      lin.mod <- glm(
-        cbind(success, fail) ~ pt,
-        data = test.pts,
-        family = binomial(link = 'logit')
-      )
-
-      cc <- rev( coef( lin.mod ) )
-      try.pt <- (logit(target.power) - cc[2]) / cc[1]
-
-    } else
-    {
-      lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
-      cc <- rev( coef( lin.mod ) )
-      try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-    }
+    lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
+    cc <- rev( coef( lin.mod ) )
+    try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
 
     if ( try.pt < start.low / gamma ) {
       try.pt <- start.low / gamma
@@ -398,12 +373,16 @@ find_best <- function(test.pts, target.power, use.logit = FALSE, gamma = 1.5)
 find_best_old <- function(test.pts, gamma = 1.5, target.power )
 {
   # Get current range of search so far.
-  start.low = min( test.pts$pt )
-  start.high = max( test.pts$pt )
+  start.low <- min( test.pts$pt )
+  start.high <- max( test.pts$pt )
 
   # fit quadratic curve
-  test.pts$sq_pt = sqrt( test.pts$pt )
-  quad.mod <- lm( power ~ 1 + sq_pt + I(sq_pt^2), weights = w, data = test.pts)
+  test.pts$sq_pt <- sqrt( test.pts$pt )
+  quad.mod <- lm(
+    power ~ 1 + sq_pt + I(sq_pt^2),
+    weights = w,
+    data = test.pts
+  )
 
   # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - target.power)
@@ -422,28 +401,28 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
 
     if ( sum( hits ) == 1 ) {
       try.pt <- try.pt[hits]
-      happy = TRUE
+      happy <- TRUE
     } else if ( sum( hits ) == 2 ) {
       # both roots in our range.  Probably flat.  Pick center
       try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
-      happy = TRUE
+      happy <- TRUE
     } else {
-      happy = FALSE
+      happy <- FALSE
       # Go to linear
 
-      # # No roots in the original range.  Try extrapolation, if we can stay
-      # # within gamma of the original range
-      # try.pt = sort( try.pt )
-      # if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
-      #   if ( try.pt[[1]] < start.low / gamma ) {
-      #     try.pt <- try.pt[[2]]
-      #   } else if ( try.pt[[2]] > start.high * gamma ) {
-      #     try.pt <- try.pt[[1]]
-      #   } else {
-      #     try.pt = ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
-      #   }
-      #   happy = TRUE
-      # }
+      # No roots in the original range.  Try extrapolation, if we can stay
+      # within gamma of the original range
+      try.pt <- sort( try.pt )
+      if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
+        if ( try.pt[[1]] < start.low / gamma ) {
+          try.pt <- try.pt[[2]]
+        } else if ( try.pt[[2]] > start.high * gamma ) {
+          try.pt <- try.pt[[1]]
+        } else {
+          try.pt <- ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+        }
+        happy <- TRUE
+      }
     }
   } else {
     warning( "No root in quadratic model fit" )
@@ -454,7 +433,7 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
   if ( !happy ) {
     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
     cc <- rev( coef( lin.mod ) )
-    try.pt = ( (target.power - cc[[2]]) / cc[[1]] )^2
+    try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
 
     if ( try.pt < start.low / gamma ) {
       try.pt <- start.low / gamma
@@ -471,15 +450,17 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
 #' Examine search path of the power search
 #'
 #' @param pwr Result from the pump_sample or pump_mdes
-plot_power_search = function( pwr, step_plot = FALSE ) {
+plot_power_search <- function( pwr, step_plot = FALSE ) {
+  test.pts <- search_path(pwr)
   if ( !step_plot ) {
-    ggplot( pwr$test.pts, aes( pt, power ) ) +
-    geom_point( aes( size = w ), alpha = 0.5 ) + theme_minimal() +
-      geom_hline( yintercept = pwr$test.pts$target.power[[1]], col="red" ) +
-      geom_text( aes( label = pwr$test.pts$step ), nudge_y=0.01 )
+    ggplot( test.pts, aes( pt, power ) ) +
+      geom_point( aes( size = w ), alpha = 0.5 ) + theme_minimal() +
+      geom_hline( yintercept = test.pts$target.power[1], col = "red" ) +
+      geom_text( aes( label = test.pts$step ), nudge_y = 0.01 )
   } else {
-    ggplot( pwr$test.pts, aes(step, power, size=w) ) +
-    geom_point()
+    ggplot( test.pts, aes(step, power, size = w) ) +
+      geom_point() +
+      geom_hline( yintercept = test.pts$target.power[1], col = "red" )
   }
 }
 

@@ -442,7 +442,7 @@ test_that("P value output matches", {
 
 # set.seed(0217)
 # B <- 10000
-# 
+#
 # # generate fake input data
 # M <- 3
 # N <- 100
@@ -453,11 +453,11 @@ test_that("P value output matches", {
 # X[1,] <- 2 * T.x + rnorm(N)
 # X[2,] <- 0 * T.x + rnorm(N)
 # X[3,] <- -4 * T.x + rnorm(N)
-# 
+#
 # # calc rawt
 # rawt <- apply(X, 1, function(x){ return(t.test(x[T.x == 1], x[T.x == 0])$statistic) })
-# 
-# 
+#
+#
 # # multtest
 # set.seed(0217)
 # # suppress output
@@ -465,7 +465,7 @@ test_that("P value output matches", {
 # mult.out <- multtest::mt.maxT(X, classlabel = T.x, B = B)
 # mult.adjp <- mult.out$adjp[order(mult.out$index)]
 # sink()
-# 
+#
 # # my version
 # rawt.order <- order(abs(rawt), decreasing = TRUE)
 # set.seed(0217)
@@ -478,10 +478,10 @@ test_that("P value output matches", {
 #   nullt.b <- apply(X, 1, function(x){ return(t.test(x[T.x.b == 1], x[T.x.b == 0])$statistic) })
 #   nullt <- rbind(nullt, nullt.b)
 # }
-# 
+#
 # ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt, rawt.order = rawt.order))
 # exp.adjp <- get.adjp.minp(ind.B, rawt.order)
-# 
+#
 # test_that("P value output matches within 5%", {
 #   expect_equal(mult.adjp, exp.adjp, tol = 0.05)
 # })

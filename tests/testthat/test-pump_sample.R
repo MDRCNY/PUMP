@@ -5,7 +5,7 @@
 
 test_that("calc.nbar works", {
 
-  nbar <- pum:::calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc.nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -14,7 +14,7 @@ test_that("calc.nbar works", {
   nbar
   expect_true( is.na( nbar ) )
 
-  nbar <- pum:::calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc.nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 305,
@@ -26,11 +26,9 @@ test_that("calc.nbar works", {
 } )
 
 
-
-
 test_that("calc.J works", {
 
-  J <- pum:::calc.J(  design = "d2.2_m2rc",
+  J <- calc.J(  design = "d2.2_m2rc",
                       MT = 2.8,
                       MDES = 0.20,
                       nbar = 200,
@@ -39,7 +37,6 @@ test_that("calc.J works", {
   J
   expect_true( J < 100 )
 } )
-
 
 
 test_that("pump_sample_raw works", {
@@ -113,13 +110,11 @@ test_that("pump_sample_raw works", {
 })
 
 
-
-
 test_that( "optimize_power solves", {
 
   set.seed( 3042424 )
-  op_pow <- pum:::optimize_power(
-    MTP = "Holm", nbar=200,
+  op_pow <- optimize_power(
+    MTP = "Holm", nbar = 200,
     power.definition = "D1indiv",
     design = "d2.1_m2fc", search.type = "J",
     start.low = 56, start.high = 75,
@@ -131,12 +126,11 @@ test_that( "optimize_power solves", {
     rho = 0.4, max.tnum = 400, final.tnum = 2000
   )
   op_pow
-  expect_true( ncol( op_pow ) == 6 )
-  expect_true( all( op_pow$w <= 2000 ) )
-  expect_true( max( op_pow$w ) == 2000 )
+  expect_true( ncol( op_pow$test.pts ) == 6 )
+  expect_true( all( op_pow$test.pts$w <= 2000 ) )
+  expect_true( max( op_pow$test.pts$w ) == 2000 )
 
 })
-
 
 
 test_that("Bonferroni for non individual power", {
@@ -169,7 +163,6 @@ test_that("Bonferroni for non individual power", {
 
   expect_equal(ss$`Sample size`, 10, tol = 1)
 } )
-
 
 
 test_that("pump_sample 2 level/2 level", {
@@ -250,7 +243,7 @@ test_that("sample search when one end is missing", {
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-    rho = 0.2, just.result.table = FALSE, use.logit = TRUE ) )
+    rho = 0.2, just.result.table = FALSE) )
   nbar2
   expect_true( !is.na( nbar2$`Sample size` ) )
 
@@ -270,27 +263,7 @@ test_that("sample search when one end is missing", {
                                           rho = 0.2, max.tnum = 200, just.result.table = FALSE ) )
   nbar3
   expect_true( is.na( nbar3$`Sample size` ) )
-
-  # same happens with logit
-  set.seed( 443434344 )
-  expect_warning(nbar4 <- pump_sample( design = "d2.2_m2rc",
-                                       typesample = "nbar",
-                                       power.definition = "min1",
-                                       MTP = "Holm",
-                                       M = 4,
-                                       J = 10,
-                                       MDES = 0.39, target.power = 0.80, tol = 0.01,
-                                       Tbar = 0.50, alpha = 0.05,
-                                       numCovar.1 = 5, numCovar.2 = 1,
-                                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                                       rho = 0.2, max.tnum = 200,
-                                       use.logit = TRUE,
-                                       just.result.table = FALSE ) )
-  nbar4
-  expect_true( is.na( nbar4$`Sample size` ) )
 })
-
-
 
 
 test_that("Sample with different correlations", {
@@ -355,6 +328,7 @@ test_that("Sample with different correlations", {
     expect_equal(ss$`Sample size`, 10, tol = 1)
 
 } )
+
 
 test_that("No adjustment", {
 

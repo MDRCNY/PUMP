@@ -25,6 +25,8 @@ vignettes/*.html
 vignettes/*.pdf
 vignettes/pump_demo_cache/*
 vignettes/pump_demo_files/*
+vignettes/pump_sample_demo_cache/*
+
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth

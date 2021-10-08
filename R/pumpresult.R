@@ -9,10 +9,10 @@ scat = function( str, ... ) {
 
 
 
-make.pumpresult = function( x, 
+make.pumpresult = function( x,
                  type = c( "power", "mdes", "sample" ),
                  params.list = NULL,
-                 tries = NULL,
+                 tries = NULL, final.pts = NULL,
                  just.result.table = TRUE,
                  ... ) {
     type = match.arg(type)
@@ -26,28 +26,31 @@ make.pumpresult = function( x,
     if ( !just.result.table && !is.null( tries ) ) {
         attr( x, "tries" ) = tries
     }
+    if ( !is.null( final.pts ) ) {
+        attr( x, "final.pts" ) = final.pts
+    }
     return( x )
 }
 
 
 #' Get parameters for pump result
-#' 
+#'
 #' @return List of design parameters used.
-#' 
+#'
 #' @family pumpresult
 #' @export
 params = function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
-    
+
     pp = attr( x, "params.list" )
     return( pp )
 }
 
 
 #' Obtain search path of pump_mdes or pump_sample call
-#' 
+#'
 #' @param x A pumpresult object
-#' 
+#'
 #' @param Dataframe describing search path, if it was saved in the pumpresult object.
 #' @family pumpresult
 #' @export
@@ -56,10 +59,22 @@ search_path = function( x, ... ) {
     return( attr( x, "tries" ) )
 }
 
+#' Obtain search path of pump_mdes or pump_sample call
+#'
+#' @param x A pumpresult object
+#'
+#' @param Dataframe describing power curve.
+#' @family pumpresult
+#' @export
+power_curve = function( x, ... ) {
+    stopifnot( is.pumpresult( x ) )
+    return( attr( x, "final.pts" ) )
+}
+
 
 
 #' Dimension of pumpresult
-#' 
+#'
 #' @family pumpresult
 #' @export
 dim.pumpresult = function( x, ... ) {
@@ -77,9 +92,9 @@ print.pumpresult = function( x, n = 10, ... ) {
     args = attr( x, "args" )
 
     result_type = args$type
-    
+
     print( as.data.frame( x ) )
-    
+
     tr = attr( x, "tries" )
     if ( !is.null( tr ) ) {
         cat( "\nSearch history\n")
@@ -92,7 +107,7 @@ print.pumpresult = function( x, n = 10, ... ) {
             print( tail( tr, max(n/2),1) )
         }
     }
-    
+
 
     invisible( x )
 }
@@ -117,7 +132,7 @@ is.pumpresult = function( x ) {
 #' @aliases pumpresult
 #' @param x the pumpresult object to covert
 #' @family pumpresult
-#' 
+#'
 #' @export
 as.data.frame.pumpresult = function( x ) {
     class(x) = "list"

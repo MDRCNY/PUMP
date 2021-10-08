@@ -43,7 +43,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
   } else if (design == 'd3.3_m3rc2rc')
   {
     numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - J * ICC.3*(1 - R2.3)  - ICC.2 * (1 - R2.2)
+    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - J * ICC.3 * (1 - R2.3)  - ICC.2 * (1 - R2.2)
     nbar <- numr / denom
   } else if (design == 'd3.2_m3ff2rc')
   {
@@ -409,8 +409,8 @@ pump_sample <- function(
   max_sample_size_JK = 1000,
   tol = 0.01, give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
-  use.logit = FALSE,
-  verbose = FALSE )  {
+  verbose = FALSE )
+{
 
   if ( verbose ) {
     scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations.\n\tMax steps %d\n\t%d perms for WY if used\n",
@@ -421,13 +421,13 @@ pump_sample <- function(
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
     stopifnot( is.null( nbar ) )
-    nbar = 1000
+    nbar <- 1000
   } else if ( typesample == "J" ) {
     stopifnot( is.null( J ) )
-    J = 1000
+    J <- 1000
   } else if ( typesample == "K" ) {
     stopifnot( is.null( K ) )
-    K = 1000
+    K <- 1000
   }
 
   # validation
@@ -605,8 +605,8 @@ pump_sample <- function(
     # start.tnum <- 2000
   }
 
-  ss.low <- round( ss.low )
-  ss.high <- round( ss.high )
+  ss.low <- floor( ss.low )
+  ss.high <- ceiling( ss.high )
 
   # # sometimes we already know the answer!
   # if(ss.low == ss.high)
@@ -617,7 +617,7 @@ pump_sample <- function(
   # }
 
   # search in the grid from min to max.
-  test.pts <- optimize_power(
+  optim.out <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
@@ -630,10 +630,9 @@ pump_sample <- function(
     B = B, cl = cl,
     max.steps = max.steps, max.tnum = max.tnum,
     final.tnum = final.tnum,
-    use.logit = use.logit,
-    give.warnings = give.optimizer.warnings,
-    verbose = verbose
+    give.warnings = give.optimizer.warnings
   )
+  test.pts <- optim.out$test.pts
 
   # Assemble results
   ss.results <- data.frame(
@@ -646,9 +645,18 @@ pump_sample <- function(
   )
   colnames(ss.results) <- output.colnames
 
+
+  # if it has converged, give notice about possible flatness
+  if(!is.na(ss.results$`Sample size`))
+  {
+    msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
+    msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
+    message(msg)
+  }
+
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
                            just.result.table = just.result.table,
-                           tries = test.pts ) )
+                           tries = test.pts, final.pts = optim.out$final.pts ) )
 }
 
 

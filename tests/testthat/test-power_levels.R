@@ -17,7 +17,7 @@ test_that("parameters that result in 80% power for raw D1indiv", {
                     rho = 0.4, tnum = 10000
   )
   pp
-  expect_equal( pp[1,1], 0.8, tol = 0.05)
+  expect_equal( pp$D1indiv[1], 0.8, tol = 0.05)
 })
 
 
@@ -37,7 +37,7 @@ test_that("parameters that result in 80% power for Bonferroni D1indiv", {
                     rho = 0.4, tnum = 10000
   )
 
-  expect_equal( pp[2,1], 0.8, tol = 0.05)
+  expect_equal(pp$D1indiv[2], 0.8, tol = 0.05)
 })
 
 
@@ -57,7 +57,7 @@ test_that("parameters that result in 80% power for Bonferroni min1", {
                     rho = 0.4, tnum = 10000
   )
   pp
-  expect_equal( pp[2,5], 0.8, tol = 0.05)
+  expect_equal( pp$min1[2], 0.8, tol = 0.05)
 })
 
 test_that("parameters that result in 80% power for Bonferroni min2", {
@@ -76,7 +76,7 @@ test_that("parameters that result in 80% power for Bonferroni min2", {
                     rho = 0.4, tnum = 10000
   )
 
-  expect_equal( pp[2,6], 0.8, tol = 0.05)
+  expect_equal( pp$min2[2], 0.8, tol = 0.05)
 })
 
 test_that("parameters that result in 80% power for Bonferroni complete", {
@@ -94,5 +94,5 @@ test_that("parameters that result in 80% power for Bonferroni complete", {
                     ICC.2 = 0.05, ICC.3 = 0.4,
                     rho = 0.4, tnum = 10000
   )
-  expect_equal( pp[2,7], 0.8, tol = 0.05)
+  expect_equal( pp$complete[2], 0.8, tol = 0.05)
 })

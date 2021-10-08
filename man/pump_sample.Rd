@@ -44,7 +44,6 @@ pump_sample(
   tol = 0.01,
   give.optimizer.warnings = FALSE,
   just.result.table = TRUE,
-  use.logit = FALSE,
   verbose = FALSE
 )
 }
