@@ -36,17 +36,17 @@ transpose_power_table = function( power_table ) {
 #' @param nbar scalar; the harmonic mean of the number of units per school
 #' @param Tbar scalar; the proportion of samples that are assigned to the
 #'   treatment
-#' @param R2.1 vector of length M; percent of variation explained by Level 1
+#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1
 #'   covariates for each outcome
-#' @param R2.2 vector of length M; percent of variation explained by Level 2
+#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2
 #'   covariates for each outcome
-#' @param R2.3 vector of length M; percent of variation explained by Level 3
+#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3
 #'   covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random
+#' @param ICC.2 scalar, or vector of length M; school intraclass correlation
+#' @param ICC.3 scalar, or vector of length M; district intraclass correlation
+#' @param omega.2 scalar, or vector of length M; ratio of school effect size variability to random
 #'   effects variability
-#' @param omega.3 scalar; ratio of district effect size variability to random
+#' @param omega.3 scalar, or vector of length M; ratio of district effect size variability to random
 #'   effects variability
 #'
 #' @return Q_m, the standard error of the effect size estimate
@@ -221,10 +221,10 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
 #'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 #'   to automatically re-run for each procedure on the list.
-#' @param MDES scalar or vector:  t he MDES values for each outcome. Please
+#' @param MDES scalar or vector; the desired MDES values for each outcome. Please
 #'   provide a scalar, a vector of length M, or vector of values for non-zero
 #'   outcomes.
-#' @param numZero Additional number of outcomes assumed to be zero. Please
+#' @param numZero scalar; Additional number of outcomes assumed to be zero. Please
 #'   provide NumZero + length(MDES) = M
 #' @param M scalar; the number of hypothesis tests (outcomes), including zero
 #'   outcomes
@@ -244,12 +244,12 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #'   Level 2 covariates for each outcome. Defaults to 0.
 #' @param R2.3 scalar, or vector of length M; percent of variation explained by
 #'   Level 3 covariates for each outcome. Defaults to 0.
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of variance of school-average impacts to
+#' @param ICC.2 scalar, or vector of length M; school intraclass correlation
+#' @param ICC.3 scalar, or vector length M; district intraclass correlation
+#' @param omega.2 scalar, or vector of length M; ratio of variance of school-average impacts to
 #'   variance of school-level random intercepts.  Default to 0 (no treatment
 #'   variation).
-#' @param omega.3 scalar; ratio of variance of district-average impacts to
+#' @param omega.3 scalar, or vector of length M; ratio of variance of district-average impacts to
 #'   variance of district-level random intercepts. Default to 0 (no treatment
 #'   variation).
 #' @param rho scalar; assumed correlation between the test statistics of the
