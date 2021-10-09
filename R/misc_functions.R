@@ -64,13 +64,12 @@ validate_inputs <- function( design, params.list,
                              single.MDES = FALSE)
 {
 
-
   #-------------------------------------------------------#
   # basic checks of inputs
   #-------------------------------------------------------#
 
   # allow either supported design names or PowerUp equivalents
-  designs = supported_designs()
+  designs <- supported_designs()
   if(!(design %in% designs$Design$Code))
   {
     if(design %in% designs$Design$PowerUp)
@@ -143,10 +142,79 @@ validate_inputs <- function( design, params.list,
         #message('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
-                   MDES, 'M =', M))
+                   MDES, 'M =', params.list$M))
       }
     }
   }
+
+  #-------------------------------------------------------#
+  # convert all params from scalar to vector
+  #-------------------------------------------------------#
+  if(!(length(params.list$R2.1) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$R2.1) == 1)
+  {
+    params.list$R2.1 <- rep(params.list$R2.1, params.list$M)
+  }
+
+  if(!(length(params.list$R2.2) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$R2.2) == 1)
+  {
+    params.list$R2.2 <- rep(params.list$R2.2, params.list$M)
+  }
+
+  if(!(length(params.list$R2.3) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$R2.3) == 1)
+  {
+    params.list$R2.3 <- rep(params.list$R2.3, params.list$M)
+  }
+
+  if(!(length(params.list$ICC.2) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$ICC.2) == 1)
+  {
+    params.list$ICC.2 <- rep(params.list$ICC.2, params.list$M)
+  }
+
+  if(!(length(params.list$ICC.3) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$ICC.3) == 1)
+  {
+    params.list$ICC.3 <- rep(params.list$ICC.3, params.list$M)
+  }
+
+  if(!(length(params.list$omega.2) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$omega.2) == 1)
+  {
+    params.list$omega.2 <- rep(params.list$omega.2, params.list$M)
+  }
+
+  if(!(length(params.list$omega.3) %in% c(1, params.list$M)))
+  {
+    stop("Please provide a scalar parameter or a vector of length M.")
+  }
+  if(length(params.list$omega.3) == 1)
+  {
+    params.list$omega.3 <- rep(params.list$omega.3, params.list$M)
+  }
+
+
+
 
   #-------------------------------------------------------#
   # Basic checks of data parameters
@@ -180,7 +248,7 @@ validate_inputs <- function( design, params.list,
     stop('Please provide R2 as a probability between 0 and 1')
   }
 
-  if(params.list$omega.2 < 0 | (!is.null(params.list$omega.3) && params.list$omega.3 < 0))
+  if(any(params.list$omega.2 < 0) | (!is.null(params.list$omega.3) && any(params.list$omega.3 < 0)))
   {
     stop('Please provide a non-negative value of Omega')
   }
@@ -188,25 +256,6 @@ validate_inputs <- function( design, params.list,
   if(params.list$rho > 1 | params.list$rho < -1)
   {
     stop('Please provide rho as a correlation between -1 and 1')
-  }
-
-  if(!(length(params.list$R2.1) %in% c(1, params.list$M))  |
-     !(length(params.list$R2.2) %in% c(1, params.list$M)) |
-     !(length(params.list$R2.3) %in% c(1, params.list$M)) )
-  {
-    stop('Please provide R2 as a scalar or vector of length M.')
-  }
-
-  if(!(length(params.list$ICC.2) %in% c(1, params.list$M))  |
-     !(length(params.list$ICC.3) %in% c(1, params.list$M)) )
-  {
-    stop('Please provide ICC as a scalar or vector of length M.')
-  }
-
-  if(!(length(params.list$omega.2) %in% c(1, params.list$M))  |
-     !(length(params.list$omega.3) %in% c(1, params.list$M)) )
-  {
-    stop('Please provide omega as a scalar or vector of length M.')
   }
   #-------------------------------------------------------#
   # check for inconsistent user inputs
@@ -290,7 +339,7 @@ validate_inputs <- function( design, params.list,
   # constant treatment effects models: level 2
   if(design %in% c('d2.1_m2fc', 'd2.2_m2rc', 'd3.3_mrc2rc', 'd3.2_m3ff2rc'))
   {
-    if(params.list$omega.2 > 0)
+    if(any(params.list$omega.2 > 0))
     {
       warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
       params.list$omega.2 <- 0

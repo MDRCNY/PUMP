@@ -141,7 +141,6 @@ test_that("K = 1 runs successfully", {
     pp
 })
 
-
 test_that("unblocked designs", {
 
   pp <- pump_power(   design = "d1.1_m2cc",
@@ -217,7 +216,6 @@ test_that("Correct MTP parameter validation.", {
     expect_true( nrow( pp ) == 1 )
 })
 
-
 test_that("different correlations", {
 
     pp.rhomin <- pump_power( design = "d2.2_m2rc",
@@ -263,7 +261,6 @@ test_that("different correlations", {
 
 })
 
-
 test_that("numZero has expected behavior", {
 
   pp <- pump_power( design = "d2.2_m2rc",
@@ -290,7 +287,6 @@ test_that("numZero has expected behavior", {
   )
 
 })
-
 
 test_that("do not report invalid power values", {
 
