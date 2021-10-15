@@ -257,14 +257,16 @@ pump_sample_raw <- function(
   # Get initial size (will be low)
   MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
-    J <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
+    J <- calc.J( design, MT = MT, MDES = MDES[1],
+                 K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                  omega.2 = omega.2[1], omega.3 = omega.3[1] )
     J <- round(J)
   } else if (typesample == "K") {
     K <- calc.K(
-      design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
+      design, MT = MT, MDES = MDES[1],
+      J = J, nbar = nbar, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
       omega.2 = omega.2[1], omega.3 = omega.3[1]
@@ -310,10 +312,11 @@ pump_sample_raw <- function(
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
-      J1 <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
+      J1 <- calc.J( design, MT = MT, MDES = MDES[1],
+                    K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-                    omega.2 = omega.2, omega.3 = omega.3 )
+                    omega.2 = omega.2[1], omega.3 = omega.3[1] )
       J1 <- round( J1 )
 
       #cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
@@ -326,10 +329,11 @@ pump_sample_raw <- function(
 
     } else if (typesample == "K") {
       K1 <- calc.K(
-        design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
+        design, MT = MT, MDES = MDES[1],
+        J = J, nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-        omega.2 = omega.2, omega.3 = omega.3
+        omega.2 = omega.2[1], omega.3 = omega.3[1]
       )
       K1 <- round( K1 )
       if ( is.na(K1) || (K1 <= K) ) {
@@ -339,10 +343,11 @@ pump_sample_raw <- function(
       }
     } else if (typesample == "nbar") {
       nbar1 <- calc.nbar(
-        design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
+        design, MT = MT, MDES = MDES[1],
+        J = J, K = K, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-        omega.2 = omega.2, omega.3 = omega.3
+        omega.2 = omega.2[1], omega.3 = omega.3[1]
       )
       #cat( "nbar=", nbar, "\tdf=", df, "\tnbar1=", nbar1, "\n" )
 
@@ -362,13 +367,13 @@ pump_sample_raw <- function(
 
   if (typesample == "J") {
     if(!is.na(J) & J <= 0){ J <- NA }
-    return( list( J=J, df=df ) )
+    return( list( J = J, df = df ) )
   } else if (typesample == "K") {
     if(!is.na(K) & K <= 0){ K <- NA }
-    return( list( K = K, df=df ) )
+    return( list( K = K, df = df ) )
   } else if (typesample == "nbar") {
     if(!is.na(nbar) & nbar <= 0){ nbar <- NA }
-    return( list( nbar=nbar, df=df ) )
+    return( list( nbar = nbar, df = df ) )
   }
 }
 
