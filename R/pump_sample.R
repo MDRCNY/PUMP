@@ -260,14 +260,14 @@ pump_sample_raw <- function(
     J <- calc.J( design, MT = MT, MDES = MDES[1], K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-                 omega.2 = omega.2, omega.3 = omega.3 )
+                 omega.2 = omega.2[1], omega.3 = omega.3[1] )
     J <- round(J)
   } else if (typesample == "K") {
     K <- calc.K(
       design, MT = MT, MDES = MDES[1], J = J, nbar = nbar, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-      omega.2 = omega.2, omega.3 = omega.3
+      omega.2 = omega.2[1], omega.3 = omega.3[1]
     )
     K <- round(K)
   } else if (typesample == "nbar") {
@@ -275,7 +275,7 @@ pump_sample_raw <- function(
       design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
-      omega.2 = omega.2, omega.3 = omega.3
+      omega.2 = omega.2[1], omega.3 = omega.3[1]
     )
   }
 
