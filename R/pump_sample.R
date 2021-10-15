@@ -248,6 +248,17 @@ pump_sample_raw <- function(
     K <- Inf
   }
 
+
+  # check for vectorized components
+  if(length(MDES) > 1 |
+     length(R2.1) > 1 | length(R2.2) > 1 | length(R2.3) > 1 |
+     length(ICC.2) > 1 | length(ICC.3) > 1 |
+     length(omega.2) > 1 | length(omega.3) > 1
+  )
+  {
+    stop('pump_sample_raw only takes scalar inputs')
+  }
+
   initial_df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
   stopifnot( initial_df > 0 )
 
@@ -367,13 +378,13 @@ pump_sample_raw <- function(
 
   if (typesample == "J") {
     if(!is.na(J) & J <= 0){ J <- NA }
-    return( list( J = J, df = df ) )
+    return( list( ss = J, df = df ) )
   } else if (typesample == "K") {
     if(!is.na(K) & K <= 0){ K <- NA }
-    return( list( K = K, df = df ) )
+    return( list( ss = K, df = df ) )
   } else if (typesample == "nbar") {
     if(!is.na(nbar) & nbar <= 0){ nbar <- NA }
-    return( list( nbar = nbar, df = df ) )
+    return( list( ss = nbar, df = df ) )
   }
 }
 
@@ -435,12 +446,6 @@ pump_sample <- function(
     K <- 1000
   }
 
-  # validation
-  if(length(MDES) > 1 & length(unique(MDES)) > 1)
-  {
-    stop('Procedure assumes MDES is the same for all outcomes.')
-  }
-
   # validate input parameters
   params.list <- list(
     MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero,
@@ -451,7 +456,7 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- validate_inputs(design, params.list, single.MDES = TRUE)
+  params.list <- validate_inputs(design, params.list)
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES
@@ -518,66 +523,115 @@ pump_sample <- function(
   if ( !pdef$min ) {
     # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
     # estimating (potential) bounds
-    ss.low <- pump_sample_raw(
-      design = design, MTP = MTP, typesample = typesample,
-      MDES = MDES, J = J, K = K,
-      target.power = target.power,
-      nbar = nbar, Tbar = Tbar,
-      alpha = alpha,
-      two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      omega.2 = omega.2, omega.3 = omega.3,
-      warn.small = FALSE)
+    ss.low.list <- NULL
+    for(m in 1:M)
+    {
+      ss.low.list[[m]] <- pump_sample_raw(
+        design = design, MTP = MTP, typesample = typesample,
+        MDES = MDES[m], J = J, K = K,
+        target.power = target.power,
+        nbar = nbar, Tbar = Tbar,
+        alpha = alpha,
+        two.tailed = two.tailed,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
+        ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
+        omega.2 = omega.2[m], omega.3 = omega.3[m],
+        warn.small = FALSE
+      )
+    }
 
     # Identify sample size for Bonferroni
-    ss.high <- pump_sample_raw(
-      design = design, MTP = MTP, typesample = typesample,
-      MDES = MDES, J = J, K = K,
-      target.power = target.power,
-      nbar = nbar, Tbar = Tbar,
-      alpha = alpha / M, # adjust alpha for BF
-      two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      omega.2 = omega.2, omega.3 = omega.3,
-      warn.small = FALSE)
+    ss.high.list <- NULL
+    for(m in 1:M)
+    {
+      ss.high.list[[m]] <- pump_sample_raw(
+        design = design, MTP = MTP, typesample = typesample,
+        MDES = MDES[m], J = J, K = K,
+        target.power = target.power,
+        nbar = nbar, Tbar = Tbar,
+        alpha = alpha / M, # adjust alpha for BF
+        two.tailed = two.tailed,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
+        ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
+        omega.2 = omega.2[m], omega.3 = omega.3[m],
+        warn.small = FALSE
+      )
+    }
 
   } else {
     # lower bound needs to be lower for min type power
     need_pow <- 1 - (1 - target.power)^(1/M)
-    ss.low <- pump_sample_raw(
-      design = design, MTP = MTP, typesample = typesample,
-      MDES = MDES, J = J, K = K,
-      target.power = need_pow,
-      nbar = nbar, Tbar = Tbar,
-      alpha = alpha,
-      two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      omega.2 = omega.2, omega.3 = omega.3,
-      warn.small = FALSE)
+
+    ss.low.list <- NULL
+    for(m in 1:M)
+    {
+      ss.low.list[[m]] <- pump_sample_raw(
+        design = design, MTP = MTP, typesample = typesample,
+        MDES = MDES[m], J = J, K = K,
+        target.power = need_pow,
+        nbar = nbar, Tbar = Tbar,
+        alpha = alpha,
+        two.tailed = two.tailed,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
+        ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
+        omega.2 = omega.2[m], omega.3 = omega.3[m],
+        warn.small = FALSE
+      )
+    }
 
     # higher bound needs to be higher for min type power (including comlpete)
     need_pow <- (target.power^(1/M))
-    ss.high <- pump_sample_raw(
-      design = design, MTP = MTP, typesample = typesample,
-      MDES = MDES, J = J, K = K,
-      target.power = need_pow,
-      nbar = nbar, Tbar = Tbar,
-      alpha = alpha / M, # adjust alpha for BF
-      two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
-      omega.2 = omega.2, omega.3 = omega.3,
-      warn.small = FALSE)
+    ss.high.list <- NULL
+    for(m in 1:M)
+    {
+      ss.high.list[[m]] <- pump_sample_raw(
+        design = design, MTP = MTP, typesample = typesample,
+        MDES = MDES[m], J = J, K = K,
+        target.power = need_pow,
+        nbar = nbar, Tbar = Tbar,
+        alpha = alpha / M, # adjust alpha for BF
+        two.tailed = two.tailed,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
+        ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
+        omega.2 = omega.2[m], omega.3 = omega.3[m],
+        warn.small = FALSE
+      )
+    }
   }
 
-  ss.low.df <- ss.low$df
-  ss.low <- ss.low[[1]]
+  ss.low.vals <- sapply(ss.low.list, function(x) x$ss)
+  which.ss.low <- which.min(ss.low.vals)
+  # check if everything is NA
+  if(length(which.ss.low) > 0)
+  {
+    ss.low <- ss.low.list[[which.ss.low]]$ss
+  } else
+  {
+    ss.low <- 1
+  }
 
-  ss.high.df <- ss.high$sf
-  ss.high <- ss.high[[1]]
+  ss.high.vals <- sapply(ss.high.list, function(x) x$ss)
+  which.ss.high <- which.max(ss.high.vals)
+  # check if everything is NA
+  if(length(which.ss.high) > 0)
+  {
+    ss.high <- ss.high.list[[which.ss.high]]$ss
+  } else
+  {
+    if( typesample == 'nbar')
+    {
+      ss.high <- max_sample_size_nbar
+    } else
+    {
+      ss.high <- max_sample_size_JK
+    }
+    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
+  }
+
 
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni" & pdef$indiv ) {
@@ -588,38 +642,6 @@ pump_sample <- function(
                              just.result.table = just.result.table ) )
   }
 
-  # If we can't make it work with raw, then we can't make it work.
-  if ( is.na( ss.low ) ) {
-    # ss.results <- data.frame(MTP, typesample, NA, target.power)
-    # colnames(ss.results) <- output.colnames
-    # return(ss.results)
-    ss.low <- 1
-  }
-
-  if ( is.na( ss.high ) ) {
-    if( typesample == 'nbar')
-    {
-      ss.high <- max_sample_size_nbar
-    } else
-    {
-      ss.high <- max_sample_size_JK
-    }
-    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
-
-    # Why is this here?   It shouldn't be?
-    # start.tnum <- 2000
-  }
-
-  ss.low <- floor( ss.low )
-  ss.high <- ceiling( ss.high )
-
-  # # sometimes we already know the answer!
-  # if(ss.low == ss.high)
-  # {
-  #   ss.results <- data.frame(MTP, typesample, 1, target.power)
-  #   colnames(ss.results) <- output.colnames
-  #   return(ss.results)
-  # }
 
   # search in the grid from min to max.
   optim.out <- optimize_power(

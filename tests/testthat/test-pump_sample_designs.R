@@ -115,7 +115,7 @@ test_that("testing of d3.2_m3rr2rc raw", {
                            ICC.2 = 0.05, ICC.3 = 0.05,
                            omega.3 = 0.5 )
   traw
-  expect_true( !is.na( traw$K ) )
+  expect_true( !is.na( traw$ss ) )
   expect_true( !is.na( traw$df ) )
 
 })
@@ -477,10 +477,10 @@ test_that("testing of d3.1_m3rr2rr", {
   nbar1
   expect_true(!is.na(nbar1$`Sample size`))
   # but not very close!
-  expect_equal(50, nbar1$`Sample size`, tol = 0.4)
+  expect_equal(nbar1$`Sample size`, 50, tol = 0.6)
 
   # sometimes it doesn't (only difference is a new seed)
-  set.seed( 524235325 )
+  set.seed( 524235326 )
   expect_warning(nbar2 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
@@ -500,9 +500,9 @@ test_that("testing of d3.1_m3rr2rr", {
   nbar2
   expect_true(is.na(nbar2$`Sample size`))
 
-  # decreasing the maximum sample size alone does not fix it
-  set.seed( 524235325 )
-  expect_warning(nbar5 <- pump_sample(
+  # decreasing the maximum sample size alone fixes it in this case
+  set.seed( 524235326 )
+  expect_warning(nbar3 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
     MTP = 'Holm',
@@ -519,12 +519,12 @@ test_that("testing of d3.1_m3rr2rr", {
     omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
     max_sample_size_nbar = 500,
     just.result.table = FALSE))
-  nbar5
-  expect_true(is.na(nbar5$`Sample size`))
+  nbar3
+  expect_true(!is.na(nbar3$`Sample size`))
 
   # it converges with more iterations
   # but it is very flat!
-  set.seed( 524235325 )
+  set.seed( 524235326 )
   expect_warning(nbar4 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
@@ -546,8 +546,8 @@ test_that("testing of d3.1_m3rr2rr", {
   expect_true(!is.na(nbar4$`Sample size`))
   expect_equal(nbar4$`Sample size`, 50, tol = 0.5)
 
-  # decreasing max sample size helps get a smaller estiamte
-  set.seed( 524235325 )
+  # decreasing max sample size does not get smaller estimate
+  set.seed( 524235326 )
   expect_warning(nbar5 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
@@ -567,11 +567,11 @@ test_that("testing of d3.1_m3rr2rr", {
     just.result.table = FALSE))
   nbar5
   expect_true(!is.na(nbar5$`Sample size`))
-  expect_equal(nbar5$`Sample size`, 50, tol = 0.3)
+  expect_equal(nbar5$`Sample size`, 50, tol = 0.5)
 
   # decreasing max sample size helps get a smaller estiamte
   # and decreasing tolerance
-  set.seed( 524235325 )
+  set.seed( 524235326 )
   expect_warning(nbar6 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
@@ -592,11 +592,11 @@ test_that("testing of d3.1_m3rr2rr", {
     just.result.table = FALSE))
   nbar6
   expect_true(!is.na(nbar6$`Sample size`))
-  expect_equal(nbar6$`Sample size`, 50, tol = 0.2)
+  expect_equal(nbar6$`Sample size`, 50, tol = 0.3)
 
 
   # if we go below the true value, does not converge!
-  set.seed( 524235325 )
+  set.seed( 524235326 )
   expect_warning(nbar7 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'nbar',
@@ -617,7 +617,6 @@ test_that("testing of d3.1_m3rr2rr", {
   nbar7
   expect_true(is.na(nbar7$`Sample size`))
 })
-
 
 #----------------------------------------
 # d3.2_m3ff2rc
@@ -718,10 +717,9 @@ test_that("testing of d3.1_m3ff2rr", {
     omega.2 = 0, omega.3 = 0.1, rho = 0.5,
     just.result.table = FALSE))
   nbar2
-  expect_equal(nbar2$`Sample size`, 50, tol = 0.1)
+  expect_equal(nbar2$`Sample size`, 50, tol = 0.2)
 
 })
-
 
 #----------------------------------------
 # d3.2_m3ff2rc
@@ -824,10 +822,9 @@ test_that("testing of d3.2_m3ff2rc", {
     max_sample_size_nbar = 1000,
     just.result.table = FALSE))
   nbar2
-  expect_equal(nbar2$`Sample size`, 50, tol = 0.1)
+  expect_equal(nbar2$`Sample size`, 50, tol = 0.2)
 
 })
-
 
 #----------------------------------------
 # d3.2_m3rr2rc
@@ -1032,7 +1029,6 @@ test_that("testing of d3.2_m3rr2rc", {
 #----------------------------------------
 # d3.3_m3rc2rc
 #----------------------------------------
-# does not converge for nbar
 
 test_that("testing of d3.3_m3rc2rc", {
 
@@ -1162,7 +1158,7 @@ test_that("testing of d3.3_m3rc2rc", {
   expect_true(!is.na(J4$`Sample size`))
   expect_equal(J4$`Sample size`, 40, tol = 0.2)
 
-  # does not converge
+  # converges
   set.seed( 245444 )
   nbar1 <- expect_warning(pump_sample(
     design = "d3.3_m3rc2rc",
@@ -1181,9 +1177,9 @@ test_that("testing of d3.3_m3rc2rc", {
     omega.2 = 0, omega.3 = 0, rho = 0.5,
     just.result.table = FALSE))
   nbar1
-  expect_true(is.na(nbar1$`Sample size`))
+  expect_true(!is.na(nbar1$`Sample size`))
 
-  # does not converge
+  # converges to something smaller
   set.seed( 245444 )
   nbar2 <- expect_warning(pump_sample(
     design = "d3.3_m3rc2rc",
@@ -1204,9 +1200,9 @@ test_that("testing of d3.3_m3rc2rc", {
     start.tnum = 5000, max.tnum = 8000,
     just.result.table = FALSE))
   nbar2
-  expect_true(is.na(nbar2$`Sample size`))
+  expect_true(!is.na(nbar2$`Sample size`))
 
-  # does not converge
+  # converges even smaller
   set.seed( 245444 )
   nbar3 <- expect_warning(pump_sample(
     design = "d3.3_m3rc2rc",
@@ -1227,9 +1223,55 @@ test_that("testing of d3.3_m3rc2rc", {
     start.tnum = 5000, max.tnum = 8000,
     just.result.table = FALSE))
   nbar3
-  expect_true(is.na(nbar3$`Sample size`))
-})
+  expect_true(!is.na(nbar3$`Sample size`))
 
+  # converges even smaller
+  set.seed( 245444 )
+  nbar4 <- expect_warning(pump_sample(
+    design = "d3.3_m3rc2rc",
+    power.definition = 'D1indiv',
+    target.power = pp1$D1indiv[2],
+    typesample = 'nbar',
+    MTP = 'Holm',
+    K = 20,
+    J = 40,
+    M = 3,
+    MDES = 0.25,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5,
+    max_sample_size_nbar = 120,
+    start.tnum = 5000, max.tnum = 8000,
+    just.result.table = FALSE))
+  nbar4
+  expect_true(!is.na(nbar4$`Sample size`))
+
+  # converges even smaller
+  set.seed( 245444 )
+  nbar5 <- expect_warning(pump_sample(
+    design = "d3.3_m3rc2rc",
+    power.definition = 'D1indiv',
+    target.power = pp1$D1indiv[2],
+    typesample = 'nbar',
+    MTP = 'Holm',
+    K = 20,
+    J = 40,
+    M = 3,
+    MDES = 0.25,
+    Tbar = 0.5, alpha = 0.05,
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5,
+    max_sample_size_nbar = 73,
+    start.tnum = 5000, max.tnum = 8000,
+    just.result.table = FALSE))
+  nbar5
+  expect_true(!is.na(nbar5$`Sample size`))
+  expect_equal(nbar5$`Sample size`, 50, tol = 0.2)
+})
 
 #----------------------------------------
 # lower limit

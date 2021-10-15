@@ -111,13 +111,6 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return(test.pts)
   }
 
-  # Ensure we have single MDES that is appropriate
-  if ( search.type != "mdes" ) {
-    stopifnot( !is.null( MDES ) )
-    stopifnot( length(MDES) == 1 && MDES > 0 )
-    MDES <- rep( MDES, M )
-  }
-
   # Step 1: fit initial quadratic curve to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum)
 
