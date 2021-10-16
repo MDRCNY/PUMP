@@ -91,17 +91,18 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   }
   
   
-  gen_test_pts <- function(start.low, start.high, tnum)
+  gen_test_pts <- function(start.low, start.high, tnum, round=FALSE)
   {
     # generate a series of points to try (on quadratic scale, especially relevant
     # for sample size)
-    test.pts <- data.frame(
-      step = 0,
-      pt = round( seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2 ),
-      power = NA,
-      w = tnum,
-      MTP = MTP,
-      target.power = target.power
+    pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2
+    if ( round ) {
+      pt = round(pt)
+    }
+    test.pts <- data.frame( step = 0, pt = pt, 
+                            w = tnum, MTP = MTP,
+      target.power = target.power,
+      power = NA
     )
     
     # generate power for all the initial test points
@@ -128,9 +129,14 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return(test.pts)
   }
   
+  if ( search.type != "mdes" ) {
+    start.low = pmax( start.low, 1 )
+  }
+  
   
   # Step 1: fit initial series of points to start search
-  test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum)
+  test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
+                           round = search.type != "mdes" )
   
   
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
@@ -283,7 +289,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     final.pts <- gen_test_pts(
       start.low = start.low,
       start.high = ceiling(test.pts$pt[nrow(test.pts)]),
-      tnum = max.tnum
+      tnum = max.tnum,
+      round = search.type != "mdes"
     )
     final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'power')]
   }
