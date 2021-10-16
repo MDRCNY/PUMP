@@ -97,7 +97,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     # for sample size)
     test.pts <- data.frame(
       step = 0,
-      pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2,
+      pt = round( seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2 ),
       power = NA,
       w = tnum,
       MTP = MTP,
@@ -128,12 +128,6 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return(test.pts)
   }
   
-  # Ensure we have single MDES that is appropriate
-  if ( search.type != "mdes" ) {
-    stopifnot( !is.null( MDES ) )
-    stopifnot( length(MDES) == 1 && MDES > 0 )
-    MDES <- rep( MDES, M )
-  }
   
   # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum)
@@ -152,7 +146,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   if ( !is.null( ct$warnings ) ) {
       optimizer.warnings <- c(optimizer.warnings, ct$warnings)
   }
-  current.try = ct$result
+  current.try = ct$result$x
+  current.try.dx = ct$result$dx
   
   current.power <- 0
   current.tnum <- start.tnum
@@ -212,6 +207,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     }
     
     iter.results <- power_check_df( current.try, current.tnum )
+    iter.results$dx = current.try.dx
     
     # If we are close, check with more iterations and update our current step.
     if(abs(iter.results$power - target.power) < tol && current.tnum < max.tnum )
@@ -238,9 +234,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
         (!current.try.ok && current.power > target.power + tol) )
     {
       final.power.results <- power_check_df( current.try, final.tnum )
-      
+      final.power.results$dx = current.try.dx      
       test.pts <- dplyr::bind_rows(test.pts, final.power.results)
       current.power = final.power.results$power
+      
     }
     
     if( (abs(current.power - target.power) < tol) || 
@@ -252,8 +249,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       if ( !is.null( ct$warnings ) ) {
         optimizer.warnings <- c(optimizer.warnings, ct$warnings)
       }
-      current.try = ct$result
-      
+      current.try = ct$result$x
+      current.try.dx = ct$result$dx
     }
   }
   
@@ -265,6 +262,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   if ( !current.try.ok ) {
     warning( "Hit lower limit of what is allowed by degrees of freedom.  Likely overpowered." )
+  }
+  
+  if ( current.try.dx < 0.0001 ) {
+    warning( "Derivative flat; very possible estimate is off the mark.  Explore other (smaller) sample sizes" )
   }
   
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
@@ -286,7 +287,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     )
     final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'power')]
   }
-  test.pts = dplyr::relocate( test.pts, step, MTP, target.power, pt, w, power )
+  test.pts = dplyr::relocate( test.pts, step, MTP, target.power, pt, dx, w, power )
   return(list(test.pts = test.pts, final.pts = final.pts))
 }
 
@@ -385,7 +386,8 @@ fit_bounded_logistic = function( x, y, wt ) {
 #' @param target.power goal power
 #' @param alternate alternate point to return if quadratic fit fails
 #'
-#' @return root of quadratic curve
+#' @return List of estimate of when curve reaches target.power, derivative of
+#'   curve at that point, and parameters of the fit curve.
 
 find_best <- function(test.pts, target.power, gamma = 1.5)
 {
@@ -397,20 +399,21 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   if ( fit[["pmin"]] > target.power ) {
     # Min power is too high.  Reach lower.
     warning( "Minimum estimated power higher than target power" )
-    return( start.low / gamma )
-    
+    cc =  start.low / gamma
   } else if ( fit[["pmax"]] < target.power ) {
     # Max power is too low.  This could be a limitation or estimation error.
     warning( "Maximum estimated power lower than target power" )
     
-    return( start.high * gamma )
+    cc = start.high * gamma
+  } else {
+  
+    #print( plot_power_search(test.pts) )
+    
+    # extract point where it crosses target power.
+    cc = find_crossover( target.power, fit )
   }
   
-  #print( plot_power_search(test.pts) )
-  
-  # extract point where it crosses target power.
-  cc = find_crossover( target.power, fit )
-  return( cc )
+  return( list( x = cc, dx = d_bounded_logistic_curve(cc,fit), params=fit ) )
 }
 
 
@@ -599,7 +602,8 @@ plot_power_search <- function( pwr ) {
     geom_text( aes( pt, power, label = step ), vjust = "bottom", nudge_y = 0.01, size=3 ) +
     stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, par=fit ) } ) +
     guides(colour="none", size="none") +
-    coord_cartesian(ylim=lims )
+    coord_cartesian(ylim=lims ) +
+    scale_x_log10()
   
   
   plot2 <-  ggplot( test.pts, aes(step, power, size = w) ) +
@@ -614,7 +618,8 @@ plot_power_search <- function( pwr ) {
     geom_point( alpha = 0.5 ) +
     scale_x_continuous( breaks=0:max(test.pts$step) ) +
     theme_minimal() +
-    guides(colour="none", size="none") 
+    guides(colour="none", size="none")+
+    scale_y_log10()
   
   grid.arrange(plot1, plot2, plot3, ncol=3) #+
   #title( "Search path for optimize_power" )

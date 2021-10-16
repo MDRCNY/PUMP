@@ -18,7 +18,8 @@ find_best(test.pts, target.power, gamma = 1.5)
 \item{alternate}{alternate point to return if quadratic fit fails}
 }
 \value{
-root of quadratic curve
+List of estimate of when curve reaches target.power, derivative of
+  curve at that point, and parameters of the fit curve.
 }
 \description{
 Extract roots from quadratic curve based on given evaluated points

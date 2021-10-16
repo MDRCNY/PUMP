@@ -4,13 +4,7 @@
 \alias{validate_inputs}
 \title{Validates user inputs}
 \usage{
-validate_inputs(
-  design,
-  params.list,
-  power.call = FALSE,
-  mdes.call = FALSE,
-  single.MDES = FALSE
-)
+validate_inputs(design, params.list, power.call = FALSE, mdes.call = FALSE)
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}

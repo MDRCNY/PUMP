@@ -69,8 +69,8 @@ test_that( "optimize_power solves", {
     )
     op_pow
     
-    pum:::plot_power_search(op_pow)
-    expect_true( ncol( op_pow$test.pts ) == 6 )
+    #pum:::plot_power_search(op_pow)
+    expect_true( ncol( op_pow$test.pts ) == 7 )
     expect_true( all( op_pow$test.pts$w <= 2000 ) )
     expect_true( max( op_pow$test.pts$w ) == 2000 )
     

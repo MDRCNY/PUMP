@@ -61,7 +61,7 @@ test_that("pump_sample_raw works", {
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcnbar
-  expect_true( is.na( calcnbar$nbar ) )
+  expect_true( is.na( calcnbar$ss ) )
 
 
   calcJ <- pump_sample_raw( design = "d2.1_m2fc",
@@ -73,40 +73,40 @@ test_that("pump_sample_raw works", {
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcJ
-  expect_true( !is.na( calcJ$J ) )
+  expect_true( !is.na( calcJ$ss ) )
 
   calcn <- pump_sample_raw( design = "d2.1_m2fc",
                             typesample = "nbar",
-                            J = calcJ$J,
+                            J = calcJ$ss,
                             MDES = 0.05, target.power = 0.80,
                             Tbar = 0.50, alpha = 0.05,
                             numCovar.1 = 5, numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcn
-  expect_true( abs( calcn$nbar - 258 ) < 2 )
+  expect_true( abs( calcn$ss - 258 ) < 2 )
 
   calcJ2 <- pump_sample_raw( design = "d2.1_m2fc",
                              typesample = "J",
-                             nbar = calcn$nbar,
+                             nbar = calcn$ss,
                              MDES = 0.05, target.power = 0.80,
                              Tbar = 0.50, alpha = 0.05,
                              numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcJ2
-  expect_true( abs( calcJ$J - calcJ2$J ) < 1 )
+  expect_true( abs( calcJ$ss - calcJ2$ss ) < 1 )
 
   calcn2 <- pump_sample_raw( design = "d2.1_m2fc",
                              typesample = "nbar",
-                             J = calcJ2$J,
+                             J = calcJ2$ss,
                              MDES = 0.05, target.power = 0.80,
                              Tbar = 0.50, alpha = 0.05,
                              numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcn2
-  expect_true( abs( calcn$nbar - calcn2$nbar ) < 2 )
+  expect_true( abs( calcn$ss - calcn2$ss ) < 2 )
 })
 
 
@@ -238,7 +238,7 @@ test_that("sample search when one end is missing", {
                                           Tbar = 0.50, alpha = 0.05,
                                           numCovar.1 = 5, numCovar.2 = 1,
                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                                          rho = 0.2, max.tnum = 200, just.result.table = FALSE ) )
+                                          rho = 0.2, max.tnum = 1000, just.result.table = FALSE ) )
   nbar3
   expect_true( is.na( nbar3$`Sample size` ) )
 })

@@ -60,8 +60,7 @@ scat = function( str, ... ) {
 #'
 validate_inputs <- function( design, params.list,
                              power.call = FALSE,
-                             mdes.call = FALSE,
-                             single.MDES = FALSE)
+                             mdes.call = FALSE )
 {
 
   #-------------------------------------------------------#
@@ -130,16 +129,11 @@ validate_inputs <- function( design, params.list,
       }
       message('Assumed full MDES vector:', 'c(', paste(params.list$MDES, collapse = ', '), ')')
     }
-    if ( single.MDES ) {
-      if ( length(params.list$MDES) != 1 ) {
-        stop( "Please provide a single MDES value. This function does not support vector MDES inputs." )
-      }
-    } else if(length(params.list$MDES) != params.list$M)
+
+    if(length(params.list$MDES) != params.list$M)
     {
       if ( length(params.list$MDES) == 1 ) {
         params.list$MDES <- rep( params.list$MDES, params.list$M )
-        #warning('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
-        #message('Assuming same MDES for all outcomes.  Specify full vector to remove this message.')
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
                    MDES, 'M =', params.list$M))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{power_curve}
 \alias{power_curve}
-\title{Obtain search path of pump_mdes or pump_sample call}
+\title{Obtain recheck path (to see rate of power change)}
 \usage{
 power_curve(x, ...)
 }
@@ -12,7 +12,7 @@ power_curve(x, ...)
 \item{Dataframe}{describing power curve.}
 }
 \description{
-Obtain search path of pump_mdes or pump_sample call
+Obtain recheck path (to see rate of power change)
 }
 \seealso{
 Other pumpresult: 

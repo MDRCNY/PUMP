@@ -1,5 +1,5 @@
 ---
-title: "pump_sample_demo"
+title: "Demo and discussion of the pump_sample method"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{pump_sample_demo}
@@ -30,7 +30,7 @@ Let's start with a case of calculating the sample size for a 3-level model.
 To demonstrate some of the challenges of calculating sample size, we start with calculating power for a given set of parameters, and then try to recover those parameters.
 
 
-```{r}
+```{r, cache=TRUE}
 set.seed( 101010 )
 p <- pump_power(
     design = "d3.1_m3rr2rr",
@@ -45,24 +45,26 @@ p <- pump_power(
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1,
-    rho = 0.5
+    rho = 0.5,
+    tnum = 100000
 )
 ```
 
 ```{r echo = FALSE}
 print(p)
-# kable(p)
+target_power = round( p$indiv.mean[[2]], digits=3 )
 ```
 
+Our individual power using the Holm procedure is estimated as `r target_power`.
 First, let's try to recover $K$, the number of districts, given the power we just found.
 
-```{r}
-set.seed( 404040 )
+```{r, cache=TRUE}
+set.seed( 40444040 )
 K <- pump_sample(
   design = "d3.1_m3rr2rr",
   typesample = 'K',
   MTP = 'Holm',
-  target.power = p$D1indiv[2],
+  target.power = target_power,
   power.definition = 'D1indiv',
   J = 30,
   nbar = 50,
@@ -72,8 +74,7 @@ K <- pump_sample(
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1,
   ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5
-)
+  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5 )
 ```
 
 ```{r, echo = FALSE}
@@ -83,6 +84,8 @@ print(K)
 We recover a similar value K = `K`, but it is not surprising that we do not recover exactly the same value.
 There are two reasons for this discrepancy.
 First, our power calculations rely on simulations, so they are estimates--and this randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
+In this case we have uncertainty in what the actual power is (from our first call) and uncertainty in the power calculations of `pump_sample()` as well.
+
 Second, the search algorithm finds a sample size which is within a certain tolerance of the target power, give or take this estimation uncertainty.
 The default tolerance is $0.01$, meaning we can get any $K$ that has an estimated power within 1\% of our target power.
 
@@ -97,12 +100,13 @@ We also could find that other values of $K$, including smaller values, would res
 
 Now let's turn to calculating the number of schools $J$, given a fixed $K$.
 
-```{r}
+```{r, cache=TRUE}
+set.seed( 333434443 )
 J1 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'J',
     MTP = 'Holm',
-    target.power = p$D1indiv[2],
+    target.power = target_power,
     power.definition = 'D1indiv',
     K = 15,
     nbar = 50,
@@ -118,26 +122,39 @@ J1 <- pump_sample(
 )
 ```
 
+```{r, include=FALSE}
+sp = search_path(J1)
+sp$dx[nrow(sp)] * 4
+```
+
 ```{r}
 print(J1)
 ```
 
 Our $J$ is a bit larger than our original input of `30`.
 Let's examine the source of this discrepancy.
-First, we can use the power curve function, which calculates power over a range of possible $J$ values.
+First note the `dx` column of the printout, above: this is the derivative of the estimated power curve; we see it is not particularly large, meaning a change of $J$ of 4 would result in an estimated change in power of a bit less than 0.01, under our tolerance.
 
+We can also plot the path the algorithm took to estimate $J$, which calculates power over a range of possible $J$ values:
+
+```{r}
+plot_power_search(J1)
+```
+
+We can also examine the power for a grid of points up to our selected $J$ (this is a second estimation step to verify our results):
 ```{r}
 power_curve(J1)
 ```
 
-From this curve, we can see that we might have a combination of estimation randomness and flatness of the power curve contributing to the result.
-For example, a sample size of 29 results in a power of `0.769`, even though we initially input a sample size of 30 to get our target power of `0.7964.`
+From these results, we can see that we have a combination of estimation randomness and flatness of the power curve contributing to the result.
+For example, a sample size of 29 results in a power of `0.769`, even though we initially input a sample size of 30 to get our target power of `0.80.`
 This jump between 29 and 30 is likely larger than reality, and is probably due to estimation error.
 
 We can try running the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
 The parameter `start.tnum` sets the number of iterations we start with, and `max.tnum` controls the number of test statistics drawn during later iterations as the algorithm refines its estimate.
 
 ```{r}
+set.seed( 42244 )
 J2 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'J',
@@ -166,11 +183,7 @@ print(J2)
 
 With greater precision, we have achieved a sample size closer to our original sample size of 30.
 
-```{r}
-power_curve(J2)
-```
-
-We can get a bit closer by decreasing our default tolerance from $0.01$:
+We can also get closer by decreasing our default tolerance from $0.01$:
 
 ```{r}
 J3 <- pump_sample(
@@ -239,7 +252,7 @@ print(nbar1)
 We can examine the search path to see what happened.
 
 ```{r}
-search_path(nbar1)
+plot_power_search(nbar1)
 ```
 
 Remember that our original nbar value was 50.
