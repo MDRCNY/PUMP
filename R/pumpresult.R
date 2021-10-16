@@ -56,10 +56,13 @@ params = function( x, ... ) {
 #' @export
 search_path = function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
-    return( attr( x, "tries" ) )
+    rs <- attr( x, "tries" )
+    rs$delta = rs$power - rs$target.power
+    return( rs )
 }
 
-#' Obtain search path of pump_mdes or pump_sample call
+
+#' Obtain recheck path (to see rate of power change)
 #'
 #' @param x A pumpresult object
 #'
@@ -99,7 +102,7 @@ print.pumpresult = function( x, n = 10, ... ) {
     if ( !is.null( tr ) ) {
         cat( "\nSearch history\n")
         nr = nrow( tr )
-        if ( nr < n ) {
+        if ( nr <= n ) {
             print( tr )
         } else {
             print( head( tr, max(n/2,1) ) )

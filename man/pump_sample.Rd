@@ -61,7 +61,7 @@ to automatically re-run for each procedure on the list.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
 
-\item{numZero}{Additional number of outcomes assumed to be zero. Please
+\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
 provide NumZero + length(MDES) = M}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
@@ -96,18 +96,18 @@ Level 2 covariates for each outcome. Defaults to 0.}
 \item{R2.3}{scalar, or vector of length M; percent of variation explained by
 Level 3 covariates for each outcome. Defaults to 0.}
 
-\item{ICC.2}{scalar; school intraclass correlation}
+\item{ICC.2}{scalar, or vector of length M; school intraclass correlation}
 
-\item{ICC.3}{scalar; district intraclass correlation}
+\item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
 \item{rho}{scalar; assumed correlation between the test statistics of the
 tests.}
 
-\item{omega.2}{scalar; ratio of variance of school-average impacts to
+\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
 variation).}
 
-\item{omega.3}{scalar; ratio of variance of district-average impacts to
+\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 

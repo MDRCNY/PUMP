@@ -41,20 +41,21 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            max.steps = 20, max.tnum = 2000, final.tnum = 4*max.tnum,
                            give.warnings = FALSE)
 {
-
+  
   # Helper function to call pump_power for our search and give back the power results
   # from the given set of parameters.
   power_check <- function( test_point, test_tnum ) {
-
-    # Hack code since ifelse() cannot allow a NULL value and K could be NULL for
+    
+    # Set K to passed parameter or test_point if we are searching on K
+    # This is not below since ifelse() cannot allow a NULL value and K could be NULL for
     # 2 level designs.
     myK <- K
     if ( search.type == 'K' ) {
       myK <- test_point
     }
-
+    
     if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
-
+    
     pt.power.results <- pump_power(
       design, MTP = MTP,
       MDES = MDES,
@@ -70,13 +71,29 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       B = B, cl = cl,
       validate.inputs = FALSE
     )
-
+    
     return(pt.power.results)
   }
-
+  
+  power_check_df <- function( test_point, test_tnum ) {
+    current.power.results <- power_check( test_point, test_tnum )
+    
+    current.power <- current.power.results[
+      current.power.results$MTP == MTP, power.definition
+    ]
+    
+    iter.results <- data.frame(
+      step = step, 
+      MTP = MTP, target.power = target.power,
+      pt = test_point, w = test_tnum, power = current.power
+    ) 
+    return( iter.results )
+  }
+  
+  
   gen_test_pts <- function(start.low, start.high, tnum)
   {
-    # generate a series of points to try (on quadradic scale, especially relevant
+    # generate a series of points to try (on quadratic scale, especially relevant
     # for sample size)
     test.pts <- data.frame(
       step = 0,
@@ -86,7 +103,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       MTP = MTP,
       target.power = target.power
     )
-
+    
     # generate power for all the initial test points
     for(i in 1:nrow(test.pts))
     {
@@ -107,68 +124,66 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
         ]
       }
     }
-
+    
     return(test.pts)
   }
-
+  
   # Ensure we have single MDES that is appropriate
   if ( search.type != "mdes" ) {
     stopifnot( !is.null( MDES ) )
     stopifnot( length(MDES) == 1 && MDES > 0 )
     MDES <- rep( MDES, M )
   }
-
-  # Step 1: fit initial quadratic curve to start search
+  
+  # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum)
-
-
+  
+  
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
   # search going?)
   # TODO: test if we should keep going?
   # stopifnot( all( !is.na( test.pts$power ) ) )
-
+  
   optimizer.warnings <- NULL
-
+  quiet_find_best = purrr::quietly( find_best )
+  
   # Based on initial grid, pick best guess for search.
-  current.try <- median( test.pts$pt )
-  tryCatch(
-    current.try <- find_best(
-      test.pts = test.pts, target.power = target.power, gamma = 1.5
-    ),
-    warning = function(w) {
-      optimizer.warnings <<- c(optimizer.warnings, w$message)
-    }
-  )
+  ct <- quiet_find_best( test.pts = test.pts, target.power = target.power, gamma = 1.5 )
+  if ( !is.null( ct$warnings ) ) {
+      optimizer.warnings <- c(optimizer.warnings, ct$warnings)
+  }
+  current.try = ct$result
+  
   current.power <- 0
   current.tnum <- start.tnum
   step <- 0
-
-  # Flag if our next point to test is a valid (df > 0) point.  (Assume true
+  
+  # Flag for if our next point to test is a valid (df > 0) point.  (Assume true
   # until we find otherwise.)
   current.try.ok <- TRUE
-
+  
+  bad_df_threshold = 0
+  
   # Iteratively search by checking best point and then updating our curve.
-  while( (step < max.steps) & (abs( current.power - target.power ) > tol) )
+  done = FALSE
+  while( !done && step < max.steps )
   {
     step <- step + 1
     current.tnum <- pmin(max.tnum, round(current.tnum * 1.1))
-
+    
     # what is smallest tested point?
     min_limit <- min( test.pts$pt )
-
-    # This is a catch for running out of degrees of freedom if we are hugely overpowered.
+    
+    # the following code block is to handle possibly running out of degrees of
+    # freedom if we are hugely overpowered.
     if ( current.try <= min_limit ) {
       # we are going lower than we have ever gone before.  Need to check if
       # degrees of freedom is still defined.
-
-      if ( !current.try.ok ) {
-        # we still want to go low.  We have hit a wall.
-        break
-      }
-
+      
       current.try.ok = FALSE
+      current.try = max( bad_df_threshold + 1, current.try )
       while( !current.try.ok && (min_limit - current.try) > 0.5 ) {
-
+        
         myK = K
         if ( search.type == 'K' ) {
           myK = current.try
@@ -179,98 +194,86 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
           J = ifelse(search.type == 'J', current.try, J),
           K = myK,
           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3, validate=FALSE )
-
+        
         if ( t.df > 1 ) {
           current.try.ok = TRUE
         } else {
+          bad_df_threshold = max( bad_df_threshold, current.try )
           current.try = (current.try + min_limit) / 2
         }
       }
     } else {
       current.try.ok <- TRUE
     }
-
+    
     if ( !current.try.ok ) {
+      # We can't go lower than min_limit.  Need to see if it is indeed overpowered.
       current.try <- min_limit
     }
-
-    current.power.results <- power_check( current.try, current.tnum )
-
-    current.power <- current.power.results[
-      current.power.results$MTP == MTP, power.definition
-    ]
-
-    iter.results <- data.frame(
-      step = step, pt = current.try, power = current.power, w = current.tnum,
-      MTP = MTP, target.power = target.power
-    )
-
-    # If we are close, check with more iterations
-    if(abs(current.power - target.power) < tol)
+    
+    iter.results <- power_check_df( current.try, current.tnum )
+    
+    # If we are close, check with more iterations and update our current step.
+    if(abs(iter.results$power - target.power) < tol && current.tnum < max.tnum )
     {
-      check.power.tnum <- pmin(10 * current.tnum, max.tnum)
-
-      check.power.results <- power_check( current.try, check.power.tnum )
-      check.power <- check.power.results[
-        check.power.results$MTP == MTP, power.definition
-      ]
-
-      current.power <- (current.tnum*current.power + check.power.tnum*check.power)/(current.tnum+check.power.tnum)
-
+      check.power.tnum <- pmin(10 * current.tnum, max.tnum - current.tnum)
+      
+      check.results <- power_check_df( current.try, check.power.tnum )
+      
+      avg_pow = weighted.mean( x = c(iter.results$power, check.results$power),
+                               w = c(current.tnum, check.power.tnum) )
+      
       # Overwrite results with our bonus step.
-      iter.results <- data.frame(
-        step = step, pt = current.try, power = current.power,
-        w = current.tnum + check.power.tnum,
-        MTP = MTP, target.power = target.power
-      )
+      iter.results$w <- current.tnum + check.power.tnum
+      iter.results$power = avg_pow
     } # end if within tolerance
-
+    
     # Record our step.
+    current.power = iter.results$power
     test.pts <- dplyr::bind_rows(test.pts, iter.results)
-
-    # If still good, go to a second full check to see if we are winners!
-    if(abs(current.power - target.power) < tol)
+    
+    # If still good, or are stuck at minimum, go to a second full check to see
+    # if we are winners!
+    if( (abs(current.power - target.power) < tol) || 
+        (!current.try.ok && current.power > target.power + tol) )
     {
-      final.power.results <- power_check( current.try, final.tnum )
-      current.power <- final.power.results[
-        final.power.results$MTP == MTP, power.definition
-      ]
-
-      iter.results <- data.frame(
-        step = step, pt = current.try, power = current.power,
-        w = final.tnum,
-        MTP = MTP, target.power = target.power
-      )
-      test.pts <- dplyr::bind_rows(test.pts, iter.results)
+      final.power.results <- power_check_df( current.try, final.tnum )
+      
+      test.pts <- dplyr::bind_rows(test.pts, final.power.results)
+      current.power = final.power.results$power
     }
-
-    tryCatch(
-      current.try <- find_best(
-        test.pts = test.pts, target.power = target.power, gamma = 1.5
-      ),
-      warning = function(w) {
-        optimizer.warnings <<- c(optimizer.warnings, w$message)
+    
+    if( (abs(current.power - target.power) < tol) || 
+        (!current.try.ok && current.power > target.power + tol) ) {
+      done = TRUE
+    } else {
+      
+      ct <- quiet_find_best( test.pts = test.pts, target.power = target.power, gamma = 1.5 )
+      if ( !is.null( ct$warnings ) ) {
+        optimizer.warnings <- c(optimizer.warnings, ct$warnings)
       }
-    )
+      current.try = ct$result
+      
+    }
   }
-
+  
   # collect all warnings
   if(!is.null(optimizer.warnings) & give.warnings)
   {
     warning(unique(optimizer.warnings))
   }
-
+  
   if ( !current.try.ok ) {
     warning( "Hit lower limit of what is allowed by degrees of freedom.  Likely overpowered." )
   }
-
+  
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
     msg <- "Reached maximum iterations without converging on estimate within tolerance.\n"
     msg <- paste(msg, "See sample size vignette for suggestions.")
     warning(msg)
     iter.results <- data.frame(
-      step = step, pt = NA, power = NA, w = NA,
-      MTP = MTP, target.power = target.power
+      step = step, MTP = MTP, target.power = target.power,
+      pt = NA, power = NA, w = NA
     )
     test.pts <- dplyr::bind_rows(test.pts, iter.results )
     final.pts <- NULL
@@ -281,10 +284,96 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       start.high = ceiling(test.pts$pt[nrow(test.pts)]),
       tnum = max.tnum
     )
-    final.pts <- final.pts[,c('pt', 'power', 'MTP', 'target.power')]
+    final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'power')]
   }
-
+  test.pts = dplyr::relocate( test.pts, step, MTP, target.power, pt, w, power )
   return(list(test.pts = test.pts, final.pts = final.pts))
+}
+
+
+
+
+
+
+bounded_logistic_curve = function( x, params ) {
+  if ( !is.null( names( params ) ) ) {
+    beta0 <- params[["beta0"]]
+    beta1 <- params[["beta1"]]
+    pmin <- params[["pmin"]]
+    pmax <- params[["pmax"]]
+  } else {
+    beta0 = params[[1]]
+    beta1 = params[[2]]
+    pmin = params[[3]]
+    pmax = params[[4]]
+  }
+  pmin + (pmax - pmin)*plogis( beta0 + beta1*x )
+}
+
+
+
+
+d_bounded_logistic_curve = function( x, params ) {
+  if ( !is.null( names( params ) ) ) {
+    beta0 <- params[["beta0"]]
+    beta1 <- params[["beta1"]]
+    pmin <- params[["pmin"]]
+    pmax <- params[["pmax"]]
+  } else {
+    beta0 = params[[1]]
+    beta1 = params[[2]]
+    pmin = params[[3]]
+    pmax = params[[4]]
+  }
+  
+  delta = pmax - pmin
+  lin = -1 * (beta0 + beta1*x)
+  e_lin = exp( lin )
+  deriv = delta * ( 1/(1+e_lin)^2 ) * e_lin * beta1
+  return( deriv )
+}
+
+
+
+find_crossover = function( target_power, params ) {
+  beta0 <- params[["beta0"]]
+  beta1 <- params[["beta1"]]
+  pmin <- params[["pmin"]]
+  pmax <- params[["pmax"]]
+  
+  delta = pmax - pmin
+  xover = - ( log( delta / (target_power - pmin) - 1 ) + beta0 ) / beta1
+  xover
+}
+
+
+
+
+#' Fit a bounded logistic curve
+#' 
+#' Curve is of form f(y) = pmin + (pmax-pmin) * logistic( beta0 + beta1*x )
+#' 
+#' (logistic as defined by plogis)
+#' 
+#' @return Vector of four estimated parameters for the logistic curve: beta0, beta1, pmin, pmax
+fit_bounded_logistic = function( x, y, wt ) {
+  
+  # the log likelihood
+  loglik <- function(par, y, x, wt) {
+    p = bounded_logistic_curve( x, par )
+    -sum( wt * (p - y)^2 )
+  }
+  
+  # fit the model
+  rs <- optim( c(0, 0.5 ,.1, .9), 
+               loglik, 
+               control=list(fnscale=-1),
+               y=y, x=x, wt=wt, 
+               lower=c(-Inf,0,0,0),
+               upper=c(Inf,Inf,1,1),
+               method="L-BFGS-B")
+  names(rs$par) = c( "beta0", "beta1", "pmin", "pmax" )
+  rs$par
 }
 
 
@@ -302,7 +391,38 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 {
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
+  
+  fit = fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
+  
+  if ( fit[["pmin"]] > target.power ) {
+    # Min power is too high.  Reach lower.
+    warning( "Minimum estimated power higher than target power" )
+    return( start.low / gamma )
+    
+  } else if ( fit[["pmax"]] < target.power ) {
+    # Max power is too low.  This could be a limitation or estimation error.
+    warning( "Maximum estimated power lower than target power" )
+    
+    return( start.high * gamma )
+  }
+  
+  #print( plot_power_search(test.pts) )
+  
+  # extract point where it crosses target power.
+  cc = find_crossover( target.power, fit )
+  return( cc )
+}
 
+
+
+
+
+
+find_best_semi_old <- function(test.pts, target.power, gamma = 1.5)
+{
+  start.low <- min( test.pts$pt )
+  start.high <- max( test.pts$pt )
+  
   # fit quadratic curve
   test.pts$sq_pt = sqrt( test.pts$pt )
   fit <- lm(
@@ -310,25 +430,25 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
     data = test.pts,
     weights = w
   )
-
+  
   # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - logit(target.power))
   # Using x = [ -b \pm sqrt( b^2 - 4a(c- logit(y))  ] / [2a]
   # first check if root exists
   cc <- rev( coef( fit ) )
-
-
+  
+  
   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-
+  
   happy <- FALSE
-
+  
   # We have a place where our quad line crosses target.power
   if ( rt.check > 0 ) {
-
+    
     # calculate the two points to try (our two roots)
     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / 2 * cc[1]
     hits <- (start.low <= try.pt) & (try.pt <= start.high)
-
+    
     if ( sum( hits ) == 1 ) {
       try.pt <- try.pt[hits]
       happy <- TRUE
@@ -342,22 +462,24 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   } else {
     warning( "No root in logistic model fit" )
   }
-
+  
   if ( !happy ) {
-
+    
     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
     cc <- rev( coef( lin.mod ) )
     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-
+    
     if ( try.pt < start.low / gamma ) {
       try.pt <- start.low / gamma
     } else if ( try.pt > start.high * gamma ) {
       try.pt <- start.high * gamma
     }
   }
-
+  
   return(unname(try.pt))
 }
+
+
 
 
 #' Extract roots from quadratic curve based on given evaluated points
@@ -375,7 +497,7 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
   # Get current range of search so far.
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
-
+  
   # fit quadratic curve
   test.pts$sq_pt <- sqrt( test.pts$pt )
   quad.mod <- lm(
@@ -383,22 +505,22 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
     weights = w,
     data = test.pts
   )
-
+  
   # extract point where it crosses target power.
   # Our curve is now a x^2 + b x + (c - target.power)
   # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
   # first check if root exists
   cc <- rev( coef( quad.mod ) )
   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-
+  
   happy = FALSE
   if ( rt.check > 0 ) {
     # We have a place where our quad line crosses target.power
-
+    
     # calculate the two points to try (our two roots)
     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )^2
     hits <- (start.low <= try.pt) & (try.pt <= start.high)
-
+    
     if ( sum( hits ) == 1 ) {
       try.pt <- try.pt[hits]
       happy <- TRUE
@@ -409,7 +531,7 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
     } else {
       happy <- FALSE
       # Go to linear
-
+      
       # No roots in the original range.  Try extrapolation, if we can stay
       # within gamma of the original range
       try.pt <- sort( try.pt )
@@ -427,40 +549,75 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
   } else {
     warning( "No root in quadratic model fit" )
   }
-
+  
   # If no roots in the original range, and quad extrapolation failed, try linear
   # extrapolation, but stay within gamma of the original range.
   if ( !happy ) {
     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
     cc <- rev( coef( lin.mod ) )
     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-
+    
     if ( try.pt < start.low / gamma ) {
       try.pt <- start.low / gamma
     } else if ( try.pt > start.high * gamma ) {
       try.pt <- start.high * gamma
     }
   }
-
+  
   return(try.pt)
 }
 
 
 
-#' Examine search path of the power search
+#' Examine search path of the power search.
+#'
+#' This will give two plots about how the search narrowed down into the final
+#' estimate.  Can be useful to gauge where convergence went poorly.
 #'
 #' @param pwr Result from the pump_sample or pump_mdes
-plot_power_search <- function( pwr, step_plot = FALSE ) {
-  test.pts <- search_path(pwr)
-  if ( !step_plot ) {
-    ggplot( test.pts, aes( pt, power ) ) +
-      geom_point( aes( size = w ), alpha = 0.5 ) + theme_minimal() +
-      geom_hline( yintercept = test.pts$target.power[1], col = "red" ) +
-      geom_text( aes( label = test.pts$step ), nudge_y = 0.01 )
+#' 
+#' @export
+plot_power_search <- function( pwr ) {
+  if ( is.pumpresult(pwr) ) {
+    test.pts <- search_path(pwr)
+  } else if ( is.data.frame(pwr) ) {
+    test.pts = pwr
   } else {
-    ggplot( test.pts, aes(step, power, size = w) ) +
-      geom_point() +
-      geom_hline( yintercept = test.pts$target.power[1], col = "red" )
+    test.pts <- pwr$test.pts
   }
+  
+  require(gridExtra)
+  require( ggplot2 )
+  tp = dplyr::filter( test.pts, !is.na( power ) )
+  fit = fit_bounded_logistic( tp$pt, tp$power, tp$w )
+  
+  lims = extendrange( r=range( test.pts$power, test.pts$target.power[[1]], na.rm=TRUE ), 0.15 )
+  plot1 <-  ggplot( test.pts ) +
+    geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
+    geom_point( aes( pt, power, size = w ), alpha = 0.5 ) + 
+    theme_minimal() +
+    geom_text( aes( pt, power, label = step ), vjust = "bottom", nudge_y = 0.01, size=3 ) +
+    stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, par=fit ) } ) +
+    guides(colour="none", size="none") +
+    coord_cartesian(ylim=lims )
+  
+  
+  plot2 <-  ggplot( test.pts, aes(step, power, size = w) ) +
+    geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
+    geom_point( alpha = 0.5 ) +
+    scale_x_continuous( breaks=0:max(test.pts$step) ) +
+    theme_minimal()+
+    coord_cartesian(ylim=lims ) +
+    guides(colour="none", size="none") 
+  
+  plot3 <-  ggplot( test.pts, aes(step, pt, size = w) ) +
+    geom_point( alpha = 0.5 ) +
+    scale_x_continuous( breaks=0:max(test.pts$step) ) +
+    theme_minimal() +
+    guides(colour="none", size="none") 
+  
+  grid.arrange(plot1, plot2, plot3, ncol=3) #+
+  #title( "Search path for optimize_power" )
+  
 }
 

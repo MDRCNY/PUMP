@@ -110,28 +110,6 @@ test_that("pump_sample_raw works", {
 })
 
 
-test_that( "optimize_power solves", {
-
-  set.seed( 3042424 )
-  op_pow <- optimize_power(
-    MTP = "Holm", nbar = 200,
-    power.definition = "D1indiv",
-    design = "d2.1_m2fc", search.type = "J",
-    start.low = 56, start.high = 75,
-    start.tnum = 200,
-    M = 3,
-    MDES = 0.05, target.power = 0.80, tol = 0.01,
-    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
-    rho = 0.4, max.tnum = 400, final.tnum = 2000
-  )
-  op_pow
-  expect_true( ncol( op_pow$test.pts ) == 6 )
-  expect_true( all( op_pow$test.pts$w <= 2000 ) )
-  expect_true( max( op_pow$test.pts$w ) == 2000 )
-
-})
-
 
 test_that("Bonferroni for non individual power", {
 

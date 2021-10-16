@@ -31,6 +31,7 @@ To demonstrate some of the challenges of calculating sample size, we start with 
 
 
 ```{r}
+set.seed( 101010 )
 p <- pump_power(
     design = "d3.1_m3rr2rr",
     MTP = 'Holm',
@@ -56,6 +57,7 @@ print(p)
 First, let's try to recover $K$, the number of districts, given the power we just found.
 
 ```{r}
+set.seed( 404040 )
 K <- pump_sample(
   design = "d3.1_m3rr2rr",
   typesample = 'K',
@@ -80,14 +82,16 @@ print(K)
 
 We recover a similar value K = `K`, but it is not surprising that we do not recover exactly the same value.
 There are two reasons for this discrepancy.
-First, our power calculations rely on simulations, so they are estimates--the randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
-Second, the search algorithm finds a sample size which is within a certain tolerance of the target power.
-The default tolerance is $0.01$, so $K = 16$ will be returned if it is within 1\% of our target power.
+First, our power calculations rely on simulations, so they are estimates--and this randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
+Second, the search algorithm finds a sample size which is within a certain tolerance of the target power, give or take this estimation uncertainty.
+The default tolerance is $0.01$, meaning we can get any $K$ that has an estimated power within 1\% of our target power.
 
-This discrepancy highlights how the output should be interpreted.
-The output of `pump_sample` is  one possible sample size which would result in a power within the given tolerance of our target power, also taking into account estimation error.
-Given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
+These two facts highlight how the output should be interpreted: `pump_sample` finds one possible sample size that would result in a power within the given tolerance of our target power, give or take the estimation error.
+For computational efficiency, `pump_sample` also usually is run with fewer simulation iterations, meaning its estimates are bit more noisy.
+We therefore advise checking `pump_sample`'s work: given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
 We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
+
+
 
 # Exploring a range of sample size values
 
@@ -241,8 +245,9 @@ search_path(nbar1)
 Remember that our original nbar value was 50.
 We can see from this search that the power curve is very flat.
 Values of nbar ranging from around 60 to above 1000 all result in very similar power values!
+With a three level model with substantial variation, including impact variation, at level 2 and level 3, even having perfect estimation of the individual sites will not give us perfect estimation of the superpopulation.
 
-Because the power curve is so flat in the region we are interested in, it can sometimes help to increase the precision of our estimates to get a better sense of the curve in that region.
+Because the power curve is so flat in the region we are interested in, it can again sometimes help to increase the precision of our estimates to get a better sense of the curve in that region.
 
 ```{r}
 nbar2 <- pump_sample(
