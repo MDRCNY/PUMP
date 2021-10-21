@@ -17,6 +17,7 @@ Obtain search path of pump_mdes or pump_sample call
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},

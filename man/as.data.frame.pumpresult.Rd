@@ -15,6 +15,7 @@ Cast pumpresult result to data.frame
 }
 \seealso{
 Other pumpresult: 
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},

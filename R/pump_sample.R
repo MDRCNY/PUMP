@@ -499,6 +499,7 @@ pump_sample <- function(
     colnames(ss.results) <- output.colnames
     return( make.pumpresult( ss.results, type="sample", params.list=params.list,
                              tries = NULL,
+                             design = design,
                              just.result.table = just.result.table ) )
   }
 
@@ -639,6 +640,7 @@ pump_sample <- function(
     colnames(ss.results) <- output.colnames
     return( make.pumpresult( ss.results, tries = NULL,
                              type="sample", params.list=params.list,
+                             design = design,
                              just.result.table = just.result.table ) )
   }
 
@@ -683,6 +685,7 @@ pump_sample <- function(
 
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
                            just.result.table = just.result.table,
+                           design = design,
                            tries = test.pts, final.pts = optim.out$final.pts ) )
 }
 

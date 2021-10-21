@@ -17,6 +17,7 @@ Obtain recheck path (to see rate of power change)
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},

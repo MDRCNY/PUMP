@@ -8,9 +8,26 @@ scat = function( str, ... ) {
 
 
 
+#' Update a pump call, tweaking some parameters
+#' 
+#' @param x Pump result object.
+#' @return New call using parameters of old object.
+#' 
+#' @export
+update.pumpresult = function( x, ... ) {
+    params = attr(x,"param")
+    dts = list(...)
+    for ( d in names(dts) ) {
+        params[[d]] = dts[[d]]
+    }
+    params["design"] = design(x)
+    do.call(pump_power, params)
+}
+
 
 make.pumpresult = function( x,
                  type = c( "power", "mdes", "sample" ),
+                 design = design,
                  params.list = NULL,
                  tries = NULL, final.pts = NULL,
                  just.result.table = TRUE,
@@ -19,6 +36,7 @@ make.pumpresult = function( x,
     class(x) = c( "pumpresult", class(x) )
     attr(x, "type" ) = type
     attr(x, "params.list") = params.list
+    attr(x, "design") = design
     ll = list(...)
     for ( l in names(ll) ) {
         attr(x, l) = ll[[ l ]]
@@ -43,6 +61,22 @@ params = function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
 
     pp = attr( x, "params.list" )
+    return( pp )
+}
+
+
+
+
+#' Get design for pump result
+#'
+#' @return design used
+#'
+#' @family pumpresult
+#' @export
+design = function( x, ... ) {
+    stopifnot( is.pumpresult( x ) )
+    
+    pp = attr( x, "design" )
     return( pp )
 }
 
@@ -95,7 +129,7 @@ print.pumpresult = function( x, n = 10, ... ) {
     args = attr( x, "args" )
 
     result_type = args$type
-
+    scat( "%s with %d outcomes\n", design(x), params(x)$M )
     print( as.data.frame( x ) )
 
     tr = attr( x, "tries" )

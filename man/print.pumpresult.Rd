@@ -17,6 +17,7 @@ Pretty print pump result
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},

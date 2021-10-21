@@ -12,6 +12,7 @@ Dimension of pumpresult
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},
 \code{\link{power_curve}()},

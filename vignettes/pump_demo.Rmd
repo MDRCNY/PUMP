@@ -1,13 +1,20 @@
 ---
 title: "pump_demo"
-output: rmarkdown::html_vignette
+output: 
+    pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+<!--
+    rmarkdown::html_vignette
+
 vignette: >
   %\VignetteIndexEntry{pump_demo}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
----
+
+-->
 
 ```{r initialize, include = FALSE}
 knitr::opts_chunk$set(

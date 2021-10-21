@@ -99,6 +99,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return( make.pumpresult( mdes.results,
                              type = "mdes",
+                             design = design,
                               params.list = params.list) )
   }
 
@@ -110,6 +111,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return( make.pumpresult( mdes.results,
                              type = "mdes",
+                             design = design,
                              params.list = params.list) )
   }
 
@@ -156,6 +158,7 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, mdes.bf, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
+                             design = design,
                               params.list = params.list ) )
   }
 
@@ -163,6 +166,7 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, mdes.raw, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
+                             design = design,
                              params.list = params.list ) )
   }
 
@@ -237,6 +241,7 @@ pump_mdes <- function(
 
   return( make.pumpresult( mdes.results, type = "mdes",
                            tries = test.pts,
+                           design = design,
                            params.list = params.list,
                            just.result.table = just.result.table  ) )
 }

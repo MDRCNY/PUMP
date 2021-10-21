@@ -16,6 +16,7 @@ Is object a pumpresult object?
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{params}()},
 \code{\link{power_curve}()},

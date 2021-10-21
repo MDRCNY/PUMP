@@ -318,6 +318,7 @@ pump_power <- function(
     }
     return( make.pumpresult( ftable, "power",
                              params.list = plist,
+                             design = design,
                              multiple_MTP = TRUE,
                              long.table=long.table ) )
 
@@ -435,6 +436,7 @@ pump_power <- function(
   }
   return( make.pumpresult( power.results, "power",
                            params.list = params.list,
+                           design = design,
                            long.table = long.table ) )
 }
 

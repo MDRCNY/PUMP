@@ -137,12 +137,12 @@ First note the `dx` column of the printout, above: this is the derivative of the
 
 We can also plot the path the algorithm took to estimate $J$, which calculates power over a range of possible $J$ values:
 
-```{r}
+```{r, fig.width=7, fig.align="center"}
 plot_power_search(J1)
 ```
 
 We can also examine the power for a grid of points up to our selected $J$ (this is a second estimation step to verify our results):
-```{r}
+```{r, fig.width=7}
 power_curve(J1)
 ```
 
@@ -251,7 +251,7 @@ print(nbar1)
 
 We can examine the search path to see what happened.
 
-```{r}
+```{r, fig.width=8, fig.align="center"}
 plot_power_search(nbar1)
 ```
 
