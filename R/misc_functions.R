@@ -44,6 +44,32 @@ supported_designs <- function( comment = TRUE) {
     list( Design=design, Adjustment=adjust )
 }
 
+
+#' Return characteristics of a given design code
+#'
+#' @return List of features including number of levels, level of randomization,
+#'   etc.
+#' @family supported_designs
+#' @export
+parse_design = function( design ) {
+    des = str_split(design, "\\.|_")[[1]]
+    nums = parse_number(des)
+    levels = nums[[1]]
+    if ( levels == 3 ) {
+      l3 = substr( des[3], 3, 4)
+      l2 = substr( des[3], 6, 8 )
+    } else {
+      l2 = substr( des[3], 2, 4 )
+      l3 = NULL
+    }
+    list( levels = levels,
+          rand_level = nums[[2]],
+          model2 = l2,
+          model3 = l3
+          )
+}
+
+
 scat = function( str, ... ) {
   cat( sprintf( str, ... ) )
 }
