@@ -4,7 +4,7 @@
 \alias{update.pumpresult}
 \title{Update a pump call, tweaking some parameters}
 \usage{
-\method{update}{pumpresult}(x, ...)
+\method{update}{pumpresult}(x, type = NULL, ...)
 }
 \arguments{
 \item{x}{Pump result object.}

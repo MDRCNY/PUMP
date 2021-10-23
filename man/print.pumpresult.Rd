@@ -4,7 +4,7 @@
 \alias{print.pumpresult}
 \title{Pretty print pump result}
 \usage{
-\method{print}{pumpresult}(x, n = 10, ...)
+\method{print}{pumpresult}(x, n = 10, no_header = FALSE, ...)
 }
 \arguments{
 \item{x}{A pumpresult object.}
@@ -21,7 +21,8 @@ Other pumpresult:
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},
-\code{\link{power_curve}()},
-\code{\link{search_path}()}
+\code{\link{pump_type}()},
+\code{\link{search_path}()},
+\code{\link{summary.pumpresult}()}
 }
 \concept{pumpresult}

@@ -2,7 +2,7 @@
 title: "Demo and discussion of the pump_sample method"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pump_sample_demo}
+  %\VignetteIndexEntry{Demo and discussion of the pump_sample method}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

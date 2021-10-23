@@ -21,7 +21,8 @@ Other pumpresult:
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},
-\code{\link{power_curve}()},
-\code{\link{print.pumpresult}()}
+\code{\link{print.pumpresult}()},
+\code{\link{pump_type}()},
+\code{\link{summary.pumpresult}()}
 }
 \concept{pumpresult}

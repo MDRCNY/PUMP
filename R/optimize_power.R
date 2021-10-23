@@ -26,8 +26,14 @@
 #'
 #' @param cl cluster object to use for parallel processing
 #' @param max.steps how many steps allowed before terminating
-#' @param max.tnum maximum number of samples for a single step (other than the final check step).
+#' @param max.tnum maximum number of samples for a single step (other than the
+#'   final check step).
 #' @param final.tnum number of samples for final draw
+#' @param grid.only TRUE means generate a grid from start.low to start.high, but
+#'   do not do iterative search. (Useful for mapping out the power curve rather
+#'   than identifying a point of particular power).
+#' @param grid.size Number of points to check in initial search grid.  Grid will
+#'   be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).
 #'
 #' @return power
 optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
@@ -39,7 +45,9 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
                            omega.2 = 0, omega.3 = 0, rho,
                            B = NULL, cl = NULL,
                            max.steps = 20, max.tnum = 2000, final.tnum = 4*max.tnum,
-                           give.warnings = FALSE)
+                           give.warnings = FALSE,
+                           grid.only = FALSE,
+                           grid.size = 5 )
 {
   
   # Helper function to call pump_power for our search and give back the power results
@@ -75,6 +83,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return(pt.power.results)
   }
   
+  # Bundle power_check results in the data frame
   power_check_df <- function( test_point, test_tnum ) {
     current.power.results <- power_check( test_point, test_tnum )
     
@@ -90,14 +99,13 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return( iter.results )
   }
   
-  
-  gen_test_pts <- function(start.low, start.high, tnum, round=FALSE)
-  {
+  # Generate grid of test points (no searching)
+  gen_test_pts <- function(start.low, start.high, tnum, round=FALSE) {
     # generate a series of points to try (on quadratic scale, especially relevant
     # for sample size)
-    pt = seq(sqrt(start.low), sqrt(start.high), length.out = 5)^2
+    pt = seq(sqrt(start.low), sqrt(start.high), length.out = grid.size)^2
     if ( round ) {
-      pt = round(pt)
+      pt = unique( round(pt) )
     }
     test.pts <- data.frame( step = 0, pt = pt, 
                             w = tnum, MTP = MTP,
@@ -136,8 +144,11 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   
   # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
-                           round = search.type != "mdes" )
+                           round = FALSE ) #search.type != "mdes" )
   
+  if ( grid.only ) {
+    return( test.pts )
+  }
   
   # Did we get NAs?  If so, currently crash (but should we impute 0 to keep
   # search going?)
@@ -283,22 +294,54 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       pt = NA, power = NA, w = NA
     )
     test.pts <- dplyr::bind_rows(test.pts, iter.results )
-    final.pts <- NULL
-  } else
-  {
-    final.pts <- gen_test_pts(
-      start.low = start.low,
-      start.high = ceiling(test.pts$pt[nrow(test.pts)]),
-      tnum = max.tnum,
-      round = search.type != "mdes"
-    )
-    final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'power')]
+  } else {
   }
   test.pts = dplyr::relocate( test.pts, step, MTP, target.power, pt, dx, w, power )
-  return(list(test.pts = test.pts, final.pts = final.pts))
+  return( test.pts = test.pts )
 }
 
 
+#' Calculate a power curve for sample size or mdes
+#'
+#' For a grid of points based on a passed sample or mdes pumpresult, estimate
+#' power.
+#'
+#' @param p pumpresult object
+#' @param low Low end of grid
+#' @param high High end of grid
+#' @param grid.size Number of points in grid.
+#'
+#' @return List of powers for grid of points.
+estimate_power_curve = function( p, low = NULL, high = NULL, grid.size = 5, tnum = 2000 ) {
+  stopifnot( is.pumpresult( p ) )
+  stopifnot( pump_type(p) != "power" ) 
+  
+  pp = params(p)
+  pp$numZero = NULL
+  pp$rho.matrix = NULL
+  sp = attr(p, "search.range" )
+  test.pts = search_path(p)
+  if ( is.null( low ) ) {
+    low = sp[[1]]
+  }
+  if ( is.null( high ) ) {
+    high = sp[[2]] * 1.2
+  }
+  search_type = ifelse( pump_type(p) == "mdes",
+                        "mdes",
+                        attr(p, "sample.level" ) )
+  final.pts <- do.call( optimize_power, 
+                        c( design = design(p),
+                           pp, search.type=search_type,
+                           start.low = low,
+                           start.high = high,
+                           start.tnum = tnum,
+                           grid.only = TRUE,
+                           grid.size = grid.size ) )
+  
+  #                      round = search.type != "mdes"
+  final.pts
+}
 
 
 
@@ -576,6 +619,53 @@ find_best_old <- function(test.pts, gamma = 1.5, target.power )
   
   return(try.pt)
 }
+
+
+
+
+#' Examine search path of the power search.
+#'
+#' This will give two plots about how the search narrowed down into the final
+#' estimate.  Can be useful to gauge where convergence went poorly.
+#'
+#' @param pwr Result from the pump_sample or pump_mdes
+#' 
+#' @export
+plot_power_curve <- function( pwr, plot.points=TRUE ) {
+  if ( is.pumpresult( pwr ) ) {
+    test.pts = power_curve(pwr, all = TRUE )
+    x_label = pump_type(pwr)
+  } else {
+    stopifnot( is.data.frame(pwr) )
+    test.pts = pwr
+    x_label = "parameter"
+  }
+  
+  require(gridExtra)
+  require( ggplot2 )
+  tp = dplyr::filter( test.pts, !is.na( power ) )
+  fit = fit_bounded_logistic( tp$pt, tp$power, tp$w )
+  
+  lims = extendrange( r=range( test.pts$power, test.pts$target.power[[1]], na.rm=TRUE ), 0.15 )
+  limsX = extendrange( r=range( test.pts$pt ), 0.15 )
+  plot1 <-  ggplot( test.pts ) +
+    geom_hline( yintercept = test.pts$target.power[[1]], col = "purple" ) +
+    theme_minimal() +
+    stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, par=fit ) } ) +
+    guides(colour="none", size="none") +
+    coord_cartesian( ylim=lims, xlim = limsX ) +
+    scale_x_log10() +
+    labs( x = x_label, y = "power" )
+  
+  if ( plot.points ) {
+    plot1 = plot1 + geom_point( aes( pt, power, size = w ), alpha = 0.5 )
+  }
+  
+  plot1
+  
+}
+
+
 
 
 

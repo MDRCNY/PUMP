@@ -58,14 +58,23 @@ parse_design = function( design ) {
     if ( levels == 3 ) {
       l3 = substr( des[3], 3, 4)
       l2 = substr( des[3], 6, 8 )
-    } else {
+    } else if ( levels == 2 ) {
       l2 = substr( des[3], 2, 4 )
       l3 = NULL
+    } else {
+      l2 = NULL
+      l3 = NULL
     }
+    
+    FE.2 = !is.na(l2) && substring( l2, 0, 1 ) == "f"
+    FE.3 = !is.na(l3) && substring( l3, 0, 1 ) == "f"
+    
     list( levels = levels,
           rand_level = nums[[2]],
           model2 = l2,
-          model3 = l3
+          model3 = l3,
+          FE.2 = FE.2,
+          FE.3 = FE.3
           )
 }
 

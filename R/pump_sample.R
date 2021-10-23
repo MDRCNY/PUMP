@@ -473,6 +473,10 @@ pump_sample <- function(
   # power definition type
   pdef <- parse_power_definition( power.definition, M )
 
+  pow_params = list( target.power = target.power,
+                     power.definition = power.definition,
+                     tol = tol )
+  
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
   {
@@ -500,6 +504,8 @@ pump_sample <- function(
     return( make.pumpresult( ss.results, type="sample", params.list=params.list,
                              tries = NULL,
                              design = design,
+                             sample.level = typesample,
+                             power.params.list = pow_params,
                              just.result.table = just.result.table ) )
   }
 
@@ -641,12 +647,14 @@ pump_sample <- function(
     return( make.pumpresult( ss.results, tries = NULL,
                              type="sample", params.list=params.list,
                              design = design,
+                             sample.level = typesample,
+                             power.params.list = pow_params,
                              just.result.table = just.result.table ) )
   }
 
 
   # search in the grid from min to max.
-  optim.out <- optimize_power(
+  test.pts <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
@@ -661,7 +669,6 @@ pump_sample <- function(
     final.tnum = final.tnum,
     give.warnings = give.optimizer.warnings
   )
-  test.pts <- optim.out$test.pts
 
   # Assemble results
   ss.results <- data.frame(
@@ -686,7 +693,9 @@ pump_sample <- function(
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
                            just.result.table = just.result.table,
                            design = design,
-                           tries = test.pts, final.pts = optim.out$final.pts ) )
+                           sample.level = typesample,
+                           power.params.list = pow_params,
+                           tries = test.pts ) )
 }
 
 

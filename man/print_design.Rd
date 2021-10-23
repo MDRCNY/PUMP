@@ -4,7 +4,10 @@
 \alias{print_design}
 \title{Print design of given pump result object}
 \usage{
-print_design(x)
+print_design(x, insert_results = FALSE, ...)
+}
+\arguments{
+\item{x}{A pumpresult object.}
 }
 \description{
 Print design of given pump result object

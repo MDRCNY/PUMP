@@ -51,7 +51,9 @@ optimize_power(
   max.steps = 20,
   max.tnum = 2000,
   final.tnum = 4 * max.tnum,
-  give.warnings = FALSE
+  give.warnings = FALSE,
+  grid.only = FALSE,
+  grid.size = 5
 )
 }
 \arguments{
@@ -122,9 +124,17 @@ tests.}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.tnum}{maximum number of samples for a single step (other than the final check step).}
+\item{max.tnum}{maximum number of samples for a single step (other than the
+final check step).}
 
 \item{final.tnum}{number of samples for final draw}
+
+\item{grid.only}{TRUE means generate a grid from start.low to start.high, but
+do not do iterative search. (Useful for mapping out the power curve rather
+than identifying a point of particular power).}
+
+\item{grid.size}{Number of points to check in initial search grid.  Grid will
+be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).}
 }
 \value{
 power
