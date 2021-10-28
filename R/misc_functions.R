@@ -148,7 +148,7 @@ validate_inputs <- function( design, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(params.list$MTP %in% designs$Adjustment$Method))
+  if(!(params.list$MTP %in% info$Adjustment$Method))
   {
     stop('Invalid MTP.')
   }

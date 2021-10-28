@@ -31,3 +31,4 @@ vignettes/pump_sample_demo_cache/*
 .DS_Store
 inst/doc
 luke_scratch/
+tests/testthat/Rplots.pdf
