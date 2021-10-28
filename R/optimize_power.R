@@ -130,7 +130,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   }
   
   if ( search.type != "mdes" ) {
-    start.low = pmax( start.low, 1 )
+    start.low <- pmax( start.low, 1 )
   }
   
   
@@ -145,15 +145,15 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
   # stopifnot( all( !is.na( test.pts$power ) ) )
   
   optimizer.warnings <- NULL
-  quiet_find_best = purrr::quietly( find_best )
+  quiet_find_best <- purrr::quietly( find_best )
   
   # Based on initial grid, pick best guess for search.
   ct <- quiet_find_best( test.pts = test.pts, target.power = target.power, gamma = 1.5 )
   if ( !is.null( ct$warnings ) ) {
       optimizer.warnings <- c(optimizer.warnings, ct$warnings)
   }
-  current.try = ct$result$x
-  current.try.dx = ct$result$dx
+  current.try <- ct$result$x
+  current.try.dx <- ct$result$dx
   
   current.power <- 0
   current.tnum <- start.tnum
@@ -213,7 +213,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     }
     
     iter.results <- power_check_df( current.try, current.tnum )
-    iter.results$dx = current.try.dx
+    iter.results$dx <- current.try.dx
     
     # If we are close, check with more iterations and update our current step.
     if(abs(iter.results$power - target.power) < tol && current.tnum < max.tnum )
@@ -222,16 +222,16 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       
       check.results <- power_check_df( current.try, check.power.tnum )
       
-      avg_pow = weighted.mean( x = c(iter.results$power, check.results$power),
+      avg_pow <- weighted.mean( x = c(iter.results$power, check.results$power),
                                w = c(current.tnum, check.power.tnum) )
       
       # Overwrite results with our bonus step.
       iter.results$w <- current.tnum + check.power.tnum
-      iter.results$power = avg_pow
+      iter.results$power <- avg_pow
     } # end if within tolerance
     
     # Record our step.
-    current.power = iter.results$power
+    current.power <- iter.results$power
     test.pts <- dplyr::bind_rows(test.pts, iter.results)
     
     # If still good, or are stuck at minimum, go to a second full check to see
@@ -240,10 +240,9 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
         (!current.try.ok && current.power > target.power + tol) )
     {
       final.power.results <- power_check_df( current.try, final.tnum )
-      final.power.results$dx = current.try.dx      
+      final.power.results$dx <- current.try.dx      
       test.pts <- dplyr::bind_rows(test.pts, final.power.results)
-      current.power = final.power.results$power
-      
+      current.power <- final.power.results$power
     }
     
     if( (abs(current.power - target.power) < tol) || 
@@ -255,8 +254,8 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       if ( !is.null( ct$warnings ) ) {
         optimizer.warnings <- c(optimizer.warnings, ct$warnings)
       }
-      current.try = ct$result$x
-      current.try.dx = ct$result$dx
+      current.try <- ct$result$x
+      current.try.dx <- ct$result$dx
     }
   }
   
@@ -280,7 +279,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     warning(msg)
     iter.results <- data.frame(
       step = step, MTP = MTP, target.power = target.power,
-      pt = NA, power = NA, w = NA
+      pt = NA, power = NA, w = NA, dx = NA
     )
     test.pts <- dplyr::bind_rows(test.pts, iter.results )
     final.pts <- NULL
@@ -292,9 +291,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       tnum = max.tnum,
       round = search.type != "mdes"
     )
-    final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'power')]
+    final.pts <- final.pts[, c('MTP', 'target.power', 'pt', 'w', 'dx', 'power')]
   }
-  test.pts = dplyr::relocate( test.pts, step, MTP, target.power, pt, dx, w, power )
+  test.pts <- dplyr::relocate( test.pts, step, MTP, target.power, pt, dx, w, power )
+  print(test.pts)
   return(list(test.pts = test.pts, final.pts = final.pts))
 }
 
