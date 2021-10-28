@@ -61,6 +61,40 @@ pump_info <- function( comment = TRUE) {
     list( Design = design, Adjustment = adjust, Parameters = params )
 }
 
+#' Return characteristics of a given design code
+#'
+#' @return List of features including number of levels, level of randomization,
+#'   etc.
+#' @family supported_designs
+#' @export
+parse_design <- function( design ) {
+    des <- str_split(design, "\\.|_")[[1]]
+    nums <- parse_number(des)
+    levels <- nums[[1]]
+    if ( levels == 3 ) {
+      l3 <- substr( des[3], 3, 4)
+      l2 <- substr( des[3], 6, 8 )
+    } else if ( levels == 2 ) {
+      l2 <- substr( des[3], 2, 4 )
+      l3 <- NULL
+    } else {
+      l2 <- NULL
+      l3 <- NULL
+    }
+    
+    FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
+    FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
+    
+    list( levels = levels,
+          rand_level = nums[[2]],
+          model2 = l2,
+          model3 = l3,
+          FE.2 = FE.2,
+          FE.3 = FE.3
+          )
+}
+
+
 scat <- function( str, ... ) {
   cat( sprintf( str, ... ) )
 }
@@ -426,21 +460,21 @@ validate_inputs <- function( design, params.list,
 #' @param M number of outcomes
 #' @return information about power type
 parse_power_definition <- function( power.definition, M ) {
-  powertype = list( min = FALSE,
+  powertype <- list( min = FALSE,
                     complete = FALSE,
                     indiv = FALSE )
 
   if ( stringr::str_detect( power.definition, "min" ) ) {
-    powertype$min = TRUE
-    powertype$min_k = readr::parse_number( power.definition )
+    powertype$min <- TRUE
+    powertype$min_k <- readr::parse_number( power.definition )
     stopifnot( is.numeric( powertype$min_k ) )
   } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-    powertype$min = TRUE
-    powertype$complete = TRUE
-    powertype$min_k = M
+    powertype$min <- TRUE
+    powertype$complete <- TRUE
+    powertype$min_k <- M
   } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-    powertype$indiv = TRUE
-    powertype$indiv_k = readr::parse_number( power.definition )
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- readr::parse_number( power.definition )
     stopifnot( is.numeric( powertype$indiv_k ) )
   }
 

@@ -17,10 +17,12 @@ Obtain search path of pump_mdes or pump_sample call
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
 \code{\link{params}()},
-\code{\link{power_curve}()},
-\code{\link{print.pumpresult}()}
+\code{\link{print.pumpresult}()},
+\code{\link{pump_type}()},
+\code{\link{summary.pumpresult}()}
 }
 \concept{pumpresult}

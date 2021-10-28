@@ -16,10 +16,12 @@ Is object a pumpresult object?
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{params}()},
-\code{\link{power_curve}()},
 \code{\link{print.pumpresult}()},
-\code{\link{search_path}()}
+\code{\link{pump_type}()},
+\code{\link{search_path}()},
+\code{\link{summary.pumpresult}()}
 }
 \concept{pumpresult}

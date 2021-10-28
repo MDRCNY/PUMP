@@ -37,9 +37,9 @@ run_grid = function( args, pum_function, verbose = FALSE,
   }
 
   grid$res = purrr::map( grid$res, as.data.frame )
-  grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid = tidyr::unnest( grid, res ) %>% dplyr::arrange( adjustment ) %>%
-    dplyr::relocate( adjustment )
+  #grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
+  grid = tidyr::unnest( grid, res ) %>% dplyr::arrange( MTP ) %>%
+    dplyr::relocate( MTP )
 
   grid
 }

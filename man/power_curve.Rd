@@ -2,25 +2,28 @@
 % Please edit documentation in R/pumpresult.R
 \name{power_curve}
 \alias{power_curve}
-\title{Obtain recheck path (to see rate of power change)}
+\title{Obtain power curve over a range of parameters}
 \usage{
-power_curve(x, ...)
+power_curve(
+  x,
+  all = FALSE,
+  low = NULL,
+  high = NULL,
+  grid.size = 5,
+  tnum = 2000
+)
 }
 \arguments{
-\item{x}{A pumpresult object}
+\item{x}{A pumpresult object.}
 
-\item{Dataframe}{describing power curve.}
+\item{all}{Merge in the search path from the original search.}
+
+\item{low}{Low end of grid}
+
+\item{high}{High end of grid}
+
+\item{grid.size}{Number of points in grid.}
 }
 \description{
-Obtain recheck path (to see rate of power change)
+This is used to see rate of power change.
 }
-\seealso{
-Other pumpresult: 
-\code{\link{as.data.frame.pumpresult}()},
-\code{\link{dim.pumpresult}()},
-\code{\link{is.pumpresult}()},
-\code{\link{params}()},
-\code{\link{print.pumpresult}()},
-\code{\link{search_path}()}
-}
-\concept{pumpresult}

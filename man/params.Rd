@@ -15,10 +15,12 @@ Get parameters for pump result
 \seealso{
 Other pumpresult: 
 \code{\link{as.data.frame.pumpresult}()},
+\code{\link{design}()},
 \code{\link{dim.pumpresult}()},
 \code{\link{is.pumpresult}()},
-\code{\link{power_curve}()},
 \code{\link{print.pumpresult}()},
-\code{\link{search_path}()}
+\code{\link{pump_type}()},
+\code{\link{search_path}()},
+\code{\link{summary.pumpresult}()}
 }
 \concept{pumpresult}
