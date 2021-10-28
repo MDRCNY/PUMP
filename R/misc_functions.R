@@ -35,7 +35,7 @@ pump_info <- function( comment = TRUE) {
                               "BH", "Benjamini-Hochberg",
                               "WY-SS", "Westfall-Young, Single Step",
                               "WY-SD", "Westfall-Young, Step Down" )
-    
+
     params <- tibble::tribble( ~ Parameter, ~ Description,
       "nbar",       "the harmonic mean of the number of level 1 units per level 2 unit (students per school)",
       "J",          "the number of level 2 units (schools)",
@@ -52,7 +52,7 @@ pump_info <- function( comment = TRUE) {
       "omega.2",    "ratio of variance of level 2 average impacts to variance of level 2 random intercepts",
       "omega.3",    "ratio of variance of level 3 average impacts to variance of level 3 random intercepts"
     )
-      
+
     if ( !comment ) {
         design$Comment <- NULL
         adjust$Comment <- NULL
@@ -65,7 +65,7 @@ pump_info <- function( comment = TRUE) {
 #'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
-#' @family supported_designs
+#' @family pump_info
 #' @export
 parse_design <- function( design ) {
     des <- str_split(design, "\\.|_")[[1]]
@@ -81,10 +81,10 @@ parse_design <- function( design ) {
       l2 <- NULL
       l3 <- NULL
     }
-    
+
     FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
     FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
-    
+
     list( levels = levels,
           rand_level = nums[[2]],
           model2 = l2,
@@ -119,12 +119,12 @@ validate_inputs <- function( design, params.list,
   #-------------------------------------------------------#
 
   # allow either supported design names or PowerUp equivalents
-  designs <- supported_designs()
-  if(!(design %in% designs$Design$Code))
+  info <- pump_info()
+  if(!(design %in% info$Design$Code))
   {
-    if(design %in% designs$Design$PowerUp)
+    if(design %in% info$Design$PowerUp)
     {
-      design <- designs$Design$Code[designs$Design$PowerUp == design]
+      design <- info$Design$Code[info$Design$PowerUp == design]
     } else
     {
       stop('Invalid design.')

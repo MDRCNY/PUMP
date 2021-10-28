@@ -13,4 +13,4 @@ List of features including number of levels, level of randomization,
 \description{
 Return characteristics of a given design code
 }
-\concept{supported_designs}
+\concept{pump_info}
