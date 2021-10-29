@@ -10,6 +10,10 @@ validate_inputs(design, params.list, power.call = FALSE, mdes.call = FALSE)
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{params.list}{a list of parameters input by a user}
+
+\item{power.call}{flag for power estimation}
+
+\item{mdes.call}{flag for MDES estimation}
 }
 \value{
 params.list

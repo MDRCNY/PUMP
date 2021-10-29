@@ -30,6 +30,8 @@ including block dummies)}
 \item{numCovar.2}{scalar; number of Level 2 (school) covariates}
 
 \item{numCovar.3}{scalar; number of Level 3 (district) covariates}
+
+\item{validate}{whether or not to validate if output df is <= 0}
 }
 \value{
 Degree of freedom for the design.

@@ -10,12 +10,6 @@ find_best(test.pts, target.power, gamma = 1.5)
 \item{test.pts}{power evaluated at different points}
 
 \item{target.power}{goal power}
-
-\item{start.low}{lower bound}
-
-\item{start.high}{upper bound}
-
-\item{alternate}{alternate point to return if quadratic fit fails}
 }
 \value{
 List of estimate of when curve reaches target.power, derivative of

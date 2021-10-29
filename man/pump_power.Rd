@@ -92,8 +92,11 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+
+\item{rho.matrix}{matrix; alternate specification allowing a full matrix
+of correlations between test statistics. Must specify either
+rho or rho.matrix, but not both.}
 
 \item{tnum}{scalar; the number of test statistics (samples)}
 
@@ -103,6 +106,9 @@ tests.}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
+
+\item{validate.inputs}{whether or not to check whether parameters are valid
+given the choice of design}
 
 \item{long.table}{TRUE for table with power as rows, correction as columns,
 and with more verbose names.  See `transpose_power_table`.}

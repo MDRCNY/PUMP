@@ -175,7 +175,9 @@ It is easy to rerun the above using the Westfall-Young Stepdown correction proce
 Here we update, again, with a full list. We could also have simply provided this list with `pump_power()` initially.
 
 ```{r othercorrections, cache=TRUE}
-p2 <- update( p, MTP = c("Bonferroni", "Holm", "WY-SD") )
+# p2 <- update( p, MTP = c("Bonferroni", "Holm", "WY-SD") )
+# TODO
+p2 <- update( p, MTP = c("Bonferroni", "Holm", "WY-SD"), B = 100)
 ```
 
 ```{r echo = FALSE}
@@ -360,7 +362,9 @@ We recommend checking the mdes and sample-size calculators as the estimation err
 Check by running the found design through `pump_power` to see if we recover or originally targeted power (we can use `update()` again for this):
 
 ```{r samplesizeverify, cache=TRUE}
-p_check <- update( smp, type="power", tnum = 100000 )
+# p_check <- update( smp, type="power", tnum = 100000 )
+# TODO
+p_check <- update( smp, type="power", tnum = 100 )
 ```
 
 ```{r echo = FALSE}

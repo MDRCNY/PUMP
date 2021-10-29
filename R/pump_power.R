@@ -1,25 +1,23 @@
-library( tidyverse )
-
 #' Convert power table from wide to long
 #'
 #' Transform table returned from pump_power to a long format table.
 #'
-transpose_power_table = function( power_table ) {
+transpose_power_table <- function( power_table ) {
 
-  pp = t( power_table )
-  colnames(pp) = pp[1,]
-  pp = pp[-1,]
+  pp <- t( power_table )
+  colnames(pp) <- pp[1,]
+  pp <- pp[-1,]
   #if ( ncol( pp ) > 1 ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
-  pows = rownames(pp)
-  pp = pp %>% # pp[ nrow(pp):1, ] %>%
+  pows <- rownames(pp)
+  pp <- pp %>% # pp[ nrow(pp):1, ] %>%
     as.data.frame() %>%
     tibble::rownames_to_column( var="power" )
 
-  pp$power = stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
-  pp$power = stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
-  pp$power = stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+  pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
+  pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
+  pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
   pp
 }
 
@@ -101,6 +99,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #' conservative) for the design.
 #'
 #' @inheritParams pump_power
+#' @param validate whether or not to validate if output df is <= 0
 #'
 #' @return Degree of freedom for the design.
 #'
@@ -156,11 +155,11 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 #' @param pval.mat matrix of p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param unadj whether p-values are unadjusted or not
+#' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
+get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
   M <- ncol(pval.mat)
   num.nonzero <- sum(ind.nonzero)
@@ -252,8 +251,10 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param omega.3 scalar, or vector of length M; ratio of variance of district-average impacts to
 #'   variance of district-level random intercepts. Default to 0 (no treatment
 #'   variation).
-#' @param rho scalar; assumed correlation between the test statistics of the
-#'   tests.
+#' @param rho scalar; assumed correlation between all pairs of test statistics.
+#' @param rho.matrix matrix; alternate specification allowing a full matrix
+#' of correlations between test statistics. Must specify either
+#' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
 #' @param cl cluster object to use for parallel processing
@@ -262,6 +263,8 @@ get.power.results = function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
 #' @param verbose Print out diagnostics of time, etc.
+#' @param validate.inputs whether or not to check whether parameters are valid
+#' given the choice of design
 #' @return power results for MTP and unadjusted across all definitions of power
 #' @export
 #'
@@ -384,7 +387,7 @@ pump_power <- function(
 
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
   rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
-  rawp.mat <- pt(-abs(rawt.mat), df = t.df) * 2
+  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df) * 2
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
@@ -392,15 +395,15 @@ pump_power <- function(
 
   if (MTP == "Bonferroni"){
 
-    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "bonferroni"))
+    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
   } else if (MTP == "Holm") {
 
-    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "holm"))
+    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
 
   } else if (MTP == "BH") {
 
-    adjp <- t(apply(rawp.mat, 1, p.adjust, method = "hochberg"))
+    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
 
   } else if (MTP == "WY-SS"){
 

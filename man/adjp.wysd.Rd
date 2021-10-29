@@ -4,10 +4,10 @@
 \alias{adjp.wysd}
 \title{Westfall Young Step Down Function}
 \usage{
-adjp.wysd(rawt.matrix, B, Sigma, t.df, cl = NULL)
+adjp.wysd(rawt.mat, B, Sigma, t.df, cl = NULL)
 }
 \arguments{
-\item{rawt.matrix}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
+\item{rawt.mat}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
 
 \item{B}{the number of samples for which test statistics under the alternative hypothesis
 are compared with the distribution (matrix) of test statistics under the complete null (this distribution

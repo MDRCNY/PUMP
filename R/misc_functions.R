@@ -1,3 +1,6 @@
+scat <- function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
 
 #' List all the supported designs of the `pum` package.
 #'
@@ -26,7 +29,7 @@ pump_info <- function( comment = TRUE) {
     "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts"
   )
 
-    design <- tidyr::separate( design, Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
+    design <- tidyr::separate( design, .data$Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
 
     adjust <- tibble::tribble( ~ Method, ~ Comment,
                               "None", "No adjustment",
@@ -68,8 +71,8 @@ pump_info <- function( comment = TRUE) {
 #' @family pump_info
 #' @export
 parse_design <- function( design ) {
-    des <- str_split(design, "\\.|_")[[1]]
-    nums <- parse_number(des)
+    des <- stringr::str_split(design, "\\.|_")[[1]]
+    nums <- readr::parse_number(des)
     levels <- nums[[1]]
     if ( levels == 3 ) {
       l3 <- substr( des[3], 3, 4)
@@ -94,11 +97,6 @@ parse_design <- function( design ) {
           )
 }
 
-
-scat <- function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
@@ -106,6 +104,8 @@ scat <- function( str, ... ) {
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param params.list a list of parameters input by a user
+#' @param power.call flag for power estimation
+#' @param mdes.call flag for MDES estimation
 #'
 #' @return params.list
 #'
@@ -187,7 +187,7 @@ validate_inputs <- function( design, params.list,
         params.list$MDES <- rep( params.list$MDES, params.list$M )
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
-                   MDES, 'M =', params.list$M))
+                   params.list$MDES, 'M =', params.list$M))
       }
     }
   }
@@ -329,7 +329,7 @@ validate_inputs <- function( design, params.list,
     if( ( !is.null(params.list$K) && params.list$K > 1 ) |
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
-        ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
+        ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
     {
       warning('The following parameters are only valid for three-level designs, and will be ignored:\n
               K, numCovar.3, R2.3, ICC.3, omega.3')
@@ -376,7 +376,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # ICC
-  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
+  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && any(params.list$ICC.2 + params.list$ICC.3 > 1))
   {
     stop('ICC.2 + ICC.3 must be <= 1')
   }
@@ -417,17 +417,17 @@ validate_inputs <- function( design, params.list,
   }
 
   # number covariates
-  if(!is.null( params.list$R2.1) && params.list$R2.1 != 0 && params.list$numCovar.1 == 0)
+  if(!is.null( params.list$R2.1) && any(params.list$R2.1 != 0) && params.list$numCovar.1 == 0)
   {
     warning('If nonzero R2 (R2.1, level 1), at least one covariate is assumed. Setting numCovar.1 = 1')
     params.list$numCovar.1 <- 1
   }
-  if(!is.null( params.list$R2.2) && params.list$R2.2 != 0 && params.list$numCovar.2 == 0)
+  if(!is.null( params.list$R2.2) && any(params.list$R2.2 != 0) && params.list$numCovar.2 == 0)
   {
     warning('If nonzero R2 (R2.2, level 2), at least one covariate is assumed. Setting numCovar.2 = 1')
     params.list$numCovar.2 <- 1
   }
-  if(!is.null( params.list$R2.3) && params.list$R2.3 != 0 && params.list$numCovar.3 == 0)
+  if(!is.null( params.list$R2.3) && any(params.list$R2.3 != 0) && params.list$numCovar.3 == 0)
   {
     warning('If nonzero R2 (R2.3, level 3), at least one covariate is assumed. Setting numCovar.3 = 1')
     params.list$numCovar.3 <- 1
@@ -443,7 +443,7 @@ validate_inputs <- function( design, params.list,
 
   if(!is.null(params.list$rho.matrix))
   {
-    if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)
+    if(nrow(params.list$rho.matrix) != params.list$M | ncol(params.list$rho.matrix) != params.list$M)
     {
       stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
     }

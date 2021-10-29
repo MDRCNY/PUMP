@@ -25,6 +25,8 @@ calc.K(
 
 \item{MT}{multiplier}
 
+\item{MDES}{scalar; the MDES value for all outcomes}
+
 \item{J}{scalar; the number of schools}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
@@ -46,9 +48,6 @@ variability}
 
 \item{omega.3}{scalar; ratio of district effect size variability to random effects
 variability}
-
-\item{vector}{of length M; the MDES values for each outcome.
-Can provide single MDES value which will be repeated for the M outcomes.}
 }
 \value{
 K, the number of districts
