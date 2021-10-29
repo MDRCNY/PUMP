@@ -92,8 +92,11 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+
+\item{rho.matrix}{matrix; alternate specification allowing a full matrix
+of correlations between test statistics. Must specify either
+rho or rho.matrix, but not both.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
@@ -109,12 +112,16 @@ variation).}
 
 \item{max.tnum}{maximum cumulative number of samples}
 
+\item{start.tnum}{number of samples for first iteration of search algorithm}
+
 \item{final.tnum}{number of samples for final draw}
 
 \item{cl}{cluster object to use for parallel processing}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
+
+\item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 
 \item{just.result.table}{TRUE means only return final answer, FALSE means
 return search path information.}

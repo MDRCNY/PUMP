@@ -8,6 +8,7 @@
 #' a difference in t-statistic) for all implemented designs
 #'
 #' @inheritParams calc.J
+#' @param J scalar; the number of schools
 #'
 #' @return nbar, the number of individuals needed, or NA if not possible given design
 #' @export
@@ -74,7 +75,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 #' @param MT Number of approximate effect-size unit SEs (adjusted for degrees of
 #'   freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
 #'   2.8 for normal theory.
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome
+#' @param MDES scalar; the MDES values for each outcome
 #'
 #' @return J, the number of schools needed
 #' @export
@@ -135,8 +136,7 @@ calc.J <- function(
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MT multiplier
-#' @param vector of length M; the MDES values for each outcome.
-#'   Can provide single MDES value which will be repeated for the M outcomes.
+#' @param MDES scalar; the MDES value for all outcomes
 #' @param J scalar; the number of schools
 #' @param nbar scalar; the harmonic mean of the number of units per school
 #' @param Tbar scalar; the proportion of samples that are assigned to the treatment
@@ -186,7 +186,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar,
 
 
 
-calc_MT = function( df, alpha, two.tailed, target.power ) {
+calc_MT <- function( df, alpha, two.tailed, target.power ) {
   # t statistics
   T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
   T2 <- abs(qt(target.power, df))
@@ -214,7 +214,6 @@ calc_MT = function( df, alpha, two.tailed, target.power ) {
 #'
 #' @inheritParams pump_power
 #'
-#' @param design a single RCT design (see list/naming convention)
 #' @param typesample type of sample size to calculate: J, K, or nbar
 #' @param target.power target power to arrive at
 #' @param two.tailed whether to calculate two-tailed or one-tailed power
@@ -373,7 +372,7 @@ pump_sample_raw <- function(
   }
 
   if ( i >= max.steps ) {
-    error( "Hit maximum iterations in pump_sample_raw()" )
+    stop( "Hit maximum iterations in pump_sample_raw()" )
   }
 
   if (typesample == "J") {
@@ -402,6 +401,8 @@ pump_sample_raw <- function(
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
+#' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
 #'
 #' @return sample size results
 #' @export
@@ -476,7 +477,7 @@ pump_sample <- function(
   pow_params = list( target.power = target.power,
                      power.definition = power.definition,
                      tol = tol )
-  
+
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
   {
@@ -509,18 +510,15 @@ pump_sample <- function(
                              just.result.table = just.result.table ) )
   }
 
+  msg <- paste("Estimating sample size of type", typesample, "for",
+               MTP, "for target",
+               power.definition, "power of", round(target.power, 4))
+
   # Checks on what we are estimating, sample size
   if ( verbose ) {
-    message(paste("Estimating sample size of type", typesample, "for",
-                  MTP, "for target",
-                  power.definition, "power of", round(target.power, 4)))
+    message(msg)
   }
-
-  # Progress Message for the Type of Sample we are estimating, the type of power
-  # and the targeted power value
   if (is.function(updateProgress)) {
-    msg <- (paste("Estimating", whichSS, "for target", power.definition,
-                  "power of",round(power,4)))
     updateProgress(message = msg)
   }
 

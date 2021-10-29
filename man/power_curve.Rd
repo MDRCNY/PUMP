@@ -22,7 +22,9 @@ power_curve(
 
 \item{high}{High end of grid}
 
-\item{grid.size}{Number of points in grid.}
+\item{grid.size}{Number of points in grid}
+
+\item{tnum}{the number of test statistics (samples)}
 }
 \description{
 This is used to see rate of power change.
