@@ -13,7 +13,9 @@ estimate_power_curve(p, low = NULL, high = NULL, grid.size = 5, tnum = 2000)
 
 \item{high}{High end of grid}
 
-\item{grid.size}{Number of points in grid.}
+\item{grid.size}{Number of points in grid}
+
+\item{tnum}{the number of test statistics (samples)}
 }
 \value{
 List of powers for grid of points.

@@ -93,8 +93,7 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
 }

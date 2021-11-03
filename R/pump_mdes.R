@@ -17,6 +17,7 @@
 #' @param tol tolerance for target power
 #'
 #' @param max.steps how many steps allowed before terminating
+#' @param start.tnum number of samples for first iteration of search algorithm
 #' @param max.tnum maximum cumulative number of samples
 #' @param final.tnum number of samples for final draw
 #' @param cl cluster object to use for parallel processing
@@ -24,6 +25,7 @@
 #'   does not have to input anything)
 #' @param just.result.table TRUE means only return final answer, FALSE means
 #'   return search path information.
+#' @param give.optimizer.warnings whether to return verbose optimizer warnings
 #'
 #' @importFrom stats qt
 #' @return mdes results
@@ -53,9 +55,9 @@ pump_mdes <- function(
   if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
     stop( "target.power, power.definition, or tol (tolerance) not supplied" )
   }
-  pow_params = list( target.power=target.power, 
-                     power.definition = power.definition,
-                     tol = tol )
+  pow_params <- list( target.power=target.power,
+                      power.definition = power.definition,
+                      tol = tol )
 
   # validate input parameters
   params.list <- list(
@@ -102,9 +104,9 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                             design = design, 
+                             design = design,
                              power.params.list = pow_params,
-                              params.list = params.list) )
+                             params.list = params.list) )
   }
 
   # check if max power, then return infinite MDES

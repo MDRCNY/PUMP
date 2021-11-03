@@ -4,10 +4,10 @@
 \alias{adjp.wyss}
 \title{Westfall-Young Single Step Adjustment Function}
 \usage{
-adjp.wyss(rawt.matrix, B, Sigma, t.df)
+adjp.wyss(rawt.mat, B, Sigma, t.df)
 }
 \arguments{
-\item{rawt.matrix}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
+\item{rawt.mat}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
 
 \item{B}{the number of samples for which test statistics under the alternative hypothesis
 are compared with the distribution (matrix) of test statistics under the complete null (this distribution

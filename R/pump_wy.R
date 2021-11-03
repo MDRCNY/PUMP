@@ -91,7 +91,7 @@ get.adjp.minp <- function(ind.B, rawt.order)
 #' alternative hypothesis to all the rows in the matrix of the test statistics
 #' under the complete null.
 #'
-#' @param rawt.matrix a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M
+#' @param rawt.mat a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M
 #' @param B the number of samples for which test statistics under the alternative hypothesis
 #' are compared with the distribution (matrix) of test statistics under the complete null (this distribution
 #' is obtained through drawing test values under H0 with a default of 10,000)
@@ -101,11 +101,11 @@ get.adjp.minp <- function(ind.B, rawt.order)
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
+adjp.wyss <- function(rawt.mat, B, Sigma, t.df) {
 
   # creating the matrix to store the adjusted test values
-  M <- ncol(rawt.matrix)
-  tnum <- nrow(rawt.matrix)
+  M <- ncol(rawt.mat)
+  tnum <- nrow(rawt.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
 
   # looping through all the samples of raw test statistics
@@ -118,7 +118,7 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
 
     # compare the distribution of test statistics
     # under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt.matrix[t,]))
+    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt.mat[t,]))
 
     # calculating the p-value for each sample
     adjp[t,] <- colMeans(ind.B)
@@ -144,7 +144,7 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
 #' @param B the number of samples for which test statistics under the alternative hypothesis
 #' are compared with the distribution (matrix) of test statistics under the complete null (this distribution
 #' is obtained through drawing test values under H0 with a default of 10,000)
-#' @param rawt.matrix a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M
+#' @param rawt.mat a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M
 #' @param B the number of samples for which test statistics under the alternative hypothesis
 #' are compared with the distribution (matrix) of test statistics under the complete null (this distribution
 #' is obtained through drawing test values under H0 with a default of 10,000)
@@ -155,24 +155,24 @@ adjp.wyss <- function(rawt.matrix, B, Sigma, t.df) {
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp.wysd <- function(rawt.matrix, B, Sigma, t.df, cl = NULL) {
+adjp.wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
 
   # creating the matrix to store the adjusted test values
-  M <- ncol(rawt.matrix)
-  tnum <- nrow(rawt.matrix)
+  M <- ncol(rawt.mat)
+  tnum <- nrow(rawt.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
 
   if(!is.null(cl))
   {
-    clusterExport(
+    parallel::clusterExport(
       cl,
-      list("rawt.matrix"),
+      list("rawt.mat"),
       envir = environment()
     )
-    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.matrix), 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(parallel::parApply(cl, abs(rawt.mat), 1, order, decreasing = TRUE))
   } else
   {
-    rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = TRUE))
+    rawt.order.matrix <- t(apply(abs(rawt.mat), 1, order, decreasing = TRUE))
   }
 
   # looping through all the samples of raw test statistics
@@ -183,7 +183,7 @@ adjp.wysd <- function(rawt.matrix, B, Sigma, t.df, cl = NULL) {
     nullt <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
 
     # compare to raw statistics
-    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,]))
+    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.mat[t,], rawt.order = rawt.order.matrix[t,]))
 
     # calculate adjusted p value
     adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
@@ -215,12 +215,12 @@ adjp.wysd <- function(rawt.matrix, B, Sigma, t.df, cl = NULL) {
 #   # s = 1:B
 #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
 #     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[t,], rawt.order = rawt.order.matrix[t,])
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.mat[t,], rawt.order = rawt.order.matrix[t,])
 #   }
 # } else
 # {
 #   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
-#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.matrix[s,], rawt.order = rawt.order.matrix[t,])
+#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.mat[s,], rawt.order = rawt.order.matrix[t,])
 #   }
 # }
 

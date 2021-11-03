@@ -13,7 +13,7 @@ get.power.results(pval.mat, ind.nonzero, alpha, adj = TRUE)
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{unadj}{whether p-values are unadjusted or not}
+\item{adj}{whether p-values are unadjusted or not}
 }
 \value{
 power results for individual, minimum, complete power

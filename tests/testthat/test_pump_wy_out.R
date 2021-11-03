@@ -39,7 +39,7 @@ test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
@@ -77,7 +77,7 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random)", {
@@ -120,7 +120,7 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random)", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random)", {
@@ -163,7 +163,7 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random)", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 
@@ -207,7 +207,7 @@ test_that("WY-SS results are stable for design: d3.1_m3rr2rr (random), small num
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 
@@ -251,7 +251,7 @@ test_that("WY-SD results are stable for design: d3.1_m3rr2rr (random), small num
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 
@@ -291,7 +291,7 @@ test_that("WY-SS results are stable for design: d2.2_m2rc", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })
 
 
@@ -331,5 +331,5 @@ test_that("WY-SD results are stable for design: d2.2_m2rc", {
   pp1
   pp2
 
-  expect_equal( pp1[2,1], pp2[2,1], tol = default.tol)
+  expect_equal( pp1[2,2], pp2[2,2], tol = default.tol)
 })

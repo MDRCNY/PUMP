@@ -1,22 +1,11 @@
-library( furrr )
-library( future )
-
 ##
 ## This file has the "grid" functions that call pump_power, pump_mdes, and pump_sample on multiple combinations
 ##
 
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
-
-
-
-
-run_grid = function( args, pum_function, verbose = FALSE,
+run_grid <- function( args, pum_function, verbose = FALSE,
                      drop_unique_columns, ...,
                      use_furrr = FALSE ) {
-  grid = do.call( tidyr::expand_grid, args )
+  grid <- do.call( tidyr::expand_grid, args )
   if ( verbose ) {
     scat( "Processing %d calls\n", nrow(grid) )
   }
@@ -24,22 +13,23 @@ run_grid = function( args, pum_function, verbose = FALSE,
 
   if ( use_furrr ) {
     # TODO: To be fixed later
-    grid$res = furrr::future_pmap( grid, pum_function, ...,
+    grid$res <- furrr::future_pmap( grid, pum_function, ...,
                                    .progress = verbose )
   } else {
-    grid$res = purrr::pmap( grid, pum_function, ...,
+    grid$res <- purrr::pmap( grid, pum_function, ...,
                             verbose = verbose )
 
   }
 
   if ( drop_unique_columns ) {
-    grid = dplyr::select( grid, any_of( "MDES" ) | where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+    grid <- dplyr::select( grid, dplyr::any_of( "MDES" ) |
+                          where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
 
-  grid$res = purrr::map( grid$res, as.data.frame )
-  #grid$res = purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid = tidyr::unnest( grid, res ) %>% dplyr::arrange( MTP ) %>%
-    dplyr::relocate( MTP )
+  grid$res <- purrr::map( grid$res, as.data.frame )
+  #grid$res <- purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
+  grid <- tidyr::unnest( grid, .data$res ) %>% dplyr::arrange( .data$MTP ) %>%
+    dplyr::relocate( .data$MTP )
 
   grid
 }
@@ -50,19 +40,12 @@ run_grid = function( args, pum_function, verbose = FALSE,
 #' Set up furrr to use all but one core
 #'
 #' @importFrom future plan
+#' @importFrom future multisession
 #' @importFrom parallel detectCores
 #'
 #' @export
-setup_default_parallel_plan = function() {
-
-  parallel::detectCores()
-
-  library(future)
-  library(furrr)
-
-  #plan(multiprocess) # choose an appropriate plan from future package
-  #plan(multicore)
-  future::plan(multisession, workers = parallel::detectCores() - 1 )
+setup_default_parallel_plan <- function() {
+  future::plan(future::multisession, workers = parallel::detectCores() - 1 )
 }
 
 
@@ -110,15 +93,15 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
     stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
   }
 
-  args = list( design=design, M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
+  args <- list( design=design, M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
                Tbar = Tbar, alpha = alpha,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
-  nulls = purrr::map_lgl( args, is.null )
-  args = args[ !nulls ]
+  nulls <- purrr::map_lgl( args, is.null )
+  args <- args[ !nulls ]
 
-  grid = run_grid( args, pum_function=pump_power, verbose=verbose,
+  grid <- run_grid( args, pum_function=pump_power, verbose=verbose,
                    drop_unique_columns = drop_unique_columns,
                    MTP = MTP, ..., use_furrr = use_furrr )
 
@@ -152,15 +135,15 @@ pump_mdes_grid <- function( design, MTP, M,
                             ... ) {
 
 
-  args = list( design=design, M = M, J = J, K = K, nbar = nbar, target.power = target.power,
+  args <- list( design=design, M = M, J = J, K = K, nbar = nbar, target.power = target.power,
                Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
-  nulls = purrr::map_lgl( args, is.null )
-  args = args[ !nulls ]
+  nulls <- purrr::map_lgl( args, is.null )
+  args <- args[ !nulls ]
 
-  grid = run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
+  grid <- run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
                    tol = tol, MTP = MTP, just.result.table = TRUE, use_furrr = use_furrr )
 
@@ -197,15 +180,15 @@ pump_sample_grid <- function( design, MTP, M,
                               ... ) {
 
 
-  args = list( design=design, M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
+  args <- list( design=design, M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
                Tbar = Tbar, alpha = alpha, numZero = numZero,
                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
-  nulls = purrr::map_lgl( args, is.null )
-  args = args[ !nulls ]
+  nulls <- purrr::map_lgl( args, is.null )
+  args <- args[ !nulls ]
 
-  grid = run_grid( args, pum_function = pump_sample, power.definition = power.definition,
+  grid <- run_grid( args, pum_function = pump_sample, power.definition = power.definition,
                    typesample = typesample,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
                    tol = tol, MTP = MTP, just.result.table = TRUE, use_furrr = use_furrr )

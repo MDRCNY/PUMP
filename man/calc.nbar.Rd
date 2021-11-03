@@ -28,7 +28,9 @@ calc.nbar(
 freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
 2.8 for normal theory.}
 
-\item{MDES}{scalar, or vector of length M; the MDES values for each outcome}
+\item{MDES}{scalar; the MDES values for each outcome}
+
+\item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
 

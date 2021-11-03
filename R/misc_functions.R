@@ -1,3 +1,6 @@
+scat <- function( str, ... ) {
+  cat( sprintf( str, ... ) )
+}
 
 #' List all the supported designs of the `pum` package.
 #'
@@ -6,8 +9,8 @@
 #' @param comment = TRUE prints out description of each design or method.  FALSE does not.
 #'
 #' @export
-supported_designs <- function( comment = TRUE) {
-  design = tibble::tribble(
+pump_info <- function( comment = TRUE) {
+  design <- tibble::tribble(
     ~ Code, ~PowerUp, ~ Comment,
     # 1 level design
     "d1.1_m2cc",    "n/a",            "1 lvl, lvl 1 rand / constant intercepts, constant impacts model",
@@ -26,49 +29,65 @@ supported_designs <- function( comment = TRUE) {
     "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts"
   )
 
-    design = tidyr::separate( design, Code, into=c("Design","Model"), remove = FALSE, sep="_" )
+    design <- tidyr::separate( design, .data$Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
 
-    adjust = tibble::tribble( ~ Method, ~ Comment,
+    adjust <- tibble::tribble( ~ Method, ~ Comment,
                               "None", "No adjustment",
                               "Bonferroni", "The classic (and conservative) multiple testing correction",
-                              "Holm", "Bonferroni improved!",
-                              "BH", "Benjamini-Hochberg (False Discovery Rate)",
+                              "Holm", "Step down version of Bonferroni",
+                              "BH", "Benjamini-Hochberg",
                               "WY-SS", "Westfall-Young, Single Step",
                               "WY-SD", "Westfall-Young, Step Down" )
 
+    params <- tibble::tribble( ~ Parameter, ~ Description,
+      "nbar",       "the harmonic mean of the number of level 1 units per level 2 unit (students per school)",
+      "J",          "the number of level 2 units (schools)",
+      "K",          "the number of level 3 units (district)",
+      "Tbar",       "the proportion of units that are assigned to the treatment",
+      "numCovar.1", "number of Level 1 (individual) covariates",
+      "numCovar.2", "number of Level 2 (school) covariates",
+      "numCovar.3", "number of Level 3 (district) covariates",
+      "R2.1",       "percent of variation explained by Level 1 covariates",
+      "R2.2",       "percent of variation explained by Level 2 covariates",
+      "R2.3",       "percent of variation explained by Level 3 covariates",
+      "ICC.2",      "level 2 intraclass correlation",
+      "ICC.3",      "level 3 intraclass correlation",
+      "omega.2",    "ratio of variance of level 2 average impacts to variance of level 2 random intercepts",
+      "omega.3",    "ratio of variance of level 3 average impacts to variance of level 3 random intercepts"
+    )
+
     if ( !comment ) {
-        design$Comment = NULL
-        adjust$Comment = NULL
+        design$Comment <- NULL
+        adjust$Comment <- NULL
     }
 
-    list( Design=design, Adjustment=adjust )
+    list( Design = design, Adjustment = adjust, Parameters = params )
 }
-
 
 #' Return characteristics of a given design code
 #'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
-#' @family supported_designs
+#' @family pump_info
 #' @export
-parse_design = function( design ) {
-    des = str_split(design, "\\.|_")[[1]]
-    nums = parse_number(des)
-    levels = nums[[1]]
+parse_design <- function( design ) {
+    des <- stringr::str_split(design, "\\.|_")[[1]]
+    nums <- readr::parse_number(des)
+    levels <- nums[[1]]
     if ( levels == 3 ) {
-      l3 = substr( des[3], 3, 4)
-      l2 = substr( des[3], 6, 8 )
+      l3 <- substr( des[3], 3, 4)
+      l2 <- substr( des[3], 6, 8 )
     } else if ( levels == 2 ) {
-      l2 = substr( des[3], 2, 4 )
-      l3 = NULL
+      l2 <- substr( des[3], 2, 4 )
+      l3 <- NULL
     } else {
-      l2 = NULL
-      l3 = NULL
+      l2 <- NULL
+      l3 <- NULL
     }
-    
-    FE.2 = !is.na(l2) && substring( l2, 0, 1 ) == "f"
-    FE.3 = !is.na(l3) && substring( l3, 0, 1 ) == "f"
-    
+
+    FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
+    FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
+
     list( levels = levels,
           rand_level = nums[[2]],
           model2 = l2,
@@ -78,11 +97,6 @@ parse_design = function( design ) {
           )
 }
 
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
@@ -90,6 +104,8 @@ scat = function( str, ... ) {
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param params.list a list of parameters input by a user
+#' @param power.call flag for power estimation
+#' @param mdes.call flag for MDES estimation
 #'
 #' @return params.list
 #'
@@ -103,12 +119,12 @@ validate_inputs <- function( design, params.list,
   #-------------------------------------------------------#
 
   # allow either supported design names or PowerUp equivalents
-  designs <- supported_designs()
-  if(!(design %in% designs$Design$Code))
+  info <- pump_info()
+  if(!(design %in% info$Design$Code))
   {
-    if(design %in% designs$Design$PowerUp)
+    if(design %in% info$Design$PowerUp)
     {
-      design <- designs$Design$Code[designs$Design$PowerUp == design]
+      design <- info$Design$Code[info$Design$PowerUp == design]
     } else
     {
       stop('Invalid design.')
@@ -132,7 +148,7 @@ validate_inputs <- function( design, params.list,
     stop( 'Please provide only a single MTP procedure.' )
   }
 
-  if(!(params.list$MTP %in% designs$Adjustment$Method))
+  if(!(params.list$MTP %in% info$Adjustment$Method))
   {
     stop('Invalid MTP.')
   }
@@ -171,7 +187,7 @@ validate_inputs <- function( design, params.list,
         params.list$MDES <- rep( params.list$MDES, params.list$M )
       } else {
         stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
-                   MDES, 'M =', params.list$M))
+                   params.list$MDES, 'M =', params.list$M))
       }
     }
   }
@@ -313,7 +329,7 @@ validate_inputs <- function( design, params.list,
     if( ( !is.null(params.list$K) && params.list$K > 1 ) |
         ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
-        ( !is.null(params.list$omega.3) && params.list$omega.3 > 0 ) )
+        ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
     {
       warning('The following parameters are only valid for three-level designs, and will be ignored:\n
               K, numCovar.3, R2.3, ICC.3, omega.3')
@@ -360,7 +376,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # ICC
-  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && params.list$ICC.2 + params.list$ICC.3 > 1)
+  if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && any(params.list$ICC.2 + params.list$ICC.3 > 1))
   {
     stop('ICC.2 + ICC.3 must be <= 1')
   }
@@ -401,17 +417,17 @@ validate_inputs <- function( design, params.list,
   }
 
   # number covariates
-  if(!is.null( params.list$R2.1) && params.list$R2.1 != 0 && params.list$numCovar.1 == 0)
+  if(!is.null( params.list$R2.1) && any(params.list$R2.1 != 0) && params.list$numCovar.1 == 0)
   {
     warning('If nonzero R2 (R2.1, level 1), at least one covariate is assumed. Setting numCovar.1 = 1')
     params.list$numCovar.1 <- 1
   }
-  if(!is.null( params.list$R2.2) && params.list$R2.2 != 0 && params.list$numCovar.2 == 0)
+  if(!is.null( params.list$R2.2) && any(params.list$R2.2 != 0) && params.list$numCovar.2 == 0)
   {
     warning('If nonzero R2 (R2.2, level 2), at least one covariate is assumed. Setting numCovar.2 = 1')
     params.list$numCovar.2 <- 1
   }
-  if(!is.null( params.list$R2.3) && params.list$R2.3 != 0 && params.list$numCovar.3 == 0)
+  if(!is.null( params.list$R2.3) && any(params.list$R2.3 != 0) && params.list$numCovar.3 == 0)
   {
     warning('If nonzero R2 (R2.3, level 3), at least one covariate is assumed. Setting numCovar.3 = 1')
     params.list$numCovar.3 <- 1
@@ -427,7 +443,7 @@ validate_inputs <- function( design, params.list,
 
   if(!is.null(params.list$rho.matrix))
   {
-    if(nrow(params.list$rho.matrix) != M | ncol(params.list$rho.matrix) != M)
+    if(nrow(params.list$rho.matrix) != params.list$M | ncol(params.list$rho.matrix) != params.list$M)
     {
       stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
     }
@@ -444,21 +460,21 @@ validate_inputs <- function( design, params.list,
 #' @param M number of outcomes
 #' @return information about power type
 parse_power_definition <- function( power.definition, M ) {
-  powertype = list( min = FALSE,
+  powertype <- list( min = FALSE,
                     complete = FALSE,
                     indiv = FALSE )
 
   if ( stringr::str_detect( power.definition, "min" ) ) {
-    powertype$min = TRUE
-    powertype$min_k = readr::parse_number( power.definition )
+    powertype$min <- TRUE
+    powertype$min_k <- readr::parse_number( power.definition )
     stopifnot( is.numeric( powertype$min_k ) )
   } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-    powertype$min = TRUE
-    powertype$complete = TRUE
-    powertype$min_k = M
+    powertype$min <- TRUE
+    powertype$complete <- TRUE
+    powertype$min_k <- M
   } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-    powertype$indiv = TRUE
-    powertype$indiv_k = readr::parse_number( power.definition )
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- readr::parse_number( power.definition )
     stopifnot( is.numeric( powertype$indiv_k ) )
   }
 
