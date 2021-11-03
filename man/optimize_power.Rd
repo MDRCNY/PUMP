@@ -54,7 +54,9 @@ to automatically re-run for each procedure on the list.}
 \item{power.definition}{must be a valid power type outputted by power
 function, i.e. D1indiv, min1, etc.}
 
-\item{tol}{tolerance for target power}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
+controls when the search is done: when estimated power (checked with
+`final.tnum` iterations) is within `tol`, the search stops.}
 
 \item{start.tnum}{number of samples for first iteration of search algorithm}
 

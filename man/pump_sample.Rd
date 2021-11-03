@@ -133,7 +133,9 @@ does not have to input anything)}
 
 \item{max_sample_size_JK}{scalar; default upper bound for J or K for search algorithm}
 
-\item{tol}{tolerance for target power}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
+controls when the search is done: when estimated power (checked with
+`final.tnum` iterations) is within `tol`, the search stops.}
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 

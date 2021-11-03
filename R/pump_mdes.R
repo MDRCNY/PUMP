@@ -14,7 +14,9 @@
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power
 #'   function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance for target power
+#' @param tol tolerance for target power, defaults to 0.01 (1%).  This parameter
+#'   controls when the search is done: when estimated power (checked with
+#'   `final.tnum` iterations) is within `tol`, the search stops.
 #'
 #' @param max.steps how many steps allowed before terminating
 #' @param start.tnum number of samples for first iteration of search algorithm
@@ -30,11 +32,11 @@
 #' @importFrom stats qt
 #' @return mdes results
 #' @export
-#'
+#' 
 
 pump_mdes <- function(
   design, MTP = NULL, M, J, K = 1, numZero = NULL,
-  target.power, power.definition, tol,
+  target.power, power.definition, tol = 0.01,
   nbar, Tbar, alpha,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
@@ -52,9 +54,13 @@ pump_mdes <- function(
           max.tnum, start.tnum, final.tnum, B )
   }
 
-  if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
-    stop( "target.power, power.definition, or tol (tolerance) not supplied" )
+  if ( missing( "target.power" ) ||  missing( "power.definition" )  ) {
+    stop( "target.power or power.definition not supplied" )
   }
+  if ( is.null( "tol" ) ) {
+    stop( "Cannot have NULL tol (tolerance)" )
+  }
+  
   pow_params <- list( target.power=target.power,
                       power.definition = power.definition,
                       tol = tol )
