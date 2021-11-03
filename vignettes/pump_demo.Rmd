@@ -1,14 +1,25 @@
 ---
 title: "Demonstration of the pum-p package"
-output: 
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+header-includes:
+  - \usepackage{setspace}  
+geometry: margin=1.5in
+---
+
+\doublespacing
+
+<!--
+
     rmarkdown::html_vignette
-vignette: >
+    
+    vignette: >
   %\VignetteIndexEntry{Demonstration of the pum-p package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
-editor_options: 
-  chunk_output_type: console
----
+
+-->
 
 
 ```{r initialize, include = FALSE}
