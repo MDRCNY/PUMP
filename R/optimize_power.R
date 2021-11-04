@@ -1,3 +1,6 @@
+
+
+
 #' Optimizes power to help in search for MDES or SS
 #'
 #' @inheritParams pump_power
@@ -621,17 +624,27 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
   fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
 
+  xrng = range( test.pts$pt )
   lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
-  limsX <- grDevices::extendrange( r = range( test.pts$pt ), 0.15 )
+  limsX <- grDevices::extendrange( r = xrng, 0.15 )
+
   plot1 <-  ggplot2::ggplot( test.pts ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[[1]], col = "purple" ) +
     ggplot2::theme_minimal() +
     ggplot2::stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
     ggplot2::guides(colour="none", size="none") +
     ggplot2::coord_cartesian( ylim=lims, xlim = limsX ) +
-    ggplot2::scale_x_log10() +
     ggplot2::labs( x = x_label, y = "power" )
-
+  
+  delrange = diff( xrng )
+  if ( delrange >= 2 && delrange <= 10 ) {
+    xpt = seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
+    plot1 = plot1 +   ggplot2::scale_x_log10( breaks = xpt )
+  } else {
+    plot1 = plot1 +  ggplot2::scale_x_log10()
+  }
+  
+  
   if ( plot.points ) {
     plot1 <- plot1 + ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 )
   }

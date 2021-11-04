@@ -2,100 +2,8 @@ scat <- function( str, ... ) {
   cat( sprintf( str, ... ) )
 }
 
-#' List all the supported designs of the `pum` package.
-#'
-#' List all supported designs, with brief descriptions.
-#'
-#' @param comment = TRUE prints out description of each design or method.  FALSE does not.
-#'
-#' @export
-pump_info <- function( comment = TRUE) {
-  design <- tibble::tribble(
-    ~ Code, ~PowerUp, ~ Comment,
-    # 1 level design
-    "d1.1_m2cc",    "n/a",            "1 lvl, lvl 1 rand / constant intercepts, constant impacts model",
-    # 2 level designs, randomization at level 1
-    "d2.1_m2fc",    "blocked_i1_2c",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
-    "d2.1_m2ff",    "blocked_i1_2f",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
-    "d2.1_m2fr",    "blocked_i1_2r",  "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
-    # 2 lvl design, rand at lvl 2
-    "d2.2_m2rc",    "simple_2c_2r",   "2 lvls, lvl 2 rand / random intercepts, constant impacts",
-    # 3 lvl design, rand at lvl 1
-    "d3.1_m3rr2rr", "blocked_i1_3r",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
-    # 3 lvl design, rand at lvl 2
-    "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
-    "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts",
-    # 3 lvl design, rand at lvl 3
-    "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts"
-  )
 
-    design <- tidyr::separate( design, .data$Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
 
-    adjust <- tibble::tribble( ~ Method, ~ Comment,
-                              "None", "No adjustment",
-                              "Bonferroni", "The classic (and conservative) multiple testing correction",
-                              "Holm", "Step down version of Bonferroni",
-                              "BH", "Benjamini-Hochberg",
-                              "WY-SS", "Westfall-Young, Single Step",
-                              "WY-SD", "Westfall-Young, Step Down" )
-
-    params <- tibble::tribble( ~ Parameter, ~ Description,
-      "nbar",       "the harmonic mean of the number of level 1 units per level 2 unit (students per school)",
-      "J",          "the number of level 2 units (schools)",
-      "K",          "the number of level 3 units (district)",
-      "Tbar",       "the proportion of units that are assigned to the treatment",
-      "numCovar.1", "number of Level 1 (individual) covariates",
-      "numCovar.2", "number of Level 2 (school) covariates",
-      "numCovar.3", "number of Level 3 (district) covariates",
-      "R2.1",       "percent of variation explained by Level 1 covariates",
-      "R2.2",       "percent of variation explained by Level 2 covariates",
-      "R2.3",       "percent of variation explained by Level 3 covariates",
-      "ICC.2",      "level 2 intraclass correlation",
-      "ICC.3",      "level 3 intraclass correlation",
-      "omega.2",    "ratio of variance of level 2 average impacts to variance of level 2 random intercepts",
-      "omega.3",    "ratio of variance of level 3 average impacts to variance of level 3 random intercepts"
-    )
-
-    if ( !comment ) {
-        design$Comment <- NULL
-        adjust$Comment <- NULL
-    }
-
-    list( Design = design, Adjustment = adjust, Parameters = params )
-}
-
-#' Return characteristics of a given design code
-#'
-#' @return List of features including number of levels, level of randomization,
-#'   etc.
-#' @family pump_info
-#' @export
-parse_design <- function( design ) {
-    des <- stringr::str_split(design, "\\.|_")[[1]]
-    nums <- readr::parse_number(des)
-    levels <- nums[[1]]
-    if ( levels == 3 ) {
-      l3 <- substr( des[3], 3, 4)
-      l2 <- substr( des[3], 6, 8 )
-    } else if ( levels == 2 ) {
-      l2 <- substr( des[3], 2, 4 )
-      l3 <- NULL
-    } else {
-      l2 <- NULL
-      l3 <- NULL
-    }
-
-    FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
-    FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
-
-    list( levels = levels,
-          rand_level = nums[[2]],
-          model2 = l2,
-          model3 = l3,
-          FE.2 = FE.2,
-          FE.3 = FE.3
-          )
-}
 
 #' Validates user inputs
 #'
@@ -130,7 +38,9 @@ validate_inputs <- function( design, params.list,
       stop('Invalid design.')
     }
   }
-
+  
+  par_design = parse_design(design)
+  
   if(params.list$M == 1)
   {
     if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
@@ -265,13 +175,16 @@ validate_inputs <- function( design, params.list,
   # Basic checks of data parameters
   #-------------------------------------------------------#
 
-  if( (!is.null( params.list$K ) && params.list$K <= 0) | ( !is.null( params.list$J) && params.list$J <= 0) | params.list$nbar <= 0)
+  if( (!is.null( params.list$K ) && params.list$K <= 0) |
+      ( !is.null( params.list$J) && params.list$J <= 0) | 
+      params.list$nbar <= 0)
   {
     stop('Provided values of J, K, and/or nbar need to be positive.')
   }
 
-  if(params.list$numCovar.1 < 0 | ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |
-     ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
+  if( params.list$numCovar.1 < 0 | 
+      ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |
+      ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
   {
     stop('Please provide non-negative values of your num.Covar parameters')
   }
@@ -319,9 +232,9 @@ validate_inputs <- function( design, params.list,
 
 
   # two level models
-  if(startsWith(design, 'd2') | startsWith(design, 'd1'))
+  if( par_design$levels <= 2 ) 
   {
-    if ( startsWith(design, 'd2') & params.list$J == 1 )
+    if ( par_design$levels == 2 & params.list$J == 1 )
     {
       warning('Two level design with single unit at level 2')
     }
@@ -341,7 +254,7 @@ validate_inputs <- function( design, params.list,
     }
   }
 
-  if(design == 'd3.2_m3ff2rc')
+  if( par_design$levels == 3 && par_design$FE.3 )
   {
     if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
         ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
@@ -354,7 +267,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # three level models
-  if(startsWith(design, 'd3'))
+  if( par_design$levels == 3 )
   {
     if(is.null(params.list$K) || params.list$K < 1 )
     {
@@ -367,7 +280,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # three level models, continued.
-  if(design %in% c('d3.1_m3rr2rr', 'd3.3_m3rc2rc', 'd3.2_m3rr2rc'))
+  if( par_design$levels == 3 && !par_design$FE.3 ) 
   {
     if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
     {
@@ -382,7 +295,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # constant treatment effects models: level 2
-  if(design %in% c('d2.1_m2fc', 'd2.2_m2rc', 'd3.3_mrc2rc', 'd3.2_m3ff2rc'))
+  if( par_design$levels >= 2 && par_design$model2.p[[2]] == 'c' )
   {
     if(any(params.list$omega.2 > 0))
     {
@@ -390,8 +303,9 @@ validate_inputs <- function( design, params.list,
       params.list$omega.2 <- 0
     }
   }
+  
   # constant treatment effects models: level 3
-  if(design %in% c('d3.3_mrc2rc'))
+  if( par_design$levels == 3 && par_design$model3 %in% c('rc', 'cc'))
   {
     if(!is.null(params.list$omega.3) && any(params.list$omega.3 > 0))
     {
@@ -400,15 +314,18 @@ validate_inputs <- function( design, params.list,
     }
   }
 
-  # specific 3 level models
-  if(design %in% c('d3.1_m3rr2rr', 'd3.2_m3ff2rc', 'd3.2_m3rr2rc'))
+  # If 3 level model allows treatment variation, we need omega
+  if( par_design$levels == 3 && par_design$model3.p[2] != 'c' )
   {
     if(is.null(params.list$omega.3))
     {
       stop('Omega.3 is required for this design.')
     }
   }
-  if(design %in% c('d3.1_m3rr2rr', 'd3.2_m3rr2rc'))
+
+  # NOTE: Used to be this:     design %in% c('d3.1_m3rr2rr', 'd3.2_m3rr2rc'))
+  # But shouldn't all three level designs need ICC.3 (possibly = 0, of course).
+  if( par_design$levels == 3 ) 
   {
     if(is.null(params.list$ICC.3))
     {
