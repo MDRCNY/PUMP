@@ -51,7 +51,9 @@ outcomes}
 \item{power.definition}{must be a valid power type outputted by power
 function, i.e. D1indiv, min1, etc.}
 
-\item{tol}{tolerance for target power}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
+controls when the search is done: when estimated power (checked with
+`final.tnum` iterations) is within `tol`, the search stops.}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -95,8 +97,7 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
 }

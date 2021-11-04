@@ -2,7 +2,7 @@
 title: "Demo and discussion of the pump_sample method"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pump_sample_demo}
+  %\VignetteIndexEntry{Demo and discussion of the pump_sample method}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -183,6 +183,11 @@ pc <- power_curve(J1)
 kable(pc)
 ```
 
+```{r, fig.width=7, fig.align="center"}
+plot_power_search(J1)
+```
+
+
 From these results, we can see that we have a combination of estimation randomness and flatness of the power curve contributing to the result.
 For example, a sample size of `25` actually results in a higher power (power = `0.784`) than a larger sample size of `32` (power = `0.767`).
 The fact that the power seems to decrease as the sample size increases is likely not true, and is instead is an artifact of the uncertainty of our power estimation procedure.
@@ -287,7 +292,7 @@ kable(nbar1)
 
 We can examine the search path to see what happened.
 
-```{r}
+```{r, fig.width=8, fig.align="center"}
 plot_power_search(nbar1)
 ```
 

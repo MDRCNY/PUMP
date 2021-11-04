@@ -13,7 +13,7 @@ Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
 Description: This package details provides functions for power calculation, minimum detectable effect size and sample size
     for multiple outcomes. We currently have those functions created for 2-level randomized block.
 Depends:
-     R (>= 3.3.0)
+     R (>= 3.5.0)
 Imports:
      MASS,
      mvtnorm,
@@ -24,11 +24,22 @@ Imports:
      snow,
      RcppEigen,
      lme4,
-     stats,
      here,
      furrr,
      future,
-     magrittr
+     magrittr,
+     ggplot2,
+     plyr,
+     grDevices,
+     stats,
+     purrr,
+     gridExtra,
+     dplyr,
+     readr,
+     stringr,
+     tibble,
+     tidyr,
+     rlang
 Additional_repositories: 
 License: MIT + file LICENSE
 Encoding: UTF-8

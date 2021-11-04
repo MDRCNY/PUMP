@@ -14,9 +14,12 @@
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power
 #'   function, i.e. D1indiv, min1, etc.
-#' @param tol tolerance for target power
+#' @param tol tolerance for target power, defaults to 0.01 (1%).  This parameter
+#'   controls when the search is done: when estimated power (checked with
+#'   `final.tnum` iterations) is within `tol`, the search stops.
 #'
 #' @param max.steps how many steps allowed before terminating
+#' @param start.tnum number of samples for first iteration of search algorithm
 #' @param max.tnum maximum cumulative number of samples
 #' @param final.tnum number of samples for final draw
 #' @param cl cluster object to use for parallel processing
@@ -24,15 +27,16 @@
 #'   does not have to input anything)
 #' @param just.result.table TRUE means only return final answer, FALSE means
 #'   return search path information.
+#' @param give.optimizer.warnings whether to return verbose optimizer warnings
 #'
 #' @importFrom stats qt
 #' @return mdes results
 #' @export
-#'
+#' 
 
 pump_mdes <- function(
   design, MTP = NULL, M, J, K = 1, numZero = NULL,
-  target.power, power.definition, tol,
+  target.power, power.definition, tol = 0.01,
   nbar, Tbar, alpha,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
@@ -50,9 +54,16 @@ pump_mdes <- function(
           max.tnum, start.tnum, final.tnum, B )
   }
 
-  if ( missing( "target.power" ) ||  missing( "power.definition" ) || missing( "tol" ) ) {
-    stop( "target.power, power.definition, or tol (tolerance) not supplied" )
+  if ( missing( "target.power" ) ||  missing( "power.definition" )  ) {
+    stop( "target.power or power.definition not supplied" )
   }
+  if ( is.null( "tol" ) ) {
+    stop( "Cannot have NULL tol (tolerance)" )
+  }
+  
+  pow_params <- list( target.power=target.power,
+                      power.definition = power.definition,
+                      tol = tol )
 
   # validate input parameters
   params.list <- list(
@@ -99,7 +110,9 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                              params.list = params.list) )
+                             design = design,
+                             power.params.list = pow_params,
+                             params.list = params.list) )
   }
 
   # check if max power, then return infinite MDES
@@ -110,6 +123,8 @@ pump_mdes <- function(
     colnames(mdes.results) <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
     return( make.pumpresult( mdes.results,
                              type = "mdes",
+                             design = design,
+                             power.params.list = pow_params,
                              params.list = params.list) )
   }
 
@@ -156,13 +171,17 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, mdes.bf, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
-                              params.list = params.list ) )
+                             design = design,
+                             power.params.list = pow_params,
+                             params.list = params.list ) )
   }
 
   if ( MTP == "None") {
     mdes.results <- data.frame(MTP, mdes.raw, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
+                             design = design,
+                             power.params.list = pow_params,
                              params.list = params.list ) )
   }
 
@@ -209,7 +228,7 @@ pump_mdes <- function(
     mdes.low <- 0
   }
 
-  optim.out <-optimize_power(design, search.type = 'mdes', MTP,
+  test.pts <-optimize_power(design, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
                              start.tnum,
                              start.low = mdes.low, start.high = mdes.high,
@@ -225,8 +244,6 @@ pump_mdes <- function(
                              max.steps = max.steps, max.tnum = max.tnum,
                              final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
 
-  test.pts <- optim.out$test.pts
-
 
   mdes.results <- data.frame(
     MTP,
@@ -237,7 +254,9 @@ pump_mdes <- function(
 
   return( make.pumpresult( mdes.results, type = "mdes",
                            tries = test.pts,
+                           design = design,
                            params.list = params.list,
+                           power.params.list = pow_params,
                            just.result.table = just.result.table  ) )
 }
 

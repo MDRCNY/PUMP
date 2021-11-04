@@ -106,13 +106,13 @@ test_that("p-values match", {
 # test p values across multiple iterations
 #----------------------------------------------------#
 
-rawt.matrix <- rbind(
+rawt.mat <- rbind(
   c(1.5, 2, 3),
   c(0, -1.5, -3)
 )
 
 set.seed(458738957)
-adjp <- adjp.wyss(rawt.matrix = rawt.matrix, B, sigma, t.df)
+adjp <- adjp.wyss(rawt.mat = rawt.mat, B, sigma, t.df)
 
 # null t
 # t = 1
@@ -348,12 +348,12 @@ test_that("Montonicity is correct", {
 # test order matrix
 #----------------------------------------------------#
 
-rawt.matrix = rbind(
+rawt.mat = rbind(
   c(0.8, 0.4, 3),
   c(0.3, 1, 0.1)
 )
 
-rawt.order.matrix <- t(apply(abs(rawt.matrix), 1, order, decreasing = TRUE))
+rawt.order.matrix <- t(apply(abs(rawt.mat), 1, order, decreasing = TRUE))
 exp.rawt.order.matrix <- rbind(
   c(3, 1, 2),
   c(2, 1, 3)
@@ -391,15 +391,15 @@ test_that("P value output matches", {
 #----------------------------------------------------#
 
 #--------------------------#
-rawt.matrix = rbind(
+rawt.mat = rbind(
   c(0.8, -0.4, 3),
   c(0.3, 1, 0.1)
 )
 B <- 100
 set.seed(4335)
-adjp.sd <- adjp.wysd(rawt.matrix, B, sigma, t.df, cl = NULL)
+adjp.sd <- adjp.wysd(rawt.mat, B, sigma, t.df, cl = NULL)
 set.seed(4335)
-adjp.ss <- adjp.wyss(rawt.matrix, B, sigma, t.df)
+adjp.ss <- adjp.wyss(rawt.mat, B, sigma, t.df)
 test_that("Smallest p-value should match", {
   expect_equal(adjp.sd[1,3], adjp.ss[1,3])
 })
@@ -410,7 +410,7 @@ test_that("Smallest p-value should match", {
 
 # calculate by hand
 #--------------------------#
-rawt.matrix = rbind(
+rawt.mat = rbind(
   c(0.8, -0.4, 3),
   c(0.3, 1, 0.1)
 )
@@ -424,7 +424,7 @@ B <- 2
 # [2,] -1.0086968 -0.6327400480  0.8786953
 
 set.seed(4334)
-adjp <- adjp.wysd(rawt.matrix, B, sigma, t.df, cl = NULL)
+adjp <- adjp.wysd(rawt.mat, B, sigma, t.df, cl = NULL)
 exp.adjp = rbind(
   c(0.5, 0.5, 0),
   c(1, 0.5, 1)

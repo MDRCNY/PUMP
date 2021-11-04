@@ -31,7 +31,6 @@ pump_sample(
   rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
-  tnum = 10000,
   B = 1000,
   max.steps = 20,
   max.tnum = 2000,
@@ -77,6 +76,8 @@ function, i.e. D1indiv, min1, etc.}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
+\item{two.tailed}{whether or not to do calculate two tailed or one tailed power.}
+
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
 
@@ -100,8 +101,11 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+
+\item{rho.matrix}{matrix; alternate specification allowing a full matrix
+of correlations between test statistics. Must specify either
+rho or rho.matrix, but not both.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
@@ -117,6 +121,8 @@ variation).}
 
 \item{max.tnum}{maximum cumulative number of samples}
 
+\item{start.tnum}{number of samples for first iteration of search algorithm}
+
 \item{final.tnum}{number of samples for final draw}
 
 \item{cl}{cluster object to use for parallel processing}
@@ -124,7 +130,15 @@ variation).}
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
 
-\item{tol}{tolerance for target power}
+\item{max_sample_size_nbar}{scalar; default upper bound for nbar for search algorithm}
+
+\item{max_sample_size_JK}{scalar; default upper bound for J or K for search algorithm}
+
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
+controls when the search is done: when estimated power (checked with
+`final.tnum` iterations) is within `tol`, the search stops.}
+
+\item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 
 \item{just.result.table}{TRUE means only return final answer, FALSE means
 return search path information.}

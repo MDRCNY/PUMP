@@ -4,189 +4,10 @@
 
 
 
-#' This function calculates needed nbar to achieve a given power (as represented by
-#' a difference in t-statistic) for all implemented designs
-#'
-#' @inheritParams calc.J
-#'
-#' @return nbar, the number of individuals needed, or NA if not possible given design
-#' @export
-
-calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
-                      R2.2, ICC.2, omega.2,
-                      R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
-
-  if(design %in% c('d1.1_m2cc'))
-  {
-    numr <- (1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J
-    nbar <- (MT/MDES)^2 * numr/denom
-  } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
-  {
-    numr <- (1 - ICC.2) * (1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J
-    nbar <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd2.1_m2fr')
-  {
-    numr <- (1 - ICC.2)*(1 - R2.1)
-    denom <- J * ((MDES/MT)^2) - ICC.2 * omega.2
-    nbar <- numr / (Tbar*(1-Tbar)*denom)
-  } else if (design == 'd3.1_m3rr2rr') {
-    numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- J*K*((MDES/MT)^2) - J*ICC.3*omega.3 - ICC.2*omega.2
-    nbar <- numr / ( Tbar*(1-Tbar)*denom )
-  } else if (design == 'd2.2_m2rc')
-  {
-    numr <- (1 - ICC.2)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
-    nbar <- numr / denom
-  } else if (design == 'd3.3_m3rc2rc')
-  {
-    numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - J * ICC.3 * (1 - R2.3)  - ICC.2 * (1 - R2.2)
-    nbar <- numr / denom
-  } else if (design == 'd3.2_m3ff2rc')
-  {
-    numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
-    nbar <- numr / denom
-  } else if (design == 'd3.2_m3rr2rc')
-  {
-    numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * J * ( K * ((MDES/MT)^2) - ICC.3 * omega.3 ) - ICC.2 * (1 - R2.2)
-    nbar <- numr / denom
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-  nbar <- ifelse( is.na( nbar ) || nbar < 0, NA, nbar )
-  return( nbar )
-}
 
 
 
-#' This function calculates needed J to achieve a given power (as represented by
-#' a difference in t-statistic) for all implemented designs
-#'
-#' @inheritParams pump_power
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MT Number of approximate effect-size unit SEs (adjusted for degrees of
-#'   freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
-#'   2.8 for normal theory.
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome
-#'
-#' @return J, the number of schools needed
-#' @export
-
-calc.J <- function(
-  design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
-  R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
-) {
-
-  if(design %in% c('d1.1_m2cc'))
-  {
-    numr <- (1 - R2.1)
-    denom <- (Tbar * (1 - Tbar) * nbar)
-    J <- (MT/MDES)^2 * numr/denom
-  } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
-  {
-    numr <- (1 - ICC.2) * (1 - R2.1)
-    denom <- (Tbar * (1 - Tbar) * nbar)
-    J <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd2.1_m2fr')
-  {
-    numr <- (1 - ICC.2) * (1 - R2.1)
-    denom <- (Tbar * (1 - Tbar) * nbar)
-    J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) + numr / denom)
-  } else if (design == 'd3.1_m3rr2rr')
-  {
-    numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) + Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
-    denom <- K * (MDES/MT)^2 - ICC.3 * omega.3
-    J <- (1 / (Tbar * (1 - Tbar) * nbar)) * numr/denom
-  } else if (design == 'd2.2_m2rc')
-  {
-    numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2) * (1 - R2.1)
-    denom <- Tbar * (1 - Tbar) * nbar
-    J <- (MT/MDES)^2 * numr/denom
-  } else if (design == 'd3.3_m3rc2rc')
-  {
-    numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- nbar * ( Tbar * (1 - Tbar) * K * (MDES/MT)^2 - ICC.3 * (1 - R2.3) )
-    J <- numr/denom
-  } else if (design == 'd3.2_m3ff2rc')
-  {
-    numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- nbar * Tbar * (1 - Tbar) * K * (MDES/MT)^2
-    J <- numr/denom
-  } else if (design == 'd3.2_m3rr2rc')
-  {
-    numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
-    denom <- nbar * Tbar * (1 - Tbar) * ( K * (MDES/MT)^2 - ICC.3 * omega.3 )
-    J <- numr/denom
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-  return( J )
-}
-
-#' Calculates K, the number of districts
-#'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MT multiplier
-#' @param vector of length M; the MDES values for each outcome.
-#'   Can provide single MDES value which will be repeated for the M outcomes.
-#' @param J scalar; the number of schools
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the treatment
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by Level 3 covariates for each outcome
-#' @param ICC.2 scalar; school intraclass correlation
-#' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect size variability to random effects
-#'   variability
-#' @param omega.3 scalar; ratio of district effect size variability to random effects
-#'   variability
-#'
-#' @return K, the number of districts
-#' @export
-calc.K <- function(design, MT, MDES, J, nbar, Tbar,
-                   R2.1, R2.2, R2.3,
-                   ICC.2, ICC.3,
-                   omega.2, omega.3) {
-
-  K <- NA
-  if(design == 'd3.1_m3rr2rr')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                           (ICC.2 * omega.2) / J +
-                           ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.3_m3rc2rc')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
-                           (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.2_m3ff2rc')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else if (design == 'd3.2_m3rr2rc')
-  {
-    K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
-                           (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-                           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-  } else
-  {
-    stop(paste('Design not implemented:', design))
-  }
-  return(K)
-}
-
-
-
-calc_MT = function( df, alpha, two.tailed, target.power ) {
+calc_MT <- function( df, alpha, two.tailed, target.power ) {
   # t statistics
   T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
   T2 <- abs(qt(target.power, df))
@@ -214,7 +35,6 @@ calc_MT = function( df, alpha, two.tailed, target.power ) {
 #'
 #' @inheritParams pump_power
 #'
-#' @param design a single RCT design (see list/naming convention)
 #' @param typesample type of sample size to calculate: J, K, or nbar
 #' @param target.power target power to arrive at
 #' @param two.tailed whether to calculate two-tailed or one-tailed power
@@ -373,7 +193,7 @@ pump_sample_raw <- function(
   }
 
   if ( i >= max.steps ) {
-    error( "Hit maximum iterations in pump_sample_raw()" )
+    stop( "Hit maximum iterations in pump_sample_raw()" )
   }
 
   if (typesample == "J") {
@@ -401,7 +221,10 @@ pump_sample_raw <- function(
 #' @inheritParams pump_mdes
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
+#' @param two.tailed whether or not to do calculate two tailed or one tailed power.
 #' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
+#' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
 #'
 #' @return sample size results
 #' @export
@@ -418,7 +241,7 @@ pump_sample <- function(
   ICC.2 = 0, ICC.3 = 0,
   rho = NULL, rho.matrix = NULL,
   omega.2 = 0, omega.3 = 0,
-  tnum = 10000, B = 1000,
+  B = 1000,
   max.steps = 20, max.tnum = 2000, start.tnum = 1000, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL,
   max_sample_size_nbar = 10000,
@@ -473,6 +296,10 @@ pump_sample <- function(
   # power definition type
   pdef <- parse_power_definition( power.definition, M )
 
+  pow_params = list( target.power = target.power,
+                     power.definition = power.definition,
+                     tol = tol )
+
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
   {
@@ -499,21 +326,21 @@ pump_sample <- function(
     colnames(ss.results) <- output.colnames
     return( make.pumpresult( ss.results, type="sample", params.list=params.list,
                              tries = NULL,
+                             design = design,
+                             sample.level = typesample,
+                             power.params.list = pow_params,
                              just.result.table = just.result.table ) )
   }
 
+  msg <- paste("Estimating sample size of type", typesample, "for",
+               MTP, "for target",
+               power.definition, "power of", round(target.power, 4))
+
   # Checks on what we are estimating, sample size
   if ( verbose ) {
-    message(paste("Estimating sample size of type", typesample, "for",
-                  MTP, "for target",
-                  power.definition, "power of", round(target.power, 4)))
+    message(msg)
   }
-
-  # Progress Message for the Type of Sample we are estimating, the type of power
-  # and the targeted power value
   if (is.function(updateProgress)) {
-    msg <- (paste("Estimating", whichSS, "for target", power.definition,
-                  "power of",round(power,4)))
     updateProgress(message = msg)
   }
 
@@ -639,12 +466,15 @@ pump_sample <- function(
     colnames(ss.results) <- output.colnames
     return( make.pumpresult( ss.results, tries = NULL,
                              type="sample", params.list=params.list,
+                             design = design,
+                             sample.level = typesample,
+                             power.params.list = pow_params,
                              just.result.table = just.result.table ) )
   }
 
 
   # search in the grid from min to max.
-  optim.out <- optimize_power(
+  test.pts <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
@@ -659,7 +489,6 @@ pump_sample <- function(
     final.tnum = final.tnum,
     give.warnings = give.optimizer.warnings
   )
-  test.pts <- optim.out$test.pts
 
   # Assemble results
   ss.results <- data.frame(
@@ -683,7 +512,10 @@ pump_sample <- function(
 
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
                            just.result.table = just.result.table,
-                           tries = test.pts, final.pts = optim.out$final.pts ) )
+                           design = design,
+                           sample.level = typesample,
+                           power.params.list = pow_params,
+                           tries = test.pts ) )
 }
 
 

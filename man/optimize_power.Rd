@@ -2,21 +2,7 @@
 % Please edit documentation in R/optimize_power.R
 \name{optimize_power}
 \alias{optimize_power}
-\title{#' Midpoint function
-#'
-#' Calculating the midpoint between the lower and upper bound by calculating
-#' half the distance between the two and adding the lower bound to it. The
-#' function is a helper function in determining the MDES that falls within
-#' acceptable power range.
-#'
-#' @param lower lower bound
-#' @param upper upper bound
-#' @importFrom stats dist
-#' @return returns midpoint value
-midpoint <- function(lower, upper) {
-  return(lower + dist(c(lower, upper))[[1]]/2)
-}
-Optimizes power to help in search for MDES or SS}
+\title{Optimizes power to help in search for MDES or SS}
 \usage{
 optimize_power(
   design,
@@ -51,21 +37,34 @@ optimize_power(
   max.steps = 20,
   max.tnum = 2000,
   final.tnum = 4 * max.tnum,
-  give.warnings = FALSE
+  give.warnings = FALSE,
+  grid.only = FALSE,
+  grid.size = 5
 )
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
-\item{search.type}{options: MDES, J, K (nbar not currently supported)}
+\item{search.type}{type of optimization search being conducted. Options: K, J, nbar, mdes}
 
-\item{MTP}{a single multiple adjustment procedure of interest. Supported
-options: Bonferroni, BH, Holm, WY-SS, WY-SD}
+\item{MTP}{Multiple adjustment procedure of interest. Supported options:
+none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+to automatically re-run for each procedure on the list.}
 
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
 function, i.e. D1indiv, min1, etc.}
+
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
+controls when the search is done: when estimated power (checked with
+`final.tnum` iterations) is within `tol`, the search stops.}
+
+\item{start.tnum}{number of samples for first iteration of search algorithm}
+
+\item{start.low}{lower bound for optimization procedure}
+
+\item{start.high}{upper bound for optimization procedure}
 
 \item{MDES}{scalar or vector; the desired MDES values for each outcome. Please
 provide a scalar, a vector of length M, or vector of values for non-zero
@@ -113,8 +112,7 @@ variation).}
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
-\item{rho}{scalar; assumed correlation between the test statistics of the
-tests.}
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
@@ -122,27 +120,22 @@ tests.}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.tnum}{maximum number of samples for a single step (other than the final check step).}
+\item{max.tnum}{maximum cumulative number of samples}
 
 \item{final.tnum}{number of samples for final draw}
+
+\item{give.warnings}{whether to return optimizer warnings}
+
+\item{grid.only}{TRUE means generate a grid from start.low to start.high, but
+do not do iterative search. (Useful for mapping out the power curve rather
+than identifying a point of particular power).}
+
+\item{grid.size}{Number of points to check in initial search grid.  Grid will
+be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).}
 }
 \value{
 power
 }
 \description{
-#' Midpoint function
-#'
-#' Calculating the midpoint between the lower and upper bound by calculating
-#' half the distance between the two and adding the lower bound to it. The
-#' function is a helper function in determining the MDES that falls within
-#' acceptable power range.
-#'
-#' @param lower lower bound
-#' @param upper upper bound
-#' @importFrom stats dist
-#' @return returns midpoint value
-midpoint <- function(lower, upper) {
-  return(lower + dist(c(lower, upper))[[1]]/2)
-}
 Optimizes power to help in search for MDES or SS
 }
