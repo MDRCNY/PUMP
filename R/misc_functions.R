@@ -393,7 +393,7 @@ validate_inputs <- function( design, params.list,
   # constant treatment effects models: level 3
   if(design %in% c('d3.3_mrc2rc'))
   {
-    if(!is.null(params.list$omega.3) && params.list$omega.3 > 0)
+    if(!is.null(params.list$omega.3) && any(params.list$omega.3 > 0))
     {
       warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
       params.list$omega.3 <- 0

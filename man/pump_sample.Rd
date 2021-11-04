@@ -31,7 +31,6 @@ pump_sample(
   rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
-  tnum = 10000,
   B = 1000,
   max.steps = 20,
   max.tnum = 2000,
@@ -76,6 +75,8 @@ provide NumZero + length(MDES) = M}
 function, i.e. D1indiv, min1, etc.}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
+
+\item{two.tailed}{whether or not to do calculate two tailed or one tailed power.}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

@@ -2,11 +2,10 @@
 #'
 #' @inheritParams pump_power
 #' @inheritParams pump_sample
-#'
+#' @param search.type type of optimization search being conducted. Options: K, J, nbar, mdes
 #' @param start.low lower bound for optimization procedure
 #' @param start.high upper bound for optimization procedure
 #' @param give.warnings whether to return optimizer warnings
-#'
 #' @param cl cluster object to use for parallel processing
 #' @param grid.only TRUE means generate a grid from start.low to start.high, but
 #'   do not do iterative search. (Useful for mapping out the power curve rather
@@ -512,90 +511,90 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 
 
 
-#' #' Extract roots from quadratic curve based on given evaluated points
-#' #'
-#' #' @param test.pts power evaluated at different points
-#' #' @param start.low lower bound
-#' #' @param start.high upper bound
-#' #' @param target.power goal power
-#' #' @param alternate alternate point to return if quadratic fit fails
-#' #'
-#' #' @return root of quadratic curve
-#'
-#' find_best_old <- function(test.pts, gamma = 1.5, target.power )
-#' {
-#'   # Get current range of search so far.
-#'   start.low <- min( test.pts$pt )
-#'   start.high <- max( test.pts$pt )
-#'
-#'   # fit quadratic curve
-#'   test.pts$sq_pt <- sqrt( test.pts$pt )
-#'   quad.mod <- lm(
-#'     power ~ 1 + sq_pt + I(sq_pt^2),
-#'     weights = w,
-#'     data = test.pts
-#'   )
-#'
-#'   # extract point where it crosses target power.
-#'   # Our curve is now a x^2 + b x + (c - target.power)
-#'   # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
-#'   # first check if root exists
-#'   cc <- rev( coef( quad.mod ) )
-#'   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-#'
-#'   happy = FALSE
-#'   if ( rt.check > 0 ) {
-#'     # We have a place where our quad line crosses target.power
-#'
-#'     # calculate the two points to try (our two roots)
-#'     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )^2
-#'     hits <- (start.low <= try.pt) & (try.pt <= start.high)
-#'
-#'     if ( sum( hits ) == 1 ) {
-#'       try.pt <- try.pt[hits]
-#'       happy <- TRUE
-#'     } else if ( sum( hits ) == 2 ) {
-#'       # both roots in our range.  Probably flat.  Pick center
-#'       try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
-#'       happy <- TRUE
-#'     } else {
-#'       happy <- FALSE
-#'       # Go to linear
-#'
-#'       # No roots in the original range.  Try extrapolation, if we can stay
-#'       # within gamma of the original range
-#'       try.pt <- sort( try.pt )
-#'       if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
-#'         if ( try.pt[[1]] < start.low / gamma ) {
-#'           try.pt <- try.pt[[2]]
-#'         } else if ( try.pt[[2]] > start.high * gamma ) {
-#'           try.pt <- try.pt[[1]]
-#'         } else {
-#'           try.pt <- ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
-#'         }
-#'         happy <- TRUE
-#'       }
-#'     }
-#'   } else {
-#'     warning( "No root in quadratic model fit" )
-#'   }
-#'
-#'   # If no roots in the original range, and quad extrapolation failed, try linear
-#'   # extrapolation, but stay within gamma of the original range.
-#'   if ( !happy ) {
-#'     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
-#'     cc <- rev( coef( lin.mod ) )
-#'     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-#'
-#'     if ( try.pt < start.low / gamma ) {
-#'       try.pt <- start.low / gamma
-#'     } else if ( try.pt > start.high * gamma ) {
-#'       try.pt <- start.high * gamma
-#'     }
-#'   }
-#'
-#'   return(try.pt)
-#' }
+# #' Extract roots from quadratic curve based on given evaluated points
+# #'
+# #' @param test.pts power evaluated at different points
+# #' @param start.low lower bound
+# #' @param start.high upper bound
+# #' @param target.power goal power
+# #' @param alternate alternate point to return if quadratic fit fails
+# #'
+# #' @return root of quadratic curve
+#
+# find_best_old <- function(test.pts, gamma = 1.5, target.power )
+# {
+#   # Get current range of search so far.
+#   start.low <- min( test.pts$pt )
+#   start.high <- max( test.pts$pt )
+#
+#   # fit quadratic curve
+#   test.pts$sq_pt <- sqrt( test.pts$pt )
+#   quad.mod <- lm(
+#     power ~ 1 + sq_pt + I(sq_pt^2),
+#     weights = w,
+#     data = test.pts
+#   )
+#
+#   # extract point where it crosses target power.
+#   # Our curve is now a x^2 + b x + (c - target.power)
+#   # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
+#   # first check if root exists
+#   cc <- rev( coef( quad.mod ) )
+#   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
+#
+#   happy = FALSE
+#   if ( rt.check > 0 ) {
+#     # We have a place where our quad line crosses target.power
+#
+#     # calculate the two points to try (our two roots)
+#     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )^2
+#     hits <- (start.low <= try.pt) & (try.pt <= start.high)
+#
+#     if ( sum( hits ) == 1 ) {
+#       try.pt <- try.pt[hits]
+#       happy <- TRUE
+#     } else if ( sum( hits ) == 2 ) {
+#       # both roots in our range.  Probably flat.  Pick center
+#       try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
+#       happy <- TRUE
+#     } else {
+#       happy <- FALSE
+#       # Go to linear
+#
+#       # No roots in the original range.  Try extrapolation, if we can stay
+#       # within gamma of the original range
+#       try.pt <- sort( try.pt )
+#       if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
+#         if ( try.pt[[1]] < start.low / gamma ) {
+#           try.pt <- try.pt[[2]]
+#         } else if ( try.pt[[2]] > start.high * gamma ) {
+#           try.pt <- try.pt[[1]]
+#         } else {
+#           try.pt <- ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
+#         }
+#         happy <- TRUE
+#       }
+#     }
+#   } else {
+#     warning( "No root in quadratic model fit" )
+#   }
+#
+#   # If no roots in the original range, and quad extrapolation failed, try linear
+#   # extrapolation, but stay within gamma of the original range.
+#   if ( !happy ) {
+#     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
+#     cc <- rev( coef( lin.mod ) )
+#     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
+#
+#     if ( try.pt < start.low / gamma ) {
+#       try.pt <- start.low / gamma
+#     } else if ( try.pt > start.high * gamma ) {
+#       try.pt <- start.high * gamma
+#     }
+#   }
+#
+#   return(try.pt)
+# }
 
 
 
