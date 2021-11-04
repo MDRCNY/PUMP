@@ -45,6 +45,8 @@ optimize_power(
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
+\item{search.type}{type of optimization search being conducted. Options: K, J, nbar, mdes}
+
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
 none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}

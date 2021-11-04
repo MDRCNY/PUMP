@@ -2,15 +2,7 @@
 % Please edit documentation in R/optimize_power.R
 \name{plot_power_curve}
 \alias{plot_power_curve}
-\title{#' Extract roots from quadratic curve based on given evaluated points
-#'
-#' @param test.pts power evaluated at different points
-#' @param start.low lower bound
-#' @param start.high upper bound
-#' @param target.power goal power
-#' @param alternate alternate point to return if quadratic fit fails
-#'
-#' @return root of quadratic curve}
+\title{Examine search path of the power search.}
 \usage{
 plot_power_curve(pwr, plot.points = TRUE)
 }
@@ -20,8 +12,6 @@ plot_power_curve(pwr, plot.points = TRUE)
 \item{plot.points}{flag; whether to plot individual points on curve}
 }
 \description{
-
-}
-\details{
-
+This will give two plots about how the search narrowed down into the final
+estimate.  Can be useful to gauge where convergence went poorly.
 }
