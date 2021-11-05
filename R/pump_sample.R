@@ -499,13 +499,18 @@ pump_sample <- function(
     msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
     message(msg)
+    flat <- TRUE
+  } else
+  {
+    flat <- FALSE
   }
 
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
                            design = design,
                            sample.level = typesample,
                            power.params.list = pow_params,
-                           tries = test.pts ) )
+                           tries = test.pts,
+                           flat = flat) )
 }
 
 
