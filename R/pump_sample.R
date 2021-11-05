@@ -1,12 +1,6 @@
 
 # Code for the pump_sample method
 
-
-
-
-
-
-
 calc_MT <- function( df, alpha, two.tailed, target.power ) {
   # t statistics
   T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
@@ -247,7 +241,6 @@ pump_sample <- function(
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
   tol = 0.01, give.optimizer.warnings = FALSE,
-  just.result.table = TRUE,
   verbose = FALSE )
 {
 
@@ -328,8 +321,7 @@ pump_sample <- function(
                              tries = NULL,
                              design = design,
                              sample.level = typesample,
-                             power.params.list = pow_params,
-                             just.result.table = just.result.table ) )
+                             power.params.list = pow_params) )
   }
 
   msg <- paste("Estimating sample size of type", typesample, "for",
@@ -468,8 +460,7 @@ pump_sample <- function(
                              type="sample", params.list=params.list,
                              design = design,
                              sample.level = typesample,
-                             power.params.list = pow_params,
-                             just.result.table = just.result.table ) )
+                             power.params.list = pow_params) )
   }
 
 
@@ -511,7 +502,6 @@ pump_sample <- function(
   }
 
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
-                           just.result.table = just.result.table,
                            design = design,
                            sample.level = typesample,
                            power.params.list = pow_params,

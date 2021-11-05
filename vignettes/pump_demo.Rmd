@@ -392,8 +392,7 @@ smp <- pump_sample(
   target.power = 0.80, power.definition = "complete", tol = 0.01,
   MDES = 0.10, M = 3, nbar = 258, K = 21,
   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 3,
-  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4,
-  just.result.table = FALSE
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4
 )
 ```
 

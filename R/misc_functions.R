@@ -38,9 +38,9 @@ validate_inputs <- function( design, params.list,
       stop('Invalid design.')
     }
   }
-  
-  par_design = parse_design(design)
-  
+
+  par_design <- parse_design(design)
+
   if(params.list$M == 1)
   {
     if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
@@ -176,13 +176,13 @@ validate_inputs <- function( design, params.list,
   #-------------------------------------------------------#
 
   if( (!is.null( params.list$K ) && params.list$K <= 0) |
-      ( !is.null( params.list$J) && params.list$J <= 0) | 
+      ( !is.null( params.list$J) && params.list$J <= 0) |
       params.list$nbar <= 0)
   {
     stop('Provided values of J, K, and/or nbar need to be positive.')
   }
 
-  if( params.list$numCovar.1 < 0 | 
+  if( params.list$numCovar.1 < 0 |
       ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |
       ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
   {
@@ -219,7 +219,7 @@ validate_inputs <- function( design, params.list,
   # check for inconsistent user inputs
   #-------------------------------------------------------#
 
-  if( design == 'd1.1_m2cc' ) {
+  if( par_design$levels == 1 ) {
     if ( !is.null( params.list$J ) && params.list$J != 1 ) {
       stop( "Can't have multiple units at 2nd level for the d1.1_m2cc design" )
     }
@@ -232,7 +232,7 @@ validate_inputs <- function( design, params.list,
 
 
   # two level models
-  if( par_design$levels <= 2 ) 
+  if( par_design$levels <= 2 )
   {
     if ( par_design$levels == 2 & params.list$J == 1 )
     {
@@ -280,7 +280,7 @@ validate_inputs <- function( design, params.list,
   }
 
   # three level models, continued.
-  if( par_design$levels == 3 && !par_design$FE.3 ) 
+  if( par_design$levels == 3 && !par_design$FE.3 )
   {
     if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
     {
@@ -303,7 +303,7 @@ validate_inputs <- function( design, params.list,
       params.list$omega.2 <- 0
     }
   }
-  
+
   # constant treatment effects models: level 3
   if( par_design$levels == 3 && par_design$model3 %in% c('rc', 'cc'))
   {
@@ -325,7 +325,7 @@ validate_inputs <- function( design, params.list,
 
   # NOTE: Used to be this:     design %in% c('d3.1_m3rr2rr', 'd3.2_m3rr2rc'))
   # But shouldn't all three level designs need ICC.3 (possibly = 0, of course).
-  if( par_design$levels == 3 ) 
+  if( par_design$levels == 3 )
   {
     if(is.null(params.list$ICC.3))
     {

@@ -25,14 +25,12 @@
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
-#' @param just.result.table TRUE means only return final answer, FALSE means
-#'   return search path information.
 #' @param give.optimizer.warnings whether to return verbose optimizer warnings
 #'
 #' @importFrom stats qt
 #' @return mdes results
 #' @export
-#' 
+#'
 
 pump_mdes <- function(
   design, MTP = NULL, M, J, K = 1, numZero = NULL,
@@ -45,7 +43,6 @@ pump_mdes <- function(
   B = 1000,
   max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE,
-  just.result.table = TRUE,
   verbose = FALSE
 )
 {
@@ -60,7 +57,7 @@ pump_mdes <- function(
   if ( is.null( "tol" ) ) {
     stop( "Cannot have NULL tol (tolerance)" )
   }
-  
+
   pow_params <- list( target.power=target.power,
                       power.definition = power.definition,
                       tol = tol )
@@ -256,8 +253,7 @@ pump_mdes <- function(
                            tries = test.pts,
                            design = design,
                            params.list = params.list,
-                           power.params.list = pow_params,
-                           just.result.table = just.result.table  ) )
+                           power.params.list = pow_params ) )
 }
 
 

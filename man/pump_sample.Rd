@@ -42,7 +42,6 @@ pump_sample(
   max_sample_size_JK = 1000,
   tol = 0.01,
   give.optimizer.warnings = FALSE,
-  just.result.table = TRUE,
   verbose = FALSE
 )
 }
@@ -139,9 +138,6 @@ controls when the search is done: when estimated power (checked with
 `final.tnum` iterations) is within `tol`, the search stops.}
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
-
-\item{just.result.table}{TRUE means only return final answer, FALSE means
-return search path information.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
 }

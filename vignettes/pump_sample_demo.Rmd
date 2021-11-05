@@ -130,8 +130,7 @@ J1 <- pump_sample(
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1,
-    rho = 0.5,
-    just.result.table = FALSE
+    rho = 0.5
 )
 ```
 
@@ -219,8 +218,7 @@ J2 <- pump_sample(
     omega.2 = 0.1, omega.3 = 0.1,
     rho = 0.5,
     start.tnum = 2000,
-    max.tnum = 5000,
-    just.result.table = FALSE
+    max.tnum = 5000
 )
 ```
 
@@ -250,8 +248,7 @@ J3 <- pump_sample(
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1,
     rho = 0.5,
-    tol = 0.005,
-    just.result.table = FALSE
+    tol = 0.005
 )
 ```
 
@@ -314,8 +311,7 @@ nbar1 <- pump_sample(
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
-        omega.2 = 0, omega.3 = 0, rho = 0.5,
-        just.result.table = FALSE
+        omega.2 = 0, omega.3 = 0, rho = 0.5
 )
 ```
 
@@ -394,7 +390,6 @@ nbar2 <- pump_sample(
     R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
     ICC.2 = 0.1, ICC.3 = 0.1,
     omega.2 = 0, omega.3 = 0, rho = 0.5,
-    just.result.table = FALSE,
     max_sample_size_nbar = 100
 )
 ```
@@ -425,8 +420,7 @@ nbar3 <- pump_sample(
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
-        omega.2 = 0, omega.3 = 0, rho = 0.5,
-        just.result.table = FALSE
+        omega.2 = 0, omega.3 = 0, rho = 0.5
 )
 ```
 

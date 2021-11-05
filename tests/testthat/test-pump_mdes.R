@@ -15,7 +15,7 @@ test_that("pump_mdes runs for Bonferroni", {
                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                        max.tnum = 300,
-                       rho = 0.4, just.result.table = FALSE )
+                       rho = 0.4 )
   pmdesB
   expect_true( pmdesB$`Adjusted MDES` > 0 )
   expect_true( abs(pmdesB$`D2indiv power` - 0.80) <  0.01 )
@@ -45,7 +45,7 @@ test_that("pump_mdes runs for Bonferroni", {
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                       max.tnum = 1000,
-                      rho = 0.4, just.result.table = FALSE )
+                      rho = 0.4 )
   pmdesBmin
   expect_true( pmdesBmin$`Adjusted MDES` < pmdesR$`Adjusted MDES` )
   expect_true( abs( pmdesBmin$`min1 power` - 0.80) <  0.01 )
@@ -60,7 +60,7 @@ test_that("pump_mdes runs for Bonferroni", {
                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                            max.tnum = 300,
-                           rho = 0.4, just.result.table = FALSE )
+                           rho = 0.4 )
   pmdes_comp
   expect_true( pmdes_comp$`Adjusted MDES` > pmdesB$`Adjusted MDES` )
   expect_true( abs( pmdes_comp$`complete power` - 0.80) <  0.01 )
@@ -106,7 +106,7 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                       max.tnum = 300,
-                      rho = 0.4, just.result.table = FALSE )
+                      rho = 0.4 )
 
   pmdes
   expect_true( pmdes$`Adjusted MDES` > 0 )
@@ -125,20 +125,19 @@ test_that("pump_mdes runs for D1indiv, Holm", {
 })
 
 
-test_that("pump_mdes runs for d1.1_m2cc", {
+test_that("pump_mdes runs for d1.1_m1c", {
 
   set.seed( 10130103 )
   R2.1 = 0.61
-  pmdes <- pump_mdes(design = "d1.1_m2cc", MTP = "Holm",
+  pmdes <- pump_mdes(design = "d1.1_m1c", MTP = "Holm",
                      target.power = 0.80, power.definition = "min1", tol = 0.02,
                      R2.1 = R2.1, numCovar.1 = 1, J = 1,
                      max.tnum = 1000,
-                     M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5,
-                     just.result.table = FALSE )
+                     M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5)
   pmdes
 
   ES = pmdes$`Adjusted MDES`
-  ppow <- pump_power(design = "d1.1_m2cc", MTP = "Holm", MDES = ES,
+  ppow <- pump_power(design = "d1.1_m1c", MTP = "Holm", MDES = ES,
              R2.1 = R2.1, numCovar.1 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
   ppow
@@ -159,7 +158,7 @@ test_that("No adjustment", {
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                         max.tnum = 300,
-                        rho = 0.4, just.result.table = FALSE )
+                        rho = 0.4 )
 
     expect_error(pmdes <- pump_mdes( design = "d2.1_m2fc",
                         MTP = "None",
@@ -170,7 +169,7 @@ test_that("No adjustment", {
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                         max.tnum = 300,
-                        rho = 0.4, just.result.table = FALSE ))
+                        rho = 0.4 ))
 
 
     pmdes <- pump_mdes( design = "d2.1_m2fc",
@@ -182,7 +181,7 @@ test_that("No adjustment", {
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                         max.tnum = 300,
-                        rho = 0.4, just.result.table = FALSE )
+                        rho = 0.4 )
 })
 
 

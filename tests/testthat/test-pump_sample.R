@@ -154,7 +154,7 @@ test_that("pump_sample 2 level/2 level", {
                         Tbar = 0.50, alpha = 0.05,
                         numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
-                        rho = 0.4, just.result.table = FALSE )
+                        rho = 0.4 )
   ss2
 
   p2 <- pump_power( design = "d2.1_m2fc",
@@ -203,7 +203,7 @@ test_that("sample search when one end is missing", {
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-    rho = 0.2, just.result.table = FALSE ) )
+    rho = 0.2 ) )
   nbar1
   expect_true( !is.na( nbar1$`Sample size` ) )
 
@@ -221,7 +221,7 @@ test_that("sample search when one end is missing", {
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-    rho = 0.2, just.result.table = FALSE) )
+    rho = 0.2 ) )
   nbar2
   expect_true( !is.na( nbar2$`Sample size` ) )
 
@@ -238,7 +238,7 @@ test_that("sample search when one end is missing", {
                                           Tbar = 0.50, alpha = 0.05,
                                           numCovar.1 = 5, numCovar.2 = 1,
                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                                          rho = 0.2, max.tnum = 1000, just.result.table = FALSE ) )
+                                          rho = 0.2, max.tnum = 1000 ) )
   nbar3
   expect_true( is.na( nbar3$`Sample size` ) )
 })

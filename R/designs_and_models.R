@@ -11,7 +11,7 @@ pump_info <- function( comment = TRUE) {
     design <- tibble::tribble(
         ~ Code, ~PowerUp, ~ Comment,
         # 1 level design
-        "d1.1_m2cc",    "n/a",            "1 lvl, lvl 1 rand / constant intercepts, constant impacts model",
+        "d1.1_m1c",     "n/a",            "1 lvl, lvl 1 rand / constant impacts model",
         # 2 level designs, randomization at level 1
         "d2.1_m2fc",    "blocked_i1_2c",  "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
         "d2.1_m2ff",    "blocked_i1_2f",  "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
@@ -22,14 +22,14 @@ pump_info <- function( comment = TRUE) {
         "d3.1_m3rr2rr", "blocked_i1_3r",  "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
         # 3 lvl design, rand at lvl 2
         "d3.2_m3ff2rc", "blocked_c2_3f",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
-        "d3.2_m3fc2rc", "n/a",  "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, constant impact, lvl 2 random intercepts, constant impact",
+        "d3.2_m3fc2rc", "n/a",            "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, constant impact, lvl 2 random intercepts, constant impact",
         "d3.2_m3rr2rc", "blocked_c2_3r",  "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts",
         # 3 lvl design, rand at lvl 3
         "d3.3_m3rc2rc", "simple_c3_3r",   "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts"
     )
-    
+
     design <- tidyr::separate( design, .data$Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
-    
+
     adjust <- tibble::tribble( ~ Method, ~ Comment,
                                "None", "No adjustment",
                                "Bonferroni", "The classic (and conservative) multiple testing correction",
@@ -37,7 +37,7 @@ pump_info <- function( comment = TRUE) {
                                "BH", "Benjamini-Hochberg",
                                "WY-SS", "Westfall-Young, Single Step",
                                "WY-SD", "Westfall-Young, Step Down" )
-    
+
     params <- tibble::tribble( ~ Parameter, ~ Description,
                                "nbar",       "the harmonic mean of the number of level 1 units per level 2 unit (students per school)",
                                "J",          "the number of level 2 units (schools)",
@@ -54,12 +54,12 @@ pump_info <- function( comment = TRUE) {
                                "omega.2",    "ratio of variance of level 2 average impacts to variance of level 2 random intercepts",
                                "omega.3",    "ratio of variance of level 3 average impacts to variance of level 3 random intercepts"
     )
-    
+
     if ( !comment ) {
         design$Comment <- NULL
         adjust$Comment <- NULL
     }
-    
+
     list( Design = design, Adjustment = adjust, Parameters = params )
 }
 
@@ -92,10 +92,10 @@ parse_design <- function( design ) {
         l3 <- NULL
         l3.p <- NULL
     }
-    
+
     FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
     FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
-    
+
     list( levels = levels,
           rand_level = nums[[2]],
           model2 = l2,
@@ -140,8 +140,8 @@ parse_design <- function( design ) {
 #' @export
 
 calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
-    
-    if(design %in% c('d1.1_m2cc'))
+
+    if(design %in% c('d1.1_m1c'))
     {
         Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * nbar) )
     } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
@@ -195,8 +195,8 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #' @export
 
 calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
-    
-    if(design == 'd1.1_m2cc')
+
+    if(design == 'd1.1_m1c')
     {
         df <- J * nbar - numCovar.1 - 1
     } else if(design == 'd2.1_m2fc')
@@ -229,12 +229,12 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
     {
         stop(paste('Design not implemented:', design))
     }
-    
+
     if(validate & df <= 0)
     {
         stop('Invalid design parameters resulting in nonpositive degrees of freedom')
     }
-    
+
     return(df)
 }
 
@@ -254,8 +254,8 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
-    
-    if(design %in% c('d1.1_m2cc'))
+
+    if(design %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J
@@ -323,8 +323,8 @@ calc.J <- function(
     design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
-    
-    if(design %in% c('d1.1_m2cc'))
+
+    if(design %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
@@ -395,7 +395,7 @@ calc.K <- function(design, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
                    omega.2, omega.3) {
-    
+
     K <- NA
     if(design == 'd3.1_m3rr2rr')
     {

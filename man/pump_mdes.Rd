@@ -37,7 +37,6 @@ pump_mdes(
   cl = NULL,
   updateProgress = NULL,
   give.optimizer.warnings = FALSE,
-  just.result.table = TRUE,
   verbose = FALSE
 )
 }
@@ -124,9 +123,6 @@ variation).}
 does not have to input anything)}
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
-
-\item{just.result.table}{TRUE means only return final answer, FALSE means
-return search path information.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
 }
