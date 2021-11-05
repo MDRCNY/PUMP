@@ -310,20 +310,30 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   if ( is.null( high ) ) {
     high <- sp[[2]] * 1.2
   }
+
+  # for Bonferroni
+  if(length(low) == 0)
+  {
+    low <- 0
+  }
+  if(length(high) == 0)
+  {
+    high <- p$`Sample size`
+  }
+
   search_type <- ifelse( pump_type(p) == "mdes",
                          "mdes",
                          attr(p, "sample.level" ) )
   final.pts <- do.call( optimize_power,
                         c( design = design(p),
-                           pp, search.type=search_type,
+                           pp, search.type = search_type,
                            start.low = low,
                            start.high = high,
                            start.tnum = tnum,
                            grid.only = TRUE,
                            grid.size = grid.size ) )
 
-  #                      round = search.type != "mdes"
-  final.pts
+  return(final.pts)
 }
 
 
@@ -622,6 +632,11 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
     x_label <- "parameter"
   }
 
+  if(is.null(test.pts))
+  {
+    stop('Algorithm converged in one iteration. No search path.')
+  }
+
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
   fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
 
@@ -673,6 +688,11 @@ plot_power_search <- function( pwr ) {
     test.pts <- pwr
   } else {
     test.pts <- pwr$test.pts
+  }
+
+  if(is.null(test.pts))
+  {
+    stop('Algorithm converged in one iteration. No search path.')
   }
 
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )

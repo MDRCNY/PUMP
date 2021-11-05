@@ -143,6 +143,64 @@ test_that("Bonferroni for non individual power", {
 } )
 
 
+test_that("plot_power_curve", {
+  ss1 <- pump_sample(   design = "d2.1_m2fc",
+                        MTP = "Bonferroni",
+                        typesample = "J",
+                        nbar = 200,
+                        power.definition = "D1indiv",
+                        M = 3,
+                        MDES = 0.05, target.power = 0.80, tol = 0.01,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
+                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        rho = 0.4 )
+  expect_true(!is.null(plot_power_curve(ss1)))
+
+  ss2 <- pump_sample(   design = "d2.1_m2fc",
+                        MTP = "Holm",
+                        typesample = "J",
+                        nbar = 200,
+                        power.definition = "D1indiv",
+                        M = 3,
+                        MDES = 0.05, target.power = 0.80, tol = 0.01,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
+                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        rho = 0.4 )
+  expect_true(!is.null(plot_power_curve(ss2)))
+} )
+
+
+test_that("plot_power_search", {
+  ss1 <- pump_sample(   design = "d2.1_m2fc",
+                        MTP = "Bonferroni",
+                        typesample = "J",
+                        nbar = 200,
+                        power.definition = "D1indiv",
+                        M = 3,
+                        MDES = 0.05, target.power = 0.80, tol = 0.01,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
+                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        rho = 0.4 )
+  expect_error(plot_power_search(ss1))
+
+  ss2 <- pump_sample(   design = "d2.1_m2fc",
+                        MTP = "Holm",
+                        typesample = "J",
+                        nbar = 200,
+                        power.definition = "D1indiv",
+                        M = 3,
+                        MDES = 0.05, target.power = 0.80, tol = 0.01,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5, numCovar.2 = 1,
+                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        rho = 0.4 )
+  expect_true(!is.null(plot_power_search(ss2)))
+} )
+
+
 test_that("pump_sample 2 level/2 level", {
   ss2 <- pump_sample(   design = "d2.1_m2fc",
                         MTP = "Holm",
