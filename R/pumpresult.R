@@ -96,6 +96,7 @@ make.pumpresult = function( x,
                  design = design,
                  params.list = NULL,
                  tries = NULL,
+                 flat = FALSE,
                  ... ) {
     type <- match.arg(type)
     class(x) <- c( "pumpresult", class(x) )
@@ -111,6 +112,7 @@ make.pumpresult = function( x,
         attr( x, "search.range" ) <- c( min=min( tries$pt, na.rm=TRUE ),
                                         final=tries$pt[ nrow(tries) ],
                                         max=max( tries$pt, na.rm=TRUE ) )
+        attr( x, "flat" ) <- flat
     }
     return( x )
 }

@@ -249,8 +249,20 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
+  if(!is.na(mdes.results$`Adjusted MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  {
+    msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
+    msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
+    message(msg)
+    flat <- TRUE
+  } else
+  {
+    flat <- FALSE
+  }
+
   return( make.pumpresult( mdes.results, type = "mdes",
                            tries = test.pts,
+                           flat = flat,
                            design = design,
                            params.list = params.list,
                            power.params.list = pow_params ) )

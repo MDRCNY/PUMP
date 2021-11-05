@@ -251,6 +251,10 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     }
   }
 
+  # if ( current.try.dx < 0.0001 ) {
+  #   warning( "Derivative flat; very possible estimate is off the mark.  Explore other (smaller) sample sizes" )
+  # }
+
   # collect all warnings
   if(!is.null(optimizer.warnings) & give.warnings)
   {
@@ -261,9 +265,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     warning( "Hit lower limit of what is allowed by degrees of freedom.  Likely overpowered." )
   }
 
-  if ( current.try.dx < 0.0001 ) {
-    warning( "Derivative flat; very possible estimate is off the mark.  Explore other (smaller) sample sizes" )
-  }
+
 
   if( (step == max.steps) & abs(current.power - target.power) > tol) {
     msg <- "Reached maximum iterations without converging on estimate within tolerance.\n"
@@ -274,7 +276,6 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       pt = NA, power = NA, w = NA
     )
     test.pts <- dplyr::bind_rows(test.pts, iter.results )
-  } else {
   }
   test.pts <- dplyr::relocate( test.pts, .data$step, .data$MTP, .data$target.power, .data$pt, .data$dx, .data$w, .data$power )
   return( test.pts = test.pts )
