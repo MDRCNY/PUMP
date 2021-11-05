@@ -13,9 +13,8 @@
 /*.Rcheck/
 # RStudio files
 .Rproj.user/
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+# vignettes
+vignettes/*.R
 vignettes/pump_demo_cache/*
 vignettes/pump_demo_files/*
 vignettes/pump_sample_demo_cache/*

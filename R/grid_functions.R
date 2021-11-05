@@ -145,7 +145,7 @@ pump_mdes_grid <- function( design, MTP, M,
 
   grid <- run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, MTP = MTP, just.result.table = TRUE, use_furrr = use_furrr )
+                   tol = tol, MTP = MTP, use_furrr = use_furrr )
 
   grid
 }
@@ -191,7 +191,7 @@ pump_sample_grid <- function( design, MTP, M,
   grid <- run_grid( args, pum_function = pump_sample, power.definition = power.definition,
                    typesample = typesample,
                    verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, MTP = MTP, just.result.table = TRUE, use_furrr = use_furrr )
+                   tol = tol, MTP = MTP, use_furrr = use_furrr )
 
   grid
 }

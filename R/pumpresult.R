@@ -96,21 +96,18 @@ make.pumpresult = function( x,
                  design = design,
                  params.list = NULL,
                  tries = NULL,
-                 just.result.table = TRUE,
                  ... ) {
-    type = match.arg(type)
-    class(x) = c( "pumpresult", class(x) )
-    attr(x, "type" ) = type
-    attr(x, "params.list") = params.list
-    attr(x, "design") = design
+    type <- match.arg(type)
+    class(x) <- c( "pumpresult", class(x) )
+    attr(x, "type" ) <- type
+    attr(x, "params.list") <- params.list
+    attr(x, "design") <- design
     ll = list(...)
     for ( l in names(ll) ) {
-        attr(x, l) = ll[[ l ]]
+        attr(x, l) <- ll[[ l ]]
     }
     if ( !is.null( tries ) ) {
-        if ( !just.result.table ) {
-           attr( x, "tries" ) = tries
-        }
+        attr( x, "tries" ) <- tries
         attr( x, "search.range" ) <- c( min=min( tries$pt, na.rm=TRUE ),
                                         final=tries$pt[ nrow(tries) ],
                                         max=max( tries$pt, na.rm=TRUE ) )
@@ -299,7 +296,7 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
 
     params = params(x)
     MDESv = params$MDES
-    params = sapply( params, reduce_vec, simplify=FALSE )
+    params = sapply( params, reduce_vec, simplify = FALSE )
 
     design = design(x)
     des = parse_design(design)
@@ -320,12 +317,10 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
         }
     }
 
-    attach( params, warn.conflicts = FALSE)
-
     scat( "%s result: %s design with %s outcomes",
-          result_type, design(x), M )
-    if ( !is.null( numZero ) ) {
-        scat( " (%s zeros)\n", numZero )
+          result_type, design(x), params$M )
+    if ( !is.null( params$numZero ) ) {
+        scat( " (%s zeros)\n", params$numZero )
     } else {
         scat( "\n" )
     }
@@ -340,49 +335,48 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
         scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
     }
 
-    scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n", params$nbar, params$J, params$K, Tbar )
-    scat( "  alpha: %s\t\n", alpha)
+    scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n", params$nbar, params$J, params$K, params$Tbar )
+    scat( "  alpha: %s\t\n", params$alpha)
     scat( "  Level:\n    1: R2: %s (%s covariate)\n",
-          R2.1, numCovar.1 )
+          params$R2.1, params$numCovar.1 )
     if ( des$levels >= 2 ) {
         scat( "    2: ")
         if ( des$FE.2 ) {
             scat( "  fixed effects  " )
         } else {
-            scat( "R2: %s (%s covariate)", R2.2, numCovar.2)
+            scat( "R2: %s (%s covariate)", params$R2.2, params$numCovar.2)
         }
-        scat( "\tICC: %s\tomega: %s\n", ICC.2, omega.2 )
+        scat( "\tICC: %s\tomega: %s\n", params$ICC.2, params$omega.2 )
     }
     if ( des$levels >= 3 ) {
         scat( "    3: ")
         if ( des$FE.3 ) {
             scat( "  fixed effects  " )
         } else {
-            scat( "R2: %s (%s covariate)", R2.3, numCovar.3)
+            scat( "R2: %s (%s covariate)", params$R2.3, params$numCovar.3)
         }
-        scat( "\tICC: %s\tomega: %s\n", ICC.3, omega.3 )
+        scat( "\tICC: %s\tomega: %s\n", params$ICC.3, params$omega.3 )
     }
-    if ( !is.null( rho.matrix ) ) {
+    if ( !is.null( params$rho.matrix ) ) {
         cat( "Rho matrix:\n" )
-        print( rho.matrix )
+        print( params$rho.matrix )
     } else {
-        scat( "  rho = %s\n", rho )
+        scat( "  rho = %s\n", params$rho )
     }
 
     if ( insert_results ) {
         print.pumpresult(x, n = n, no_header=TRUE, ... )
     }
 
-    scat( "\t  (B = %s", B )
+    scat( "\t  (B = %s", params$B )
     if ( exists( "tnum" ) ) {
-        scat( "  tnum = %s", tnum)
+        scat( "  tnum = %s", params$tnum)
     }
     if ( exists( "tol" ) ) {
-        scat( "  tol = %s", tol )
+        scat( "  tol = %s", params$tol )
     }
     scat( ")\n" )
 
-    detach( params )
     invisible( x )
 }
 
