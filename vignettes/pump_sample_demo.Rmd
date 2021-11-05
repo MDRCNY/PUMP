@@ -30,8 +30,11 @@ Let's start with a case of calculating the sample size for a 3-level model.
 To demonstrate some of the challenges of calculating sample size, we start with calculating power for a given set of parameters, and then try to recover those parameters.
 
 
-```{r, cache=TRUE}
+```{r, echo = FALSE}
 set.seed( 101010 )
+```
+
+```{r}
 p <- pump_power(
     design = "d3.1_m3rr2rr",
     MTP = 'Holm',
@@ -51,15 +54,18 @@ p <- pump_power(
 ```
 
 ```{r echo = FALSE}
-print(p)
+kable(p)
 target_power = round( p$indiv.mean[[2]], digits=3 )
 ```
 
 Our individual power using the Holm procedure is estimated as `r target_power`.
 First, let's try to recover $K$, the number of districts, given the power we just found.
 
-```{r, cache=TRUE}
+```{r, echo = FALSE}
 set.seed( 40444040 )
+```
+
+```{r}
 K <- pump_sample(
   design = "d3.1_m3rr2rr",
   typesample = 'K',
@@ -74,25 +80,29 @@ K <- pump_sample(
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1,
   ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5 )
+  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5
+)
 ```
 
 ```{r, echo = FALSE}
-print(K)
+# print(K)
+kable(K)
 ```
 
-We recover a similar value K = `K`, but it is not surprising that we do not recover exactly the same value.
-There are two reasons for this discrepancy.
-First, our power calculations rely on simulations, so they are estimates--and this randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
+We recover a similar value K = `r K[['Sample size']]`, but it is not surprising that we do not recover exactly the same value.
+There are two potential reasons for this discrepancy.
+First, PUMP power calculations rely on simulations, so they are estimates--and this randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
 In this case we have uncertainty in what the actual power is (from our first call) and uncertainty in the power calculations of `pump_sample()` as well.
 
 Second, the search algorithm finds a sample size which is within a certain tolerance of the target power, give or take this estimation uncertainty.
-The default tolerance is $0.01$, meaning we can get any $K$ that has an estimated power within 1\% of our target power.
+The default tolerance is $0.01$, meaning the algorithm will return a value of $K$ that has an estimated power within 1\% of our target power.
 
 These two facts highlight how the output should be interpreted: `pump_sample` finds one possible sample size that would result in a power within the given tolerance of our target power, give or take the estimation error.
 For computational efficiency, `pump_sample` also usually is run with fewer simulation iterations, meaning its estimates are bit more noisy.
 We therefore advise checking `pump_sample`'s work: given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
 We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
+This idea will be explored in the next section.
+
 
 
 
@@ -100,8 +110,11 @@ We also could find that other values of $K$, including smaller values, would res
 
 Now let's turn to calculating the number of schools $J$, given a fixed $K$.
 
-```{r, cache=TRUE}
+```{r, echo = FALSE}
 set.seed( 333434443 )
+```
+
+```{r}
 J1 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'J',
@@ -127,13 +140,25 @@ sp = search_path(J1)
 sp$dx[nrow(sp)] * 4
 ```
 
-```{r}
-print(J1)
+```{r, echo = FALSE}
+# print(J1)
+kable(J1)
 ```
 
 Our $J$ is a bit larger than our original input of `30`.
 Let's examine the source of this discrepancy.
-First note the `dx` column of the printout, above: this is the derivative of the estimated power curve; we see it is not particularly large, meaning a change of $J$ of 4 would result in an estimated change in power of a bit less than 0.01, under our tolerance.
+First, we can print out more detail, including information about the search path the algorithm took to arrive at the final answer.
+
+
+```{r, echo = FALSE}
+print(J1)
+```
+
+At step 0, the algorithm tries a range of possible sample size values, and calculates power for each.
+After step 0, the algorithm fits a model to the data points, and then uses the model to attempt to arrive closer and closer to a sample size achieving the target power.
+
+Note the `dx` column of the printout, above: this is the derivative of the estimated power curve.
+We see it is not particularly large, meaning a change of $J$ of 4 would result in an estimated change in power of a bit less than 0.01, under our tolerance.
 
 We can also plot the path the algorithm took to estimate $J$, which calculates power over a range of possible $J$ values:
 
@@ -141,20 +166,42 @@ We can also plot the path the algorithm took to estimate $J$, which calculates p
 plot_power_search(J1)
 ```
 
-We can also examine the power for a grid of points up to our selected $J$ (this is a second estimation step to verify our results):
-```{r, fig.width=7}
+The first plot shows the sample size against power, e.g. how power varies as sample size changes.
+The remaining plots show information about the steps taken by the search algorithm to arrive at the final results.
+The middle plot shows the calculated power at each step of the algorihtm.
+The final plot shows the value(s) of the sample size tried at each step.
+
+We can also examine the power for a grid of points up to our selected $J$.
+This information is a second estimation step to verify our results.
+It can help us examine whether smaller values of $J$ might result in similar values of power.
+
+```{r, echo = FALSE}
+set.seed( 333434445 )
+```
+
+```{r}
 power_curve(J1)
 ```
 
 From these results, we can see that we have a combination of estimation randomness and flatness of the power curve contributing to the result.
-For example, a sample size of 29 results in a power of `0.769`, even though we initially input a sample size of 30 to get our target power of `0.80.`
-This jump between 29 and 30 is likely larger than reality, and is probably due to estimation error.
+For example, we actually have that a larger sample size has a lower estimated power!
+Power generally increases with sample size, so this pattern is due to estimation error.
+Second, we can see that a variety of sample size values result in relatively similar estimates of power.
 
-We can try running the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
+Finally, we can also visualize this power curve.
+
+```{r, fig.width=5, fig.align="center"}
+plot_power_curve(J1)
+```
+
+To check our sample size estimate, we can try running the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
 The parameter `start.tnum` sets the number of iterations we start with, and `max.tnum` controls the number of test statistics drawn during later iterations as the algorithm refines its estimate.
 
-```{r}
+```{r, echo = FALSE}
 set.seed( 42244 )
+```
+
+```{r}
 J2 <- pump_sample(
     design = "d3.1_m3rr2rr",
     typesample = 'J',
@@ -178,12 +225,13 @@ J2 <- pump_sample(
 ```
 
 ```{r, echo = FALSE}
-print(J2)
+kable(J2)
 ```
 
-With greater precision, we have achieved a sample size closer to our original sample size of 30.
+With greater precision, we have achieved a sample size exactly equal to our original sample size of $30$.
 
-We can also get closer by decreasing our default tolerance from $0.01$:
+We can also get closer by decreasing our default tolerance from $0.01$.
+By decreasing the tolerance, we are enforcing a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
 
 ```{r}
 J3 <- pump_sample(
@@ -202,216 +250,215 @@ J3 <- pump_sample(
     ICC.2 = 0.2, ICC.3 = 0.2,
     omega.2 = 0.1, omega.3 = 0.1,
     rho = 0.5,
-    start.tnum = 2000,
-    max.tnum = 5000,
     tol = 0.005,
     just.result.table = FALSE
 )
 ```
 
 ```{r, echo = FALSE}
-print(J3)
+kable(J3)
 ```
 
-By decreasing the tolerance, we are enforcing a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
-Now we are even closer to the input value of 30!
 
-# Non-convergence
+Once again, we are slightly closer to our original sample size than our initial estimate, but instead we have a sample size of $29$.
 
-Sometimes, the algorithm does not converge on a sample size value.
-If we try the same scenario but try to find `nbar`, it is a more difficult problem, and we are more likely to face convergence issues.
+
+# Flat power curves
+
+For some designs, the power curve can be extremely flat in certain regions.
+This flatness can mean that a wide range of potential sample size values can result in virtually the same power.
+Flat curves typically happen below the top level.
+For example, for a three-level model, we expect very little flatness in `K`, some flatness in `J`, and the highest likelihood for flatness in `nbar`.
+Let's examine a case where we see a flat power curve.
+First, we calculate power for a sample size of `nbar` = $50$.
 
 ```{r, echo = FALSE}
-set.seed( 524235325 )
+set.seed(2344)
 ```
 
 ```{r}
-nbar1 <- pump_sample(
-    design = "d3.1_m3rr2rr",
-    typesample = 'nbar',
+pp1 <- pump_power(
+    design = "d3.3_m3rc2rc",
     MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    K = 15,
-    J = 30,
+    nbar = 50,
+    K = 20,
+    J = 40,
     M = 3,
-    MDES = 0.125,
+    MDES = rep(0.25, 3),
     Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
-    just.result.table = FALSE
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5
 )
 ```
 
 ```{r, echo = FALSE}
-print(nbar1)
+kable(pp1)
 ```
 
-We can examine the search path to see what happened.
+Now, we attempt to recover the `nbar` value given this power.
 
-```{r, fig.width=8, fig.align="center"}
-plot_power_search(nbar1)
+```{r, warning = TRUE}
+nbar1 <- pump_sample(
+        design = "d3.3_m3rc2rc",
+        power.definition = 'D1indiv',
+        target.power = 0.2594,
+        typesample = 'nbar',
+        MTP = 'Holm',
+        K = 20,
+        J = 40,
+        M = 3,
+        MDES = rep(0.25, 3),
+        Tbar = 0.5, alpha = 0.05,
+        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+        ICC.2 = 0.1, ICC.3 = 0.1,
+        omega.2 = 0, omega.3 = 0, rho = 0.5,
+        just.result.table = FALSE
+)
+```
+
+```{r, echo = FALSE}
+kable(nbar1)
+```
+
+The output returns an unexpectedly large sample size!
+We also see a warning message that the derivative is flat.
+
+Given the warning message about the flatness, we examine the power curve plot.
+
+```{r, fig.width=5, fig.align="center"}
+plot_power_curve(nbar1)
 ```
 
 Remember that our original nbar value was 50.
-We can see from this search that the power curve is very flat.
-Values of nbar ranging from around 60 to above 1000 all result in very similar power values!
-With a three level model with substantial variation, including impact variation, at level 2 and level 3, even having perfect estimation of the individual sites will not give us perfect estimation of the superpopulation.
+We can see from this search that the power curve is very flat in some regions.
+With a three level model with substantial variation, at level 2 and level 3, even having perfect estimation of the individual sites will not give us perfect estimation of the superpopulation.
+Thus, above an nbar value of 10, the curve asymptotes--we will never be able to achieve power above a certain threshold by increasing nbar.
+On the other hand, if we want power in the range of the asymptote, a wide variety of sample sizes would result in the same power.
+This explains our result--a sample size of 22,500 will indeed give us the intended power, but a much smaller sample size would also give us sufficient power.
 
-Because the power curve is so flat in the region we are interested in, it can again sometimes help to increase the precision of our estimates to get a better sense of the curve in that region.
-
-```{r}
-nbar2 <- pump_sample(
-    design = "d3.1_m3rr2rr",
-    typesample = 'nbar',
-    MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    start.tnum = 10000,
-    K = 15,
-    J = 30,
-    M = 3,
-    MDES = 0.125,
-    Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
-    just.result.table = FALSE
-)
-```
-
-```{r}
-print(nbar2)
-```
-
-Now we see that our algorithm has converged! 
-
-Let's consider a different scenario to diagnose a different way of fixing convergence issues.
-We will try a different design and model.
-Again, we begin with a power calculation.
-
-```{r}
-p <- pump_power(
-    design = "d3.2_m3ff2rc",
-    MTP = 'Holm',
-    nbar = 50,
-    K = 10,
-    J = 30,
-    M = 3,
-    MDES = rep(0.125, 3),
-    Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5
-)
-```
-
-And we again try calculating the nbar necessary to achieve this power.
+There are two ways to proceed from here.
+First, we can look at the curve, and proceed straight to plugging in sample sizes to the power function to see if the desired power is achieved.
+Let's check a value of $10$ for `nbar`.
 
 ```{r, echo = FALSE}
-set.seed( 245444 )
+set.seed(2344)
 ```
 
 ```{r}
-nbar1 <- pump_sample(
-    design = "d3.2_m3ff2rc",
-    typesample = 'nbar',
+pp2 <- pump_power(
+    design = "d3.3_m3rc2rc",
     MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    K = 10,
-    J = 30,
+    nbar = 10,
+    K = 20,
+    J = 40,
     M = 3,
-    MDES = 0.125,
+    MDES = rep(0.25, 3),
     Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
-    just.result.table = FALSE
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5
 )
 ```
 
 ```{r, echo = FALSE}
-print(nbar1)
+kable(pp2)
 ```
 
-We again see a lack of convergence.
-Let's take a look at the search path.
+We reach a power value pretty close to our intended target!
 
-```{r}
-search_path(nbar1)
-```
-
-Our region of interest is below a sample size of 742, so we can try focusing our efforts in this region.
+Alternatively, we can also constrain the algorithm to focus our efforts in the flat region.
 We can change the argument `max_sample_size_nbar`, which bounds the upper end of our search region.
+Let's try setting the maximum to 100, which is still somewhat conservative based on the curve.
+
+```{r, echo = FALSE}
+set.seed(2344)
+```
 
 ```{r}
 nbar2 <- pump_sample(
-    design = "d3.2_m3ff2rc",
+    design = "d3.3_m3rc2rc",
     typesample = 'nbar',
     MTP = 'Holm',
-    target.power = p$D1indiv[2],
+    target.power = pp1$D1indiv[2],
     power.definition = 'D1indiv',
-    K = 10,
-    J = 30,
+    K = 20,
+    J = 40,
     M = 3,
-    MDES = 0.125,
+    MDES = rep(0.25, 3),
     Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+    numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+    R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+    ICC.2 = 0.1, ICC.3 = 0.1,
+    omega.2 = 0, omega.3 = 0, rho = 0.5,
     just.result.table = FALSE,
-    max_sample_size_nbar = 742
+    max_sample_size_nbar = 100
 )
 ```
 
 ```{r, echo = FALSE}
-print(nbar2)
+kable(nbar2)
 ```
 
-The algorithm has now converged, but it is a much larger sample size than expected! 
-Let's take a look at the power curve.
+We get a sample size estimate that is much more reasonable than our original estimate, but it is still larger than we need to achieve the target power.
 
-```{r}
-power_curve(nbar2)
-```
+# Non-Convergence
 
-We again see both estimation error, and a very flat power curve.
-To try and see if there is a smaller sample size that is valid, we can (1) further limit the max sample size, (2) increase precision, and (3) decrease tolerance.
-We can decrease the upper bound to be our current sample size estimate.
-These changes will slightly slow down the search algorithm.
+Let's return to a scenario very similar to the previous section, but now we request a higher target power.
+In particular, we request a target power of $40\%$, which we know is higher than the point at which the power asymptotes.
 
 ```{r}
 nbar3 <- pump_sample(
-    design = "d3.2_m3ff2rc",
-    typesample = 'nbar',
-    MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    K = 10,
-    J = 30,
-    M = 3,
-    MDES = 0.125,
-    Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0, omega.3 = 0.1, rho = 0.5,
-    just.result.table = FALSE,
-    start.tnum = 2000, max.tnum = 5000,
-    tol = 0.005,
-    max_sample_size_nbar = 101
+        design = "d3.3_m3rc2rc",
+        power.definition = 'D1indiv',
+        target.power = 0.4,
+        typesample = 'nbar',
+        MTP = 'Holm',
+        K = 20,
+        J = 40,
+        M = 3,
+        MDES = rep(0.25, 3),
+        Tbar = 0.5, alpha = 0.05,
+        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+        ICC.2 = 0.1, ICC.3 = 0.1,
+        omega.2 = 0, omega.3 = 0, rho = 0.5,
+        just.result.table = FALSE
 )
 ```
 
 ```{r, echo = FALSE}
-print(nbar3)
+kable(nbar3)
 ```
 
-Now we see a parameter very close to our original value of 50.
+We see that the algorithm returns `NA` as the required sample size.
+Let's examine the power search for more information.
+
+```{r, fig.width=7, fig.align="center"}
+plot_power_search(nbar3)
+```
+
+The first plot shows us the sample size against power.
+We can see that no matter how large `nbar` is, we can never achieve a power above about $0.26$.
+We can see that the algorithm keeps trying larger and larger points until it reaches the maximum number of steps, and returns `NA`. 
+If we want to achieve a power of $0.4$ with this design, we will need to change other parameters, such as increasing $J$ or $K$.
+
+## Note: Non-convergence for feasible designs
+
+In rare cases, the algorithm may not converge even if the design is feasible.
+Thus, the user should always inspect the search path in cases of nonconvergence to examine if there is possibly a feasible value of the sample size.
+If the power does not asymptote below the target power, then it is possible there is a sample size corresponding to the target power, but the search algorithm was not able to arrive at that value.
+
+In a case of non-convergence for a feasible set of parameters, the following strategies can be tried:
+
+- Re-run the function. Due to randomness, sometimes repeating the same call will result in convergence.
+- Increase the max_steps parameter, which controls how many steps the optimization procedure tries.
+- Decrease tolerance. The final result may not be as precise, but at least will return a plausible range of values to explore.
+- Decrease max_sample_size. There are two arguments, `max_sample_size_nbar` for `nbar` searches, and `max_sample_size_JK` for searches over `J` or `K`. Decreasing the upper bound focuses the algorithm in a more likely area of the sample size space.
+- Increase precision through start.tnum and max.tnum. Increasing precision provides a better estimate of the true power curve.
+
+
+

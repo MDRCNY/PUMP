@@ -214,7 +214,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       check.results <- power_check_df( current.try, check.power.tnum )
 
       avg_pow <- stats::weighted.mean( x = c(iter.results$power, check.results$power),
-                               w = c(current.tnum, check.power.tnum) )
+                                       w = c(current.tnum, check.power.tnum) )
 
       # Overwrite results with our bonus step.
       iter.results$w <- current.tnum + check.power.tnum
@@ -399,12 +399,12 @@ fit_bounded_logistic = function( x, y, wt ) {
 
   # fit the model
   rs <- stats::optim( c(0, 0.5 ,.1, .9),
-               loglik,
-               control=list(fnscale=-1),
-               y=y, x=x, wt=wt,
-               lower=c(-Inf,0,0,0),
-               upper=c(Inf,Inf,1,1),
-               method="L-BFGS-B")
+                      loglik,
+                      control=list(fnscale=-1),
+                      y=y, x=x, wt=wt,
+                      lower=c(-Inf,0,0,0),
+                      upper=c(Inf,Inf,1,1),
+                      method="L-BFGS-B")
   names(rs$par) = c( "beta0", "beta1", "pmin", "pmax" )
   rs$par
 }
@@ -635,7 +635,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
     ggplot2::guides(colour="none", size="none") +
     ggplot2::coord_cartesian( ylim=lims, xlim = limsX ) +
     ggplot2::labs( x = x_label, y = "power" )
-  
+
   delrange = diff( xrng )
   if ( delrange >= 2 && delrange <= 10 ) {
     xpt = seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
@@ -643,8 +643,8 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
   } else {
     plot1 = plot1 +  ggplot2::scale_x_log10()
   }
-  
-  
+
+
   if ( plot.points ) {
     plot1 <- plot1 + ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 )
   }
@@ -708,4 +708,3 @@ plot_power_search <- function( pwr ) {
   #title( "Search path for optimize_power" )
 
 }
-
