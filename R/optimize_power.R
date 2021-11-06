@@ -446,9 +446,6 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 
     cc = start.high * gamma
   } else {
-
-    #print( plot_power_search(test.pts) )
-
     # extract point where it crosses target power.
     cc = find_crossover( target.power, fit )
   }
@@ -630,11 +627,6 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
     stopifnot( is.data.frame(pwr) )
     test.pts <- pwr
     x_label <- "parameter"
-  }
-
-  if(is.null(test.pts))
-  {
-    stop('Algorithm converged in one iteration. No search path.')
   }
 
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
