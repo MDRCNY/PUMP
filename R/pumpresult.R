@@ -109,9 +109,9 @@ make.pumpresult = function( x,
     }
     if ( !is.null( tries ) ) {
         attr( x, "tries" ) <- tries
-        attr( x, "search.range" ) <- c( min=min( tries$pt, na.rm=TRUE ),
-                                        final=tries$pt[ nrow(tries) ],
-                                        max=max( tries$pt, na.rm=TRUE ) )
+        attr( x, "search.range" ) <- c( min = min( tries$pt, na.rm = TRUE ),
+                                        final = tries$pt[ nrow(tries) ],
+                                        max = max( tries$pt, na.rm = TRUE ) )
         attr( x, "flat" ) <- flat
     }
     return( x )
