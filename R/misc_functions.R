@@ -378,8 +378,8 @@ validate_inputs <- function( design, params.list,
 #' @return information about power type
 parse_power_definition <- function( power.definition, M ) {
   powertype <- list( min = FALSE,
-                    complete = FALSE,
-                    indiv = FALSE )
+                     complete = FALSE,
+                     indiv = FALSE )
 
   if ( stringr::str_detect( power.definition, "min" ) ) {
     powertype$min <- TRUE
@@ -389,6 +389,9 @@ parse_power_definition <- function( power.definition, M ) {
     powertype$min <- TRUE
     powertype$complete <- TRUE
     powertype$min_k <- M
+  } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- NULL
   } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
     powertype$indiv <- TRUE
     powertype$indiv_k <- readr::parse_number( power.definition )

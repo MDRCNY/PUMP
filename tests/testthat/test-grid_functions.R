@@ -132,10 +132,6 @@ test_that("pump_power_grid works", {
 })
 
 
-
-
-
-
 test_that("pump_mdes_grid works", {
 
   pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
@@ -159,11 +155,6 @@ test_that("pump_mdes_grid works", {
   expect_equal( nrow(pp), 2 * 2)
 
 })
-
-
-
-
-
 
 
 test_that("pump_sample_grid works", {

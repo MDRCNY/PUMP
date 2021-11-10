@@ -35,7 +35,7 @@
 pump_mdes <- function(
   design, MTP = NULL, M, J, K = 1, numZero = NULL,
   target.power, power.definition, tol = 0.01,
-  nbar, Tbar, alpha,
+  nbar, Tbar, alpha = 0.05,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
@@ -225,7 +225,7 @@ pump_mdes <- function(
     mdes.low <- 0
   }
 
-  test.pts <-optimize_power(design, search.type = 'mdes', MTP,
+  test.pts <- optimize_power(design, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
                              start.tnum,
                              start.low = mdes.low, start.high = mdes.high,

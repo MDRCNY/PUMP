@@ -44,7 +44,7 @@ pump_sample_raw <- function(
   MDES,
   nbar = NULL, J = NULL, K = NULL,
   target.power,
-  Tbar, alpha, two.tailed = TRUE,
+  Tbar, alpha = 0.05, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
   omega.2 = NULL, omega.3 = NULL, max.steps = 100,
@@ -289,7 +289,7 @@ pump_sample <- function(
   # power definition type
   pdef <- parse_power_definition( power.definition, M )
 
-  pow_params = list( target.power = target.power,
+  pow_params <- list( target.power = target.power,
                      power.definition = power.definition,
                      tol = tol )
 

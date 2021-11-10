@@ -78,7 +78,8 @@ setup_default_parallel_plan <- function() {
 #' @importFrom magrittr %>%
 #' @importFrom furrr future_pmap
 #' @export
-pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero = NULL, Tbar, alpha,
+pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero = NULL,
+                             Tbar, alpha = 0.05,
                              numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
                              R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                              ICC.2 = NULL, ICC.3 = NULL,
@@ -93,17 +94,18 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
     stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
   }
 
-  args <- list( design=design, M = M, MDES = MDES, J = J, K = K, nbar = nbar, numZero = numZero,
-               Tbar = Tbar, alpha = alpha,
-               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+  args <- list( design = design, M = M, MDES = MDES, J = J, K = K,
+                nbar = nbar, numZero = numZero,
+                Tbar = Tbar, alpha = alpha,
+                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
-  grid <- run_grid( args, pum_function=pump_power, verbose=verbose,
-                   drop_unique_columns = drop_unique_columns,
-                   MTP = MTP, ..., use_furrr = use_furrr )
+  grid <- run_grid( args, pum_function = pump_power, verbose = verbose,
+                    drop_unique_columns = drop_unique_columns,
+                    MTP = MTP, ..., use_furrr = use_furrr )
 
   grid
 }
@@ -123,7 +125,8 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
 #' @export
 pump_mdes_grid <- function( design, MTP, M,
                             target.power, power.definition, tol,
-                            nbar, J = 1, K = 1, numZero = NULL, Tbar, alpha,
+                            nbar, J = 1, K = 1, numZero = NULL,
+                            Tbar, alpha,
                             numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
                             R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                             ICC.2 = NULL, ICC.3 = NULL,
@@ -135,17 +138,18 @@ pump_mdes_grid <- function( design, MTP, M,
                             ... ) {
 
 
-  args <- list( design=design, M = M, J = J, K = K, nbar = nbar, target.power = target.power,
-               Tbar = Tbar, alpha = alpha, numZero = numZero,
-               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+  args <- list( design = design, M = M, J = J, K = K, nbar = nbar,
+                target.power = target.power,
+                Tbar = Tbar, alpha = alpha, numZero = numZero,
+                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
   grid <- run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
-                   verbose=verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, MTP = MTP, use_furrr = use_furrr )
+                    verbose = verbose, drop_unique_columns = drop_unique_columns,
+                    tol = tol, MTP = MTP, use_furrr = use_furrr )
 
   grid
 }
@@ -168,7 +172,8 @@ pump_sample_grid <- function( design, MTP, M,
                               target.power, power.definition, tol,
                               MDES = NULL,
                               typesample,
-                              nbar = NULL, J = NULL, K = NULL, numZero = NULL, Tbar, alpha,
+                              nbar = NULL, J = NULL, K = NULL,
+                              numZero = NULL, Tbar, alpha,
                               numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
                               R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                               ICC.2 = NULL, ICC.3 = NULL,
@@ -180,17 +185,18 @@ pump_sample_grid <- function( design, MTP, M,
                               ... ) {
 
 
-  args <- list( design=design, M = M, J = J, K = K, MDES = MDES, nbar = nbar, target.power = target.power,
-               Tbar = Tbar, alpha = alpha, numZero = numZero,
-               numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-               R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-               rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+  args <- list( design = design, M = M, J = J, K = K,
+                MDES = MDES, nbar = nbar, target.power = target.power,
+                Tbar = Tbar, alpha = alpha, numZero = numZero,
+                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
   grid <- run_grid( args, pum_function = pump_sample, power.definition = power.definition,
                    typesample = typesample,
-                   verbose=verbose, drop_unique_columns = drop_unique_columns,
+                   verbose = verbose, drop_unique_columns = drop_unique_columns,
                    tol = tol, MTP = MTP, use_furrr = use_furrr )
 
   grid
