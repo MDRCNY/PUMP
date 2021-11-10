@@ -24,6 +24,14 @@ library( pum )
 set.seed( 524235326 )
 ```
 
+# Introduction
+
+The main PUMP vignette discusses all of the main functions of the package.
+This vignette focuses on one specific function: `pump_sample()`, which calculates required sample sizes at various levels of an RCT design.
+This function requires extra explanation because of both its unique interpretation and behavior.
+First, this vignette discusses how the user should interpret the output of a call to `pump_sample()`.
+Second, this vignette discusses some challenges the user might face when using the function.
+
 # Intepreting sample size calculations
 
 Let's start with a case of calculating the sample size for a 3-level model.

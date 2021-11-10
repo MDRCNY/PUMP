@@ -14,7 +14,7 @@ pump_power_grid(
   K = 1,
   numZero = NULL,
   Tbar,
-  alpha,
+  alpha = 0.05,
   numCovar.1 = NULL,
   numCovar.2 = NULL,
   numCovar.3 = NULL,

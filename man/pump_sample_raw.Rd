@@ -14,7 +14,7 @@ pump_sample_raw(
   K = NULL,
   target.power,
   Tbar,
-  alpha,
+  alpha = 0.05,
   two.tailed = TRUE,
   numCovar.1 = 0,
   numCovar.2 = 0,

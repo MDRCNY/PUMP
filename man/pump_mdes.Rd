@@ -16,7 +16,7 @@ pump_mdes(
   tol = 0.01,
   nbar,
   Tbar,
-  alpha,
+  alpha = 0.05,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
