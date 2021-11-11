@@ -138,9 +138,9 @@ p <- pump_power( design = "d3.2_m3fc2rc", # choice of design and analysis strate
             Tbar = 0.50, # prop Tx
             alpha = 0.05, # significance level
             numCovar.1 = 5, numCovar.2 = 3, # number of covariates per level
-            R2.1 = 0.1, R2.2 = 0.7,
-            ICC.2 = 0.05, ICC.3 = 0.4,
-			omega.3 = 0.50, 
+            R2.1 = 0.1, R2.2 = 0.7, # Explanatory power of covariates for each level
+            ICC.2 = 0.05, ICC.3 = 0.4, # Intraclass correlation coefficients 
+            omega.3 = 0.50, # Amount of treatment variation at level 3.
             rho = 0.4 ) # how correlated outcomes are
 ```
 
@@ -176,10 +176,29 @@ p_b
 
 Our assumption that variation was primarily captured in level three matters a great deal for power.
 
-After several `update()`s, we may lose track of where we are; to find out, we can always check details with `print_design()`:
+We could also investigate whether having different impacts for different outcomes (in particular no actual impact for one of our outcomes) would impact power.
+When estimating power for multiple outcomes, it is important to consider cases where some of the outcomes in fact have null, or very small, effects, to hedge against being underpowered if one of the outcomes is not well measured, for example:
+```{r}
+p_c <- update( p, MDES = c( 0.15, 0.05, 0.0 ) )
+p_c
+```
+
+When calculating power for a given scenario, it is easy to vary many of our design parameters by outcomes.  E.g., if we thought we had better predictive covariates for our second outcome, we might have:
 
 ```{r}
-print_design(p_b) 
+p_d = update( p, 
+              R2.1 = c( 0.1, 0.3, 0.1 ),
+              R2.2 = c( 0.4, 0.8, 0.7 ),
+              omega.3 = c( 0.4, 0.5, 0.6 ) )
+p_d
+```
+
+Notice how the individual powers are heavily impacted.  The min-$d$ powers will naturally take the varying outcomes into account as we are calculating a joint distribution of test statistics that will have the correct marginal distributions based on these different design parameter values.
+
+After several `update()`s, we may lose track of where we are; to find out, we can always check details with `print_design()` or `summary()`:
+
+```{r}
+summary(p_d) 
 ```
 
 
@@ -238,7 +257,8 @@ For some discussion of what parameters will affect power more generally, see <<P
 For discussion of how design parameters can affect the overall power in the multiple testing context, especially with regards to the overall power measures such as min1 or complete power, see the discussion in <<Kristen paper>>; the findings there are general, as they are a function of the final distribution of test statistics.
 The key insight into the simulation approach is that power is a function of the individual-level standard errors and degrees of freedom, and how correlated the test statistics are; once we have these elements, regardless of the design, we can proceed.
 
-To illustrate, we consider two common areas of exploration: Intraclass Correlation Coefficients (ICCs),  the correlation of test statistics, and the assumed number of non-zero effects.
+To illustrate, we consider three common areas of exploration: Intraclass Correlation Coefficients (ICCs), the correlation of test statistics, and the assumed number of non-zero effects.
+The last two are particularly important for multiple outcome contexts.
 
 ## Exploring the impact of the ICC
 
@@ -273,7 +293,12 @@ All designs in the package are discussed, and corresponding formula such as thes
 
 We reduced the number of permutations (to 5000 via `tnum`) to speed up computation.
 As `tnum` shrinks, we will get only rough estimates of power, but even these rough estimates can help us determine trends.
-Also note that the current implementation of the `grid` methods do not allow varying MDES vectors to keep package syntax simpler.
+
+The `grid` functions provide easy and direct ways of exploring how power changes as a function of the design parameters.
+We note, however, that in order to keep syntax simple, the `grid` methods do not allow different design parameters, including MDES, by outcome.
+This is to keep package syntax simpler.
+When faced with contexts where it is believed that these parameters do vary, we recommend using average values and then double-checking via the `pump_power` method a small set of potential final designs, to see how the variation across outcomes impacts ones results.
+
 
 ## Exploring the impact of rho
 
@@ -311,7 +336,8 @@ Complete power climbs as correlation increases, and min-2 power is generally unc
 
 ## Exploring the impact of null outcomes
 
-We finally explore varying the number of zeros in our outcomes.  For illustration we also expand the number of outcomes to 5.
+We finally explore varying the number of zeros in our outcomes.
+For illustration we also expand the number of outcomes to 5.
 The tools are the same as before:
 
 ```{r, cache=TRUE, fig.width = 7, fig.height = 2.5 }
@@ -335,6 +361,9 @@ ggplot( gridL, aes( numZero, power ) ) +
 
 ```
 
+With `pump_power()` one can provide an MDES vector with different values for each outcome, including 0s for some outcomes.
+For the `grid()` functions, we have a single MDES value for the non-null outcomes, and separately specify how many of the outcomes are 0.
+(This single value plus `numZero` parameter also works with `pump_power()` if desired.)
 
 
  

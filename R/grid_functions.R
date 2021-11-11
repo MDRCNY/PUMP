@@ -140,6 +140,8 @@ pump_mdes_grid <- function( design, MTP, M,
 
   args <- list( design = design, M = M, J = J, K = K, nbar = nbar,
                 target.power = target.power,
+                power.definition = power.definition,
+                MTP = MTP,
                 Tbar = Tbar, alpha = alpha, numZero = numZero,
                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                 R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
@@ -147,9 +149,9 @@ pump_mdes_grid <- function( design, MTP, M,
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
-  grid <- run_grid( args, pum_function = pump_mdes, power.definition = power.definition,
+  grid <- run_grid( args, pum_function = pump_mdes,
                     verbose = verbose, drop_unique_columns = drop_unique_columns,
-                    tol = tol, MTP = MTP, use_furrr = use_furrr )
+                    tol = tol, use_furrr = use_furrr )
 
   grid
 }
