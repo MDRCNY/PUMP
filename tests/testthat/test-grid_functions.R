@@ -184,3 +184,73 @@ test_that("pump_sample_grid works", {
 })
 
 
+text_that( "grid allows multiple MTP and power definitions", {
+  
+  pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
+                           MTP = c( "Bonferroni", "Holm" ), 
+                           target.power = 0.5,
+                           power.definition = c( "min1", "D1indiv" ),
+                           tol = 0.05,
+                           M = 5,
+                           J = 5,
+                           K = 7, # number RA blocks
+                           nbar = 58,
+                           Tbar = 0.50, # prop Tx
+                           alpha = 0.15, # significance level
+                           numCovar.1 = 1, numCovar.2 = 1,
+                           R2.1 = 0.1, R2.2 = 0.7,
+                           ICC.2 = 0.05, ICC.3 = 0.9,
+                           rho = 0.4, # how correlated outcomes are
+                           verbose = FALSE, max.tnum = 500,
+  )
+  pp
+  expect_equal( nrow( pp ), 4 )  
+  
+  
+  
+  pp <- pump_sample_grid(    design = "d3.2_m3ff2rc",
+                             MTP = c( "Bonferroni", "Holm" ), 
+                             target.power = 0.9,
+                             typesample = "J",
+                             MDES = 0.05,
+                             power.definition = c( "min1", "D1indiv" ),
+                             tol = 0.05,
+                             M = 5,
+                              nbar = 10,
+                             K = 12, # number RA blocks
+                             Tbar = 0.50, # prop Tx
+                             alpha = 0.15, # significance level
+                             numCovar.1 = 1, numCovar.2 = 1,
+                             R2.1 = 0.1, R2.2 = 0.7,
+                             ICC.2 = 0.05, ICC.3 = 0.9,
+                             rho = 0.4, # how correlated outcomes are
+                             verbose = FALSE, max.tnum = 500,
+  )
+  pp
+  expect_true( nrow( pp ) == 4 )
+})
+
+
+
+
+test_that( "grid works for long tables", {
+  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
+                            MTP = c( "Holm", "Bonferroni" ),
+                            MDES = 0.10,
+                            J = c( 4, 8 ),
+                            M = 5,
+                            K = 7, # number RA blocks
+                            nbar = 58,
+                            Tbar = 0.50, # prop Tx
+                            alpha = 0.15, # significance level
+                            numCovar.1 = 1, numCovar.2 = 1,
+                            R2.1 = 0.1, R2.2 = 0.7,
+                            ICC.2 = 0.25, ICC.3 = 0.25,
+                            rho = 0.4, # how correlated outcomes are
+                            tnum = 200, verbose = FALSE,
+                            long.table = TRUE )
+
+  expect_true( sum( is.na( pp$None ) ) > 0 )
+  expect_true( ncol( pp ) == 7 )
+})
+

@@ -4,9 +4,10 @@
 #'
 transpose_power_table <- function( power_table ) {
 
+  cname = power_table$MTP
+  power_table$MTP = NULL
   pp <- t( power_table )
-  colnames(pp) <- pp[1,]
-  pp <- pp[-1,]
+  colnames(pp) <- cname
   #if ( ncol( pp ) > 1 ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
@@ -168,7 +169,7 @@ pump_power <- function(
     }
     des = purrr::map( MTP,
                      pump_power, design = design, MDES = MDES,
-                     M = M, J = J, K = K, nbar = nbar,
+                     M = M, J = J, K = K, nbar = nbar, numZero = numZero,
                      Tbar = Tbar,
                      alpha = alpha,
                      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,

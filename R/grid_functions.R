@@ -25,12 +25,16 @@ run_grid <- function( args, pum_function, verbose = FALSE,
     grid <- dplyr::select( grid, dplyr::any_of( "MDES" ) |
                           where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
-
   grid$res <- purrr::map( grid$res, as.data.frame )
+  
   #grid$res <- purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid <- tidyr::unnest( grid, .data$res ) %>% dplyr::arrange( .data$MTP ) %>%
+  grid$MTP = NULL
+  grid <- tidyr::unnest( grid, .data$res )
+  if ( "MTP" %in% names(grid) ) {
+    grid = grid %>% dplyr::arrange( .data$MTP ) %>%
     dplyr::relocate( .data$MTP )
-
+  }
+  
   grid
 }
 
@@ -188,6 +192,8 @@ pump_sample_grid <- function( design, MTP, M,
 
 
   args <- list( design = design, M = M, J = J, K = K,
+                power.definition = power.definition, 
+                MTP = MTP,
                 MDES = MDES, nbar = nbar, target.power = target.power,
                 Tbar = Tbar, alpha = alpha, numZero = numZero,
                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -196,10 +202,10 @@ pump_sample_grid <- function( design, MTP, M,
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
-  grid <- run_grid( args, pum_function = pump_sample, power.definition = power.definition,
+  grid <- run_grid( args, pum_function = pump_sample,
                    typesample = typesample,
                    verbose = verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, MTP = MTP, use_furrr = use_furrr )
+                   tol = tol, use_furrr = use_furrr )
 
   grid
 }
