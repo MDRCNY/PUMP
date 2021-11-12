@@ -34,20 +34,23 @@ transpose_power_table <- function( power_table ) {
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
+get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
-  M <- ncol(pval.mat)
+  M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
   # rejected tests
-  rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
+  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
   rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
+
+  # unadjusted
+  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
   power.ind <- apply(rejects.nonzero, 2, mean)
   power.ind.mean <- mean(power.ind)
 
-  # minimum and complete power
+  # minimum power
   power.min <- rep(NA, num.nonzero)
 
   # if unadjusted, don't report minimum or complete power
@@ -56,9 +59,18 @@ get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
     for(m in 1:num.nonzero)
     {
       min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
-      power.min[m] <- mean(min.rejects)
+      power.min[m] <- min.rejects/M
+    }
+
+    if(num.nonzero > 0)
+    {
+      power.complete <- NA
+    } else
+    {
+      power.complete <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
     }
   }
+
 
 
   if(num.nonzero == 0)

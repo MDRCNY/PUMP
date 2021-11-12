@@ -7,9 +7,9 @@
 search_path(x, ...)
 }
 \arguments{
-\item{x}{A pumpresult object}
+\item{x}{A pumpresult object.}
 
-\item{Dataframe}{describing search path, if it was saved in the pumpresult object.}
+\item{...}{additional arguments to be passed to or from methods.}
 }
 \description{
 Obtain search path of pump_mdes or pump_sample call

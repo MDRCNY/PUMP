@@ -6,6 +6,9 @@
 \usage{
 parse_design(design)
 }
+\arguments{
+\item{design}{String. Experimental design to parse.}
+}
 \value{
 List of features including number of levels, level of randomization,
   etc.

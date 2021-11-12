@@ -4,10 +4,10 @@
 \alias{summary.pumpresult}
 \title{Pretty print pump result with parameters}
 \usage{
-\method{summary}{pumpresult}(x, ...)
+\method{summary}{pumpresult}(object, ...)
 }
 \arguments{
-\item{x}{A pumpresult object.}
+\item{object}{A pumpresult object.}
 
 \item{...}{Extra options passed to print.pumpresult}
 }

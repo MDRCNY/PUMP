@@ -8,15 +8,15 @@ pump_mdes(
   design,
   MTP = NULL,
   M,
+  nbar,
   J,
   K = 1,
   numZero = NULL,
+  Tbar,
+  alpha = 0.05,
   target.power,
   power.definition,
   tol = 0.01,
-  nbar,
-  Tbar,
-  alpha = 0.05,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
@@ -25,10 +25,10 @@ pump_mdes(
   R2.3 = 0,
   ICC.2 = 0,
   ICC.3 = 0,
-  rho = NULL,
-  rho.matrix = NULL,
   omega.2 = 0,
   omega.3 = 0,
+  rho = NULL,
+  rho.matrix = NULL,
   B = 1000,
   max.steps = 20,
   max.tnum = 2000,
@@ -50,12 +50,19 @@ to automatically re-run for each procedure on the list.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
 
+\item{nbar}{scalar; the harmonic mean of the number of units per school}
+
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
 
 \item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
 provide NumZero + length(MDES) = M}
+
+\item{Tbar}{scalar; the proportion of samples that are assigned to the
+treatment}
+
+\item{alpha}{scalar; the family wise error rate (FWER)}
 
 \item{target.power}{Target power to arrive at}
 
@@ -65,13 +72,6 @@ function, i.e. D1indiv, min1, etc.}
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
 controls when the search is done: when estimated power (checked with
 `final.tnum` iterations) is within `tol`, the search stops.}
-
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
-
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
-
-\item{alpha}{scalar; the family wise error rate (FWER)}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}
@@ -93,12 +93,6 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
-
-\item{rho.matrix}{matrix; alternate specification allowing a full matrix
-of correlations between test statistics. Must specify either
-rho or rho.matrix, but not both.}
-
 \item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
 variance of school-level random intercepts.  Default to 0 (no treatment
 variation).}
@@ -106,6 +100,12 @@ variation).}
 \item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
 variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
+
+\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+
+\item{rho.matrix}{matrix; alternate specification allowing a full matrix
+of correlations between test statistics. Must specify either
+rho or rho.matrix, but not both.}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
