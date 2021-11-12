@@ -4,10 +4,12 @@
 \alias{update.pumpresult}
 \title{Update a pump call, tweaking some parameters}
 \usage{
-\method{update}{pumpresult}(x, type = NULL, ...)
+\method{update}{pumpresult}(object, type = NULL, ...)
 }
 \arguments{
-\item{x}{Pump result object.}
+\item{object}{A pumpresult object.}
+
+\item{...}{additional arguments to be passed to or from methods.}
 }
 \value{
 New call using parameters of old object.

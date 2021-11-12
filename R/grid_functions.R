@@ -75,6 +75,7 @@ setup_default_parallel_plan <- function() {
 #'   not.
 #' @param drop_unique_columns Drop all parameter colunms that did not vary
 #'   across the grid.
+#' @param ... additional arguments to be passed to or from methods.
 #' @importFrom magrittr %>%
 #' @importFrom furrr future_pmap
 #' @export
@@ -119,6 +120,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
 #' Run pump_mdes on combination of factors
 #'
 #' @inheritParams pump_mdes
+#' @param ... additional arguments to be passed to or from methods.
 #'
 #' @family pump_power_grid
 #'
@@ -164,6 +166,7 @@ pump_mdes_grid <- function( design, MTP, M,
 #' Run pump_sample on combination of factors
 #'
 #' @inheritParams pump_mdes
+#' @param ... additional arguments to be passed to or from methods.
 #'
 #' @family pump_power_grid
 #'

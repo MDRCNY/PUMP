@@ -10,13 +10,14 @@ scat = function( str, ... ) {
 
 #' Update a pump call, tweaking some parameters
 #'
-#' @param x Pump result object.
+#' @param object A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #' @return New call using parameters of old object.
 #'
 #' @export
-update.pumpresult = function( x, type=NULL, ... ) {
-    params = params(x)
-    params["design"] = design(x)
+update.pumpresult = function( object, type = NULL, ... ) {
+    params = params(object)
+    params["design"] = design(object)
     dts = list(...)
     for ( d in names(dts) ) {
         params[[d]] = dts[[d]]
@@ -24,16 +25,16 @@ update.pumpresult = function( x, type=NULL, ... ) {
 
     if ( !is.null( type ) ) {
         result_type = type
-        old_type = attr(x, "type" )
+        old_type = attr(object, "type" )
 
         if ( old_type == "sample" ) {
              ss = smp$`Sample size`
-             slvl = attr(x, "sample.level" )
+             slvl = attr(object, "sample.level" )
              params[[slvl]] = ss
         }
 
     } else {
-        result_type = attr( x, "type" )
+        result_type = attr( object, "type" )
     }
 
     if ( result_type == "power" ) {
@@ -123,8 +124,10 @@ make.pumpresult = function( x,
 #' @return List of design parameters used.
 #'
 #' @family pumpresult
+#' @param x A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #' @export
-params = function( x, ... ) {
+params <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
 
     pp = attr( x, "params.list" )
@@ -143,20 +146,22 @@ params = function( x, ... ) {
 #' @return design used
 #'
 #' @family pumpresult
+#' @param x A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #' @export
-design = function( x, ... ) {
+design <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
 
-    pp = attr( x, "design" )
+    pp <- attr( x, "design" )
     return( pp )
 }
 
 
 #' Obtain search path of pump_mdes or pump_sample call
 #'
-#' @param x A pumpresult object
+#' @param x A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #'
-#' @param Dataframe describing search path, if it was saved in the pumpresult object.
 #' @family pumpresult
 #' @export
 search_path = function( x, ... ) {
@@ -202,16 +207,19 @@ power_curve <- function( x, all = FALSE,
 #' @return power, mdes, or sample, as a string.
 #'
 #' @family pumpresult
+#' @param x A pumpresult object.
 #' @export
-pump_type = function( x ) {
+pump_type <- function( x ) {
     return( attr(x, "type" ) )
 }
 
 #' Dimension of pumpresult
 #'
 #' @family pumpresult
+#' @param x A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #' @export
-dim.pumpresult = function( x, ... ) {
+dim.pumpresult <- function( x, ... ) {
     c( length( x[[1]] ), length(x) )
 }
 
@@ -219,11 +227,11 @@ dim.pumpresult = function( x, ... ) {
 #' Pretty print pump result with parameters
 #'
 #' @export
-#' @param x A pumpresult object.
+#' @param object A pumpresult object.
 #' @param ... Extra options passed to print.pumpresult
 #' @family pumpresult
-summary.pumpresult = function( x, ... ) {
-    print_design( x, insert_results = TRUE, ... )
+summary.pumpresult <- function( object, ... ) {
+    print_design( object, insert_results = TRUE, ... )
 }
 
 
@@ -234,7 +242,7 @@ summary.pumpresult = function( x, ... ) {
 #' @param x A pumpresult object.
 #' @param ... No extra options passed.
 #' @family pumpresult
-print.pumpresult = function( x, n = 10, no_header=FALSE, ... ) {
+print.pumpresult <- function( x, n = 10, no_header=FALSE, ... ) {
     result_type = attr( x, "type" )
 
     if ( !no_header ) {
@@ -273,6 +281,7 @@ print.pumpresult = function( x, n = 10, no_header=FALSE, ... ) {
 #' Print design of given pump result object
 #'
 #' @param x A pumpresult object.
+#' @param ... additional arguments to be passed to or from methods.
 #'
 #' @export
 print_design <- function( x, insert_results = FALSE, ...  ) {
@@ -367,7 +376,7 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
     }
 
     if ( insert_results ) {
-        print.pumpresult(x, n = n, no_header=TRUE, ... )
+        print.pumpresult(x, no_header = TRUE, ... )
     }
 
     scat( "\t  (B = %s", params$B )
@@ -400,12 +409,17 @@ is.pumpresult = function( x ) {
 #'
 #' @export
 #' @aliases pumpresult
-#' @param x the pumpresult object to covert
+#' @param x the pumpresult object to convert.
+#' @param row.names NULL or a character vector giving the row names for the data frame.
+#' @param optional logical. If TRUE, setting row names and converting column names is optional.
+#' @param ... additional arguments to be passed to or from methods.
 #' @family pumpresult
 #'
 #' @export
-as.data.frame.pumpresult = function( x ) {
+as.data.frame.pumpresult = function(
+    x, row.names = NULL, optional = FALSE, ...
+) {
     class(x) = "list"
-    as.data.frame( x )
+    as.data.frame( x, row.names = row.names, optional = optional, ... )
 }
 

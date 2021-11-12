@@ -6,6 +6,9 @@
 \usage{
 pump_type(x)
 }
+\arguments{
+\item{x}{A pumpresult object.}
+}
 \value{
 power, mdes, or sample, as a string.
 }

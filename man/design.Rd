@@ -6,6 +6,11 @@
 \usage{
 design(x, ...)
 }
+\arguments{
+\item{x}{A pumpresult object.}
+
+\item{...}{additional arguments to be passed to or from methods.}
+}
 \value{
 design used
 }

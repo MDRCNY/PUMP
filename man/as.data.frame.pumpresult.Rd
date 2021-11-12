@@ -5,10 +5,16 @@
 \alias{pumpresult}
 \title{Cast pumpresult result to data.frame}
 \usage{
-\method{as.data.frame}{pumpresult}(x)
+\method{as.data.frame}{pumpresult}(x, row.names = NULL, optional = FALSE, ...)
 }
 \arguments{
-\item{x}{the pumpresult object to covert}
+\item{x}{the pumpresult object to convert.}
+
+\item{row.names}{NULL or a character vector giving the row names for the data frame.}
+
+\item{optional}{logical. If TRUE, setting row names and converting column names is optional.}
+
+\item{...}{additional arguments to be passed to or from methods.}
 }
 \description{
 Cast pumpresult result to data.frame

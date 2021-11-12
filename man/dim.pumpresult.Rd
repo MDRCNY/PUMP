@@ -6,6 +6,11 @@
 \usage{
 \method{dim}{pumpresult}(x, ...)
 }
+\arguments{
+\item{x}{A pumpresult object.}
+
+\item{...}{additional arguments to be passed to or from methods.}
+}
 \description{
 Dimension of pumpresult
 }

@@ -71,6 +71,7 @@ pump_info <- function( comment = TRUE) {
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
 #' @family pump_info
+#' @param design String. Experimental design to parse.
 #' @export
 parse_design <- function( design ) {
     des <- stringr::str_split(design, "\\.|_")[[1]]
