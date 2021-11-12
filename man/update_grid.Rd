@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{update_grid}
 \alias{update_grid}
-\title{Update a pump call to a grid call}
+\title{Update a single pump call to a grid call}
 \usage{
 update_grid(x, ...)
 }

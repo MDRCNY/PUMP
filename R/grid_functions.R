@@ -23,7 +23,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 
   if ( drop_unique_columns ) {
     grid <- dplyr::select( grid, dplyr::any_of( "MDES" ) |
-                          where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+                             tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   grid$res <- purrr::map( grid$res, as.data.frame )
   
@@ -79,8 +79,14 @@ setup_default_parallel_plan <- function() {
 #'   not.
 #' @param drop_unique_columns Drop all parameter colunms that did not vary
 #'   across the grid.
+#' @param use_furrr Use parallel processing furrr package to fit grid.
+#' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
+#'   or pump_mdes functions.
+#'
 #' @importFrom magrittr %>%
 #' @importFrom furrr future_pmap
+#' @importFrom tidyselect vars_select_helpers
+#' @family grid functions
 #' @export
 pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero = NULL,
                              Tbar, alpha = 0.05,
@@ -123,8 +129,9 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
 #' Run pump_mdes on combination of factors
 #'
 #' @inheritParams pump_mdes
+#' @inheritParams pump_power_grid
 #'
-#' @family pump_power_grid
+#' @family grid functions
 #'
 #' @export
 pump_mdes_grid <- function( design, MTP, M,
@@ -169,9 +176,10 @@ pump_mdes_grid <- function( design, MTP, M,
 
 #' Run pump_sample on combination of factors
 #'
-#' @inheritParams pump_mdes
-#'
-#' @family pump_power_grid
+#' @inheritParams pump_sample
+#' @inheritParams pump_power_grid
+#' 
+#' @family grid functions
 #'
 #' @export
 pump_sample_grid <- function( design, MTP, M,

@@ -6,8 +6,17 @@
 \usage{
 fit_bounded_logistic(x, y, wt)
 }
+\arguments{
+\item{x}{The vector of covariate values of the logistics}
+
+\item{y}{The proportion of 1s for a given value of x.  Same length as x.}
+
+\item{wt}{The weight to place on a given x-y pair.  Same length as x, or
+scalar.}
+}
 \value{
-Vector of four estimated parameters for the logistic curve: beta0, beta1, pmin, pmax
+Vector of four estimated parameters for the logistic curve: beta0,
+  beta1, pmin, pmax
 }
 \description{
 Curve is of form f(y) = pmin + (pmax-pmin) * logistic( beta0 + beta1*x )

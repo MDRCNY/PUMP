@@ -284,6 +284,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
 #' Calculate a power curve for sample size or mdes
 #'
+#' @description
 #' For a grid of points based on a passed sample or mdes pumpresult, estimate
 #' power.
 #'
@@ -399,9 +400,18 @@ find_crossover = function( target_power, params ) {
 #'
 #' (logistic as defined by plogis)
 #'
-#' @return Vector of four estimated parameters for the logistic curve: beta0, beta1, pmin, pmax
+#' @param x The vector of covariate values of the logistics
+#' @param y The proportion of 1s for a given value of x.  Same length as x.
+#' @param wt The weight to place on a given x-y pair.  Same length as x, or
+#'   scalar.
+#'
+#' @return Vector of four estimated parameters for the logistic curve: beta0,
+#'   beta1, pmin, pmax
 fit_bounded_logistic = function( x, y, wt ) {
 
+  stopifnot( length(x) == length(y) )
+  stopifnot( length(wt) == length(x) || length(wt) == 1 )
+  
   # the log likelihood
   loglik <- function(par, y, x, wt) {
     p = bounded_logistic_curve( x, par )
@@ -425,12 +435,18 @@ fit_bounded_logistic = function( x, y, wt ) {
 #'
 #' @param test.pts power evaluated at different points
 #' @param target.power goal power
+#' @param gamma Number > 1. The amount we can extend our search range up (gamma)
+#'   or down (1/gamma) if we want to search outside our current boundaries.  1
+#'   means do not extend (which will potentially cause search to stall, not
+#'   recommended).
 #'
 #' @return List of estimate of when curve reaches target.power, derivative of
 #'   curve at that point, and parameters of the fit curve.
 
 find_best <- function(test.pts, target.power, gamma = 1.5)
 {
+  stopifnot( gamma >= 1 )
+  
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
 

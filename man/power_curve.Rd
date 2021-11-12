@@ -16,16 +16,17 @@ power_curve(
 \arguments{
 \item{x}{A pumpresult object.}
 
-\item{all}{Merge in the search path from the original search.}
+\item{all}{If TRUE, merge in the search path from the original search.}
 
-\item{low}{Low end of grid}
+\item{low}{Low range for the plot x-axis.}
 
-\item{high}{High end of grid}
+\item{high}{High range for the plot.}
 
-\item{grid.size}{Number of points in grid}
+\item{grid.size}{Number of points to calculate power.}
 
-\item{tnum}{the number of test statistics (samples)}
+\item{tnum}{Number of iterations to calculate power at each grid point.}
 }
 \description{
-This is used to see rate of power change.
+This is used to see rate of power change as a function of sample size or
+MDES.
 }

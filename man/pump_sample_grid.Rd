@@ -55,6 +55,10 @@ function, i.e. D1indiv, min1, etc.}
 controls when the search is done: when estimated power (checked with
 `final.tnum` iterations) is within `tol`, the search stops.}
 
+\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
+
+\item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
+
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
 \item{J}{scalar; the number of schools}
@@ -100,12 +104,21 @@ variation).}
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
+
+\item{use_furrr}{Use parallel processing furrr package to fit grid.}
+
+\item{drop_unique_columns}{Drop all parameter colunms that did not vary
+across the grid.}
+
+\item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
+or pump_mdes functions.}
 }
 \description{
 Run pump_sample on combination of factors
 }
 \seealso{
-Other pump_power_grid: 
-\code{\link{pump_mdes_grid}()}
+Other grid functions: 
+\code{\link{pump_mdes_grid}()},
+\code{\link{pump_power_grid}()}
 }
-\concept{pump_power_grid}
+\concept{grid functions}

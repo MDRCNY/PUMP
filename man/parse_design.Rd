@@ -6,11 +6,20 @@
 \usage{
 parse_design(design)
 }
+\arguments{
+\item{design}{String for the design to parse.}
+}
 \value{
 List of features including number of levels, level of randomization,
   etc.
 }
 \description{
-Return characteristics of a given design code
+See the pump_info method to get a list of supported designs.
+}
+\examples{
+supported = pump_info()$Design
+supported$Code[[4]]
+parse_design( supported$Code[[4]] )
+
 }
 \concept{pump_info}

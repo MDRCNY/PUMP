@@ -184,7 +184,7 @@ test_that("pump_sample_grid works", {
 })
 
 
-text_that( "grid allows multiple MTP and power definitions", {
+test_that( "grid allows multiple MTP and power definitions", {
   
   pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
                            MTP = c( "Bonferroni", "Holm" ), 

@@ -10,6 +10,11 @@ find_best(test.pts, target.power, gamma = 1.5)
 \item{test.pts}{power evaluated at different points}
 
 \item{target.power}{goal power}
+
+\item{gamma}{Number > 1. The amount we can extend our search range up (gamma)
+or down (1/gamma) if we want to search outside our current boundaries.  1
+means do not extend (which will potentially cause search to stall, not
+recommended).}
 }
 \value{
 List of estimate of when curve reaches target.power, derivative of

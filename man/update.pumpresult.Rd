@@ -8,9 +8,17 @@
 }
 \arguments{
 \item{x}{Pump result object.}
+
+\item{type}{Either "power", "sample", or "mdes", if the call should be
+shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
+respectively).}
+
+\item{...}{Parameters as specified in `pump_power`, `pump_mdes`, and
+`pump_sample` that should be overwritten.}
 }
 \value{
-New call using parameters of old object.
+Results of a new call using parameters of old object with newly
+  specified parameters replaced.
 }
 \description{
 Update a pump call, tweaking some parameters

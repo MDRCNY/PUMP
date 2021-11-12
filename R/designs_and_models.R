@@ -67,10 +67,21 @@ pump_info <- function( comment = TRUE) {
 
 
 #' Return characteristics of a given design code
+#' 
+#' See the pump_info method to get a list of supported designs.
+#' 
+#' @param design String for the design to parse.
 #'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
+#'   
 #' @family pump_info
+#' 
+#' @examples 
+#' supported = pump_info()$Design
+#' supported$Code[[4]]
+#' parse_design( supported$Code[[4]] )
+#' 
 #' @export
 parse_design <- function( design ) {
     des <- stringr::str_split(design, "\\.|_")[[1]]

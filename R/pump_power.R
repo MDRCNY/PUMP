@@ -2,6 +2,8 @@
 #'
 #' Transform table returned from pump_power to a long format table.
 #'
+#' @param power_table pumpresult object for a power result (not mdes or sample).
+#' 
 transpose_power_table <- function( power_table ) {
 
   cname = power_table$MTP

@@ -98,12 +98,21 @@ variation).}
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{verbose}{Print out diagnostics of time, etc.}
+
+\item{use_furrr}{Use parallel processing furrr package to fit grid.}
+
+\item{drop_unique_columns}{Drop all parameter colunms that did not vary
+across the grid.}
+
+\item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
+or pump_mdes functions.}
 }
 \description{
 Run pump_mdes on combination of factors
 }
 \seealso{
-Other pump_power_grid: 
+Other grid functions: 
+\code{\link{pump_power_grid}()},
 \code{\link{pump_sample_grid}()}
 }
-\concept{pump_power_grid}
+\concept{grid functions}

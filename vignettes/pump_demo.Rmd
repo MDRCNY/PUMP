@@ -1,25 +1,16 @@
 ---
 title: "Demonstration of the `pum-p` package"
-output: pdf_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Demonstration of the pum-p package}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 header-includes:
   - \usepackage{setspace}  
 geometry: margin=1.5in
 ---
-
-\doublespacing
-
-<!--
-
-    rmarkdown::html_vignette
-    
-    vignette: >
-  %\VignetteIndexEntry{Demonstration of the pum-p package}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-
--->
 
 
 ```{r initialize, include = FALSE}
@@ -215,7 +206,7 @@ If you provide a list, the package will re-run the simulation for each item on t
 Here we update, again, with a full list. We could also have simply provided this list to `pump_power()` initially.
 
 ```{r othercorrections, cache=TRUE}
-p2 <- update( p, MTP = c("Bonferroni", "Holm", "WY-SD") )
+p2 <- update( p, MTP = c("Bonferroni", "Holm", "BH") )
 ```
 
 ```{r echo = FALSE}
@@ -311,7 +302,7 @@ grid <- update_grid( p,
             MTP = c( "Bonferroni", "WY-SS" ),
             rho = c( 0, 0.15, 0.3, 0.45, 0.6 ),
             tnum = 500,
-            B = 10000 ) 
+            B = 1000 )  #10000
 ```
 
 We then plot our results
