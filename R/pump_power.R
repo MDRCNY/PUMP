@@ -4,10 +4,9 @@
 #'
 transpose_power_table <- function( power_table ) {
 
-  cname = power_table$MTP
-  power_table$MTP = NULL
   pp <- t( power_table )
-  colnames(pp) <- cname
+  colnames(pp) <- pp[1,]
+  pp <- pp[-1,]
   #if ( ncol( pp ) > 1 ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
@@ -37,41 +36,47 @@ transpose_power_table <- function( power_table ) {
 get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
-  num.nonzero <- sum(ind.nonzero)
 
   # rejected tests
   rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
-
   # unadjusted
   rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
-  power.ind <- apply(rejects.nonzero, 2, mean)
-  power.ind.mean <- mean(power.ind)
+  power.ind <- apply(rejects, 2, mean)
+  names(power.ind) <- paste0('D', 1:M, 'indiv')
 
   # minimum power
-  power.min <- rep(NA, num.nonzero)
+  power.min <- rep(NA, M)
+  names(power.min) <- paste0('min',1:M)
 
   # if unadjusted, don't report minimum or complete power
   if(adj)
   {
-    for(m in 1:num.nonzero)
+    for(m in 1:M)
     {
-      min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
-      power.min[m] <- min.rejects/M
+      min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
+      power.min[m] <- sum(min.rejects)/M
     }
 
-    if(num.nonzero > 0)
+    if(any(!ind.nonzero))
     {
       power.complete <- NA
     } else
     {
-      power.complete <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+      complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+      power.complete <- mean(complete.rejects)
     }
   }
 
+  # subset to only nonzero where relevant
+  power.ind <- power.ind[ind.nonzero]
+  power.min <- power.min[ind.nonzero]
+  power.ind.mean <- mean(power.ind)
+  names(power.ind.mean) = 'indiv.mean'
+  names(power.complete) = 'complete'
 
+  power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
 
   if(num.nonzero == 0)
   {
@@ -79,17 +84,8 @@ get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, 
   } else
   {
     # combine all power for all definitions
-    all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-
-    if(num.nonzero > 1)
-    {
-      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                      "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
-    } else
-    {
-      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                      "indiv.mean", "min1")
-    }
+    all.power.results <- data.frame(matrix(power.vec, nrow = 1))
+    colnames(all.power.results) <- names(power.vec)
   }
 
   return(all.power.results)
@@ -180,18 +176,18 @@ pump_power <- function(
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
     des = purrr::map( MTP,
-                     pump_power, design = design, MDES = MDES,
-                     M = M, J = J, K = K, nbar = nbar, numZero = numZero,
-                     Tbar = Tbar,
-                     alpha = alpha,
-                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                     numCovar.3 = numCovar.3,
-                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-                     ICC.2 = ICC.2, ICC.3 = ICC.3,
-                     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                     long.table = long.table,
-                     tnum = tnum, B = B, cl = cl,
-                     updateProgress = updateProgress )
+                      pump_power, design = design, MDES = MDES,
+                      M = M, J = J, K = K, nbar = nbar,
+                      Tbar = Tbar,
+                      alpha = alpha,
+                      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                      numCovar.3 = numCovar.3,
+                      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                      ICC.2 = ICC.2, ICC.3 = ICC.3,
+                      rho = rho, omega.2 = omega.2, omega.3 = omega.3,
+                      long.table = long.table,
+                      tnum = tnum, B = B, cl = cl,
+                      updateProgress = updateProgress )
 
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
@@ -282,40 +278,40 @@ pump_power <- function(
 
   if (MTP == "Bonferroni"){
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
   } else if (MTP == "Holm") {
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
 
   } else if (MTP == "BH") {
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
 
   } else if (MTP == "WY-SS"){
 
-    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df)
+    adjp.mat <- adjp.wyss(rawt.mat = rawt.mat, B = B,
+                          Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df, cl = cl)
+    adjp.mat <- adjp.wysd(rawt.mat = rawt.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else
   {
-    adjp <- NULL
+    adjp.mat <- NULL
   }
 
-  if (is.function(updateProgress) & !is.null(adjp)){
+  if (is.function(updateProgress) & !is.null(adjp.mat)){
     updateProgress(message = paste("Multiple adjustments done for", MTP))
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get.power.results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get.power.results(rawp.mat, adjp.mat, ind.nonzero, alpha, adj = TRUE)
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
