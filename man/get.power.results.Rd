@@ -4,16 +4,16 @@
 \alias{get.power.results}
 \title{Calculates different definitions of power}
 \usage{
-get.power.results(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get.power.results(pval.mat, ind.nonzero, alpha, adj = TRUE)
 }
 \arguments{
+\item{pval.mat}{matrix of p-values, columns are outcomes}
+
 \item{ind.nonzero}{vector indicating which outcomes are nonzero}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
 \item{adj}{whether p-values are unadjusted or not}
-
-\item{pval.mat}{matrix of p-values, columns are outcomes}
 }
 \value{
 power results for individual, minimum, complete power

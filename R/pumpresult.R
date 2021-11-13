@@ -91,7 +91,7 @@ update_grid = function( x, ... ) {
 #' shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
 #' respectively).
 #'
-#' @param x Pump result object.
+#' @param object Pump result object.
 #' @param ... Parameters as specified in `pump_power`, `pump_mdes`, and
 #'   `pump_sample` that should be overwritten.
 #'
@@ -99,10 +99,10 @@ update_grid = function( x, ... ) {
 #'   specified parameters replaced.
 #'
 #' @export
-update.pumpresult = function( x, ... ) {
-    params = params(x)
-    params["design"] = design(x)
-    result_type = attr(x, "type" )
+update.pumpresult = function( object, ... ) {
+    params = params(object)
+    params["design"] = design(object)
+    result_type = attr(object, "type" )
     params["type"] = result_type
     
     dts = list(...)
@@ -115,8 +115,8 @@ update.pumpresult = function( x, ... ) {
     if ( params$type != result_type ) {
         
         if ( result_type == "sample" ) {
-            ss = x$`Sample size`
-            slvl = attr(x, "sample.level" )
+            ss = object$`Sample size`
+            slvl = attr(object, "sample.level" )
             params[[slvl]] = ss
         }
         result_type = params$type
@@ -133,7 +133,7 @@ update.pumpresult = function( x, ... ) {
         do.call( pump_mdes, params )
     } else if ( result_type == "sample" ) {
         if ( is.null( params[["typesample"]] ) ) {
-            params["typesample"] = attr( x, "sample.level" )
+            params["typesample"] = attr( object, "sample.level" )
         } 
         params[params$typesample] = NULL
         do.call( pump_sample, params )
@@ -161,7 +161,7 @@ update.pumpresult = function( x, ... ) {
 #' and combined.  The return values from the `grid` functions will just return
 #' data frames in general.
 #' 
-#' @seealso update
+#' @seealso updateå
 #' @seealso update_grid
 #'
 #' @param x a pumpresult object (except for is.pumpresult, where it is a generic

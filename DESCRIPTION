@@ -23,6 +23,7 @@ Imports:
      parallel,
      snow,
      RcppEigen,
+     tidyselect,
      lme4,
      here,
      furrr,
@@ -30,7 +31,6 @@ Imports:
      magrittr,
      ggplot2,
      plyr,
-     grDevices,
      stats,
      purrr,
      gridExtra,
@@ -48,5 +48,6 @@ RoxygenNote: 7.1.2
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    grDevices
 VignetteBuilder: knitr
