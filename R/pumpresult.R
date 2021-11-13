@@ -9,7 +9,6 @@ scat = function( str, ... ) {
 
 
 
-
 make.pumpresult = function( x,
                             type = c( "power", "mdes", "sample" ),
                             design = design,
@@ -179,7 +178,7 @@ NULL
 #'
 #' @rdname pumpresult
 #' @export
-params = function( x, ... ) {
+params <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
     
     pp = attr( x, "params.list" )
@@ -199,10 +198,10 @@ params = function( x, ... ) {
 #'
 #' @rdname pumpresult
 #' @export
-design = function( x, ... ) {
+design <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
-    
-    pp = attr( x, "design" )
+
+    pp <- attr( x, "design" )
     return( pp )
 }
 
@@ -211,6 +210,7 @@ design = function( x, ... ) {
 #'
 #' @return search_path: Dataframe describing search path, if it was saved in the pumpresult object.
 #' @rdname pumpresult
+#'
 #' @export
 search_path = function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
@@ -259,7 +259,7 @@ power_curve <- function( x, all = FALSE,
 #'
 #' @rdname pumpresult
 #' @export
-pump_type = function( x ) {
+pump_type <- function( x ) {
     return( attr(x, "type" ) )
 }
 
@@ -281,7 +281,7 @@ is.pumpresult = function( x ) {
 #'
 #' @rdname pumpresult
 #' @export
-dim.pumpresult = function( x, ... ) {
+dim.pumpresult <- function( x, ... ) {
     c( length( x[[1]] ), length(x) )
 }
 
@@ -467,6 +467,10 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
 
 #' Cast pumpresult result to data.frame
 #'
+#' @param row.names NULL or a character vector giving the row names for the data frame.
+#' @param optional logical. If TRUE, setting row names and converting column names is optional.
+#' @param ... additional arguments to be passed to the as.data.frame.list methods.
+#' 
 #' @return as.data.frame: pumpresult object as a clean dataframe (no more attributes from
 #'   pumpresult).
 #' @rdname pumpresult
@@ -474,7 +478,8 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
 #' @export
 as.data.frame.pumpresult = function( x, row.names = NULL, optional = FALSE, ... ) {
     class(x) = "list"
-    as.data.frame( x, row.names = row.names, optional=optional, ... )
+    as.data.frame( x, row.names = row.names, optional = optional, ... )
+    
 }
 
 

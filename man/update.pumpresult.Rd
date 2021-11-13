@@ -4,14 +4,10 @@
 \alias{update.pumpresult}
 \title{Update a pump call, tweaking some parameters}
 \usage{
-\method{update}{pumpresult}(x, type = NULL, ...)
+\method{update}{pumpresult}(x, ...)
 }
 \arguments{
 \item{x}{Pump result object.}
-
-\item{type}{Either "power", "sample", or "mdes", if the call should be
-shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
-respectively).}
 
 \item{...}{Parameters as specified in `pump_power`, `pump_mdes`, and
 `pump_sample` that should be overwritten.}
@@ -21,5 +17,8 @@ Results of a new call using parameters of old object with newly
   specified parameters replaced.
 }
 \description{
-Update a pump call, tweaking some parameters
+One of the optional parameters can be a `type = something` argument, where
+the "something" is either "power", "sample", or "mdes", if the call should be
+shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
+respectively).
 }

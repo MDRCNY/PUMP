@@ -25,17 +25,19 @@ is.pumpresult(x)
 
 \method{dim}{pumpresult}(x, ...)
 
-\method{summary}{pumpresult}(x, ...)
+\method{summary}{pumpresult}(object, ...)
 
 \method{print}{pumpresult}(x, n = 10, header = TRUE, search = header, ...)
 
-\method{as.data.frame}{pumpresult}(x)
+\method{as.data.frame}{pumpresult}(x, row.names = NULL, optional = FALSE, ...)
 }
 \arguments{
 \item{x}{a pumpresult object (except for is.pumpresult, where it is a generic
 object to check).}
 
-\item{...}{No extra options passed.}
+\item{...}{additional arguments to be passed to the as.data.frame.list methods.}
+
+\item{object}{Object to summarize.}
 
 \item{n}{Number of lines of search path to print, max.}
 
@@ -44,6 +46,10 @@ the data.frame of actual results.}
 
 \item{search}{FALSE means don't print the search path for a result for
 mdes or sample.}
+
+\item{row.names}{NULL or a character vector giving the row names for the data frame.}
+
+\item{optional}{logical. If TRUE, setting row names and converting column names is optional.}
 }
 \value{
 params: List of design parameters used.

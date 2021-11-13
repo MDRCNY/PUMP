@@ -70,7 +70,7 @@ pump_info <- function( comment = TRUE) {
 #' 
 #' See the pump_info method to get a list of supported designs.
 #' 
-#' @param design String for the design to parse.
+#' @param design String. Experimental design to parse.
 #'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
