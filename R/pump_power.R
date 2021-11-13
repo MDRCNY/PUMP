@@ -36,23 +36,20 @@ transpose_power_table <- function( power_table ) {
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
-  M <- ncol(adj.pval.mat)
+  M <- ncol(pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
   # rejected tests
-  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
   rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
-
-  # unadjusted
-  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
   power.ind <- apply(rejects.nonzero, 2, mean)
   power.ind.mean <- mean(power.ind)
 
-  # minimum power
+  # minimum and complete power
   power.min <- rep(NA, num.nonzero)
 
   # if unadjusted, don't report minimum or complete power
@@ -61,18 +58,9 @@ get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, 
     for(m in 1:num.nonzero)
     {
       min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
-      power.min[m] <- min.rejects/M
-    }
-
-    if(num.nonzero > 0)
-    {
-      power.complete <- NA
-    } else
-    {
-      power.complete <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+      power.min[m] <- mean(min.rejects)
     }
   }
-
 
 
   if(num.nonzero == 0)
@@ -182,18 +170,18 @@ pump_power <- function(
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
     des = purrr::map( MTP,
-                     pump_power, design = design, MDES = MDES,
-                     M = M, J = J, K = K, nbar = nbar, numZero = numZero,
-                     Tbar = Tbar,
-                     alpha = alpha,
-                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                     numCovar.3 = numCovar.3,
-                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-                     ICC.2 = ICC.2, ICC.3 = ICC.3,
-                     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                     long.table = long.table,
-                     tnum = tnum, B = B, cl = cl,
-                     updateProgress = updateProgress )
+                      pump_power, design = design, MDES = MDES,
+                      M = M, J = J, K = K, nbar = nbar, numZero = numZero,
+                      Tbar = Tbar,
+                      alpha = alpha,
+                      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                      numCovar.3 = numCovar.3,
+                      R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                      ICC.2 = ICC.2, ICC.3 = ICC.3,
+                      rho = rho, omega.2 = omega.2, omega.3 = omega.3,
+                      long.table = long.table,
+                      tnum = tnum, B = B, cl = cl,
+                      updateProgress = updateProgress )
 
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
@@ -331,4 +319,3 @@ pump_power <- function(
                            design = design,
                            long.table = long.table ) )
 }
-
