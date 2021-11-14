@@ -56,7 +56,7 @@ update_grid = function( x, ... ) {
     }
     pparam = attr( x, "power.params.list" )
     params = c( params, pparam )
-    
+
     dts = list(...)
     for ( d in names(dts) ) {
         params[[d]] = dts[[d]]
@@ -104,25 +104,25 @@ update.pumpresult = function( object, ... ) {
     params["design"] = design(object)
     result_type = attr(object, "type" )
     params["type"] = result_type
-    
+
     dts = list(...)
     for ( d in names(dts) ) {
         params[[d]] = dts[[d]]
     }
-    
+
     # Are we changing what kind of calculation we want to perform?  If so,
     # adjust some parameters as needed.
     if ( params$type != result_type ) {
-        
+
         if ( result_type == "sample" ) {
             ss = object$`Sample size`
             slvl = attr(object, "sample.level" )
             params[[slvl]] = ss
         }
         result_type = params$type
-    } 
+    }
     params$type = NULL
-    
+
     if ( result_type == "power" ) {
         params["target.power"] = NULL
         params["power.definition"] = NULL
@@ -130,12 +130,14 @@ update.pumpresult = function( object, ... ) {
         do.call(pump_power, params)
     } else if ( result_type == "mdes" ) {
         params["MDES"] = NULL
+        params["numZero"] = NULL
         do.call( pump_mdes, params )
     } else if ( result_type == "sample" ) {
         if ( is.null( params[["typesample"]] ) ) {
             params["typesample"] = attr( object, "sample.level" )
-        } 
+        }
         params[params$typesample] = NULL
+        params["numZero"] = NULL
         do.call( pump_sample, params )
     } else {
         stop( sprintf( "Unrecognized type, %s, in update()", result_type ) )
@@ -149,7 +151,7 @@ update.pumpresult = function( object, ... ) {
 
 #' @title pumpresult object for results of power calculations
 #' @name pumpresult
-#' 
+#'
 #' @description
 #' The pumpresult object is an S3 class that holds the results from
 #' `pump_power()`, `pump_sample()`, and `pump_mdes()`.
@@ -160,7 +162,7 @@ update.pumpresult = function( object, ... ) {
 #' Pump result objects are also data.frames, so they can be easily manipulated
 #' and combined.  The return values from the `grid` functions will just return
 #' data frames in general.
-#' 
+#'
 #' @seealso updateå
 #' @seealso update_grid
 #'
@@ -180,7 +182,7 @@ NULL
 #' @export
 params <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
-    
+
     pp = attr( x, "params.list" )
     pp_pow = attr(x, "power.params.list" )
     if ( !is.null( pp_pow ) ) {
@@ -268,7 +270,7 @@ pump_type <- function( x ) {
 #' @return is.pumpresult: TRUE if object is a pumpresult object.
 #'
 #' @export
-#' 
+#'
 #' @rdname pumpresult
 is.pumpresult = function( x ) {
     inherits(x, "pumpresult")
@@ -308,8 +310,8 @@ summary.pumpresult = function( object, ... ) {
 #' @param search FALSE means don't print the search path for a result for
 #'   mdes or sample.
 #' @rdname pumpresult
-print.pumpresult = function( x, n = 10, 
-                             header=TRUE, 
+print.pumpresult = function( x, n = 10,
+                             header=TRUE,
                              search = header,
                              ... ) {
     result_type = attr( x, "type" )
@@ -415,7 +417,7 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
         scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
     }
 
-    scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n", 
+    scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
           params$nbar, params$J, params$K, params$Tbar )
     scat( "  alpha: %s\t\n", params$alpha)
     scat( "  Level:\n    1: R2: %s (%s covariate)\n",
@@ -470,7 +472,7 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
 #' @param row.names NULL or a character vector giving the row names for the data frame.
 #' @param optional logical. If TRUE, setting row names and converting column names is optional.
 #' @param ... additional arguments to be passed to the as.data.frame.list methods.
-#' 
+#'
 #' @return as.data.frame: pumpresult object as a clean dataframe (no more attributes from
 #'   pumpresult).
 #' @rdname pumpresult
@@ -479,7 +481,7 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
 as.data.frame.pumpresult = function( x, row.names = NULL, optional = FALSE, ... ) {
     class(x) = "list"
     as.data.frame( x, row.names = row.names, optional = optional, ... )
-    
+
 }
 
 

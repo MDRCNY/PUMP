@@ -60,7 +60,7 @@ pump_mdes <- function(
   #   des = purrr::map( MTP,
   #                     pump_mdes, design = design,
   #                     target.power = target.power, power.definition = power.definition, tol = tol,
-  #                     M = M, J = J, K = K, nbar = nbar, numZero = numZero,
+  #                     M = M, J = J, K = K, nbar = nbar,
   #                     Tbar = Tbar, alpha = alpha,
   #                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
   #                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -109,7 +109,7 @@ pump_mdes <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, numZero = numZero,
+    MTP = MTP,
     M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
