@@ -26,7 +26,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
                              tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   grid$res <- purrr::map( grid$res, as.data.frame )
-  
+
   #grid$res <- purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
   grid$MTP = NULL
   grid <- tidyr::unnest( grid, .data$res )
@@ -34,7 +34,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
     grid = grid %>% dplyr::arrange( .data$MTP ) %>%
     dplyr::relocate( .data$MTP )
   }
-  
+
   grid
 }
 
@@ -136,7 +136,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
 #' @export
 pump_mdes_grid <- function( design, MTP, M,
                             target.power, power.definition, tol,
-                            nbar, J = 1, K = 1, numZero = NULL,
+                            nbar, J = 1, K = 1,
                             Tbar, alpha,
                             numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
                             R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
@@ -178,7 +178,7 @@ pump_mdes_grid <- function( design, MTP, M,
 #'
 #' @inheritParams pump_sample
 #' @inheritParams pump_power_grid
-#' 
+#'
 #' @family grid functions
 #'
 #' @export
@@ -187,7 +187,7 @@ pump_sample_grid <- function( design, MTP, M,
                               MDES = NULL,
                               typesample,
                               nbar = NULL, J = NULL, K = NULL,
-                              numZero = NULL, Tbar, alpha,
+                              Tbar, alpha,
                               numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
                               R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                               ICC.2 = NULL, ICC.3 = NULL,
@@ -200,7 +200,7 @@ pump_sample_grid <- function( design, MTP, M,
 
 
   args <- list( design = design, M = M, J = J, K = K,
-                power.definition = power.definition, 
+                power.definition = power.definition,
                 MTP = MTP,
                 MDES = MDES, nbar = nbar, target.power = target.power,
                 Tbar = Tbar, alpha = alpha, numZero = numZero,
