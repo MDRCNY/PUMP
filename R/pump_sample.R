@@ -225,7 +225,7 @@ pump_sample_raw <- function(
 
 pump_sample <- function(
   design, MTP = NULL, typesample,
-  MDES, M, numZero = NULL,
+  MDES, M,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
   alpha, two.tailed = TRUE,
@@ -264,7 +264,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero,
+    MTP = MTP, MDES = MDES, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,

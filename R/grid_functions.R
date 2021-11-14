@@ -22,8 +22,8 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
 
   if ( drop_unique_columns ) {
-    grid <- dplyr::select( grid, dplyr::any_of( "MDES" ) |
-                             tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+    grid <- dplyr::select( grid, dplyr::any_of( c("MDES", "numZero" )) |
+                           tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   grid$res <- purrr::map( grid$res, as.data.frame )
 
@@ -153,7 +153,7 @@ pump_mdes_grid <- function( design, MTP, M,
                 target.power = target.power,
                 power.definition = power.definition,
                 MTP = MTP,
-                Tbar = Tbar, alpha = alpha, numZero = numZero,
+                Tbar = Tbar, alpha = alpha,
                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                 R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                 rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
@@ -203,7 +203,7 @@ pump_sample_grid <- function( design, MTP, M,
                 power.definition = power.definition,
                 MTP = MTP,
                 MDES = MDES, nbar = nbar, target.power = target.power,
-                Tbar = Tbar, alpha = alpha, numZero = numZero,
+                Tbar = Tbar, alpha = alpha,
                 numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
                 R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
                 rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
