@@ -424,4 +424,18 @@ test_that( "sample errors out for MDES vector", {
     Tbar = 0.8,
     numCovar.1 = 2,
     rho = 0.2))
+
+  expect_error(pp <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = c("Holm"),
+    typesample = c("J"),
+    M = 5,
+    numZero = 1,
+    nbar = 50,
+    target.power = 0.8,
+    power.definition = "indiv.mean",
+    alpha = 0.5,
+    Tbar = 0.8,
+    numCovar.1 = 2,
+    rho = 0.2))
 })
