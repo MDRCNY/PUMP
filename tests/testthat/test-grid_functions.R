@@ -1,3 +1,5 @@
+# library( pum )
+# library( testthat )
 
 test_that("pump_power_grid works", {
 
@@ -185,9 +187,9 @@ test_that("pump_sample_grid works", {
 
 
 test_that( "grid allows multiple MTP and power definitions", {
-  
+
   pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
-                           MTP = c( "Bonferroni", "Holm" ), 
+                           MTP = c( "Bonferroni", "Holm" ),
                            target.power = 0.5,
                            power.definition = c( "min1", "D1indiv" ),
                            tol = 0.05,
@@ -204,12 +206,12 @@ test_that( "grid allows multiple MTP and power definitions", {
                            verbose = FALSE, max.tnum = 500,
   )
   pp
-  expect_equal( nrow( pp ), 4 )  
-  
-  
-  
+  expect_equal( nrow( pp ), 4 )
+
+
+
   pp <- pump_sample_grid(    design = "d3.2_m3ff2rc",
-                             MTP = c( "Bonferroni", "Holm" ), 
+                             MTP = c( "Bonferroni", "Holm" ),
                              target.power = 0.9,
                              typesample = "J",
                              MDES = 0.05,
@@ -253,4 +255,3 @@ test_that( "grid works for long tables", {
   expect_true( sum( is.na( pp$None ) ) > 0 )
   expect_true( ncol( pp ) == 7 )
 })
-

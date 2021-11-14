@@ -216,7 +216,7 @@ pump_sample_raw <- function(
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
 #' @param two.tailed whether or not to do calculate two tailed or one tailed power.
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param MDES scalar; the MDES value for all outcomes.
 #' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
 #' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
 #'
@@ -272,7 +272,7 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- validate_inputs(design, params.list)
+  params.list <- validate_inputs(design, params.list, ss.call = TRUE)
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES
