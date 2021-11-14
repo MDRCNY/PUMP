@@ -33,26 +33,26 @@
 #'
 
 pump_mdes <- function(
-  design, MTP = NULL, M, nbar, J, K = 1, numZero = NULL,
+  design, MTP = NULL, M, nbar, J, K = 1,
   Tbar, alpha = 0.05,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
-  rho = NULL, rho.matrix = NULL, 
+  rho = NULL, rho.matrix = NULL,
   B = 1000,
   max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
   cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
 {
-  
+
   # Call self for each element on MTP list.
-  
+
   # NOTE: This is not well defined because do we store search history or what
   # when we have multiple calls to different MTPs?
-  
+
   # if ( length( MTP ) > 1 ) {
   #   if ( verbose ) {
   #     scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
@@ -66,31 +66,31 @@ pump_mdes <- function(
   #                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
   #                     ICC.2 = ICC.2, ICC.3 = ICC.3,
   #                     omega.2 = omega.2, omega.3 = omega.3,
-  #                     rho = rho, rho.matrix = rho.matrix, 
+  #                     rho = rho, rho.matrix = rho.matrix,
   #                     B = B,
   #                     max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
   #                     cl = cl, updateProgress = updateProgress, give.optimizer.warnings = give.optimizer.warnings,
   #                     verbose = verbose )
-  #   
+  #
   #   plist = attr( des[[1]], "params.list" )
   #   plist$MTP = MTP
   #     ftable = des[[1]]
   #     for ( i in 2:length(des) ) {
   #       ftable = dplyr::bind_rows( ftable, des[[i]] )
   #     }
-  #   
+  #
   #   return( make.pumpresult( ftable, "mdes",
   #                            params.list = plist,
   #                            design = design,
   #                            multiple_MTP = TRUE ) )
-  #   
+  #
   #   #des = map( des, ~ .x[nrow(.x),] ) %>%
   #   #  dplyr::bind_rows()
   #   #return( des )
   # }
-  
-  
-  
+
+
+
   if ( verbose ) {
     scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations (%d perms for WY if used)\n",
           max.tnum, start.tnum, final.tnum, B )

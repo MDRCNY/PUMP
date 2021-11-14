@@ -19,7 +19,8 @@ scat <- function( str, ... ) {
 #'
 validate_inputs <- function( design, params.list,
                              power.call = FALSE,
-                             mdes.call = FALSE )
+                             mdes.call = FALSE,
+                             ss.call = FALSE )
 {
 
   #-------------------------------------------------------#
@@ -70,6 +71,15 @@ validate_inputs <- function( design, params.list,
   if ( mdes.call ) {
     if ( !is.null( params.list$MDES ) ) {
       stop( "You cannot provide MDES to pump_mdes()" )
+    }
+    if ( !is.null( params.list$numZero ) ) {
+      stop( "You cannot provide numZero to pump_mdes()" )
+    }
+  } else if (ss.call) {
+    if( length(params.list$MDES) > 1 | params.list$numZero > 0)
+    {
+      stop(paste0('Please provide a single MDES value.\n',
+      'Sample size calculations assume the same MDES for all outcomes.'))
     }
   } else
   {
