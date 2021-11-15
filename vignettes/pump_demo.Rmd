@@ -331,7 +331,7 @@ We finally explore varying the number of zeros in our outcomes.
 For illustration we also expand the number of outcomes to 5.
 The tools are the same as before:
 
-```{r, cache=TRUE, fig.width = 7, fig.height = 2.5 }
+```{r, cache = TRUE, fig.width = 7, fig.height = 2.5 }
 grid <- update_grid( p,
             numZero = 0:4,
             M = 5 )

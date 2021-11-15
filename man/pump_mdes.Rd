@@ -11,7 +11,6 @@ pump_mdes(
   nbar,
   J,
   K = 1,
-  numZero = NULL,
   Tbar,
   alpha = 0.05,
   target.power,
@@ -55,9 +54,6 @@ outcomes}
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
-
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

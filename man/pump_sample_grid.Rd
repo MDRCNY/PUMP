@@ -16,7 +16,6 @@ pump_sample_grid(
   nbar = NULL,
   J = NULL,
   K = NULL,
-  numZero = NULL,
   Tbar,
   alpha,
   numCovar.1 = NULL,
@@ -55,7 +54,7 @@ function, i.e. D1indiv, min1, etc.}
 controls when the search is done: when estimated power (checked with
 `final.tnum` iterations) is within `tol`, the search stops.}
 
-\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
+\item{MDES}{scalar; the MDES value for all outcomes.}
 
 \item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
 
@@ -64,9 +63,6 @@ controls when the search is done: when estimated power (checked with
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
-
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
