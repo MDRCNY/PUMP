@@ -81,10 +81,12 @@ validate_inputs <- function( design, params.list,
     {
       params.list$MDES <- rep( params.list$MDES, params.list$M )
     }
-  } else if(mdes.call) {
-    if(!is.null(params.list$MDES))
-    {
-      stop('Do not provide MDES to pump_mdes()')
+  } else if( mdes.call ) {
+    if ( !is.null( params.list$MDES ) ) {
+      stop( "You cannot provide MDES to pump_mdes()" )
+    }
+    if ( !is.null( params.list$numZero ) ) {
+      stop( "You cannot provide numZero to pump_mdes()" )
     }
   } else
   {
