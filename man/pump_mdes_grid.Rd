@@ -14,7 +14,6 @@ pump_mdes_grid(
   nbar,
   J = 1,
   K = 1,
-  numZero = NULL,
   Tbar,
   alpha,
   numCovar.1 = NULL,
@@ -58,9 +57,6 @@ controls when the search is done: when estimated power (checked with
 \item{J}{scalar; the number of schools}
 
 \item{K}{scalar; the number of districts}
-
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

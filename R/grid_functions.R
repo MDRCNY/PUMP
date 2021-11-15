@@ -43,8 +43,8 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 #'
 #' Set up furrr to use all but one core
 #'
-#' @importFrom future plan
-#' @importFrom future multisession
+# @importFrom future plan
+# @importFrom future multisession
 #' @importFrom parallel detectCores
 #'
 #' @export
@@ -84,7 +84,7 @@ setup_default_parallel_plan <- function() {
 #'   or pump_mdes functions.
 #'
 #' @importFrom magrittr %>%
-#' @importFrom furrr future_pmap
+# @importFrom furrr future_pmap
 #' @importFrom tidyselect vars_select_helpers
 #' @family grid functions
 #' @export

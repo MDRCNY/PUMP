@@ -4,7 +4,13 @@
 \alias{validate_inputs}
 \title{Validates user inputs}
 \usage{
-validate_inputs(design, params.list, power.call = FALSE, mdes.call = FALSE)
+validate_inputs(
+  design,
+  params.list,
+  power.call = FALSE,
+  mdes.call = FALSE,
+  ss.call = FALSE
+)
 }
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
@@ -14,6 +20,8 @@ validate_inputs(design, params.list, power.call = FALSE, mdes.call = FALSE)
 \item{power.call}{flag for power estimation}
 
 \item{mdes.call}{flag for MDES estimation}
+
+\item{ss.call}{flag for sample size estimation}
 }
 \value{
 params.list
