@@ -12,7 +12,8 @@ test_that( "update generally works", {
                           tol = 0.05,
                           Tbar = 0.50, alpha = 0.05,
                           numCovar.1 = 5, numCovar.2 = 1,
-                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                          R2.1 = 0.1, R2.2 = 0.7,
+                          ICC.2 = 0.05, ICC.3 = 0.4,
                           rho = 0,
                           final.tnum = 1000 )
 
@@ -52,7 +53,6 @@ test_that( "update generally works", {
 
 test_that( "update_grid generally works", {
 
-
     set.seed( 101010 )
     ss <- pump_mdes(    design = "d2.1_m2fc",
                         MTP = "Holm",
@@ -62,10 +62,10 @@ test_that( "update_grid generally works", {
                         tol = 0.02,
                         Tbar = 0.50, alpha = 0.05,
                         numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        R2.1 = 0.1, R2.2 = 0.7,
+                        ICC.2 = 0.05, ICC.3 = 0.4,
                         rho = 0,
                         final.tnum = 1000 )
-
     ss
 
     gd = update_grid( ss, J = c( 10, 20, 30 ) )
@@ -77,7 +77,8 @@ test_that( "update_grid generally works", {
     expect_true( nrow( gd2 ) == 4 )
 
     s3 = update( s2, type="sample", typesample="J",
-                 power.definition = "D2indiv", target.power=0.70, tol=0.03 )
+                 power.definition = "D2indiv",
+                 target.power = 0.70, tol = 0.03 )
     gd3 = update_grid( s3, power.definition = c( "min1", "min2" )  )
     expect_true( nrow(gd3) == 2 )
 } )

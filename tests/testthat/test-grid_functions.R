@@ -177,7 +177,7 @@ test_that("pump_sample_grid works", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.25, ICC.3 = 0.25,
                              rho = 0.4, # how correlated outcomes are
-                             tnum = 200, verbose = FALSE, max.tnum = 400
+                             verbose = FALSE, max.tnum = 400
 
   )
   pp
@@ -257,23 +257,33 @@ test_that( "grid works for long tables", {
 })
 
 
-test_that( "TODO grid should breaks with invalid inputs", {
-  pp <- pump_sample_grid(
+test_that( "grid breaks with invalid inputs", {
+  expect_error(pp <- pump_sample_grid(
     design = "d2.2_m2rc",
     MTP = c("Holm"),
     typesample = c("J"),
-    MDES = c(0.125),
+    MDES = 0.125,
+    J = 10,
     M = 5,
-    numZero = 1,
     nbar = 50,
     target.power = 0.8,
     power.definition = "indiv.mean",
     alpha = 0.5,
     Tbar = 0.8,
     numCovar.1 = 2,
-    rho = 0.2,
-    max_sample_size_JK = 50,
-    tol = 0.05)
+    rho = 0.2))
 
-  expect_true(!is.null(pp))
+  expect_error(pp <- pump_mdes_grid(
+    design = "d2.2_m2rc",
+    MTP = c("Holm"),
+    MDES = c(0.125),
+    J = 10,
+    M = 5,
+    nbar = 50,
+    target.power = 0.8,
+    power.definition = "indiv.mean",
+    alpha = 0.5,
+    Tbar = 0.8,
+    numCovar.1 = 2,
+    rho = 0.2))
 })

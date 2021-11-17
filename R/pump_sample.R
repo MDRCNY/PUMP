@@ -252,13 +252,19 @@ pump_sample <- function(
 
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
-    stopifnot( is.null( nbar ) )
+    if(!is.null(nbar)) {
+      stop('Do not provide nbar if you are searching for nbar')
+    }
     nbar <- 1000
   } else if ( typesample == "J" ) {
-    stopifnot( is.null( J ) )
+    if(!is.null(J)) {
+      stop('Do not provide J if you are searching for J')
+    }
     J <- 1000
   } else if ( typesample == "K" ) {
-    stopifnot( is.null( K ) )
+    if(!is.null(K)) {
+      stop('Do not provide K if you are searching for K')
+    }
     K <- 1000
   }
 

@@ -1,10 +1,13 @@
-##
-## This file has the "grid" functions that call pump_power, pump_mdes, and pump_sample on multiple combinations
-##
-
+#' Run grid across any of the core pump functions
+#'
+#' @param args list of scenario arguments
+#' @param pum_function pump_mdes, pump_sample, pump_power
+#' @param verbose print out detailed diagnostics
+#' @param drop_unique_columns
+#' @param use_furrr not currently in use, whether to parallelize
 run_grid <- function( args, pum_function, verbose = FALSE,
-                     drop_unique_columns, ...,
-                     use_furrr = FALSE ) {
+                      drop_unique_columns, ...,
+                      use_furrr = FALSE ) {
   grid <- do.call( tidyr::expand_grid, args )
   if ( verbose ) {
     scat( "Processing %d calls\n", nrow(grid) )
@@ -88,9 +91,12 @@ setup_default_parallel_plan <- function() {
 #' @importFrom tidyselect vars_select_helpers
 #' @family grid functions
 #' @export
-pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero = NULL,
+pump_power_grid <- function( design, MTP, MDES, M, nbar,
+                             J = 1, K = 1, numZero = NULL,
                              Tbar, alpha = 0.05,
-                             numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
+                             numCovar.1 = NULL,
+                             numCovar.2 = NULL,
+                             numCovar.3 = NULL,
                              R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                              ICC.2 = NULL, ICC.3 = NULL,
                              omega.2 = NULL, omega.3 = NULL,
@@ -104,12 +110,17 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar, J = 1, K = 1, numZero =
     stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
   }
 
-  args <- list( design = design, M = M, MDES = MDES, J = J, K = K,
+  args <- list( design = design, M = M, MDES = MDES,
+                J = J, K = K,
                 nbar = nbar, numZero = numZero,
                 Tbar = Tbar, alpha = alpha,
-                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+                numCovar.1 = numCovar.1,
+                numCovar.2 = numCovar.2,
+                numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2,
+                ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho,
+                omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
@@ -138,7 +149,9 @@ pump_mdes_grid <- function( design, MTP, M,
                             target.power, power.definition, tol,
                             nbar, J = 1, K = 1,
                             Tbar, alpha,
-                            numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
+                            numCovar.1 = NULL,
+                            numCovar.2 = NULL,
+                            numCovar.3 = NULL,
                             R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                             ICC.2 = NULL, ICC.3 = NULL,
                             omega.2 = NULL, omega.3 = NULL,
@@ -149,20 +162,26 @@ pump_mdes_grid <- function( design, MTP, M,
                             ... ) {
 
 
-  args <- list( design = design, M = M, J = J, K = K, nbar = nbar,
+  args <- list( design = design, M = M,
+                J = J, K = K, nbar = nbar,
                 target.power = target.power,
                 power.definition = power.definition,
                 MTP = MTP,
                 Tbar = Tbar, alpha = alpha,
-                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+                numCovar.1 = numCovar.1,
+                numCovar.2 = numCovar.2,
+                numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2,
+                ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho,
+                omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
   grid <- run_grid( args, pum_function = pump_mdes,
-                    verbose = verbose, drop_unique_columns = drop_unique_columns,
-                    tol = tol, use_furrr = use_furrr )
+                    verbose = verbose,
+                    drop_unique_columns = drop_unique_columns,
+                    tol = tol, ..., use_furrr = use_furrr )
 
   grid
 }
@@ -188,7 +207,9 @@ pump_sample_grid <- function( design, MTP, M,
                               typesample,
                               nbar = NULL, J = NULL, K = NULL,
                               Tbar, alpha,
-                              numCovar.1 = NULL, numCovar.2 = NULL, numCovar.3 = NULL,
+                              numCovar.1 = NULL,
+                              numCovar.2 = NULL,
+                              numCovar.3 = NULL,
                               R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
                               ICC.2 = NULL, ICC.3 = NULL,
                               omega.2 = NULL, omega.3 = NULL,
@@ -202,18 +223,24 @@ pump_sample_grid <- function( design, MTP, M,
   args <- list( design = design, M = M, J = J, K = K,
                 power.definition = power.definition,
                 MTP = MTP,
-                MDES = MDES, nbar = nbar, target.power = target.power,
+                MDES = MDES, nbar = nbar,
+                target.power = target.power,
                 Tbar = Tbar, alpha = alpha,
-                numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-                R2.1 = R2.1, R2.2 = R2.2, ICC.2 = ICC.2, ICC.3 = ICC.3,
-                rho = rho, omega.2 = omega.2, omega.3 = omega.3 )
+                numCovar.1 = numCovar.1,
+                numCovar.2 = numCovar.2,
+                numCovar.3 = numCovar.3,
+                R2.1 = R2.1, R2.2 = R2.2,
+                ICC.2 = ICC.2, ICC.3 = ICC.3,
+                rho = rho,
+                omega.2 = omega.2, omega.3 = omega.3 )
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
   grid <- run_grid( args, pum_function = pump_sample,
                    typesample = typesample,
-                   verbose = verbose, drop_unique_columns = drop_unique_columns,
-                   tol = tol, use_furrr = use_furrr )
+                   verbose = verbose,
+                   drop_unique_columns = drop_unique_columns,
+                   tol = tol, ..., use_furrr = use_furrr )
 
   grid
 }
