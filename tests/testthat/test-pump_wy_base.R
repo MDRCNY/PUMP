@@ -15,7 +15,7 @@ rawt <- c(2, 2, 2)
 nullt <- c(3, 3, 3)
 
 exp.ind.B <- c(1, 1, 1)
-ind.B <- comp.rawt.ss(nullt, rawt)
+ind.B <- comp_rawt_ss(nullt, rawt)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -28,7 +28,7 @@ rawt <- c(2, 2, 2)
 nullt <- c(1, 1, 1)
 
 exp.ind.B <- c(0, 0, 0)
-ind.B <- comp.rawt.ss(nullt, rawt)
+ind.B <- comp_rawt_ss(nullt, rawt)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -41,7 +41,7 @@ rawt <- c(-2, -2, -2)
 nullt <- c(1, 1, 1)
 
 exp.ind.B <- c(0, 0, 0)
-ind.B <- comp.rawt.ss(nullt, rawt)
+ind.B <- comp_rawt_ss(nullt, rawt)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -54,7 +54,7 @@ rawt <- c(2, 0.5, 2)
 nullt <- c(1, 1, 1)
 
 exp.ind.B <- c(0, 1, 0)
-ind.B <- comp.rawt.ss(nullt, rawt)
+ind.B <- comp_rawt_ss(nullt, rawt)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -90,7 +90,7 @@ exp.ind.B <- rbind(
   c(1, 0, 0),
   c(1, 1, 0)
 )
-ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt))
+ind.B <- t(apply(nullt, 1, comp_rawt_ss, rawt = rawt))
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -112,7 +112,7 @@ rawt.mat <- rbind(
 )
 
 set.seed(458738957)
-adjp <- adjp.wyss(rawt.mat = rawt.mat, B, sigma, t.df)
+adjp <- adjp_wyss(rawt.mat = rawt.mat, B, sigma, t.df)
 
 # null t
 # t = 1
@@ -171,7 +171,7 @@ test_that("Qstar match", {
 
 # test indicator B
 exp.ind.B <- c(1, 1, 1)
-ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
+ind.B <- comp_rawt_sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -201,7 +201,7 @@ test_that("Qstar match", {
 
 # test indicator B
 exp.ind.B <- c(0, 1, 1)
-ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
+ind.B <- comp_rawt_sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -231,7 +231,7 @@ test_that("Qstar match", {
 
 # test indicator B
 exp.ind.B <- c(1, 1, 0)
-ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
+ind.B <- comp_rawt_sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -260,7 +260,7 @@ test_that("Qstar match", {
 
 # test indicator B
 exp.ind.B <- c(0, 0, 1)
-ind.B <- comp.rawt.sd(nullt, rawt, rawt.order)
+ind.B <- comp_rawt_sd(nullt, rawt, rawt.order)
 
 test_that("Indicator functions match", {
   expect_equal(ind.B, exp.ind.B)
@@ -379,7 +379,7 @@ ind.B <- rbind(
   c(0, 1, 1)
 )
 
-adjp <- get.adjp.minp(ind.B, rawt.order)
+adjp <- get_adjp_minp(ind.B, rawt.order)
 exp.adjp <- c(1, 1, 0)
 
 test_that("P value output matches", {
@@ -397,9 +397,9 @@ rawt.mat = rbind(
 )
 B <- 100
 set.seed(4335)
-adjp.sd <- adjp.wysd(rawt.mat, B, sigma, t.df, cl = NULL)
+adjp.sd <- adjp_wysd(rawt.mat, B, sigma, t.df, cl = NULL)
 set.seed(4335)
-adjp.ss <- adjp.wyss(rawt.mat, B, sigma, t.df)
+adjp.ss <- adjp_wyss(rawt.mat, B, sigma, t.df)
 test_that("Smallest p-value should match", {
   expect_equal(adjp.sd[1,3], adjp.ss[1,3])
 })
@@ -424,7 +424,7 @@ B <- 2
 # [2,] -1.0086968 -0.6327400480  0.8786953
 
 set.seed(4334)
-adjp <- adjp.wysd(rawt.mat, B, sigma, t.df, cl = NULL)
+adjp <- adjp_wysd(rawt.mat, B, sigma, t.df, cl = NULL)
 exp.adjp = rbind(
   c(0.5, 0.5, 0),
   c(1, 0.5, 1)

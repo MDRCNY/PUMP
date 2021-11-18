@@ -1,7 +1,3 @@
-
-
-
-
 #' MDES (minimum detectable effect size) function
 #'
 #' The minimum detectable effect size function calculates the most feasible
@@ -181,12 +177,12 @@ pump_mdes <- function(
   }
 
   # Compute Q.m and df
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
   )
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K, nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
   )

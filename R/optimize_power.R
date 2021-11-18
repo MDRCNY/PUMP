@@ -178,7 +178,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
         if ( search.type == 'K' ) {
           myK <- current.try
         }
-        t.df <- calc.df(
+        t.df <- calc_df(
           design = design,
           nbar = ifelse(search.type == 'nbar', current.try, nbar),
           J = ifelse(search.type == 'J', current.try, J),
@@ -411,7 +411,7 @@ fit_bounded_logistic = function( x, y, wt ) {
 
   stopifnot( length(x) == length(y) )
   stopifnot( length(wt) == length(x) || length(wt) == 1 )
-  
+
   # the log likelihood
   loglik <- function(par, y, x, wt) {
     p = bounded_logistic_curve( x, par )
@@ -446,7 +446,7 @@ fit_bounded_logistic = function( x, y, wt ) {
 find_best <- function(test.pts, target.power, gamma = 1.5)
 {
   stopifnot( gamma >= 1 )
-  
+
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
 

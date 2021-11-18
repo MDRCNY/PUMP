@@ -3,7 +3,7 @@
 #' Transform table returned from pump_power to a long format table.
 #'
 #' @param power_table pumpresult object for a power result (not mdes or sample).
-#' 
+#'
 transpose_power_table <- function( power_table ) {
 
   cname = power_table$MTP
@@ -36,7 +36,7 @@ transpose_power_table <- function( power_table ) {
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
   M <- ncol(pval.mat)
   num.nonzero <- sum(ind.nonzero)
@@ -238,14 +238,14 @@ pump_power <- function(
   }
 
   # compute test statistics for when null hypothesis is false
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,
     omega.2 = omega.2, omega.3 = omega.3
   )
   t.shift <- MDES/Q.m
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K,
     nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
@@ -284,12 +284,12 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B,
+    adjp <- adjp_wyss(rawt.mat = rawt.mat, B = B,
                       Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B,
+    adjp <- adjp_wysd(rawt.mat = rawt.mat, B = B,
                       Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else
@@ -302,10 +302,10 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get_power_results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(adjp, ind.nonzero, alpha, adj = TRUE)
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
