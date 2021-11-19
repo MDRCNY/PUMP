@@ -24,7 +24,7 @@ exp.power.results <- data.frame(
   min2 = 0.5,
   complete = 0.25
 )
-power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(pval.mat, ind.nonzero, alpha)
 
 test_that("Power matches when all outcomes are nonzero", {
   expect_equal(exp.power.results, power.results.out)
@@ -51,7 +51,7 @@ exp.power.results <- data.frame(
   min1 = 0.75,
   complete = 0.25
 )
-power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(pval.mat, ind.nonzero, alpha)
 
 test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_equal(exp.power.results, power.results.out)
@@ -83,7 +83,7 @@ exp.power.results <- data.frame(
     min3 = 0.25,
     complete = 0.25
 )
-power.results.out <- get.power.results(pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(pval.mat, ind.nonzero, alpha)
 
 test_that("Power matches with perfectly correlated outcomes", {
     expect_equal(exp.power.results, power.results.out)

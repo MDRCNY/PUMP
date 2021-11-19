@@ -1,3 +1,5 @@
+
+# print out results cleanly
 scat <- function( str, ... ) {
   cat( sprintf( str, ... ) )
 }

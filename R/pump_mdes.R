@@ -1,7 +1,3 @@
-
-
-
-
 #' MDES (minimum detectable effect size) function
 #'
 #' The minimum detectable effect size function calculates the most feasible
@@ -142,7 +138,7 @@ pump_mdes <- function(
   }
 
   # information that will be returned to the user
-  mdes.cols <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -181,12 +177,12 @@ pump_mdes <- function(
   }
 
   # Compute Q.m and df
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
   )
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K, nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
   )
@@ -294,7 +290,7 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
-  if(!is.na(mdes.results$`Adjusted MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(mdes.results$`Adjusted.MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
     msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")

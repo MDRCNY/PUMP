@@ -3,9 +3,9 @@
 # library( testthat )
 
 
-test_that("calc.nbar works", {
+test_that("calc_nbar works", {
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -14,7 +14,7 @@ test_that("calc.nbar works", {
   nbar
   expect_true( is.na( nbar ) )
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 305,
@@ -26,9 +26,9 @@ test_that("calc.nbar works", {
 } )
 
 
-test_that("calc.J works", {
+test_that("calc_J works", {
 
-  J <- calc.J(  design = "d2.2_m2rc",
+  J <- calc_J(  design = "d2.2_m2rc",
                       MT = 2.8,
                       MDES = 0.20,
                       nbar = 200,

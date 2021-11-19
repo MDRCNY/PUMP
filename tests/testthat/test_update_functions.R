@@ -36,7 +36,7 @@ test_that( "update generally works", {
     tomdes = update( topow, type="mdes",
                      target.power = 0.95,
                      power.definition = "min2" )
-    expect_true( tomdes$`Adjusted MDES` > params( topow )$MDES[[1]] )
+    expect_true( tomdes$`Adjusted.MDES` > params( topow )$MDES[[1]] )
 
     bsamp = update( tomdes, type="sample", typesample = "nbar",
                     MDES = 0.10 )
