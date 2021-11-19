@@ -1,3 +1,5 @@
+
+# print out results cleanly
 scat <- function( str, ... ) {
   cat( sprintf( str, ... ) )
 }
@@ -13,13 +15,15 @@ scat <- function( str, ... ) {
 #' @param design a single RCT design (see list/naming convention)
 #' @param params.list a list of parameters input by a user
 #' @param power.call flag for power estimation
+#' @param ss.call flag for sample size estimation
 #' @param mdes.call flag for MDES estimation
 #'
 #' @return params.list
 #'
 validate_inputs <- function( design, params.list,
                              power.call = FALSE,
-                             mdes.call = FALSE )
+                             mdes.call = FALSE,
+                             ss.call = FALSE)
 {
 
   #-------------------------------------------------------#
@@ -67,9 +71,24 @@ validate_inputs <- function( design, params.list,
   # MDES
   #-------------------------------------------------------#
 
-  if ( mdes.call ) {
+  if (ss.call) {
+    if( length(params.list$MDES) > 1 )
+    {
+      if(length(unique(params.list$MDES)) > 1)
+      {
+        stop(paste0('Please provide a single MDES value.\n',
+                    'Sample size calculations assume the same MDES for all outcomes.'))
+      }
+    } else
+    {
+      params.list$MDES <- rep( params.list$MDES, params.list$M )
+    }
+  } else if( mdes.call ) {
     if ( !is.null( params.list$MDES ) ) {
       stop( "You cannot provide MDES to pump_mdes()" )
+    }
+    if ( !is.null( params.list$numZero ) ) {
+      stop( "You cannot provide numZero to pump_mdes()" )
     }
   } else
   {

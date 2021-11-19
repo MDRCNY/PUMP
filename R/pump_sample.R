@@ -73,7 +73,7 @@ pump_sample_raw <- function(
     stop('pump_sample_raw only takes scalar inputs')
   }
 
-  initial_df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  initial_df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
   stopifnot( initial_df > 0 )
 
   i <- 0
@@ -82,14 +82,14 @@ pump_sample_raw <- function(
   # Get initial size (will be low)
   MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
-    J <- calc.J( design, MT = MT, MDES = MDES[1],
+    J <- calc_J( design, MT = MT, MDES = MDES[1],
                  K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                  omega.2 = omega.2[1], omega.3 = omega.3[1] )
     J <- round(J)
   } else if (typesample == "K") {
-    K <- calc.K(
+    K <- calc_K(
       design, MT = MT, MDES = MDES[1],
       J = J, nbar = nbar, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -98,7 +98,7 @@ pump_sample_raw <- function(
     )
     K <- round(K)
   } else if (typesample == "nbar") {
-    nbar <- calc.nbar(
+    nbar <- calc_nbar(
       design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -106,7 +106,7 @@ pump_sample_raw <- function(
     )
   }
 
-  df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+  df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
 
   if( df < 1 ) {
     while( df < 1 ) {
@@ -120,7 +120,7 @@ pump_sample_raw <- function(
         K <- K + 1
         min_samp_size <- K
       }
-      df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+      df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     }
     if ( warn.small ) {
       warning(
@@ -133,11 +133,11 @@ pump_sample_raw <- function(
 
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
-    df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+    df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
-      J1 <- calc.J( design, MT = MT, MDES = MDES[1],
+      J1 <- calc_J( design, MT = MT, MDES = MDES[1],
                     K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -153,7 +153,7 @@ pump_sample_raw <- function(
       }
 
     } else if (typesample == "K") {
-      K1 <- calc.K(
+      K1 <- calc_K(
         design, MT = MT, MDES = MDES[1],
         J = J, nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -167,7 +167,7 @@ pump_sample_raw <- function(
         K <- K + 1
       }
     } else if (typesample == "nbar") {
-      nbar1 <- calc.nbar(
+      nbar1 <- calc_nbar(
         design, MT = MT, MDES = MDES[1],
         J = J, K = K, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -216,7 +216,7 @@ pump_sample_raw <- function(
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
 #' @param two.tailed whether or not to do calculate two tailed or one tailed power.
-#' @param MDES scalar, or vector of length M; the MDES values for each outcome.
+#' @param MDES scalar; the MDES value for all outcomes.
 #' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
 #' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
 #'
@@ -225,7 +225,7 @@ pump_sample_raw <- function(
 
 pump_sample <- function(
   design, MTP = NULL, typesample,
-  MDES, M, numZero = NULL,
+  MDES, M,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
   alpha, two.tailed = TRUE,
@@ -252,19 +252,25 @@ pump_sample <- function(
 
   # Give prelim values for the validation of parameters process.
   if ( typesample == "nbar" ) {
-    stopifnot( is.null( nbar ) )
+    if(!is.null(nbar)) {
+      stop('Do not provide nbar if you are searching for nbar')
+    }
     nbar <- 1000
   } else if ( typesample == "J" ) {
-    stopifnot( is.null( J ) )
+    if(!is.null(J)) {
+      stop('Do not provide J if you are searching for J')
+    }
     J <- 1000
   } else if ( typesample == "K" ) {
-    stopifnot( is.null( K ) )
+    if(!is.null(K)) {
+      stop('Do not provide K if you are searching for K')
+    }
     K <- 1000
   }
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero,
+    MTP = MTP, MDES = MDES, M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -272,7 +278,7 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- validate_inputs(design, params.list)
+  params.list <- validate_inputs(design, params.list, ss.call = TRUE)
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES

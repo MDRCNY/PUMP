@@ -3,9 +3,9 @@
 # library( testthat )
 
 
-test_that("calc.nbar works", {
+test_that("calc_nbar works", {
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -14,7 +14,7 @@ test_that("calc.nbar works", {
   nbar
   expect_true( is.na( nbar ) )
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 305,
@@ -26,9 +26,9 @@ test_that("calc.nbar works", {
 } )
 
 
-test_that("calc.J works", {
+test_that("calc_J works", {
 
-  J <- calc.J(  design = "d2.2_m2rc",
+  J <- calc_J(  design = "d2.2_m2rc",
                       MT = 2.8,
                       MDES = 0.20,
                       nbar = 200,
@@ -409,3 +409,33 @@ test_that("No adjustment", {
 
 })
 
+test_that( "sample errors out for MDES vector", {
+  expect_error(pp <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = c("Holm"),
+    typesample = c("J"),
+    MDES = rep(0.2, 5),
+    M = 5,
+    numZero = 1,
+    nbar = 50,
+    target.power = 0.8,
+    power.definition = "indiv.mean",
+    alpha = 0.5,
+    Tbar = 0.8,
+    numCovar.1 = 2,
+    rho = 0.2))
+
+  expect_error(pp <- pump_sample(
+    design = "d2.2_m2rc",
+    MTP = c("Holm"),
+    typesample = c("J"),
+    M = 5,
+    numZero = 1,
+    nbar = 50,
+    target.power = 0.8,
+    power.definition = "indiv.mean",
+    alpha = 0.5,
+    Tbar = 0.8,
+    numCovar.1 = 2,
+    rho = 0.2))
+})

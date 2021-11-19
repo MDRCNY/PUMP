@@ -6,6 +6,9 @@
 \usage{
 transpose_power_table(power_table)
 }
+\arguments{
+\item{power_table}{pumpresult object for a power result (not mdes or sample).}
+}
 \description{
 Transform table returned from pump_power to a long format table.
 }

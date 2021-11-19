@@ -2,6 +2,8 @@
 #'
 #' Transform table returned from pump_power to a long format table.
 #'
+#' @param power_table pumpresult object for a power result (not mdes or sample).
+#'
 transpose_power_table <- function( power_table ) {
 
   pp <- t( power_table )
@@ -26,16 +28,18 @@ transpose_power_table <- function( power_table ) {
 #'
 #' This function takes in a matrix of adjusted p-values and outputs different types of power
 #'
-#' @param pval.mat matrix of p-values, columns are outcomes
+#' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
+#' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
+  num.nonzero <- sum(ind.nonzero)
 
   # rejected tests
   rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
@@ -50,22 +54,23 @@ get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, 
   power.min <- rep(NA, M)
   names(power.min) <- paste0('min',1:M)
 
+  # complete power
+  power.complete <- NA
+
   # if unadjusted, don't report minimum or complete power
   if(adj)
   {
-    for(m in 1:M)
-    {
-      min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
-      power.min[m] <- sum(min.rejects)/M
-    }
-
-    if(any(!ind.nonzero))
-    {
-      power.complete <- NA
-    } else
+    # complete power
+    if(all(ind.nonzero))
     {
       complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
       power.complete <- mean(complete.rejects)
+    }
+    # minimum power
+    for(m in 1:M)
+    {
+      min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
+      power.min[m] <- mean(min.rejects)
     }
   }
 
@@ -76,7 +81,14 @@ get.power.results <- function(unadj.pval.mat, adj.pval.mat, ind.nonzero, alpha, 
   names(power.ind.mean) = 'indiv.mean'
   names(power.complete) = 'complete'
 
+  # remove redundant min column
+  if(sum(num.nonzero) == M)
+  {
+    power.min <- power.min[1:(M - 1)]
+  }
+
   power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
+  power.vec <- sapply(power.vec, as.numeric)
 
   if(num.nonzero == 0)
   {
@@ -178,6 +190,7 @@ pump_power <- function(
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
+                      numZero = numZero,
                       Tbar = Tbar,
                       alpha = alpha,
                       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
@@ -206,7 +219,7 @@ pump_power <- function(
                              params.list = plist,
                              design = design,
                              multiple_MTP = TRUE,
-                             long.table=long.table ) )
+                             long.table = long.table ) )
 
     #des = map( des, ~ .x[nrow(.x),] ) %>%
     #  dplyr::bind_rows()
@@ -244,14 +257,14 @@ pump_power <- function(
   }
 
   # compute test statistics for when null hypothesis is false
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,
     omega.2 = omega.2, omega.3 = omega.3
   )
   t.shift <- MDES/Q.m
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K,
     nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
@@ -290,13 +303,13 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    adjp.mat <- adjp.wyss(rawt.mat = rawt.mat, B = B,
-                          Sigma = Sigma, t.df = t.df)
+    adjp.mat <- adjp_wyss(rawt.mat = rawt.mat, B = B,
+                      Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp.mat <- adjp.wysd(rawt.mat = rawt.mat, B = B,
-                          Sigma = Sigma, t.df = t.df, cl = cl)
+    adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
+                      Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else
   {
@@ -308,10 +321,10 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get.power.results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get_power_results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get.power.results(rawp.mat, adjp.mat, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(adjp.mat, rawp.mat, ind.nonzero, alpha, adj = TRUE)
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
@@ -325,4 +338,3 @@ pump_power <- function(
                            design = design,
                            long.table = long.table ) )
 }
-

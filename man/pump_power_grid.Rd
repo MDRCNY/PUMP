@@ -93,8 +93,13 @@ variation).}
 \item{verbose}{TRUE means print out some text as calls processed.  FALSE do
 not.}
 
+\item{use_furrr}{Use parallel processing furrr package to fit grid.}
+
 \item{drop_unique_columns}{Drop all parameter colunms that did not vary
 across the grid.}
+
+\item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
+or pump_mdes functions.}
 }
 \description{
 This extenstion of `pump_power()` will take lists of parameter values and run
@@ -112,3 +117,9 @@ These calls use furrr's future_pmap package to allow for parallel
 computation.  You can use the `setup_default_parallel_plan()` method or your
 own.  If you do nothing, it will default to single session.
 }
+\seealso{
+Other grid functions: 
+\code{\link{pump_mdes_grid}()},
+\code{\link{pump_sample_grid}()}
+}
+\concept{grid functions}

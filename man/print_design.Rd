@@ -9,7 +9,9 @@ print_design(x, insert_results = FALSE, ...)
 \arguments{
 \item{x}{A pumpresult object.}
 
-\item{...}{additional arguments to be passed to or from methods.}
+\item{insert_results}{Include actual results in the printout.}
+
+\item{...}{Extra arguments to pass to print.pumpresult.}
 }
 \description{
 Print design of given pump result object

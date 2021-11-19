@@ -68,10 +68,20 @@ pump_info <- function( comment = TRUE) {
 
 #' Return characteristics of a given design code
 #'
+#' See the pump_info method to get a list of supported designs.
+#'
+#' @param design String. Experimental design to parse.
+#'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
+#'
 #' @family pump_info
-#' @param design String. Experimental design to parse.
+#'
+#' @examples
+#' supported = pump_info()$Design
+#' supported$Code[[4]]
+#' parse_design( supported$Code[[4]] )
+#'
 #' @export
 parse_design <- function( design ) {
     des <- stringr::str_split(design, "\\.|_")[[1]]
@@ -140,7 +150,7 @@ parse_design <- function( design ) {
 #' @return Q_m, the standard error of the effect size estimate
 #' @export
 
-calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+calc_Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
     if(design %in% c('d1.1_m1c'))
     {
@@ -195,7 +205,7 @@ calc.Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
 #'
 #' @export
 
-calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
+calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
 
     if(design == 'd1.1_m1c')
     {
@@ -246,13 +256,13 @@ calc.df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 #' This function calculates needed nbar to achieve a given power (as represented by
 #' a difference in t-statistic) for all implemented designs
 #'
-#' @inheritParams calc.J
+#' @inheritParams calc_J
 #' @param J scalar; the number of schools
 #'
 #' @return nbar, the number of individuals needed, or NA if not possible given design
 #' @export
 
-calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
+calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
@@ -320,7 +330,7 @@ calc.nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 #' @return J, the number of schools needed
 #' @export
 
-calc.J <- function(
+calc_J <- function(
     design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
@@ -392,7 +402,7 @@ calc.J <- function(
 #'
 #' @return K, the number of districts
 #' @export
-calc.K <- function(design, MT, MDES, J, nbar, Tbar,
+calc_K <- function(design, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
                    omega.2, omega.3) {

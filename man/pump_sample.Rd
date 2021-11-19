@@ -10,7 +10,6 @@ pump_sample(
   typesample,
   MDES,
   M,
-  numZero = NULL,
   nbar = NULL,
   J = NULL,
   K = NULL,
@@ -54,13 +53,10 @@ to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
 
-\item{MDES}{scalar, or vector of length M; the MDES values for each outcome.}
+\item{MDES}{scalar; the MDES value for all outcomes.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
-
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

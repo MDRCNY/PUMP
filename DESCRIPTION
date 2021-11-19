@@ -17,20 +17,11 @@ Depends:
 Imports:
      MASS,
      mvtnorm,
-     doParallel,
      tidyverse,
-     foreach,
-     parallel,
-     snow,
-     RcppEigen,
-     lme4,
+     tidyselect,
      here,
-     furrr,
-     future,
      magrittr,
      ggplot2,
-     plyr,
-     grDevices,
      stats,
      purrr,
      gridExtra,
@@ -48,5 +39,13 @@ RoxygenNote: 7.1.2
 Suggests: 
     testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    grDevices,
+    furrr,
+    future,
+    parallel,
+    snow,
+    RcppEigen,
+    doParallel,
+    foreach
 VignetteBuilder: knitr
