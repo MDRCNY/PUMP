@@ -138,7 +138,7 @@ pump_mdes <- function(
   }
 
   # information that will be returned to the user
-  mdes.cols <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -290,7 +290,7 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
-  if(!is.na(mdes.results$`Adjusted MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(mdes.results$`Adjusted.MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
     msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
