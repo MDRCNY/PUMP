@@ -6,9 +6,10 @@
 #'
 transpose_power_table <- function( power_table ) {
 
+  cname = power_table$MTP
+  power_table$MTP = NULL
   pp <- t( power_table )
-  colnames(pp) <- pp[1,]
-  pp <- pp[-1,]
+  colnames(pp) <- cname
   #if ( ncol( pp ) > 1 ) {
   #  pp = pp[ , ncol(pp):1 ]
   #}
