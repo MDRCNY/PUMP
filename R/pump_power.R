@@ -1,3 +1,33 @@
+#' Parse the power definition
+#'
+#' @param power.definition i.e. D1indiv, min1, complete
+#' @param M number of outcomes
+#' @return information about power type
+parse_power_definition <- function( power.definition, M ) {
+  powertype <- list( min = FALSE,
+                     complete = FALSE,
+                     indiv = FALSE )
+
+  if ( stringr::str_detect( power.definition, "min" ) ) {
+    powertype$min <- TRUE
+    powertype$min_k <- readr::parse_number( power.definition )
+    stopifnot( is.numeric( powertype$min_k ) )
+  } else if ( stringr::str_detect( power.definition, "complete" ) ) {
+    powertype$min <- TRUE
+    powertype$complete <- TRUE
+    powertype$min_k <- M
+  } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- NULL
+  } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- readr::parse_number( power.definition )
+    stopifnot( is.numeric( powertype$indiv_k ) )
+  }
+
+  return( powertype )
+}
+
 #' Convert power table from wide to long
 #'
 #' Transform table returned from pump_power to a long format table.

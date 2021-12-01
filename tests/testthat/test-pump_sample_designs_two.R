@@ -76,13 +76,13 @@ test_that("testing of d2.2_m2rc raw", {
                         rho = 0.2)
 
   calcJ
-  expect_true( !is.na( calcJ$`Sample size` ) )
+  expect_true( !is.na( calcJ$`Sample.size` ) )
 
 
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$`Sample size` - 1,
+                   J = calcJ$`Sample.size` - 1,
                    nbar = 1000,
                    MDES = rep(0.40, 4),
                    Tbar = 0.50, alpha = 0.05,
@@ -95,7 +95,7 @@ test_that("testing of d2.2_m2rc raw", {
   pp = pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
-                   J = calcJ$`Sample size`,
+                   J = calcJ$`Sample.size`,
                    nbar = 1000,
                    MDES = rep( 0.40, 4),
                    Tbar = 0.50, alpha = 0.05,
@@ -166,7 +166,7 @@ test_that("testing of d2.1_m2fc", {
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
   J1
-  expect_equal(J1$`Sample size`, 60, tolerance = 0.1)
+  expect_equal(J1$`Sample.size`, 60, tolerance = 0.1)
 
   # converges
   set.seed(8598)
@@ -184,7 +184,7 @@ test_that("testing of d2.1_m2fc", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
     rho = 0.2)
   nbar1
-  expect_equal(50, nbar1$`Sample size`, tol = 0.1)
+  expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
 
 })
 
@@ -308,7 +308,7 @@ test_that("testing of d2.2_m2rc", {
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
   J1
-  expect_equal(J1$`Sample size`, 60, tol = 0.1)
+  expect_equal(J1$`Sample.size`, 60, tol = 0.1)
 
   nbar1 <- pump_sample(
     design = "d2.2_m2rc",
@@ -322,6 +322,6 @@ test_that("testing of d2.2_m2rc", {
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
   nbar1
-  expect_equal(nbar1$`Sample size`, 50, tol = 0.1)
+  expect_equal(nbar1$`Sample.size`, 50, tol = 0.1)
 
 })

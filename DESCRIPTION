@@ -10,8 +10,7 @@ Authors@R: c(
   person("Zarni", "Htet",,"zarni.htet@mdrc.org", c("aut"))
   )
 Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
-Description: This package details provides functions for power calculation, minimum detectable effect size and sample size
-    for multiple outcomes. We currently have those functions created for 2-level randomized block.
+Description: This package details provides functions for calculating power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The calculations take into account the use of multiple testing procedures.
 Depends:
      R (>= 3.5.0)
 Imports:
@@ -39,13 +38,6 @@ RoxygenNote: 7.1.2
 Suggests: 
     testthat,
     knitr,
-    rmarkdown,
-    grDevices,
     furrr,
-    future,
-    parallel,
-    snow,
-    RcppEigen,
-    doParallel,
-    foreach
+    future
 VignetteBuilder: knitr
