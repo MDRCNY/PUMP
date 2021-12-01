@@ -314,7 +314,7 @@ pump_sample <- function(
     K <- NULL
   }
 
-  output.colnames <- c("MTP", "Sample type", "Sample size",
+  output.colnames <- c("MTP", "Sample.type", "Sample.size",
                        paste(power.definition, "power") )
 
   # check if zero power
@@ -500,7 +500,7 @@ pump_sample <- function(
 
 
   # if it has converged, give notice about possible flatness
-  if(!is.na(ss.results$`Sample size`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
     msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")

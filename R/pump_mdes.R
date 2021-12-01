@@ -99,7 +99,7 @@ pump_mdes <- function(
     stop( "Cannot have NULL tol (tolerance)" )
   }
 
-  pow_params <- list( target.power=target.power,
+  pow_params <- list( target.power = target.power,
                       power.definition = power.definition,
                       tol = tol )
 
@@ -195,14 +195,18 @@ pump_mdes <- function(
   crit.beta <- ifelse(target.power > 0.5,
                       qt(target.power, df = t.df),
                       qt(1 - target.power, df = t.df))
-  mdes.raw  <- ifelse(target.power > 0.5,
-                      Q.m * (crit.alpha + crit.beta),
-                      Q.m * (crit.alpha - crit.beta))
-  mdes.bf   <- ifelse(target.power > 0.5,
-                      Q.m * (crit.alphaxM + crit.beta),
-                      Q.m * (crit.alphaxM - crit.beta))
+  if(target.power > 0.5)
+  {
+    mdes.raw.list <- Q.m * (crit.alpha + crit.beta)
+    mdes.bf.list  <- Q.m * (crit.alphaxM + crit.beta)
+  } else
+  {
+    mdes.raw.list <- Q.m * (crit.alpha - crit.beta)
+    mdes.bf.list  <- Q.m * (crit.alphaxM - crit.beta)
+  }
 
-
+  mdes.raw <- min(mdes.raw.list)
+  mdes.bf <- max(mdes.bf.list)
 
   # MDES is already calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {

@@ -319,7 +319,7 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   }
   if(length(high) == 0)
   {
-    high <- p$`Sample size`
+    high <- p$`Sample.size`
   }
 
   search_type <- ifelse( pump_type(p) == "mdes",

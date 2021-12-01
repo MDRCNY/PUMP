@@ -297,7 +297,7 @@ test_that("different correlations", {
     expect_true( pp.rhomed$min1[2] > pp.rhomax$min1[2]  )
 
     # complete power is the reverse
-    expect_true( pp.rhomin$complete[2] <  pp.rhomed$complete[2] )
+    expect_true( pp.rhomin$complete[2] < pp.rhomed$complete[2] )
     expect_true( pp.rhomed$complete[2] < pp.rhomax$complete[2] )
 
 })

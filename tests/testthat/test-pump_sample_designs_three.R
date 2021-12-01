@@ -30,7 +30,7 @@ test_that("testing of d3.1_m3rr2rr", {
             omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
             tnum = 100000)
         pp1
-        pp1_power =pp_power
+        pp1_power = pp_power
     }
 
     # Save the target power from above.  No need to rerun for testing code
@@ -77,7 +77,7 @@ test_that("testing of d3.1_m3rr2rr", {
         omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
         max_sample_size_nbar = 40 ))
     #  plot_power_search(nbar7)
-    expect_true(nbar7$`Sample size` < 45 )
+    expect_true(nbar7$`Sample.size` < 45 )
 })
 
 
@@ -255,8 +255,8 @@ test_that("testing of d3.3_m3rc2rc", {
         ICC.2 = 0.1, ICC.3 = 0.1,
         omega.2 = 0, omega.3 = 0, rho = 0.5))
     J1
-    expect_true(!is.na(J1$`Sample size`))
-    expect_equal(40, J1$`Sample size`, tol = 0.1)
+    expect_true(!is.na(J1$`Sample.size`))
+    expect_equal(40, J1$`Sample.size`, tol = 0.1)
 
 
     set.seed( 245444 )
@@ -278,7 +278,7 @@ test_that("testing of d3.3_m3rc2rc", {
         start.tnum = 2000, max.tnum = 4000,
         tol = 0.005, max_sample_size_JK = 80))
     J3
-    expect_true(!is.na(J3$`Sample size`))
+    expect_true(!is.na(J3$`Sample.size`))
 
 
     set.seed( 245444 )
@@ -329,6 +329,6 @@ test_that( "testing of lower limit", {
     pp
     expect_true( !is.null( pp ) )
     expect_true( pp$`min1 power` > 0.50 )
-    expect_true( pp$`Sample size` == 3 )
+    expect_true( pp$`Sample.size` == 3 )
 
 } )
