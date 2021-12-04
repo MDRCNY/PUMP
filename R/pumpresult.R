@@ -331,14 +331,17 @@ print.pumpresult = function( x, n = 10,
 
 
     tr = attr( x, "tries" )
-    if ( search && !is.null( tr ) ) {
+    if ( search && !is.null( tr )  ) {
         cat( "\nSearch history\n")
         nr = nrow( tr )
-        if ( nr <= n ) {
-            print( tr )
+        if ( nr >= n ) {
             print( utils::head( tr, max(n/2,1) ) )
             scat( "\t...  %s steps total ...\n", nr )
-            print( utils::tail( tr, max(n/2),1) )
+            if ( n >= 2 ) {
+                print( utils::tail( tr, n/2 ) )
+            }
+        } else {
+            print( tr )
         }
     }
 
