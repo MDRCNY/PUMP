@@ -32,7 +32,9 @@ test_that("pump_power works without crashing", {
 
 
 test_that("pump_power long.table", {
-  
+
+  set.seed(9515)
+
   pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
                     MDES = rep( 0.10, 3 ),
@@ -51,12 +53,16 @@ test_that("pump_power long.table", {
   )
   pp
   expect_true( is.pumpresult( pp ) )
-  expect_true( is.numeric( pp$Bonferroni ) )
-  
+  # expect_true( is.numeric( pp$Bonferroni ) )
+
   expect_equal( dim( pp ), c(7,3) )
-  
-  expect_true( is.na( pp$None[[5]] ) )
+
+  expect_true( is.na( pp$None[5] ) )
+  expect_true( is.na( pp$None[6] ) )
+  expect_true( is.na( pp$None[7] ) )
   expect_true( pp$Bonferroni[4] < pp$Bonferroni[5] )
+  expect_true( pp$Bonferroni[5] > pp$Bonferroni[6] )
+  expect_true( pp$Bonferroni[6] > pp$Bonferroni[7] )
   expect_true( pp$Bonferroni[4] > pp$Bonferroni[7] )
   expect_true( all ( ( pp$None >= pp$Bonferroni )[1:4] ) )
 })
@@ -291,7 +297,7 @@ test_that("different correlations", {
     expect_true( pp.rhomed$min1[2] > pp.rhomax$min1[2]  )
 
     # complete power is the reverse
-    expect_true( pp.rhomin$complete[2] <  pp.rhomed$complete[2] )
+    expect_true( pp.rhomin$complete[2] < pp.rhomed$complete[2] )
     expect_true( pp.rhomed$complete[2] < pp.rhomax$complete[2] )
 
 })

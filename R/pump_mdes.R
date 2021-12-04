@@ -1,7 +1,3 @@
-
-
-
-
 #' MDES (minimum detectable effect size) function
 #'
 #' The minimum detectable effect size function calculates the most feasible
@@ -103,7 +99,7 @@ pump_mdes <- function(
     stop( "Cannot have NULL tol (tolerance)" )
   }
 
-  pow_params <- list( target.power=target.power,
+  pow_params <- list( target.power = target.power,
                       power.definition = power.definition,
                       tol = tol )
 
@@ -142,7 +138,7 @@ pump_mdes <- function(
   }
 
   # information that will be returned to the user
-  mdes.cols <- c("MTP", "Adjusted MDES", paste(power.definition, "power"))
+  mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
 
   # check if zero power, then return 0 MDES
   if(round(target.power, 2) <= 0)
@@ -181,12 +177,12 @@ pump_mdes <- function(
   }
 
   # Compute Q.m and df
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
   )
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K, nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
   )
@@ -199,14 +195,18 @@ pump_mdes <- function(
   crit.beta <- ifelse(target.power > 0.5,
                       qt(target.power, df = t.df),
                       qt(1 - target.power, df = t.df))
-  mdes.raw  <- ifelse(target.power > 0.5,
-                      Q.m * (crit.alpha + crit.beta),
-                      Q.m * (crit.alpha - crit.beta))
-  mdes.bf   <- ifelse(target.power > 0.5,
-                      Q.m * (crit.alphaxM + crit.beta),
-                      Q.m * (crit.alphaxM - crit.beta))
+  if(target.power > 0.5)
+  {
+    mdes.raw.list <- Q.m * (crit.alpha + crit.beta)
+    mdes.bf.list  <- Q.m * (crit.alphaxM + crit.beta)
+  } else
+  {
+    mdes.raw.list <- Q.m * (crit.alpha - crit.beta)
+    mdes.bf.list  <- Q.m * (crit.alphaxM - crit.beta)
+  }
 
-
+  mdes.raw <- min(mdes.raw.list)
+  mdes.bf <- max(mdes.bf.list)
 
   # MDES is already calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {
@@ -294,7 +294,7 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
-  if(!is.na(mdes.results$`Adjusted MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(mdes.results$`Adjusted.MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
     msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")

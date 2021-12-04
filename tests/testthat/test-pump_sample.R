@@ -3,9 +3,9 @@
 # library( testthat )
 
 
-test_that("calc.nbar works", {
+test_that("calc_nbar works", {
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -14,7 +14,7 @@ test_that("calc.nbar works", {
   nbar
   expect_true( is.na( nbar ) )
 
-  nbar <- calc.nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  design = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 305,
@@ -26,9 +26,9 @@ test_that("calc.nbar works", {
 } )
 
 
-test_that("calc.J works", {
+test_that("calc_J works", {
 
-  J <- calc.J(  design = "d2.2_m2rc",
+  J <- calc_J(  design = "d2.2_m2rc",
                       MT = 2.8,
                       MDES = 0.20,
                       nbar = 200,
@@ -139,7 +139,7 @@ test_that("Bonferroni for non individual power", {
                         rho = 0.4 )
 
 
-  expect_equal(ss$`Sample size`, 10, tol = 1)
+  expect_equal(ss$`Sample.size`, 10, tol = 1)
 } )
 
 
@@ -217,7 +217,7 @@ test_that("pump_sample 2 level/2 level", {
 
   p2 <- pump_power( design = "d2.1_m2fc",
                     MTP = "Holm",
-                    J = ss2$`Sample size`,
+                    J = ss2$`Sample.size`,
                     nbar = 200,
                     M = 3,
                     MDES = rep(0.05, 3),
@@ -263,7 +263,7 @@ test_that("sample search when one end is missing", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
     rho = 0.2 ) )
   nbar1
-  expect_true( !is.na( nbar1$`Sample size` ) )
+  expect_true( !is.na( nbar1$`Sample.size` ) )
 
 
   # same problem happens with logit
@@ -281,7 +281,7 @@ test_that("sample search when one end is missing", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
     rho = 0.2 ) )
   nbar2
-  expect_true( !is.na( nbar2$`Sample size` ) )
+  expect_true( !is.na( nbar2$`Sample.size` ) )
 
   # Now an infeasible calculation where the correlation makes min1 not able to
   # achieve power, even though independence would.
@@ -298,7 +298,7 @@ test_that("sample search when one end is missing", {
                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                                           rho = 0.2, max.tnum = 1000 ) )
   nbar3
-  expect_true( is.na( nbar3$`Sample size` ) )
+  expect_true( is.na( nbar3$`Sample.size` ) )
 })
 
 
@@ -331,7 +331,7 @@ test_that("Sample with different correlations", {
                           rho = 0 )
 
 
-    expect_equal(ss$`Sample size`, 10, tol = 1)
+    expect_equal(ss$`Sample.size`, 10, tol = 1)
 
 
     # high correlation
@@ -361,7 +361,7 @@ test_that("Sample with different correlations", {
                           rho = 0.95 )
 
 
-    expect_equal(ss$`Sample size`, 10, tol = 1)
+    expect_equal(ss$`Sample.size`, 10, tol = 1)
 
 } )
 
@@ -438,4 +438,76 @@ test_that( "sample errors out for MDES vector", {
     Tbar = 0.8,
     numCovar.1 = 2,
     rho = 0.2))
+})
+
+
+test_that( "different values for different outcomes", {
+
+  set.seed(03443)
+
+  pow <- pump_power(
+    design = "d2.1_m2fc",
+    MTP = "Holm",
+    J = 20,
+    nbar = 200,
+    M = 3,
+    MDES = 0.05,
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    rho = 0.4 )
+
+  # sanity check: higher ICC means higher power
+  expect_true(pow$D2indiv[1] > pow$D1indiv[1])
+  expect_true(pow$D3indiv[1] > pow$D2indiv[1])
+
+  ss1 <- pump_sample(
+    design = "d2.1_m2fc",
+    MTP = "Holm",
+    typesample = 'J',
+    target.power = 0.8,
+    power.definition = 'D1indiv',
+    nbar = 200,
+    M = 3,
+    MDES = 0.05,
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    rho = 0.4
+  )
+
+  ss2 <- pump_sample(
+    design = "d2.1_m2fc",
+    MTP = "Holm",
+    typesample = 'J',
+    target.power = 0.8,
+    power.definition = 'D2indiv',
+    nbar = 200,
+    M = 3,
+    MDES = 0.05,
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    rho = 0.4
+  )
+
+  ss3 <- pump_sample(
+    design = "d2.1_m2fc",
+    MTP = "Holm",
+    typesample = 'J',
+    target.power = 0.8,
+    power.definition = 'D3indiv',
+    nbar = 200,
+    M = 3,
+    MDES = 0.05,
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    rho = 0.4
+  )
+
+  # for same target power, we should need a bigger sample size for smaller ICC
+  expect_true(ss1$`Sample.size` > ss2$`Sample.size`)
+  expect_true(ss2$`Sample.size` > ss3$`Sample.size`)
+
 })

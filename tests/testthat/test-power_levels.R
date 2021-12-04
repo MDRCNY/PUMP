@@ -82,7 +82,7 @@ test_that("parameters that result in 80% power for Bonferroni min2", {
 test_that("parameters that result in 80% power for Bonferroni complete", {
   pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = "Bonferroni",
-                    MDES = rep( 0.10, 3 ),
+                    MDES = rep( 0.09, 3 ),
                     M = 3,
                     J = 5, # number of schools/block
                     K = 18, # number RA blocks

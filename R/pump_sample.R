@@ -73,7 +73,7 @@ pump_sample_raw <- function(
     stop('pump_sample_raw only takes scalar inputs')
   }
 
-  initial_df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  initial_df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
   stopifnot( initial_df > 0 )
 
   i <- 0
@@ -82,14 +82,14 @@ pump_sample_raw <- function(
   # Get initial size (will be low)
   MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
-    J <- calc.J( design, MT = MT, MDES = MDES[1],
+    J <- calc_J( design, MT = MT, MDES = MDES[1],
                  K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                  omega.2 = omega.2[1], omega.3 = omega.3[1] )
     J <- round(J)
   } else if (typesample == "K") {
-    K <- calc.K(
+    K <- calc_K(
       design, MT = MT, MDES = MDES[1],
       J = J, nbar = nbar, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -98,7 +98,7 @@ pump_sample_raw <- function(
     )
     K <- round(K)
   } else if (typesample == "nbar") {
-    nbar <- calc.nbar(
+    nbar <- calc_nbar(
       design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -106,7 +106,7 @@ pump_sample_raw <- function(
     )
   }
 
-  df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+  df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
 
   if( df < 1 ) {
     while( df < 1 ) {
@@ -120,7 +120,7 @@ pump_sample_raw <- function(
         K <- K + 1
         min_samp_size <- K
       }
-      df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+      df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     }
     if ( warn.small ) {
       warning(
@@ -133,11 +133,11 @@ pump_sample_raw <- function(
 
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
-    df <- calc.df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+    df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
-      J1 <- calc.J( design, MT = MT, MDES = MDES[1],
+      J1 <- calc_J( design, MT = MT, MDES = MDES[1],
                     K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -153,7 +153,7 @@ pump_sample_raw <- function(
       }
 
     } else if (typesample == "K") {
-      K1 <- calc.K(
+      K1 <- calc_K(
         design, MT = MT, MDES = MDES[1],
         J = J, nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -167,7 +167,7 @@ pump_sample_raw <- function(
         K <- K + 1
       }
     } else if (typesample == "nbar") {
-      nbar1 <- calc.nbar(
+      nbar1 <- calc_nbar(
         design, MT = MT, MDES = MDES[1],
         J = J, K = K, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
@@ -314,7 +314,7 @@ pump_sample <- function(
     K <- NULL
   }
 
-  output.colnames <- c("MTP", "Sample type", "Sample size",
+  output.colnames <- c("MTP", "Sample.type", "Sample.size",
                        paste(power.definition, "power") )
 
   # check if zero power
@@ -500,7 +500,7 @@ pump_sample <- function(
 
 
   # if it has converged, give notice about possible flatness
-  if(!is.na(ss.results$`Sample size`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
     msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")

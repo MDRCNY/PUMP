@@ -115,7 +115,7 @@ update.pumpresult = function( object, ... ) {
     if ( params$type != result_type ) {
 
         if ( result_type == "sample" ) {
-            ss = object$`Sample size`
+            ss = object$`Sample.size`
             slvl = attr(object, "sample.level" )
             params[[slvl]] = ss
         }

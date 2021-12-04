@@ -23,12 +23,12 @@ test_sample_triad = function( target_power, nbar, J, K, seed, ... ) {
         J = J, K = K, ... )
 
     if ( noK ) {
-        list( J = J1$result$`Sample size`, nbar = nbar1$result$`Sample size`,
+        list( J = J1$result$`Sample.size`, nbar = nbar1$result$`Sample.size`,
               Jrun = J1$result, nbarrun= nbar1$result,
               Jwarn = J1$warnings, nbarwarn = nbar1$warnings)
 
     } else {
-        list( K = K1$result$`Sample size`, J = J1$result$`Sample size`, nbar = nbar1$result$`Sample size`,
+        list( K = K1$result$`Sample.size`, J = J1$result$`Sample.size`, nbar = nbar1$result$`Sample.size`,
               Krun = K1$result, Jrun = J1$result, nbarrun= nbar1$result,
               Kwarn = K1$warnings, Jwarn = J1$warnings, nbarwarn = nbar1$warnings )
     }

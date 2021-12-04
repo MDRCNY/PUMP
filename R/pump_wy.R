@@ -11,7 +11,7 @@
 #' @return returns a vector of 1s and 0s with length of M outcomes
 #' @export
 #'
-comp.rawt.ss <- function(nullt, rawt) {
+comp_rawt_ss <- function(nullt, rawt) {
   M <- length(nullt)
   maxt <- rep(NA, M)
   for (h in 1:M) {
@@ -29,7 +29,7 @@ comp.rawt.ss <- function(nullt, rawt) {
 #' @return returns a vector of 1s and 0s with lengths of M outcomes
 #' @export
 #'
-comp.rawt.sd <- function(nullt, rawt, rawt.order) {
+comp_rawt_sd <- function(nullt, rawt, rawt.order) {
 
   M <- length(nullt)
 
@@ -65,7 +65,7 @@ comp.rawt.sd <- function(nullt, rawt, rawt.order) {
 #' @return returns adjusted p-value matrix
 #' @export
 #'
-get.adjp.minp <- function(ind.B, rawt.order)
+get_adjp_minp <- function(ind.B, rawt.order)
 {
   # take means of dummies, these are already ordered but still need to enforce monotonicity
   pi.p.m <- colMeans(ind.B)
@@ -101,7 +101,7 @@ get.adjp.minp <- function(ind.B, rawt.order)
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp.wyss <- function(rawt.mat, B, Sigma, t.df) {
+adjp_wyss <- function(rawt.mat, B, Sigma, t.df) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.mat)
@@ -118,7 +118,7 @@ adjp.wyss <- function(rawt.mat, B, Sigma, t.df) {
 
     # compare the distribution of test statistics
     # under H0 with 1 sample of the raw statistics under H1
-    ind.B <- t(apply(nullt, 1, comp.rawt.ss, rawt = rawt.mat[t,]))
+    ind.B <- t(apply(nullt, 1, comp_rawt_ss, rawt = rawt.mat[t,]))
 
     # calculating the p-value for each sample
     adjp[t,] <- colMeans(ind.B)
@@ -155,7 +155,7 @@ adjp.wyss <- function(rawt.mat, B, Sigma, t.df) {
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp.wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
+adjp_wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.mat)
@@ -183,10 +183,10 @@ adjp.wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
     nullt <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
 
     # compare to raw statistics
-    ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt.mat[t,], rawt.order = rawt.order.matrix[t,]))
+    ind.B <- t(apply(nullt, 1, comp_rawt_sd, rawt = rawt.mat[t,], rawt.order = rawt.order.matrix[t,]))
 
     # calculate adjusted p value
-    adjp[t,] <- get.adjp.minp(ind.B, rawt.order.matrix[t,])
+    adjp[t,] <- get_adjp_minp(ind.B, rawt.order.matrix[t,])
 
     if(t == 10)
     {
@@ -198,30 +198,3 @@ adjp.wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
   }
   return(adjp)
 }
-
-
-# if(!is.null(cl))
-# {
-#   # leveraging snow to run multiple cores for foreach loops
-#   doParallel::registerDoParallel(cl)
-#   # registering the comp.rawt.SD function in global enivronment of each node
-#   parallel::clusterExport(cl = cl, list('comp.rawt.sd', 'get.adjp.minp'), envir = environment())
-#
-#   # dopar is a special function that has to be explicitly called from the foreach package
-#   # dopar accepts only 2 parameters. The number of times to execute the parallelization and the
-#   # series of steps to execute
-#   # `%dopar%` <- foreach::`%dopar%`
-#   # making s a local variable to perpetuate across (created to bypass a package requirement)
-#   # s = 1:B
-#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %dopar% {
-#     nullt <- mvtnorm::rmvt(B, sigma = sigma, df = t.df)
-#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.mat[t,], rawt.order = rawt.order.matrix[t,])
-#   }
-# } else
-# {
-#   adjp.wy <- foreach::foreach(t = 1:tnum, .combine = rbind) %do% {
-#     adjp.wy.row <- get.adjp.minp(nullt, rawt = rawt.mat[s,], rawt.order = rawt.order.matrix[t,])
-#   }
-# }
-
-

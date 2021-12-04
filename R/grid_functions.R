@@ -3,8 +3,10 @@
 #' @param args list of scenario arguments
 #' @param pum_function pump_mdes, pump_sample, pump_power
 #' @param verbose print out detailed diagnostics
-#' @param drop_unique_columns
+#' @param drop_unique_columns TODO
 #' @param use_furrr not currently in use, whether to parallelize
+#' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
+#'   or pump_mdes functions.
 run_grid <- function( args, pum_function, verbose = FALSE,
                       drop_unique_columns, ...,
                       use_furrr = FALSE ) {
@@ -20,25 +22,24 @@ run_grid <- function( args, pum_function, verbose = FALSE,
                                    .progress = verbose )
   } else {
     grid$res <- purrr::pmap( grid, pum_function, ...,
-                            verbose = verbose )
+                             verbose = verbose )
 
   }
 
   if ( drop_unique_columns ) {
-    grid <- dplyr::select( grid, dplyr::any_of( c("MDES", "numZero" )) |
-                           tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+    grid <- dplyr::select(
+      grid, dplyr::any_of( c("MDES", "numZero" )) |
+      tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   grid$res <- purrr::map( grid$res, as.data.frame )
-
-  #grid$res <- purrr::map( grid$res, tibble::rownames_to_column, var ="adjustment" )
-  grid$MTP = NULL
+  grid$MTP <- NULL
   grid <- tidyr::unnest( grid, .data$res )
   if ( "MTP" %in% names(grid) ) {
-    grid = grid %>% dplyr::arrange( .data$MTP ) %>%
+    grid <- grid %>% dplyr::arrange( .data$MTP ) %>%
     dplyr::relocate( .data$MTP )
   }
 
-  grid
+  return( grid )
 }
 
 
@@ -107,7 +108,8 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                              ... ) {
 
   if ( sum( duplicated( MDES ) ) > 0 ) {
-    stop( "Cannot pass duplicate MDES values to pump_power_grid.  Did you try to give a vector of varying MDES?" )
+    stop(paste("Cannot pass duplicate MDES values to pump_power_grid.\n",
+         "Did you try to give a vector of varying MDES?" ))
   }
 
   args <- list( design = design, M = M, MDES = MDES,
@@ -128,12 +130,8 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                     drop_unique_columns = drop_unique_columns,
                     MTP = MTP, ..., use_furrr = use_furrr )
 
-  grid
+  return( grid )
 }
-
-
-
-
 
 
 
@@ -183,14 +181,8 @@ pump_mdes_grid <- function( design, MTP, M,
                     drop_unique_columns = drop_unique_columns,
                     tol = tol, ..., use_furrr = use_furrr )
 
-  grid
+  return( grid )
 }
-
-
-
-
-
-
 
 
 #' Run pump_sample on combination of factors
@@ -242,9 +234,5 @@ pump_sample_grid <- function( design, MTP, M,
                    drop_unique_columns = drop_unique_columns,
                    tol = tol, ..., use_furrr = use_furrr )
 
-  grid
+  return( grid )
 }
-
-
-
-

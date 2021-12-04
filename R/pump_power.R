@@ -1,9 +1,39 @@
+#' Parse the power definition
+#'
+#' @param power.definition i.e. D1indiv, min1, complete
+#' @param M number of outcomes
+#' @return information about power type
+parse_power_definition <- function( power.definition, M ) {
+  powertype <- list( min = FALSE,
+                     complete = FALSE,
+                     indiv = FALSE )
+
+  if ( stringr::str_detect( power.definition, "min" ) ) {
+    powertype$min <- TRUE
+    powertype$min_k <- readr::parse_number( power.definition )
+    stopifnot( is.numeric( powertype$min_k ) )
+  } else if ( stringr::str_detect( power.definition, "complete" ) ) {
+    powertype$min <- TRUE
+    powertype$complete <- TRUE
+    powertype$min_k <- M
+  } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- NULL
+  } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
+    powertype$indiv <- TRUE
+    powertype$indiv_k <- readr::parse_number( power.definition )
+    stopifnot( is.numeric( powertype$indiv_k ) )
+  }
+
+  return( powertype )
+}
+
 #' Convert power table from wide to long
 #'
 #' Transform table returned from pump_power to a long format table.
 #'
 #' @param power_table pumpresult object for a power result (not mdes or sample).
-#' 
+#'
 transpose_power_table <- function( power_table ) {
 
   cname = power_table$MTP
@@ -29,39 +59,67 @@ transpose_power_table <- function( power_table ) {
 #'
 #' This function takes in a matrix of adjusted p-values and outputs different types of power
 #'
-#' @param pval.mat matrix of p-values, columns are outcomes
+#' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
+#' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
 {
-  M <- ncol(pval.mat)
+  M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
   # rejected tests
-  rejects <- apply(pval.mat, 2, function(x){ 1*(x < alpha) })
-  rejects.nonzero <- rejects[,ind.nonzero, drop = FALSE]
+  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  # unadjusted
+  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
-  power.ind <- apply(rejects.nonzero, 2, mean)
-  power.ind.mean <- mean(power.ind)
+  power.ind <- apply(rejects, 2, mean)
+  names(power.ind) <- paste0('D', 1:M, 'indiv')
 
-  # minimum and complete power
-  power.min <- rep(NA, num.nonzero)
+  # minimum power
+  power.min <- rep(NA, M)
+  names(power.min) <- paste0('min',1:M)
+
+  # complete power
+  power.complete <- NA
 
   # if unadjusted, don't report minimum or complete power
   if(adj)
   {
-    for(m in 1:num.nonzero)
+    # complete power
+    if(all(ind.nonzero))
     {
-      min.rejects <- apply(rejects.nonzero, 1, function(x){ sum(x) >= m })
+      complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+      power.complete <- mean(complete.rejects)
+    }
+    # minimum power
+    for(m in 1:M)
+    {
+      min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
       power.min[m] <- mean(min.rejects)
     }
   }
 
+  # subset to only nonzero where relevant
+  power.ind <- power.ind[ind.nonzero]
+  power.min <- power.min[ind.nonzero]
+  power.ind.mean <- mean(power.ind)
+  names(power.ind.mean) = 'indiv.mean'
+  names(power.complete) = 'complete'
+
+  # remove redundant min column
+  if(sum(num.nonzero) == M)
+  {
+    power.min <- power.min[1:(M - 1)]
+  }
+
+  power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
+  power.vec <- sapply(power.vec, as.numeric)
 
   if(num.nonzero == 0)
   {
@@ -69,17 +127,8 @@ get.power.results <- function(pval.mat, ind.nonzero, alpha, adj = TRUE)
   } else
   {
     # combine all power for all definitions
-    all.power.results <- data.frame(matrix(c(power.ind, power.ind.mean, power.min), nrow = 1))
-
-    if(num.nonzero > 1)
-    {
-      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                      "indiv.mean", paste0("min",1:(num.nonzero-1)), "complete")
-    } else
-    {
-      colnames(all.power.results) = c(paste0("D", 1:num.nonzero, "indiv"),
-                                      "indiv.mean", "min1")
-    }
+    all.power.results <- data.frame(matrix(power.vec, nrow = 1))
+    colnames(all.power.results) <- names(power.vec)
   }
 
   return(all.power.results)
@@ -171,7 +220,8 @@ pump_power <- function(
     }
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
-                      M = M, J = J, K = K, nbar = nbar, numZero = numZero,
+                      M = M, J = J, K = K, nbar = nbar,
+                      numZero = numZero,
                       Tbar = Tbar,
                       alpha = alpha,
                       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
@@ -200,7 +250,7 @@ pump_power <- function(
                              params.list = plist,
                              design = design,
                              multiple_MTP = TRUE,
-                             long.table=long.table ) )
+                             long.table = long.table ) )
 
     #des = map( des, ~ .x[nrow(.x),] ) %>%
     #  dplyr::bind_rows()
@@ -238,14 +288,14 @@ pump_power <- function(
   }
 
   # compute test statistics for when null hypothesis is false
-  Q.m <- calc.Q.m(
+  Q.m <- calc_Q.m(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,
     omega.2 = omega.2, omega.3 = omega.3
   )
   t.shift <- MDES/Q.m
-  t.df <- calc.df(
+  t.df <- calc_df(
     design = design, J = J, K = K,
     nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
@@ -272,40 +322,40 @@ pump_power <- function(
 
   if (MTP == "Bonferroni"){
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
   } else if (MTP == "Holm") {
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
 
   } else if (MTP == "BH") {
 
-    adjp <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
 
   } else if (MTP == "WY-SS"){
 
-    adjp <- adjp.wyss(rawt.mat = rawt.mat, B = B,
+    adjp.mat <- adjp_wyss(rawt.mat = rawt.mat, B = B,
                       Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
-    adjp <- adjp.wysd(rawt.mat = rawt.mat, B = B,
+    adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
                       Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else
   {
-    adjp <- NULL
+    adjp.mat <- NULL
   }
 
-  if (is.function(updateProgress) & !is.null(adjp)){
+  if (is.function(updateProgress) & !is.null(adjp.mat)){
     updateProgress(message = paste("Multiple adjustments done for", MTP))
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get.power.results(rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get_power_results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get.power.results(adjp, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(adjp.mat, rawp.mat, ind.nonzero, alpha, adj = TRUE)
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
