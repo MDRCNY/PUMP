@@ -30,7 +30,7 @@
 
 pump_mdes <- function(
   design, MTP = NULL, M, nbar, J, K = 1,
-  Tbar, alpha = 0.05,
+  Tbar, alpha = 0.05, two.tailed = TRUE,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
@@ -188,8 +188,16 @@ pump_mdes <- function(
   )
 
   # For raw and BF, compute critical values
-  crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-  crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+  if(two.tailed)
+  {
+    crit.alpha <- qt(p = (1-alpha/2), df = t.df)
+    crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+  } else
+  {
+    crit.alpha <- qt(p = (1-alpha), df = t.df)
+    crit.alphaxM <- qt(p = (1-alpha/M), df = t.df)
+  }
+
 
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(target.power > 0.5,

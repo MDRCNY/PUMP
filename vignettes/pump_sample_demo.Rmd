@@ -108,6 +108,19 @@ The default tolerance is $0.01$, meaning the algorithm will return a value of $K
 These two facts highlight how the output should be interpreted: `pump_sample` finds one possible sample size that would result in a power within the given tolerance of our target power, give or take the estimation error.
 For computational efficiency, `pump_sample` also usually is run with fewer simulation iterations, meaning its estimates are bit more noisy.
 We therefore advise checking `pump_sample`'s work: given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
+One easy way to verify the power is to use the `update()` function.
+We feed in the sample size object and specify that we now want to run a power calculation, and can also provide any other parameters that we would like to update.
+Here, we override the default $tnum$ for `pump_power()` to increase precision.
+
+```{r}
+p <- update(K, type = 'power', tnum = 100000)
+```
+
+```{r, echo = FALSE}
+# print(p)
+kable(p)
+```
+
 We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
 This idea will be explored in the next section.
 

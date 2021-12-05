@@ -31,7 +31,6 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 #'
 #' @param typesample type of sample size to calculate: J, K, or nbar
 #' @param target.power target power to arrive at
-#' @param two.tailed whether to calculate two-tailed or one-tailed power
 #' @param max.steps how many steps allowed before terminating
 #' @param warn.small Warn if degrees of freedom issues are causing inability to
 #'   achieve target power for sample size.

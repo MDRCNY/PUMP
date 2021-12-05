@@ -63,19 +63,32 @@ transpose_power_table <- function( power_table ) {
 #' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results <- function(adj.pval.mat, unadj.pval.mat,
+                              ind.nonzero, alpha, two.tailed,
+                              adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
-  # rejected tests
-  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  # unadjusted
-  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  if(two.tailed)
+  {
+    # rejected tests
+    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
+    # unadjusted
+    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
+  } else
+  {
+    # rejected tests
+    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+    # unadjusted
+    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  }
+
 
   # individual power
   power.ind <- apply(rejects, 2, mean)
@@ -159,6 +172,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, 
 #' @param Tbar scalar; the proportion of samples that are assigned to the
 #'   treatment
 #' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
 #' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
 #'   including block dummies)
 #' @param numCovar.2 scalar; number of Level 2 (school) covariates
@@ -199,7 +213,7 @@ pump_power <- function(
   design, MTP = NULL, MDES, numZero = NULL,
   M,
   nbar, J = 1, K = 1, Tbar,
-  alpha = 0.05,
+  alpha = 0.05, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
@@ -352,10 +366,12 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get_power_results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get_power_results(rawp.mat, rawp.mat,
+                                         ind.nonzero, alpha, two.tailed, adj = FALSE)
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get_power_results(adjp.mat, rawp.mat, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(adjp.mat, rawp.mat,
+                                            ind.nonzero, alpha, two.tailed, adj = TRUE)
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {

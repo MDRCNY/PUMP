@@ -28,6 +28,7 @@ test_that("testing of d3.1_m3rr2rr", {
             R2.1 = 0.1, R2.2 = 0.1,
             ICC.2 = 0.2, ICC.3 = 0.2,
             omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+            two.tailed = FALSE,
             tnum = 100000)
         pp1
         pp1_power = pp_power
@@ -48,7 +49,8 @@ test_that("testing of d3.1_m3rr2rr", {
                               numCovar.1 = 1, numCovar.2 = 1,
                               R2.1 = 0.1, R2.2 = 0.1,
                               ICC.2 = 0.2, ICC.3 = 0.2,
-                              omega.2 = 0.1, omega.3 = 0.1, rho = 0.5 )
+                              omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+                              two.tailed = FALSE )
 
     expect_equal(50, vals$nbar, tol=0.20)
     expect_equal(30, vals$J, tol=0.10)
