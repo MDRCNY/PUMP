@@ -20,7 +20,7 @@
 optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
                            MDES = NULL, J = NULL, K = 1, nbar = NULL,
-                           M = M, Tbar = Tbar, alpha,
+                           M = M, Tbar = Tbar, alpha, two.tailed,
                            numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
@@ -53,7 +53,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       K = myK,
       tnum = test_tnum,
       # fixed params
-      M = M, Tbar = Tbar, alpha = alpha,
+      M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,

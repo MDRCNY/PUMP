@@ -575,7 +575,7 @@ validate_inputs <- function( design, params.list,
     #-------------------------------------------------------#
     if(!(length(params.list$R2.1) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("R2.1: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$R2.1) == 1)
     {
@@ -584,7 +584,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$R2.2) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("R2.2: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$R2.2) == 1)
     {
@@ -593,7 +593,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$R2.3) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("R2.3: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$R2.3) == 1)
     {
@@ -602,7 +602,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$ICC.2) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("ICC.2: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$ICC.2) == 1)
     {
@@ -611,7 +611,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$ICC.3) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("ICC.3: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$ICC.3) == 1)
     {
@@ -620,7 +620,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$omega.2) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("omega.2: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$omega.2) == 1)
     {
@@ -629,7 +629,7 @@ validate_inputs <- function( design, params.list,
 
     if(!(length(params.list$omega.3) %in% c(1, params.list$M)))
     {
-        stop("Please provide a scalar parameter or a vector of length M.")
+        stop("omega.3: Please provide a scalar parameter or a vector of length M.")
     }
     if(length(params.list$omega.3) == 1)
     {

@@ -237,7 +237,7 @@ pump_power <- function(
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero,
                       Tbar = Tbar,
-                      alpha = alpha,
+                      alpha = alpha, two.tailed = two.tailed,
                       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
                       numCovar.3 = numCovar.3,
                       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -277,7 +277,7 @@ pump_power <- function(
     params.list <- list(
       MTP = MTP,
       MDES = MDES, numZero = numZero, M = M, J = J, K = K,
-      nbar = nbar, Tbar = Tbar, alpha = alpha,
+      nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
@@ -289,7 +289,8 @@ pump_power <- function(
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
-    nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+    nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+    alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
     numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
     numCovar.3 <- params.list$numCovar.3
     R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3

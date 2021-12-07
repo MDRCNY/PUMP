@@ -1,3 +1,7 @@
+# library( pum )
+# library( testthat )
+
+
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # ----- three level models ------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
@@ -23,19 +27,19 @@ test_that("testing of d3.1_m3rr2rr", {
             J = 30,
             M = 3,
             MDES = rep(0.125, 3),
-            Tbar = 0.5, alpha = 0.05,
+            Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
             numCovar.1 = 1, numCovar.2 = 1,
             R2.1 = 0.1, R2.2 = 0.1,
             ICC.2 = 0.2, ICC.3 = 0.2,
             omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
-            two.tailed = FALSE,
             tnum = 100000)
         pp1
-        pp1_power = pp_power
+        pp1_power = pp1$D1indiv[2]
     }
 
     # Save the target power from above.  No need to rerun for testing code
-    pp1_power = 0.79038
+    # pp1_power = 0.79038
+    pp1_power = 0.66682
 
     vals = test_sample_triad( target_power = pp1_power,
                               seed = 524235326,
@@ -45,41 +49,40 @@ test_that("testing of d3.1_m3rr2rr", {
                               power.definition = 'D1indiv',
                               M = 3,
                               MDES = 0.125,
-                              Tbar = 0.5, alpha = 0.05,
+                              Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
                               numCovar.1 = 1, numCovar.2 = 1,
                               R2.1 = 0.1, R2.2 = 0.1,
                               ICC.2 = 0.2, ICC.3 = 0.2,
-                              omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
-                              two.tailed = FALSE )
+                              omega.2 = 0.1, omega.3 = 0.1, rho = 0.5 )
 
-    expect_equal(50, vals$nbar, tol=0.20)
-    expect_equal(30, vals$J, tol=0.10)
-    expect_equal(15, vals$K, tol=0.10)
+    expect_equal(50, vals$nbar, tol = 0.25)
+    expect_equal(30, vals$J, tol = 0.40)
+    expect_equal(15, vals$K, tol = 0.10)
 
-    expect_equal( warning_pattern(vals), c(TRUE, TRUE,FALSE) )
+    expect_equal( warning_pattern(vals), c(FALSE, FALSE, FALSE) )
 
 
     # if we go below the true value, we get the wrong number since it is so flat
     set.seed( 524235325 )
 
-    expect_warning(nbar7 <- pump_sample(
+    nbar7 <- pump_sample(
         design = "d3.1_m3rr2rr",
         typesample = 'nbar',
         MTP = 'Holm',
-        target.power = pp1_power,
+        target.power = 0.66682,
         power.definition = 'D1indiv',
         K = 15,
         J = 30,
         M = 3,
         MDES = 0.125,
-        Tbar = 0.5, alpha = 0.05,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
         numCovar.1 = 1, numCovar.2 = 1,
         R2.1 = 0.1, R2.2 = 0.1,
         ICC.2 = 0.2, ICC.3 = 0.2,
         omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
-        max_sample_size_nbar = 40 ))
+        max_sample_size_nbar = 40 )
     #  plot_power_search(nbar7)
-    expect_true(nbar7$`Sample.size` < 45 )
+    expect_true(nbar7$`Sample.size` < 46 )
 })
 
 
@@ -101,7 +104,7 @@ test_that("testing of d3.2_m3ff2rc", {
             K = 10,
             M = 5,
             MDES = 0.125,
-            Tbar = 0.5, alpha = 0.05,
+            Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
             numCovar.1 = 1, numCovar.2 = 1,
             R2.1 = 0.1, R2.2 = 0.1,
             ICC.2 = 0.2, ICC.3 = 0.2,
@@ -111,14 +114,13 @@ test_that("testing of d3.2_m3ff2rc", {
     }
     pp_power = 0.64632
 
-    # In this case it looks
-    vals <- test_sample_triad( pp_power, nbar=50, J=30, K=10, 4224422,
+    vals <- test_sample_triad( pp_power, nbar = 50, J = 30, K = 10, 4224422,
                                design = "d3.2_m3ff2rc",
                                MTP = 'Holm',
                                power.definition = 'min2',
                                M = 5,
                                MDES = 0.125,
-                               Tbar = 0.5, alpha = 0.05,
+                               Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
                                numCovar.1 = 1, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.1,
                                ICC.2 = 0.2, ICC.3 = 0.2,
@@ -130,7 +132,7 @@ test_that("testing of d3.2_m3ff2rc", {
     expect_equal(30, vals$J, tol=0.10)
     expect_equal(10, vals$K, tol=0.10)
 
-    expect_equal( warning_pattern(vals), c(TRUE, FALSE,FALSE) )
+    expect_equal( warning_pattern(vals), c(TRUE, FALSE, TRUE) )
 
 })
 
@@ -154,7 +156,7 @@ test_that("testing of d3.2_m3rr2rc", {
             J = 30,
             M = 3,
             MDES = rep(0.125, 3),
-            Tbar = 0.5, alpha = 0.05,
+            Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
             numCovar.1 = 1, numCovar.2 = 1,
             R2.1 = 0.1, R2.2 = 0.1,
             ICC.2 = 0.2, ICC.3 = 0.2,
@@ -171,7 +173,7 @@ test_that("testing of d3.2_m3rr2rc", {
                               power.definition = 'D1indiv',
                               M = 3,
                               MDES = 0.125,
-                              Tbar = 0.5, alpha = 0.05,
+                              Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
                               numCovar.1 = 1, numCovar.2 = 1,
                               R2.1 = 0.1, R2.2 = 0.1,
                               ICC.2 = 0.2, ICC.3 = 0.2,
@@ -195,6 +197,8 @@ test_that("testing of d3.2_m3rr2rc", {
 
 test_that("testing of d3.3_m3rc2rc", {
 
+    set.seed(2344)
+
     if ( FALSE ) {
 
         set.seed(2344)
@@ -207,7 +211,7 @@ test_that("testing of d3.3_m3rc2rc", {
             J = 40,
             M = 3,
             MDES = rep(0.25, 3),
-            Tbar = 0.5, alpha = 0.05,
+            Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
             numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
             R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
             ICC.2 = 0.1, ICC.3 = 0.1,
@@ -215,7 +219,7 @@ test_that("testing of d3.3_m3rc2rc", {
         pp1
         pp1$D1indiv[2]
     }
-    pp_power = 0.2594
+    pp_power <- 0.2594
 
     vals <- test_sample_triad( target_power = pp_power,
                                nbar = 50, K = 20, J = 40,
@@ -225,7 +229,7 @@ test_that("testing of d3.3_m3rc2rc", {
                                power.definition = 'D1indiv',
                                M = 3,
                                MDES = 0.25,
-                               Tbar = 0.5, alpha = 0.05,
+                               Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
                                numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
                                R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
                                ICC.2 = 0.1, ICC.3 = 0.1,
@@ -241,28 +245,27 @@ test_that("testing of d3.3_m3rc2rc", {
 
     # converges but is very flat
     set.seed( 245444 )
-    J1 <- expect_warning(pump_sample(
+    J1 <- pump_sample(
         design = "d3.3_m3rc2rc",
         typesample = 'J',
         MTP = 'Holm',
-        target.power =pp_power,
+        target.power = pp_power,
         power.definition = 'D1indiv',
         K = 20,
         nbar = 50,
         M = 3,
         MDES = 0.25,
-        Tbar = 0.5, alpha = 0.05,
+        Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
-        omega.2 = 0, omega.3 = 0, rho = 0.5))
+        omega.2 = 0, omega.3 = 0, rho = 0.5)
     J1
     expect_true(!is.na(J1$`Sample.size`))
     expect_equal(40, J1$`Sample.size`, tol = 0.1)
 
-
     set.seed( 245444 )
-    J3 <- expect_warning(pump_sample(
+    J3 <- pump_sample(
         design = "d3.3_m3rc2rc",
         typesample = 'J',
         MTP = 'Holm',
@@ -272,19 +275,19 @@ test_that("testing of d3.3_m3rc2rc", {
         nbar = 50,
         M = 3,
         MDES = 0.25,
-        Tbar = 0.5, alpha = 0.05,
+        Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
         omega.2 = 0, omega.3 = 0, rho = 0.5,
         start.tnum = 2000, max.tnum = 4000,
-        tol = 0.005, max_sample_size_JK = 80))
+        tol = 0.005, max_sample_size_JK = 80)
     J3
     expect_true(!is.na(J3$`Sample.size`))
 
 
     set.seed( 245444 )
-    nbar1 <- expect_warning(pump_sample(
+    nbar1 <- pump_sample(
         design = "d3.3_m3rc2rc",
         power.definition = 'D1indiv',
         target.power =pp_power,
@@ -294,11 +297,11 @@ test_that("testing of d3.3_m3rc2rc", {
         J = 40,
         M = 3,
         MDES = 0.25,
-        Tbar = 0.5, alpha = 0.05,
+        Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
-        omega.2 = 0, omega.3 = 0, rho = 0.5))
+        omega.2 = 0, omega.3 = 0, rho = 0.5)
     nbar1
     # plot_power_search(nbar1)
 
@@ -322,7 +325,7 @@ test_that( "testing of lower limit", {
                                           K = 7, # number RA blocks
                                           nbar = 58,
                                           Tbar = 0.50, # prop Tx
-                                          alpha = 0.15, # significance level
+                                          alpha = 0.15, two.tailed = FALSE, # significance level
                                           numCovar.1 = 1, numCovar.2 = 1,
                                           R2.1 = 0.1, R2.2 = 0.7,
                                           ICC.2 = 0.05, ICC.3 = 0.9,

@@ -8,6 +8,7 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 
   # number of SEs we need for MDES
   MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
+  # MT <- T1 + T2
 
   return(MT)
 }
@@ -43,7 +44,7 @@ pump_sample_raw <- function(
   MDES,
   nbar = NULL, J = NULL, K = NULL,
   target.power,
-  Tbar, alpha = 0.05, two.tailed = TRUE,
+  Tbar, alpha = 0.05, two.tailed,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
   omega.2 = NULL, omega.3 = NULL, max.steps = 100,
@@ -214,7 +215,7 @@ pump_sample_raw <- function(
 #' @inheritParams pump_mdes
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
-#' @param two.tailed whether or not to do calculate two tailed or one tailed power.
+#' @param two.tailed whether or not to calculate two tailed or one tailed power.
 #' @param MDES scalar; the MDES value for all outcomes.
 #' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
 #' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
@@ -270,7 +271,7 @@ pump_sample <- function(
   # validate input parameters
   params.list <- list(
     MTP = MTP, MDES = MDES, M = M, J = J, K = K,
-    nbar = nbar, Tbar = Tbar, alpha = alpha,
+    nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
@@ -282,7 +283,8 @@ pump_sample <- function(
   MTP <- params.list$MTP
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+  alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
   numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
   numCovar.3 <- params.list$numCovar.3
   R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
@@ -295,8 +297,8 @@ pump_sample <- function(
   pdef <- parse_power_definition( power.definition, M )
 
   pow_params <- list( target.power = target.power,
-                     power.definition = power.definition,
-                     tol = tol )
+                      power.definition = power.definition,
+                      tol = tol )
 
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
@@ -322,7 +324,8 @@ pump_sample <- function(
     message('Target power of 0 requested')
     ss.results <- data.frame(MTP, typesample, 0, 0)
     colnames(ss.results) <- output.colnames
-    return( make.pumpresult( ss.results, type="sample", params.list=params.list,
+    return( make.pumpresult( ss.results, type = "sample",
+                             params.list = params.list,
                              tries = NULL,
                              design = design,
                              sample.level = typesample,
@@ -406,7 +409,7 @@ pump_sample <- function(
       )
     }
 
-    # higher bound needs to be higher for min type power (including comlpete)
+    # higher bound needs to be higher for min type power (including complete)
     need_pow <- (target.power^(1/M))
     ss.high.list <- NULL
     for(m in 1:M)
@@ -462,7 +465,7 @@ pump_sample <- function(
     ss.results <- data.frame(MTP, typesample, ss.high, target.power)
     colnames(ss.results) <- output.colnames
     return( make.pumpresult( ss.results, tries = NULL,
-                             type="sample", params.list=params.list,
+                             type = "sample", params.list = params.list,
                              design = design,
                              sample.level = typesample,
                              power.params.list = pow_params) )
@@ -476,7 +479,7 @@ pump_sample <- function(
     start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = J, K = K, nbar = nbar,
-    M = M, Tbar = Tbar, alpha = alpha,
+    M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
