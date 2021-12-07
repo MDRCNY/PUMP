@@ -314,7 +314,7 @@ pump_power <- function(
 
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
   rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
-  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df) * 2
+  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df)
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
@@ -352,10 +352,16 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get_power_results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
+  power.results.raw <- get_power_results(
+    adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
+    ind.nonzero, alpha, adj = FALSE
+  )
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get_power_results(adjp.mat, rawp.mat, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(
+      adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
+      ind.nonzero, alpha, adj = TRUE
+    )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {

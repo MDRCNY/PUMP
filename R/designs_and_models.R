@@ -15,35 +15,35 @@ pump_info <- function( comment = TRUE) {
             "1 lvl, lvl 1 rand / constant impacts model",
             "R2.1",
         # 2 level designs, randomization at level 1
-        "d2.1_m2fc",    "blocked_i1_2c",
+        "d2.1_m2fc",    "bira2_1c",
             "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
             "R2.1, ICC.2",
-        "d2.1_m2ff",    "blocked_i1_2f",
+        "d2.1_m2ff",    "bira2_1f",
             "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
             "R2.1, ICC.2",
-        "d2.1_m2fr",    "blocked_i1_2r",
+        "d2.1_m2fr",    "bira2_1r",
             "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
             "R2.1, ICC.2, omega.2",
         # 2 lvl design, rand at lvl 2
-        "d2.2_m2rc",    "simple_2c_2r",
+        "d2.2_m2rc",    "cra2_2r",
             "2 lvls, lvl 2 rand / random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2",
         # 3 lvl design, rand at lvl 1
-        "d3.1_m3rr2rr", "blocked_i1_3r",
+        "d3.1_m3rr2rr", "bira3_1r ",
             "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
             "R2.1, ICC.2, omega.2, ICC.3, omega.3",
         # 3 lvl design, rand at lvl 2
-        "d3.2_m3ff2rc", "blocked_c2_3f",
+        "d3.2_m3ff2rc", "bcra3_2f",
             "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, fixed impacts, lvl 2 random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2, ICC.3",
         "d3.2_m3fc2rc", "n/a",
             "3 lvls, lvl 2 rand / lvl 3 fixed intercepts, constant impact, lvl 2 random intercepts, constant impact",
             "R2.1, R2.2, ICC.2, ICC.3",
-        "d3.2_m3rr2rc", "blocked_c2_3r",
+        "d3.2_m3rr2rc", "bcra3_2r",
             "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2",
         # 3 lvl design, rand at lvl 3
-        "d3.3_m3rc2rc", "simple_c3_3r",
+        "d3.3_m3rc2rc", "cra3_3r",
             "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2, R2.3, ICC.3"
     )
