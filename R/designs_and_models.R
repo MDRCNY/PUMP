@@ -456,6 +456,39 @@ calc_K <- function(design, MT, MDES, J, nbar, Tbar,
 
 
 
+make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
+    if( !is.null(numZero) ) {
+        if( ( length(MDES) > 1 ) && ( numZero + length(MDES) != M ) )
+        {
+            stop('Please provide an MDES vector + numZero that add up to M.\n
+             Example: MDES = c(0.1, 0.1), numZero = 3, M = 5.\n
+             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
+        }
+        if ( length(MDES) == 1 ) {
+            MDES <- c(rep( MDES, M - numZero), rep(0, numZero) )
+        } else {
+            MDES <- c(MDES, rep(0, numZero))
+        }
+        if ( verbose ) {
+            message('Assumed full MDES vector:', 'c(', paste(MDES, collapse = ', '), ')')
+        }
+    }
+    
+    if(length(MDES) != M)
+    {
+        if ( length(MDES) == 1 ) {
+            MDES <- rep( MDES, M )
+        } else {
+            stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
+                       MDES, 'M =', M))
+        }
+    }
+    
+    MDES
+}
+
+
+
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
@@ -472,7 +505,8 @@ calc_K <- function(design, MT, MDES, J, nbar, Tbar,
 validate_inputs <- function( design, params.list,
                              power.call = FALSE,
                              mdes.call = FALSE,
-                             ss.call = FALSE)
+                             ss.call = FALSE,
+                             verbose = TRUE )
 {
 
     #-------------------------------------------------------#
@@ -513,62 +547,26 @@ validate_inputs <- function( design, params.list,
 
     if(!(params.list$MTP %in% info$Adjustment$Method))
     {
-        stop('Invalid MTP.')
+        stop( sprintf( '"%s" is an invalid MTP.', params.list$MTP ) )
     }
 
+    
     #-------------------------------------------------------#
     # MDES
     #-------------------------------------------------------#
 
-    if (ss.call) {
-        if( length(params.list$MDES) > 1 )
-        {
-            if(length(unique(params.list$MDES)) > 1)
-            {
-                stop(paste0('Please provide a single MDES value.\n',
-                            'Sample size calculations assume the same MDES for all outcomes.'))
-            }
-        } else
-        {
-            params.list$MDES <- rep( params.list$MDES, params.list$M )
-        }
-    } else if( mdes.call ) {
+    if ( mdes.call ) {
         if ( !is.null( params.list$MDES ) ) {
             stop( "You cannot provide MDES to pump_mdes()" )
         }
-        if ( !is.null( params.list$numZero ) ) {
-            stop( "You cannot provide numZero to pump_mdes()" )
+        if ( !is.null( params.list$numZero ) && params.list$numZero >= params.list$M ) {
+            stop( sprintf( "You cannot specify %s zeros with %s outcomes", params.list$numZero, params.list$M ) )
         }
-    } else
-    {
-        if(!is.null(params.list$numZero))
-        {
-            if( ( length(params.list$MDES) > 1 ) &&
-                ( params.list$numZero + length(params.list$MDES) != params.list$M ) )
-            {
-                stop('Please provide an MDES vector + numZero that add up to M.\n
-             Example: MDES = c(0.1, 0.1), numZero = 3, M = 5.\n
-             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
-            }
-            if ( length(params.list$MDES) == 1 ) {
-                params.list$MDES <- c(rep( params.list$MDES, params.list$M - params.list$numZero),
-                                      rep(0, params.list$numZero) )
-            } else {
-                params.list$MDES <- c(params.list$MDES, rep(0, params.list$numZero))
-            }
-            message('Assumed full MDES vector:', 'c(', paste(params.list$MDES, collapse = ', '), ')')
-        }
-
-        if(length(params.list$MDES) != params.list$M)
-        {
-            if ( length(params.list$MDES) == 1 ) {
-                params.list$MDES <- rep( params.list$MDES, params.list$M )
-            } else {
-                stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector:',
-                           params.list$MDES, 'M =', params.list$M))
-            }
-        }
+    } else {
+        params.list$MDES = make_MDES_vector( params.list$MDES, params.list$M, params.list$numZero, 
+                                             verbose = verbose )
     }
+    
 
     #-------------------------------------------------------#
     # convert all params from scalar to vector

@@ -20,7 +20,7 @@
 optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
                            MDES = NULL, J = NULL, K = 1, nbar = NULL,
-                           M = M, Tbar = Tbar, alpha, two.tailed,
+                           M = M, numZero = numZero, Tbar = Tbar, alpha, two.tailed,
                            numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
@@ -43,7 +43,9 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       myK <- test_point
     }
 
-    if(search.type == 'mdes'){ MDES <- rep(test_point, M) }
+    if(search.type == 'mdes'){ 
+      MDES <- make_MDES_vector( test_point, M, numZero, verbose = FALSE )
+    }
 
     pt.power.results <- pump_power(
       design, MTP = MTP,
@@ -53,7 +55,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       K = myK,
       tnum = test_tnum,
       # fixed params
-      M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
+      M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
@@ -64,7 +66,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
     return(pt.power.results)
   }
 
-  # Bundle power_check results in the data frame
+  # Bundle power_check results into a data frame
   power_check_df <- function( test_point, test_tnum ) {
     current.power.results <- power_check( test_point, test_tnum )
 
@@ -301,8 +303,12 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   stopifnot( pump_type(p) != "power" )
 
   pp <- params(p)
-  pp$numZero <- NULL
+  
+  #Zero this out since we will be calling optimize power, which doesn't allow
+  #for a rho matrix.
+  # pp$numZero <- NULL
   pp$rho.matrix <- NULL
+  
   sp <- attr(p, "search.range" )
   test.pts <- search_path(p)
   if ( is.null( low ) ) {

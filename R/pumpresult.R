@@ -130,14 +130,12 @@ update.pumpresult = function( object, ... ) {
         do.call(pump_power, params)
     } else if ( result_type == "mdes" ) {
         params["MDES"] = NULL
-        params["numZero"] = NULL
         do.call( pump_mdes, params )
     } else if ( result_type == "sample" ) {
         if ( is.null( params[["typesample"]] ) ) {
             params["typesample"] = attr( object, "sample.level" )
         }
         params[params$typesample] = NULL
-        params["numZero"] = NULL
         do.call( pump_sample, params )
     } else {
         stop( sprintf( "Unrecognized type, %s, in update()", result_type ) )

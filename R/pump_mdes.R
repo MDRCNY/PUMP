@@ -29,7 +29,7 @@
 #'
 
 pump_mdes <- function(
-  design, MTP = NULL, M, nbar, J, K = 1,
+  design, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
   Tbar, alpha = 0.05, two.tailed = TRUE,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -105,7 +105,7 @@ pump_mdes <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP,
+    MTP = MTP, numZero = numZero, 
     M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -114,10 +114,10 @@ pump_mdes <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- validate_inputs(design, params.list, mdes.call = TRUE)
+  params.list <- validate_inputs(design, params.list, mdes.call = TRUE, verbose = verbose )
   ##
   MTP <- params.list$MTP
-  MDES <- params.list$MDES
+  MDES <- params.list$MDES; numZero = params.list$numZero
   M <- params.list$M; J <- params.list$J; K <- params.list$K
   nbar <- params.list$nbar; Tbar <- params.list$Tbar;
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
@@ -135,7 +135,7 @@ pump_mdes <- function(
   # validate MTP
   if(MTP == 'None' & !pdef$indiv )
   {
-    stop('For minimum or complete power, you must provide a MTP.')
+    stop('For all minimum or complete power specifications, you must provide a MTP.')
   }
 
   # information that will be returned to the user
@@ -284,7 +284,8 @@ pump_mdes <- function(
                              start.tnum,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
+                             M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, 
+                             two.tailed = two.tailed,
                              numCovar.1 = numCovar.1,
                              numCovar.2 = numCovar.2,
                              numCovar.3 = numCovar.3,

@@ -16,8 +16,11 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 
 #' Calculating Needed Sample Size for Raw (Unadjusted) Power
 #'
-#' This is a Helper function for getting a needed Sample Size when no
+#' This is a helper function for getting a needed Sample Size when no
 #' adjustments has been made to the test statistics.
+#'
+#' It is for a single, individual outcome.  It only takes scalar values for all
+#' its arguments, and does not have an M argument (for number of outcomes).
 #'
 #' It requires iteration because we do not know the degrees of freedom, and so
 #' we guess and then calculate sample size, and then recalculate df based on
@@ -224,7 +227,7 @@ pump_sample_raw <- function(
 
 pump_sample <- function(
   design, MTP = NULL, typesample,
-  MDES, M,
+  MDES, M, numZero = NULL,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
   alpha, two.tailed = TRUE,
@@ -269,7 +272,7 @@ pump_sample <- function(
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, MDES = MDES, M = M, J = J, K = K,
+    MTP = MTP, MDES = MDES, M = M, J = J, K = K, numZero = numZero, 
     nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -277,10 +280,10 @@ pump_sample <- function(
     rho = rho, rho.matrix = rho.matrix, B = B
   )
   ##
-  params.list <- validate_inputs(design, params.list, ss.call = TRUE)
+  params.list <- validate_inputs(design, params.list, ss.call = TRUE, verbose = verbose )
   ##
   MTP <- params.list$MTP
-  MDES <- params.list$MDES
+  MDES <- params.list$MDES; numZero <- params.list$numZero
   M <- params.list$M; J <- params.list$J; K <- params.list$K
   nbar <- params.list$nbar; Tbar <- params.list$Tbar;
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
@@ -292,6 +295,11 @@ pump_sample <- function(
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
 
+  if ( is.null( numZero ) ) {
+    numZero = 0
+    stopifnot( M > numZero )
+  }
+  
   # power definition type
   pdef <- parse_power_definition( power.definition, M )
 
@@ -350,7 +358,7 @@ pump_sample <- function(
     # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
     # estimating (potential) bounds
     ss.low.list <- NULL
-    for(m in 1:M)
+    for(m in 1:(M-numZero) )
     {
       ss.low.list[[m]] <- pump_sample_raw(
         design = design, MTP = MTP, typesample = typesample,
@@ -369,7 +377,7 @@ pump_sample <- function(
 
     # Identify sample size for Bonferroni
     ss.high.list <- NULL
-    for(m in 1:M)
+    for(m in 1:(M-numZero) )
     {
       ss.high.list[[m]] <- pump_sample_raw(
         design = design, MTP = MTP, typesample = typesample,
@@ -391,7 +399,7 @@ pump_sample <- function(
     need_pow <- 1 - (1 - target.power)^(1/M)
 
     ss.low.list <- NULL
-    for(m in 1:M)
+    for(m in 1:(M-numZero))
     {
       ss.low.list[[m]] <- pump_sample_raw(
         design = design, MTP = MTP, typesample = typesample,
@@ -411,7 +419,7 @@ pump_sample <- function(
     # higher bound needs to be higher for min type power (including complete)
     need_pow <- (target.power^(1/M))
     ss.high.list <- NULL
-    for(m in 1:M)
+    for(m in 1:(M-numZero))
     {
       ss.high.list[[m]] <- pump_sample_raw(
         design = design, MTP = MTP, typesample = typesample,
@@ -478,7 +486,7 @@ pump_sample <- function(
     start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = J, K = K, nbar = nbar,
-    M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
+    M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,

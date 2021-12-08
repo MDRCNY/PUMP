@@ -200,7 +200,7 @@ test_that("power definitions", {
 })
 
 
-test_that( "errors out when providing MDES or numZero", {
+test_that( "errors out when providing MDES", {
   expect_error(pmdes <- pump_mdes(
     design = "d2.1_m2fc",
     MDES = rep(0.2, 5),
@@ -213,18 +213,8 @@ test_that( "errors out when providing MDES or numZero", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
     max.tnum = 300,
     rho = 0.4 ))
-  expect_error(pmdes <- pump_mdes(
-    design = "d2.1_m2fc",
-    numZero = 1,
-    MTP = "Holm",
-    nbar = 200, J = 50,
-    power.definition = "indiv.mean",
-    M = 3,
-    target.power = 0.80, tol = 0.01,
-    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
-    max.tnum = 300,
-    rho = 0.4 ))
+  
+
 })
 
 test_that( "different values for different outcomes", {
