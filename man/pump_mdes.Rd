@@ -13,6 +13,7 @@ pump_mdes(
   K = 1,
   Tbar,
   alpha = 0.05,
+  two.tailed = TRUE,
   target.power,
   power.definition,
   tol = 0.01,
@@ -59,6 +60,8 @@ outcomes}
 treatment}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
+
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
 
 \item{target.power}{Target power to arrive at}
 

@@ -8,7 +8,6 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 
   # number of SEs we need for MDES
   MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
-  # MT <- T1 + T2
 
   return(MT)
 }

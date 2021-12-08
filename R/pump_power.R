@@ -370,13 +370,13 @@ pump_power <- function(
 
   power.results.raw <- get_power_results(
     adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
-    ind.nonzero, alpha, adj = FALSE
+    ind.nonzero, alpha, two.tailed, adj = FALSE
   )
 
   if ( MTP != 'None' ) {
     power.results.proc <- get_power_results(
       adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
-      ind.nonzero, alpha, adj = TRUE
+      ind.nonzero, alpha, two.tailed, adj = TRUE
     )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)

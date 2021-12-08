@@ -127,7 +127,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
-                           round = FALSE ) #search.type != "mdes" )
+                           round = FALSE )
 
   if ( grid.only ) {
     return( test.pts )
@@ -450,23 +450,23 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
 
-  fit = fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
+  fit <- fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
 
   if ( fit[["pmin"]] > target.power ) {
     # Min power is too high.  Reach lower.
     warning( "Minimum estimated power higher than target power" )
-    cc =  start.low / gamma
+    cc <-  start.low / gamma
   } else if ( fit[["pmax"]] < target.power ) {
     # Max power is too low.  This could be a limitation or estimation error.
     warning( "Maximum estimated power lower than target power" )
 
-    cc = start.high * gamma
+    cc <- start.high * gamma
   } else {
     # extract point where it crosses target power.
-    cc = find_crossover( target.power, fit )
+    cc <- find_crossover( target.power, fit )
   }
 
-  return( list( x = cc, dx = d_bounded_logistic_curve(cc,fit), params=fit ) )
+  return( list( x = cc, dx = d_bounded_logistic_curve(cc, fit), params = fit ) )
 }
 
 

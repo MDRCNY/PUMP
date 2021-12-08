@@ -15,6 +15,7 @@ pump_power(
   K = 1,
   Tbar,
   alpha = 0.05,
+  two.tailed = TRUE,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
@@ -63,6 +64,8 @@ outcomes}
 treatment}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
+
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}

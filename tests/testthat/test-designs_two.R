@@ -1,12 +1,13 @@
 
-# Test specific designs for test_pump_sample
-
 # library( pum )
 # library( testthat )
 
+# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+# --------- two level models --------
+
+# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+
 source( "testing_code.R" )
-
-
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # -----------------------------------------------#
 # test pump sample raw
@@ -125,11 +126,6 @@ test_that("testing of d3.2_m3rr2rc raw", {
 })
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
-# --------- two level models --------
-
-# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
-
-# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # -------- d2.1_m2fc --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
@@ -149,10 +145,11 @@ test_that("testing of d2.1_m2fc one-tailed", {
       numCovar.1 = 1, numCovar.2 = 1, tnum = 100000,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
     pp1
-    pp_power = pp1$D1indiv[2]
+    pp_power <- pp1$D1indiv[2]
 
   }
-  pp_power = 0.95162
+
+  pp_power <- 0.97633
 
   J1 <- pump_sample(
     design = "d2.1_m2fc",
@@ -176,7 +173,7 @@ test_that("testing of d2.1_m2fc one-tailed", {
     MTP = 'Holm',
     power.definition = 'D1indiv',
     typesample = 'nbar',
-    target.power =pp_power,
+    target.power = pp_power,
     J = 60,
     M = 3,
     MDES = 0.125,
@@ -187,7 +184,7 @@ test_that("testing of d2.1_m2fc one-tailed", {
   nbar1
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
 
-  mdes1 <-  pump_mdes(
+  mdes1 <-  expect_warning(pump_mdes(
     design = "d2.1_m2fc",
     MTP = 'Holm',
     power.definition = 'D1indiv',
@@ -198,7 +195,7 @@ test_that("testing of d2.1_m2fc one-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-    rho = 0.2)
+    rho = 0.2))
   expect_equal(mdes1$Adjusted.MDES, 0.125, tolerance = 0.1)
 
 })
@@ -222,7 +219,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
     pp_power <- pp1$D1indiv[2]
 
   }
-  pp_power <- 0.91367
+
+  pp_power <- 0.95162
 
   J1 <- pump_sample(
     design = "d2.1_m2fc",
@@ -246,7 +244,7 @@ test_that("testing of d2.1_m2fc two-tailed", {
     MTP = 'Holm',
     power.definition = 'D1indiv',
     typesample = 'nbar',
-    target.power =pp_power,
+    target.power = pp_power,
     J = 60,
     M = 3,
     MDES = 0.125,
@@ -284,21 +282,24 @@ test_that("testing of d2.1_m2ff one-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-    design = "d2.1_m2ff",
-    MTP = 'Holm',
-    nbar = 50,
-    J = 60,
-    M = 3,
-    MDES = rep(0.125, 3),
-    Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2, tnum = 100000)
+      design = "d2.1_m2ff",
+      MTP = 'Holm',
+      nbar = 50,
+      J = 60,
+      M = 3,
+      MDES = rep(0.125, 3),
+      Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+      numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2,
+      tnum = 100000 )
     pp1
+    pp_power <- pp1$D1indiv[2]
 
   }
 
-  pp_power <- 0.95152
-  vals = test_sample_triad(pp_power, 50, 60, NULL, 24322323,
+  pp_power <- 0.97644
+
+  vals <- test_sample_triad(pp_power, nbar = 50, J = 60, NULL, 24322323,
     design = "d2.1_m2ff",
     MTP = 'Holm',
     power.definition = 'D1indiv',
@@ -332,19 +333,21 @@ test_that("testing of d2.1_m2fr one-tailed", {
       Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
       numCovar.1 = 1, numCovar.2 = 1, tnum = 100000,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
-    pp1$D1indiv[[2]]
+    pp_power <- pp1$D1indiv[2]
   }
-  pp_power = 0.9424
 
-  vals = test_sample_triad(pp_power, nbar=50, J=60, K=NULL, seed=22422422,
-                           design = "d2.1_m2ff",
-                           MTP = 'Holm',
-                           power.definition = 'D1indiv',
-                           M = 3,
-                           MDES = 0.125,
-                           Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-                           numCovar.1 = 1, numCovar.2 = 1,
-                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+  pp_power <- 0.97152
+
+  vals <- test_sample_triad(pp_power, nbar = 50, J = 60, K = NULL,
+                            seed = 22422422,
+                            design = "d2.1_m2ff",
+                            MTP = 'Holm',
+                            power.definition = 'D1indiv',
+                            M = 3,
+                            MDES = 0.125,
+                            Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+                            numCovar.1 = 1, numCovar.2 = 1,
+                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
   vals[1:2]
   warning_pattern(vals)
 
@@ -371,9 +374,10 @@ test_that("testing of d2.1_m2fr two-tailed", {
       numCovar.1 = 1, numCovar.2 = 1, tnum = 100000,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
     pp1
+    pp_power <- pp1$D1indiv[2]
   }
-  # pp_power <- 0.68156
-  pp_power <- 0.89646
+
+  pp_power <- 0.94273
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 60, K = NULL,
                             seed = 22422422,
@@ -429,12 +433,15 @@ test_that("testing of d2.2_m2rc", {
       MDES = rep(0.125, 3),
       Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
       numCovar.1 = 1, numCovar.2 = 1,
-      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2,
+      tnum = 100000)
 
     pp1
-    pp1$D1indiv[2]
+    pp_power <- pp1$D1indiv[2]
   }
-  pp_power = 0.688
+  # pp_power <- 0.688
+
+  pp_power <- 0.79407
 
   J1 <- pump_sample(
     design = "d2.2_m2rc",
