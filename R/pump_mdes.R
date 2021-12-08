@@ -30,7 +30,7 @@
 
 pump_mdes <- function(
   design, MTP = NULL, M, nbar, J, K = 1,
-  Tbar, alpha = 0.05,
+  Tbar, alpha = 0.05, two.tailed = TRUE,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
@@ -107,7 +107,7 @@ pump_mdes <- function(
   params.list <- list(
     MTP = MTP,
     M = M, J = J, K = K,
-    nbar = nbar, Tbar = Tbar, alpha = alpha,
+    nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
@@ -119,7 +119,8 @@ pump_mdes <- function(
   MTP <- params.list$MTP
   MDES <- params.list$MDES
   M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+  alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
   numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
   numCovar.3 <- params.list$numCovar.3
   R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
@@ -188,8 +189,16 @@ pump_mdes <- function(
   )
 
   # For raw and BF, compute critical values
-  crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-  crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+  if(two.tailed)
+  {
+    crit.alpha <- qt(p = (1-alpha/2), df = t.df)
+    crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+  } else
+  {
+    crit.alpha <- qt(p = (1-alpha), df = t.df)
+    crit.alphaxM <- qt(p = (1-alpha/M), df = t.df)
+  }
+
 
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(target.power > 0.5,
@@ -275,7 +284,7 @@ pump_mdes <- function(
                              start.tnum,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, Tbar = Tbar, alpha = alpha,
+                             M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
                              numCovar.1 = numCovar.1,
                              numCovar.2 = numCovar.2,
                              numCovar.3 = numCovar.3,

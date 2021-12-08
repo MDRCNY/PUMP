@@ -24,7 +24,8 @@ exp.power.results <- data.frame(
   min2 = 0.5,
   complete = 0.25
 )
-power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat,
+                                       ind.nonzero, alpha, two.tailed = TRUE)
 
 test_that("Power matches when all outcomes are nonzero", {
   expect_equal(power.results.out, exp.power.results)
@@ -52,7 +53,8 @@ exp.power.results <- data.frame(
   min2 = 0.75,
   complete = NA
 )
-power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat,
+                                       ind.nonzero, alpha, two.tailed = TRUE)
 
 test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_true(is.na(power.results.out$complete))
@@ -84,7 +86,8 @@ exp.power.results <- data.frame(
   min3 = 0.25,
   complete = NA
 )
-power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat,
+                                       ind.nonzero, alpha, two.tailed = TRUE)
 
 test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_true(is.na(power.results.out$complete))
@@ -125,7 +128,8 @@ exp.power.results <- data.frame(
   min3 = 0.25,
   complete = 0.25
 )
-power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat,
+                                       ind.nonzero, alpha, two.tailed = TRUE)
 
 test_that("Power matches with a mix of zero and nonzero outcomes", {
   expect_equal(power.results.out, exp.power.results)
@@ -157,7 +161,8 @@ exp.power.results <- data.frame(
     min3 = 0.25,
     complete = 0.25
 )
-power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha)
+power.results.out <- get_power_results(adj.pval.mat, unadj.pval.mat,
+                                       ind.nonzero, alpha, two.tailed = TRUE)
 
 test_that("Power matches with perfectly correlated outcomes", {
     expect_equal(power.results.out, exp.power.results)

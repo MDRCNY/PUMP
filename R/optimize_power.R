@@ -20,7 +20,7 @@
 optimize_power <- function(design, search.type, MTP, target.power, power.definition, tol,
                            start.tnum, start.low, start.high,
                            MDES = NULL, J = NULL, K = 1, nbar = NULL,
-                           M = M, Tbar = Tbar, alpha,
+                           M = M, Tbar = Tbar, alpha, two.tailed,
                            numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
@@ -53,7 +53,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       K = myK,
       tnum = test_tnum,
       # fixed params
-      M = M, Tbar = Tbar, alpha = alpha,
+      M = M, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
@@ -127,7 +127,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
 
   # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
-                           round = FALSE ) #search.type != "mdes" )
+                           round = FALSE )
 
   if ( grid.only ) {
     return( test.pts )
@@ -450,23 +450,23 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   start.low <- min( test.pts$pt )
   start.high <- max( test.pts$pt )
 
-  fit = fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
+  fit <- fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
 
   if ( fit[["pmin"]] > target.power ) {
     # Min power is too high.  Reach lower.
     warning( "Minimum estimated power higher than target power" )
-    cc =  start.low / gamma
+    cc <-  start.low / gamma
   } else if ( fit[["pmax"]] < target.power ) {
     # Max power is too low.  This could be a limitation or estimation error.
     warning( "Maximum estimated power lower than target power" )
 
-    cc = start.high * gamma
+    cc <- start.high * gamma
   } else {
     # extract point where it crosses target power.
-    cc = find_crossover( target.power, fit )
+    cc <- find_crossover( target.power, fit )
   }
 
-  return( list( x = cc, dx = d_bounded_logistic_curve(cc,fit), params=fit ) )
+  return( list( x = cc, dx = d_bounded_logistic_curve(cc, fit), params = fit ) )
 }
 
 
@@ -636,6 +636,10 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 #'
 #' @export
 plot_power_curve <- function( pwr, plot.points = TRUE ) {
+  if(is.na(pwr$Sample.size))
+  {
+    stop('plot_power_curve() does not work if optimizer has not converged. Try plot_power_search() for additional information.')
+  }
   if ( is.pumpresult( pwr ) ) {
     test.pts <- power_curve(pwr, all = TRUE )
     x_label <- pump_type(pwr)
