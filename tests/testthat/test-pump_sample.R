@@ -46,7 +46,7 @@ test_that("pump_sample_raw works", {
     typesample = "nbar",
     J = 5,
     MDES = 0.05, target.power = 0.80, tol = 0.01,
-    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+    Tbar = 0.50, alpha = 0.05, two.tailed = TRUE, numCovar.1 = 5,
     numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -56,7 +56,7 @@ test_that("pump_sample_raw works", {
                                typesample = "nbar",
                                J = 10,
                                MDES = 0.05, target.power = 0.80,
-                               Tbar = 0.50, alpha = 0.05,
+                               Tbar = 0.50, alpha = 0.05, two.tailed = TRUE,
                                numCovar.1 = 5, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -68,7 +68,7 @@ test_that("pump_sample_raw works", {
                             typesample = "J",
                             nbar = 258,
                             MDES = 0.05, target.power = 0.80,
-                            Tbar = 0.50, alpha = 0.05,
+                            Tbar = 0.50, alpha = 0.05, two.tailed = TRUE,
                             numCovar.1 = 5, numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
@@ -79,34 +79,34 @@ test_that("pump_sample_raw works", {
                             typesample = "nbar",
                             J = calcJ$ss,
                             MDES = 0.05, target.power = 0.80,
-                            Tbar = 0.50, alpha = 0.05,
+                            Tbar = 0.50, alpha = 0.05, two.tailed = TRUE,
                             numCovar.1 = 5, numCovar.2 = 1,
                             R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
   calcn
-  expect_true( abs( calcn$ss - 258 ) < 2 )
+  expect_equal(258, calcn$ss, tol = 0.01)
 
   calcJ2 <- pump_sample_raw( design = "d2.1_m2fc",
                              typesample = "J",
                              nbar = calcn$ss,
                              MDES = 0.05, target.power = 0.80,
-                             Tbar = 0.50, alpha = 0.05,
+                             Tbar = 0.50, alpha = 0.05, two.tailed = TRUE,
                              numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcJ2
-  expect_true( abs( calcJ$ss - calcJ2$ss ) < 1 )
+  expect_equal(calcJ$ss, calcJ2$ss, tol = 0.01)
 
   calcn2 <- pump_sample_raw( design = "d2.1_m2fc",
                              typesample = "nbar",
                              J = calcJ2$ss,
                              MDES = 0.05, target.power = 0.80,
-                             Tbar = 0.50, alpha = 0.05,
+                             Tbar = 0.50, alpha = 0.05, two.tailed = TRUE,
                              numCovar.1 = 5, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4 )
 
   calcn2
-  expect_true( abs( calcn$ss - calcn2$ss ) < 2 )
+  expect_equal(calcn$ss, calcn2$ss, tol = 0.01)
 })
 
 
@@ -119,7 +119,7 @@ test_that("Bonferroni for non individual power", {
                     nbar = 200,
                     M = 3,
                     MDES = rep(0.05, 3),
-                    Tbar = 0.50, alpha = 0.05,
+                    Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
                     numCovar.1 = 5, numCovar.2 = 1,
                     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                     rho = 0.4 )
@@ -133,7 +133,7 @@ test_that("Bonferroni for non individual power", {
                         M = 3,
                         MDES = 0.05, target.power = p$min1[2],
                         tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05,
+                        Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
                         numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
                         rho = 0.4 )

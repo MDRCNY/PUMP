@@ -63,19 +63,32 @@ transpose_power_table <- function( power_table ) {
 #' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
 #' @export
-get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results <- function(adj.pval.mat, unadj.pval.mat,
+                              ind.nonzero, alpha, two.tailed,
+                              adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
-  # rejected tests
-  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  # unadjusted
-  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  if(two.tailed)
+  {
+    # rejected tests
+    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
+    # unadjusted
+    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
+  } else
+  {
+    # rejected tests
+    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+    # unadjusted
+    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  }
+
 
   # individual power
   power.ind <- apply(rejects, 2, mean)
@@ -159,6 +172,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, 
 #' @param Tbar scalar; the proportion of samples that are assigned to the
 #'   treatment
 #' @param alpha scalar; the family wise error rate (FWER)
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
 #' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
 #'   including block dummies)
 #' @param numCovar.2 scalar; number of Level 2 (school) covariates
@@ -199,7 +213,7 @@ pump_power <- function(
   design, MTP = NULL, MDES, numZero = NULL,
   M,
   nbar, J = 1, K = 1, Tbar,
-  alpha = 0.05,
+  alpha = 0.05, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
@@ -223,7 +237,7 @@ pump_power <- function(
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero,
                       Tbar = Tbar,
-                      alpha = alpha,
+                      alpha = alpha, two.tailed = two.tailed,
                       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
                       numCovar.3 = numCovar.3,
                       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -263,7 +277,7 @@ pump_power <- function(
     params.list <- list(
       MTP = MTP,
       MDES = MDES, numZero = numZero, M = M, J = J, K = K,
-      nbar = nbar, Tbar = Tbar, alpha = alpha,
+      nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
@@ -275,7 +289,8 @@ pump_power <- function(
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
-    nbar <- params.list$nbar; Tbar <- params.list$Tbar; alpha <- params.list$alpha
+    nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+    alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
     numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
     numCovar.3 <- params.list$numCovar.3
     R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
@@ -314,7 +329,7 @@ pump_power <- function(
 
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
   rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
-  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df) * 2
+  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df)
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
@@ -352,10 +367,17 @@ pump_power <- function(
   }
 
   ind.nonzero <- MDES > 0
-  power.results.raw <- get_power_results(rawp.mat, rawp.mat, ind.nonzero, alpha, adj = FALSE)
+
+  power.results.raw <- get_power_results(
+    adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
+    ind.nonzero, alpha, two.tailed, adj = FALSE
+  )
 
   if ( MTP != 'None' ) {
-    power.results.proc <- get_power_results(adjp.mat, rawp.mat, ind.nonzero, alpha, adj = TRUE)
+    power.results.proc <- get_power_results(
+      adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
+      ind.nonzero, alpha, two.tailed, adj = TRUE
+    )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {

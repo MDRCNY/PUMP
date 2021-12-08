@@ -26,7 +26,7 @@ set.seed( 524235326 )
 
 # Introduction
 
-The main PUMP vignette discusses all of the main functions of the package.
+The main PUMP vignette covers all of the main functions of the package.
 This vignette focuses on one specific function: `pump_sample()`, which calculates required sample sizes at various levels of an RCT design.
 This function requires extra explanation because of both its unique interpretation and behavior.
 First, this vignette discusses how the user should interpret the output of a call to `pump_sample()`.
@@ -67,7 +67,7 @@ target_power = round( p$indiv.mean[[2]], digits=3 )
 ```
 
 Our individual power using the Holm procedure is estimated as `r target_power`.
-First, let's try to recover $K$, the number of districts, given the power we just found.
+First, let's try to recover the original parameter $K$, the number of districts, given the power we just found.
 
 ```{r, echo = FALSE}
 set.seed( 40444040 )
@@ -97,10 +97,11 @@ K <- pump_sample(
 kable(K)
 ```
 
-We recover a similar value K = `r K[['Sample size']]`, but it is not surprising that we do not recover exactly the same value.
-There are two potential reasons for this discrepancy.
-First, PUMP power calculations rely on simulations, so they are estimates--and this randomness means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
-In this case we have uncertainty in what the actual power is (from our first call) and uncertainty in the power calculations of `pump_sample()` as well.
+We recover a similar value K = `r K[['Sample size']]`, but not the exact value of the original parameter.
+A small discrepancy from the original parameter is unsurprising given two features of the package.
+First, PUMP power calculations rely on simulations, so the returned values are estimates with some uncertainty.
+The randomness inherent to simulations means that repeating the same power calculation with the same set of parameters might result in slightly different power estimates.
+In this example, we have two sources of uncertainty: uncertainty in what the actual power is (from our first call), and uncertainty in the power calculations of `pump_sample()`.
 
 Second, the search algorithm finds a sample size which is within a certain tolerance of the target power, give or take this estimation uncertainty.
 The default tolerance is $0.01$, meaning the algorithm will return a value of $K$ that has an estimated power within 1\% of our target power.
@@ -108,15 +109,25 @@ The default tolerance is $0.01$, meaning the algorithm will return a value of $K
 These two facts highlight how the output should be interpreted: `pump_sample` finds one possible sample size that would result in a power within the given tolerance of our target power, give or take the estimation error.
 For computational efficiency, `pump_sample` also usually is run with fewer simulation iterations, meaning its estimates are bit more noisy.
 We therefore advise checking `pump_sample`'s work: given an initial sample size value, it is worth plugging it back into `pump_power` with a high degree of precision (by increasing `tnum`, the number of test statistics draws) to verify the intended power.
+One easy way to verify the power is to use the `update()` function.
+We feed in the sample size object and specify that we now want to run a power calculation, and can also provide any other parameters that we would like to update.
+Here, we override the default $tnum$ for `pump_power()` to increase precision.
+
+```{r}
+p <- update(K, type = 'power', tnum = 100000)
+```
+
+```{r, echo = FALSE}
+# print(p)
+kable(p)
+```
+
 We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
 This idea will be explored in the next section.
 
-
-
-
 # Exploring a range of sample size values
 
-Now let's turn to calculating the number of schools $J$, given a fixed $K$.
+Now let's turn to determining the necessary number of schools $J$, given a fixed $K$.
 
 ```{r, echo = FALSE}
 set.seed( 333434443 )
@@ -152,7 +163,7 @@ sp$dx[nrow(sp)] * 4
 kable(J1)
 ```
 
-Our $J$ is a bit larger than our original input of `30`.
+Our calculated $J$ is a bit larger than our original input of `30`.
 Let's examine the source of this discrepancy.
 First, we can print out more detail, including information about the search path the algorithm took to arrive at the final answer.
 
@@ -161,26 +172,32 @@ First, we can print out more detail, including information about the search path
 print(J1)
 ```
 
-At step 0, the algorithm tries a range of possible sample size values, and calculates power for each.
+At step 0, the algorithm tries a range of possible sample size values, bounded by calculated minimum and maximum values for the scenario, and calculates power for each.
 After step 0, the algorithm fits a model to the data points, and then uses the model to attempt to arrive closer and closer to a sample size achieving the target power.
 
 Note the `dx` column of the printout, above: this is the derivative of the estimated power curve.
-We see it is not particularly large, meaning a change of $J$ of 4 would result in an estimated change in power of a bit less than 0.01, under our tolerance.
+We see it is not particularly large, meaning an increase of $J$ by 4 would result in an estimated change in power of a bit less than 0.01, which is below our set tolerance level.
 
-We can also plot the path the algorithm took to estimate $J$, which calculates power over a range of possible $J$ values:
+We can also plot the path the algorithm took to estimate $J$:
 
 ```{r, fig.width=7, fig.align="center"}
 plot_power_search(J1)
 ```
 
-The first plot shows the sample size against power, e.g. how power varies as sample size changes.
+The first plot on the left shows how power varies over different sample sizes.
+The $x$ axis, $pt$, shows different values of the sample size, and the $y$ axis shows the corresponding values of power.
+Each point on the graph represents a step in the search algorithm.
+The number for each point corresponds to the step number.
+In this case, the algorithm only took 2 steps after the initial set of points tested at step 0.
+The size of the point corresponds to the weight of the step; steps with more precision (higher tnum) are weighted more highly, which generally occur in later steps of the algorithm.
+The purple line shows the target power we are trying to achieve.
+
 The remaining plots show information about the steps taken by the search algorithm to arrive at the final results.
-The middle plot shows the calculated power at each step of the algorihtm.
+The middle plot shows the calculated power at each step of the algorithm.
 The final plot shows the value(s) of the sample size tried at each step.
 
 We can also examine the power for a grid of points up to our selected $J$.
-This information is a second estimation step to verify our results.
-It can help us examine whether smaller values of $J$ might result in similar values of power.
+This information is a second estimation step to verify our results, and can help us examine whether smaller values of $J$ might result in similar values of power.
 
 ```{r, echo = FALSE}
 set.seed( 333434445 )
@@ -190,10 +207,10 @@ set.seed( 333434445 )
 power_curve(J1)
 ```
 
-From these results, we can see that we have a combination of estimation randomness and flatness of the power curve contributing to the result.
+From this output, we can see that a combination of estimation randomness and flatness of the power curve contributes to the large value of $J$.
 For example, we actually have that a larger sample size has a lower estimated power!
-Power generally increases with sample size, so this pattern is due to estimation error.
-Second, we can see that a variety of sample size values result in relatively similar estimates of power.
+Power generally increases with sample size, so we conclude that the observed pattern is due to estimation error.
+We also notice that a variety of sample size values result in relatively similar estimates of power.
 
 Finally, we can also visualize this power curve.
 
@@ -236,8 +253,8 @@ kable(J2)
 
 With greater precision, we have achieved a sample size exactly equal to our original sample size of $30$.
 
-We can also get closer by decreasing our default tolerance from $0.01$.
-By decreasing the tolerance, we are enforcing a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
+We can also get closer to the original sample size of $30$ by decreasing our default tolerance from $0.01$.
+By decreasing the tolerance, we impose a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
 
 ```{r}
 J3 <- pump_sample(
@@ -265,15 +282,17 @@ kable(J3)
 ```
 
 
-Once again, we are slightly closer to our original sample size than our initial estimate, but instead we have a sample size of $29$.
+We are slightly closer to our original sample size than our initial estimate, but instead we have a sample size of $29$.
 
 
 # Flat power curves
 
 For some designs, the power curve can be extremely flat in certain regions.
 This flatness can mean that a wide range of potential sample size values can result in virtually the same power.
-Flat curves typically happen below the top level.
+Flat curves typically happen below the top level of a hierarchical model.
 For example, for a three-level model, we expect very little flatness in `K`, some flatness in `J`, and the highest likelihood for flatness in `nbar`.
+This pattern occurs because below the top level, we can reach an asymptote, where no matter how much we increase the sample size, the power is limited by our number of top-level units.
+Intuitively, for some models, if we see a certain level of variation at the district level, then it doesn't matter how many schools we have for each district--we will not be able to explain the district-level variation unless we increase the number of districts. 
 Let's examine a case where we see a flat power curve.
 First, we calculate power for a sample size of `nbar` = $50$.
 
@@ -338,13 +357,13 @@ plot_power_curve(nbar1)
 
 Remember that our original nbar value was 50.
 We can see from this search that the power curve is very flat in some regions.
-With a three level model with substantial variation, at level 2 and level 3, even having perfect estimation of the individual sites will not give us perfect estimation of the superpopulation.
+With a three level model with substantial variation at level 2 and level 3, even perfect estimation of the individual sites will not give us perfect estimation of the superpopulation.
 Thus, above an nbar value of 10, the curve asymptotes--we will never be able to achieve power above a certain threshold by increasing nbar.
 On the other hand, if we want power in the range of the asymptote, a wide variety of sample sizes would result in the same power.
 This explains our result--a sample size of 22,500 will indeed give us the intended power, but a much smaller sample size would also give us sufficient power.
 
 There are two ways to proceed from here.
-First, we can look at the curve, and proceed straight to plugging in sample sizes to the power function to see if the desired power is achieved.
+First, we can look at the curve, and proceed straight to plugging sample sizes into the power function to see if the desired power is achieved.
 Let's check a value of $10$ for `nbar`.
 
 ```{r, echo = FALSE}
@@ -372,10 +391,9 @@ pp2 <- pump_power(
 kable(pp2)
 ```
 
-We reach a power value pretty close to our intended target!
+Even with a substantially smaller value of `nbar`, we have achieved a level of power that is relatively close to our initial target.
 
-Alternatively, we can also constrain the algorithm to focus our efforts in the flat region.
-We can change the argument `max_sample_size_nbar`, which bounds the upper end of our search region.
+Alternatively, we can constrain the algorithm to focus our efforts in the flat region, for example by changing the argument `max_sample_size_nbar`, which bounds the upper end of our search region.
 Let's try setting the maximum to 100, which is still somewhat conservative based on the curve.
 
 ```{r, echo = FALSE}
@@ -407,11 +425,12 @@ kable(nbar2)
 ```
 
 We get a sample size estimate that is much more reasonable than our original estimate, but it is still larger than we need to achieve the target power.
+TODO: talk about whether we should always visualize, or just in case of flatness.
 
 # Non-Convergence
 
-Let's return to a scenario very similar to the previous section, but now we request a higher target power.
-In particular, we request a target power of $40\%$, which we know is higher than the point at which the power asymptotes.
+Let's return to a scenario very similar to the previous section, but now we want a higher target power.
+In particular, we want a target power of $40\%$, which we know is higher than the point at which the power asymptotes.
 
 ```{r}
 nbar3 <- pump_sample(
@@ -445,14 +464,14 @@ plot_power_search(nbar3)
 
 The first plot shows us the sample size against power.
 We can see that no matter how large `nbar` is, we can never achieve a power above about $0.26$.
-We can see that the algorithm keeps trying larger and larger points until it reaches the maximum number of steps, and returns `NA`. 
-If we want to achieve a power of $0.4$ with this design, we will need to change other parameters, such as increasing $J$ or $K$.
+The algorithm keeps trying larger and larger points until it reaches the maximum number of steps, and returns `NA`. 
+If we want to achieve a power of $0.4$ with this design, we will need to change other parameters, such as $J$ or $K$.
 
 ## Note: Non-convergence for feasible designs
 
 In rare cases, the algorithm may not converge even if the design is feasible.
 Thus, the user should always inspect the search path in cases of nonconvergence to examine if there is possibly a feasible value of the sample size.
-If the power does not asymptote below the target power, then it is possible there is a sample size corresponding to the target power, but the search algorithm was not able to arrive at that value.
+If the power does not asymptote below the target power, then a sample size corresponding to the target power is possible even if the search algorithm was unable to arrive at that value.
 
 In a case of non-convergence for a feasible set of parameters, the following strategies can be tried:
 
