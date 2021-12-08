@@ -29,7 +29,7 @@ test_that( "update generally works", {
     expect_true( ss$`Sample.size` < up$`Sample.size`)
 
     up$`Sample.size`
-    topow = update( up, type="power", J = 40 )
+    topow = update( up, type = "power", J = 40 )
     expect_true( topow$min1[[2]] < up$`min1 power` )
 
 

@@ -219,6 +219,7 @@ test_that("testing of d3.3_m3rc2rc", {
         pp1
         pp1$D1indiv[2]
     }
+
     pp_power <- 0.2594
 
     vals <- test_sample_triad( target_power = pp_power,
@@ -264,6 +265,27 @@ test_that("testing of d3.3_m3rc2rc", {
     expect_true(!is.na(J1$`Sample.size`))
     expect_equal(40, J1$`Sample.size`, tol = 0.1)
 
+    # converges but is very flat
+    set.seed( 245444 )
+    J1 <- expect_warning(pump_sample(
+      design = "d3.3_m3rc2rc",
+      typesample = 'J',
+      MTP = 'Holm',
+      target.power =pp_power,
+      power.definition = 'D1indiv',
+      K = 20,
+      nbar = 50,
+      M = 3,
+      MDES = 0.25,
+      Tbar = 0.5, alpha = 0.05,
+      numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+      R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+      ICC.2 = 0.1, ICC.3 = 0.1,
+      omega.2 = 0, omega.3 = 0, rho = 0.5))
+    J1
+    expect_true(!is.na(J1$`Sample.size`))
+    expect_equal(40, J1$`Sample.size`, tol = 0.1)
+
     set.seed( 245444 )
     J3 <- pump_sample(
         design = "d3.3_m3rc2rc",
@@ -290,7 +312,7 @@ test_that("testing of d3.3_m3rc2rc", {
     nbar1 <- pump_sample(
         design = "d3.3_m3rc2rc",
         power.definition = 'D1indiv',
-        target.power =pp_power,
+        target.power = pp_power,
         typesample = 'nbar',
         MTP = 'Holm',
         K = 20,
@@ -303,7 +325,8 @@ test_that("testing of d3.3_m3rc2rc", {
         ICC.2 = 0.1, ICC.3 = 0.1,
         omega.2 = 0, omega.3 = 0, rho = 0.5)
     nbar1
-    # plot_power_search(nbar1)
+    expect_true(is.na(nbar1$`Sample.size`))
+    expect_error(plot_power_curve(nbar1))
 
 })
 

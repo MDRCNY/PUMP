@@ -636,6 +636,10 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 #'
 #' @export
 plot_power_curve <- function( pwr, plot.points = TRUE ) {
+  if(is.na(pwr$Sample.size))
+  {
+    stop('plot_power_curve() does not work if optimizer has not converged. Try plot_power_search() for additional information.')
+  }
   if ( is.pumpresult( pwr ) ) {
     test.pts <- power_curve(pwr, all = TRUE )
     x_label <- pump_type(pwr)

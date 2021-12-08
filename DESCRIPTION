@@ -14,22 +14,20 @@ Description: This package details provides functions for calculating power, mini
 Depends:
      R (>= 3.5.0)
 Imports:
-     MASS,
-     mvtnorm,
-     tidyverse,
-     tidyselect,
-     here,
-     magrittr,
-     ggplot2,
-     stats,
-     purrr,
-     gridExtra,
      dplyr,
+     ggplot2,
+     gridExtra,
+     magrittr,
+     mvtnorm,
+     purrr,
      readr,
+     rlang,
+     stats,
      stringr,
      tibble,
      tidyr,
-     rlang
+     tidyselect,
+     tidyverse
 Additional_repositories: 
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -39,5 +37,6 @@ Suggests:
     testthat,
     knitr,
     furrr,
-    future
+    future,
+    PowerUpR
 VignetteBuilder: knitr
