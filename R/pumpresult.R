@@ -310,7 +310,7 @@ dim.pumpresult <- function( x, ... ) {
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
 summary.pumpresult = function( object, ... ) {
-    print_design( object, insert_results = TRUE, ... )
+    print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
@@ -327,7 +327,7 @@ summary.pumpresult = function( object, ... ) {
 #' @rdname pumpresult
 print.pumpresult = function( x, n = 10,
                              header=TRUE,
-                             search = header,
+                             search = FALSE,
                              ... ) {
     result_type = attr( x, "type" )
 
@@ -344,9 +344,29 @@ print.pumpresult = function( x, n = 10,
 
     print( as.data.frame( x ), row.names=FALSE )
 
+    if ( search ) {
+        print_search( x )
+    } else {
+        tr = attr( x, "tries" )
+        if ( !is.null( tr ) ) {
+            scat( "\t(%d steps in search)\n", nrow(tr) )
+        }
+    }
+    
+    invisible( x )
+}
 
+
+#' Print the search history of a pump result object
+#' 
+#' For pump_mdes and pump_sample, print the search history.
+#' 
+#' @inheritParams print.pumpresult
+#' @return Number of steps in search.
+#' @export
+print_search <- function( x, n = 10 ) {
     tr = attr( x, "tries" )
-    if ( search && !is.null( tr )  ) {
+    if ( !is.null( tr )  ) {
         cat( "\nSearch history\n")
         nr = nrow( tr )
         if ( nr >= n ) {
@@ -358,10 +378,10 @@ print.pumpresult = function( x, n = 10,
         } else {
             print( tr )
         }
+        invisible( nr )
+    } else {
+        invisible( 0 )
     }
-
-
-    invisible( x )
 }
 
 
@@ -370,10 +390,11 @@ print.pumpresult = function( x, n = 10,
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
+#' @param insert_control Include the optimizer control parameter information.
 #' @param ... Extra arguments to pass to print.pumpresult.
 #'
 #' @export
-print_design <- function( x, insert_results = FALSE, ...  ) {
+print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...  ) {
 
 
     reduce_vec = function( vec ) {
@@ -469,15 +490,17 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
         print.pumpresult(x, header=FALSE, search=FALSE, ... )
     }
 
-    ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
-    if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
-        ex_params$B = NULL
+    if ( insert_control ) {
+        ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
+        if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
+            ex_params$B = NULL
+        }
+        no_inc = sapply( ex_params, is.null )
+        ex_params = ex_params[ !no_inc ]
+        scat( "\t(%s)\n",
+              paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
     }
-    no_inc = sapply( ex_params, is.null )
-    ex_params = ex_params[ !no_inc ]
-    scat( "\t(%s)\n",
-          paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
-
+    
     invisible( x )
 }
 

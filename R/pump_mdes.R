@@ -179,7 +179,7 @@ pump_mdes <- function(
   }
 
   # Compute Q.m and df
-  Q.m <- calc_Q.m(
+  Q.m <- calc_SE(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3

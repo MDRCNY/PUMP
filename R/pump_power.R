@@ -302,7 +302,7 @@ pump_power <- function(
   }
 
   # compute test statistics for when null hypothesis is false
-  Q.m <- calc_Q.m(
+  Q.m <- calc_SE(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,

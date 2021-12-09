@@ -27,7 +27,7 @@ is.pumpresult(x)
 
 \method{summary}{pumpresult}(object, ...)
 
-\method{print}{pumpresult}(x, n = 10, header = TRUE, search = header, ...)
+\method{print}{pumpresult}(x, n = 10, header = TRUE, search = FALSE, ...)
 
 \method{as.data.frame}{pumpresult}(x, row.names = NULL, optional = FALSE, ...)
 }

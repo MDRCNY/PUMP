@@ -177,7 +177,7 @@ parse_design <- function( design ) {
 #' @return Q_m, the standard error of the effect size estimate
 #' @export
 
-calc_Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+calc_SE <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
     if(design %in% c('d1.1_m1c'))
     {
@@ -471,6 +471,10 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
              Example: MDES = c(0.1, 0.1), numZero = 3, M = 5.\n
              Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
         }
+        if( numZero >= M )
+        {
+            stop('numZero cannot be greater than or equal to M' )
+        }
         if ( length(MDES) == 1 ) {
             MDES <- c(rep( MDES, M - numZero), rep(0, numZero) )
         } else {
@@ -535,6 +539,10 @@ validate_inputs <- function( design, params.list,
 
     par_design <- parse_design(design)
 
+    if( !is.null( params.list$MTP ) && params.list$MTP == "raw") {
+        params.list$MTP = "None"
+    }
+    
     if(params.list$M == 1)
     {
         if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
