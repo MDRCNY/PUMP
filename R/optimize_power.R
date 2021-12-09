@@ -303,6 +303,7 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   stopifnot( pump_type(p) != "power" )
 
   pp <- params(p)
+  pp$start.tnum = NULL
   
   #Zero this out since we will be calling optimize power, which doesn't allow
   #for a rho matrix.
@@ -659,7 +660,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
   fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
 
   xrng = range( test.pts$pt )
-  lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
+  #lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
   limsX <- grDevices::extendrange( r = xrng, 0.15 )
 
   plot1 <-  ggplot2::ggplot( test.pts ) +
@@ -667,7 +668,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
     ggplot2::theme_minimal() +
     ggplot2::stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
     ggplot2::guides(colour="none", size="none") +
-    ggplot2::coord_cartesian( ylim=lims, xlim = limsX ) +
+    ggplot2::coord_cartesian( ylim=c(0,1), xlim = limsX ) +  
     ggplot2::labs( x = x_label, y = "power" )
 
   delrange = diff( xrng )

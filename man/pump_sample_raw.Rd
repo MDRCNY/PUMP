@@ -95,10 +95,13 @@ achieve target power for sample size.}
 Requisit sample size (as integer) and associated degreess of freedom.
 }
 \description{
-This is a Helper function for getting a needed Sample Size when no
+This is a helper function for getting a needed Sample Size when no
 adjustments has been made to the test statistics.
 }
 \details{
+It is for a single, individual outcome.  It only takes scalar values for all
+its arguments, and does not have an M argument (for number of outcomes).
+
 It requires iteration because we do not know the degrees of freedom, and so
 we guess and then calculate sample size, and then recalculate df based on
 sample size, until we converge.

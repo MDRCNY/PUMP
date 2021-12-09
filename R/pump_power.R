@@ -281,7 +281,7 @@ pump_power <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-      rho = rho, rho.matrix = rho.matrix, B = B
+      rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum
     )
 
     params.list <- validate_inputs(design, params.list, power.call = TRUE, verbose = verbose )
@@ -297,7 +297,6 @@ pump_power <- function(
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
-    B <- params.list$B
   } else {
     params.list = NULL
   }

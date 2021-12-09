@@ -511,3 +511,44 @@ test_that( "different values for different outcomes", {
   expect_true(ss2$`Sample.size` > ss3$`Sample.size`)
 
 })
+
+
+
+
+
+
+
+
+test_that( "different MDES values work", {
+  
+  set.seed(034443)
+  
+  pow <- pump_power(
+    design = "d2.2_m2rc",
+    MTP = "BH",
+    J = 40,
+    nbar = 100,
+    M = 5,
+    MDES = c( 0.10, 0.05, 0.6, 0.05, 0.7 ),
+    Tbar = 0.50, alpha = 0.05,
+    numCovar.1 = 5, numCovar.2 = 1,
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8,0,0.4), ICC.3 = 0.1,
+    rho = 0.4 )
+  pow
+  
+  ss1 = update( pow, type="sample",
+                typesample = "J",
+                power.definition = "D4indiv",
+                target.power = pow$D4indiv[[2]])
+  ss1
+  expect_equal( ss1$Sample.size, 40, tol=0.05 )
+  
+  ss2 = update( pow, type="sample",
+                typesample = "J",
+                power.definition = "D5indiv",
+                target.power = 0.80 )
+  ss2
+  expect_true( ss2$Sample.size < 40 )
+
+})
+

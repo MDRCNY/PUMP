@@ -10,6 +10,7 @@ pump_sample(
   typesample,
   MDES,
   M,
+  numZero = NULL,
   nbar = NULL,
   J = NULL,
   K = NULL,
@@ -57,6 +58,9 @@ to automatically re-run for each procedure on the list.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
+
+\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 

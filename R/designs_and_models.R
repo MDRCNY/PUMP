@@ -14,6 +14,7 @@ pump_info <- function( comment = TRUE) {
         "d1.1_m1c",     "n/a",
             "1 lvl, lvl 1 rand / constant impacts model",
             "R2.1",
+        
         # 2 level designs, randomization at level 1
         "d2.1_m2fc",    "bira2_1c",
             "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
@@ -22,12 +23,18 @@ pump_info <- function( comment = TRUE) {
             "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
             "R2.1, ICC.2",
         "d2.1_m2fr",    "bira2_1r",
-            "2 lvls, lvl 1 rand / fixed intercepts, random impacts",
+            "2 lvls, lvl 1 rand / fixed intercepts, random impacts (FIRC)",
             "R2.1, ICC.2, omega.2",
+        "d2.1_m2rr",    "n/a",
+            "2 lvls, lvl 1 rand / random intercepts & impacts (RIRC)",
+            "R2.1, ICC.2, omega.2",
+        
         # 2 lvl design, rand at lvl 2
         "d2.2_m2rc",    "cra2_2r",
             "2 lvls, lvl 2 rand / random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2",
+        
+        
         # 3 lvl design, rand at lvl 1
         "d3.1_m3rr2rr", "bira3_1r ",
             "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
@@ -178,7 +185,7 @@ calc_Q.m <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, o
     } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
-    } else if (design == 'd2.1_m2fr')
+    } else if (design == 'd2.1_m2fr' || design == 'd2.1_m2rr' )
     {
         Q.m <- sqrt( (ICC.2 * omega.2)/J +
                          ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
@@ -236,7 +243,7 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
     } else if (design == 'd2.1_m2ff')
     {
         df <- J * (nbar - 2) - numCovar.1
-    } else if (design == 'd2.1_m2fr')
+    } else if (design == 'd2.1_m2fr' || design == 'd2.1_m2rr' )
     {
         df <- J - numCovar.1 - 1
     } else if (design == 'd3.1_m3rr2rr')
@@ -296,7 +303,7 @@ calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J
         nbar <- (MT/MDES)^2 * numr/denom
-    } else if (design == 'd2.1_m2fr')
+    } else if (design == 'd2.1_m2fr' || design == 'd2.1m2rr' )
     {
         numr <- (1 - ICC.2)*(1 - R2.1)
         denom <- J * ((MDES/MT)^2) - ICC.2 * omega.2
@@ -365,7 +372,7 @@ calc_J <- function(
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
         J <- (MT/MDES)^2 * numr/denom
-    } else if (design == 'd2.1_m2fr')
+    } else if (design == 'd2.1_m2fr' || design == 'd2.1m2rr' )
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
@@ -535,10 +542,11 @@ validate_inputs <- function( design, params.list,
             warning("Multiple testing corrections are not needed when M = 1.")
         }
         params.list$MTP <- "None"
-    } else if( power.call & (is.null(params.list$MTP) | params.list$MTP == 'None') )
+    } else if( power.call && (is.null(params.list$MTP) || params.list$MTP == 'None') )
     {
         stop('Please provide a multiple test procedure (MTP).')
     }
+    
 
     if(length( params.list$MTP ) > 1)
     {
@@ -677,10 +685,7 @@ validate_inputs <- function( design, params.list,
         stop('Please provide a non-negative value of Omega')
     }
 
-    if(params.list$rho > 1 | params.list$rho < -1)
-    {
-        stop('Please provide rho as a correlation between -1 and 1')
-    }
+
     #-------------------------------------------------------#
     # check for inconsistent user inputs
     #-------------------------------------------------------#
@@ -821,7 +826,8 @@ validate_inputs <- function( design, params.list,
     #-------------------------------------------------------#
     if(is.null(params.list$rho.matrix) & is.null(params.list$rho))
     {
-        stop('Please provide either a rho matrix or default rho.')
+        stop( sprintf( 'Please provide either a %d x %d rho.matrix or default scalar rho.',
+                       params.list$M, params.list$M ) )
     }
 
     if(!is.null(params.list$rho.matrix))
@@ -829,6 +835,11 @@ validate_inputs <- function( design, params.list,
         if(nrow(params.list$rho.matrix) != params.list$M | ncol(params.list$rho.matrix) != params.list$M)
         {
             stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
+        }
+    } else {
+        if(params.list$rho > 1 | params.list$rho < -1)
+        {
+            stop('Please provide rho as a correlation between -1 and 1')
         }
     }
 

@@ -19,6 +19,7 @@ optimize_power(
   K = 1,
   nbar = NULL,
   M = M,
+  numZero = numZero,
   Tbar = Tbar,
   alpha,
   two.tailed,
@@ -79,6 +80,9 @@ outcomes.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
+
+\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}

@@ -112,13 +112,30 @@ update.pumpresult = function( object, ... ) {
 
     # Are we changing what kind of calculation we want to perform?  If so,
     # adjust some parameters as needed.
+    # result_type - the old type
+    # params$type - the new type
     if ( params$type != result_type ) {
 
+        # Copy over sample size from the pump_sampel call
         if ( result_type == "sample" ) {
             ss = object$`Sample.size`
             slvl = attr(object, "sample.level" )
             params[[slvl]] = ss
         }
+        
+        if ((params$type == "mdes" || params$type == "sample") && result_type == "power" ) {
+            params["max.tnum"] = params["tnum"]
+            params["tnum"] = NULL
+        }
+        
+        if ( params$type == "power" && (result_type == "mdes" || result_type == "sample") ) {
+            params["start.tnum"] = NULL
+            params["tnum"] = params["max.tnum"]
+            params["max.tnum"] = NULL
+            params["final.tnum"] = NULL
+            params["max.steps"] = NULL
+        }
+        
         result_type = params$type
     }
     params$type = NULL
@@ -452,14 +469,14 @@ print_design <- function( x, insert_results = FALSE, ...  ) {
         print.pumpresult(x, header=FALSE, search=FALSE, ... )
     }
 
-    scat( "\t  (B = %s", params$B )
-    if ( exists( "tnum" ) ) {
-        scat( "  tnum = %s", params$tnum)
+    ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
+    if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
+        ex_params$B = NULL
     }
-    if ( exists( "tol" ) ) {
-        scat( "  tol = %s", params$tol )
-    }
-    scat( ")\n" )
+    no_inc = sapply( ex_params, is.null )
+    ex_params = ex_params[ !no_inc ]
+    scat( "\t(%s)\n",
+          paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
 
     invisible( x )
 }

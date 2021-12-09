@@ -277,7 +277,8 @@ pump_sample <- function(
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-    rho = rho, rho.matrix = rho.matrix, B = B
+    rho = rho, rho.matrix = rho.matrix, B = B,
+    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum
   )
   ##
   params.list <- validate_inputs(design, params.list, ss.call = TRUE, verbose = verbose )

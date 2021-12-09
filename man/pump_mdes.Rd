@@ -7,6 +7,7 @@
 pump_mdes(
   design,
   MTP = NULL,
+  numZero = NULL,
   M,
   nbar,
   J,
@@ -46,6 +47,9 @@ pump_mdes(
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
 none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
+
+\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
+provide NumZero + length(MDES) = M}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}

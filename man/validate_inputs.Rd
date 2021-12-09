@@ -9,7 +9,8 @@ validate_inputs(
   params.list,
   power.call = FALSE,
   mdes.call = FALSE,
-  ss.call = FALSE
+  ss.call = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
