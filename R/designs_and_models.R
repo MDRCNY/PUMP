@@ -565,7 +565,44 @@ validate_inputs <- function( design, params.list,
     {
         stop( sprintf( '"%s" is an invalid MTP.', params.list$MTP ) )
     }
+    
+    
+    #-------------------------------------------------------#
+    # Drop inputs that we can ignore, depending on model
+    #-------------------------------------------------------#
 
+    # check for three-level parameters when working with two level models
+    if( par_design$levels <= 2 )
+    {
+        
+        if( ( !is.null(params.list$K) && params.list$K > 1 ) |
+            ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+            ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
+            ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
+        {
+            warning('The following parameters are only valid for three-level designs, and will be ignored:\n
+              K, numCovar.3, R2.3, ICC.3, omega.3')
+            params.list$K <- NULL
+            params.list$numCovar.3 <- NULL
+            params.list$R2.3 <- NULL
+            params.list$ICC.3 <- NULL
+            params.list$omega.3 <- NULL
+        }
+    }
+    
+    if( par_design$levels == 3 && par_design$FE.3 )
+    {
+        if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+            ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
+        {
+            warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
+              numCovar.3, R2.3')
+            params.list$numCovar.3 <- NULL
+            params.list$R2.3 <- NULL
+        }
+    }
+    
+    
     
     #-------------------------------------------------------#
     # MDES
@@ -584,9 +621,9 @@ validate_inputs <- function( design, params.list,
     }
     
 
-    #-------------------------------------------------------#
-    # convert all params from scalar to vector
-    #-------------------------------------------------------#
+    #---------------------------------------------------------------#
+    # convert all params from scalar to vector, if they are non-null
+    #---------------------------------------------------------------#
     if(!(length(params.list$R2.1) %in% c(1, params.list$M)))
     {
         stop("R2.1: Please provide a scalar parameter or a vector of length M.")
@@ -596,7 +633,7 @@ validate_inputs <- function( design, params.list,
         params.list$R2.1 <- rep(params.list$R2.1, params.list$M)
     }
 
-    if(!(length(params.list$R2.2) %in% c(1, params.list$M)))
+    if(!(length(params.list$R2.2) %in% c(0, 1, params.list$M)))
     {
         stop("R2.2: Please provide a scalar parameter or a vector of length M.")
     }
@@ -605,7 +642,7 @@ validate_inputs <- function( design, params.list,
         params.list$R2.2 <- rep(params.list$R2.2, params.list$M)
     }
 
-    if(!(length(params.list$R2.3) %in% c(1, params.list$M)))
+    if(!(length(params.list$R2.3) %in% c(0, 1, params.list$M)))
     {
         stop("R2.3: Please provide a scalar parameter or a vector of length M.")
     }
@@ -614,7 +651,7 @@ validate_inputs <- function( design, params.list,
         params.list$R2.3 <- rep(params.list$R2.3, params.list$M)
     }
 
-    if(!(length(params.list$ICC.2) %in% c(1, params.list$M)))
+    if(!(length(params.list$ICC.2) %in% c(0, 1, params.list$M)))
     {
         stop("ICC.2: Please provide a scalar parameter or a vector of length M.")
     }
@@ -623,7 +660,7 @@ validate_inputs <- function( design, params.list,
         params.list$ICC.2 <- rep(params.list$ICC.2, params.list$M)
     }
 
-    if(!(length(params.list$ICC.3) %in% c(1, params.list$M)))
+    if(!(length(params.list$ICC.3) %in% c(0, 1, params.list$M)))
     {
         stop("ICC.3: Please provide a scalar parameter or a vector of length M.")
     }
@@ -632,7 +669,7 @@ validate_inputs <- function( design, params.list,
         params.list$ICC.3 <- rep(params.list$ICC.3, params.list$M)
     }
 
-    if(!(length(params.list$omega.2) %in% c(1, params.list$M)))
+    if(!(length(params.list$omega.2) %in% c(0, 1, params.list$M)))
     {
         stop("omega.2: Please provide a scalar parameter or a vector of length M.")
     }
@@ -641,7 +678,7 @@ validate_inputs <- function( design, params.list,
         params.list$omega.2 <- rep(params.list$omega.2, params.list$M)
     }
 
-    if(!(length(params.list$omega.3) %in% c(1, params.list$M)))
+    if(!(length(params.list$omega.3) %in% c(0, 1, params.list$M)))
     {
         stop("omega.3: Please provide a scalar parameter or a vector of length M.")
     }
@@ -698,6 +735,7 @@ validate_inputs <- function( design, params.list,
     # check for inconsistent user inputs
     #-------------------------------------------------------#
 
+    # one level models
     if( par_design$levels == 1 ) {
         if ( !is.null( params.list$J ) && params.list$J != 1 ) {
             stop( "Can't have multiple units at 2nd level for the d1.1_m2cc design" )
@@ -709,7 +747,6 @@ validate_inputs <- function( design, params.list,
 
     }
 
-
     # two level models
     if( par_design$levels <= 2 )
     {
@@ -717,34 +754,9 @@ validate_inputs <- function( design, params.list,
         {
             warning('Two level design with single unit at level 2')
         }
-
-        if( ( !is.null(params.list$K) && params.list$K > 1 ) |
-            ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-            ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
-            ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
-        {
-            warning('The following parameters are only valid for three-level designs, and will be ignored:\n
-              K, numCovar.3, R2.3, ICC.3, omega.3')
-            params.list$K <- NULL
-            params.list$numCovar.3 <- NULL
-            params.list$R2.3 <- NULL
-            params.list$ICC.3 <- NULL
-            params.list$omega.3 <- NULL
-        }
     }
-
-    if( par_design$levels == 3 && par_design$FE.3 )
-    {
-        if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-            ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
-        {
-            warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
-              numCovar.3, R2.3')
-            params.list$numCovar.3 <- NULL
-            params.list$R2.3 <- NULL
-        }
-    }
-
+    
+   
     # three level models
     if( par_design$levels == 3 )
     {
@@ -853,6 +865,80 @@ validate_inputs <- function( design, params.list,
 
     return(params.list)
 
+}
+
+
+
+# Stolen from development purrr
+silently <- function(.f, otherwise = NULL) {
+    .f <- as_mapper(.f)
+    function(...) {
+        ret <-
+            purrr:::capture_output(
+                purrr:::capture_error(.f(...), otherwise, quiet=TRUE)
+            )
+        # reformat output to an un-nested list
+        list(
+            result = ret$result$result,
+            output = ret$output,
+            messages = ret$messages,
+            warnings = ret$warnings,
+            error = ret$result$error
+        )
+    }
+}
+
+
+# Not yet implemented
+# #' @param grid Flag of whether call is a grid call or non-grid call.
+
+
+#' Check user inputs
+#'
+#' This functions takes in a list of user inputs and checks them for validity,
+#' producing a mix of errors or warnings.
+#'
+#' @param design a single RCT design (see list/naming convention)
+#' @param call String denoting intended pump_power, pump_mdes, or pump_sample
+#'   call.
+#' @param ... The arguments to be passed to given call.
+#'
+#' @return list of two things: "ok", a TRUE/FALSE of whether this is a valid
+#'   call.  "messages", a list of all messages, warnings, and notes that would
+#'   be generated by the input parameter choices.  In the case of an error, the
+#'   messages will have the error as the first string in the list.
+#' @import purrr
+#' @export
+check_pump_call = function( design, 
+                            call = c( "power", "mdes", "sample" ),
+                            #grid = FALSE,
+                            verbose = TRUE,
+                            ... ) {
+    
+    params = list( ... )
+    call = match.arg(call)
+    power.call = call == "power"
+    mdes.call = call == "mdes"
+    ss.call = call == "sample"
+    params$design = design
+    quiet_validate_inputs = silently( validate_inputs )
+    cres = quiet_validate_inputs( design = design, params.list = params, 
+                                 power.call = power.call, mdes.call = mdes.call, ss.call = ss.call, 
+                                 verbose = verbose )
+    
+    res = list()
+    res$ok = is.null( cres$error )
+
+    messages = c()
+    if ( !res$ok ) {
+        messages = cres$error$message
+    }
+    messages = c( messages, cres$warnings, cres$messages )
+    if ( cres$output != "" ) {
+        messages = c( messages, cres$output )
+    }
+    res$messages = messages
+    return( res )
 }
 
 
