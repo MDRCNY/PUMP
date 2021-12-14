@@ -232,6 +232,7 @@ pump_power <- function(
     if ( verbose ) {
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
+    validate_MTP( MTP=MTP, power.call = TRUE, M=M, multi.MTP.ok=TRUE )
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,

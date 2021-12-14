@@ -499,7 +499,7 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
 }
 
 
-validate_MTP = function( MTP, M, multi.MTP.ok = FALSE ) {
+validate_MTP = function( MTP, power.call, M, multi.MTP.ok = FALSE ) {
     
     if( !multi.MTP.ok && length( MTP ) > 1 )
     {
@@ -517,7 +517,7 @@ validate_MTP = function( MTP, M, multi.MTP.ok = FALSE ) {
             warning("Multiple testing corrections are not needed when M = 1.")
         }
         MTP <- "None"
-    } else if( is.null(MTP) || MTP == 'None') {
+    } else if( power.call && (is.null(MTP) || MTP == 'None')) {
         stop('Please provide a multiple test procedure (MTP).')
     }
     
@@ -578,7 +578,9 @@ validate_inputs <- function( design, params.list,
 
     par_design <- parse_design(design)
 
-    params.list$MTP = validate_MTP( params.list$MTP, params.list$M,
+    params.list$MTP = validate_MTP( MTP = params.list$MTP, 
+                                    power.call= power.call,
+                                    M = params.list$M,
                                     multi.MTP.ok = multi.MTP.ok )
     
     #-------------------------------------------------------#
