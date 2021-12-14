@@ -8,6 +8,7 @@ check_pump_call(
   design,
   call = c("power", "mdes", "sample"),
   verbose = TRUE,
+  multi.MTP.ok = FALSE,
   ...
 )
 }
@@ -16,6 +17,10 @@ check_pump_call(
 
 \item{call}{String denoting intended pump_power, pump_mdes, or pump_sample
 call.}
+
+\item{verbose}{Keep and return smaller messages or not}
+
+\item{multi.MTP.ok}{TRUE/FALSE on whether multiple MTP is allowed for check.}
 
 \item{...}{The arguments to be passed to given call.}
 }

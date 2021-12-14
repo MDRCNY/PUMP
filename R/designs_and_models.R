@@ -499,6 +499,44 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
 }
 
 
+validate_MTP = function( MTP, M, multi.MTP.ok = FALSE ) {
+    
+    if( !multi.MTP.ok && length( MTP ) > 1 )
+    {
+        stop( 'Please provide only a single MTP procedure.' )
+    }
+    
+    if( !is.null( MTP ) && any( MTP == "raw" ) ) {
+        MTP[ MTP == "raw" ] = "None"
+    }
+    
+    if(M == 1)
+    {
+        if ( !is.null( MTP ) && (MTP != "None" ) )
+        {
+            warning("Multiple testing corrections are not needed when M = 1.")
+        }
+        MTP <- "None"
+    } else if( is.null(MTP) || MTP == 'None') {
+        stop('Please provide a multiple test procedure (MTP).')
+    }
+    
+    chk = MTP %in% pump_info()$Adjustment$Method
+    
+    if( ! all( chk ) ) {
+        if ( length( MTP ) > 1 ) {
+            msg = sprintf( 'You have at least one invalid MTP: %s',
+                       paste( "'", MTP[!chk], "'", sep = "", collapse = ", " ) )
+        } else {
+            msg = sprintf( '"%s" is an invalid MTP.', MTP )
+        }
+        stop( msg )
+    }
+    
+    return( MTP )
+}
+
+
 
 #' Validates user inputs
 #'
@@ -517,7 +555,8 @@ validate_inputs <- function( design, params.list,
                              power.call = FALSE,
                              mdes.call = FALSE,
                              ss.call = FALSE,
-                             verbose = TRUE )
+                             verbose = TRUE,
+                             multi.MTP.ok = FALSE )
 {
 
     #-------------------------------------------------------#
@@ -539,33 +578,8 @@ validate_inputs <- function( design, params.list,
 
     par_design <- parse_design(design)
 
-    if( !is.null( params.list$MTP ) && params.list$MTP == "raw") {
-        params.list$MTP = "None"
-    }
-    
-    if(params.list$M == 1)
-    {
-        if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
-        {
-            warning("Multiple testing corrections are not needed when M = 1.")
-        }
-        params.list$MTP <- "None"
-    } else if( power.call && (is.null(params.list$MTP) || params.list$MTP == 'None') )
-    {
-        stop('Please provide a multiple test procedure (MTP).')
-    }
-    
-
-    if(length( params.list$MTP ) > 1)
-    {
-        stop( 'Please provide only a single MTP procedure.' )
-    }
-
-    if(!(params.list$MTP %in% info$Adjustment$Method))
-    {
-        stop( sprintf( '"%s" is an invalid MTP.', params.list$MTP ) )
-    }
-    
+    params.list$MTP = validate_MTP( params.list$MTP, params.list$M,
+                                    multi.MTP.ok = multi.MTP.ok )
     
     #-------------------------------------------------------#
     # Drop inputs that we can ignore, depending on model
@@ -901,6 +915,8 @@ silently <- function(.f, otherwise = NULL) {
 #' @param design a single RCT design (see list/naming convention)
 #' @param call String denoting intended pump_power, pump_mdes, or pump_sample
 #'   call.
+#' @param verbose Keep and return smaller messages or not
+#' @param multi.MTP.ok TRUE/FALSE on whether multiple MTP is allowed for check. 
 #' @param ... The arguments to be passed to given call.
 #'
 #' @return list of two things: "ok", a TRUE/FALSE of whether this is a valid
@@ -913,6 +929,7 @@ check_pump_call = function( design,
                             call = c( "power", "mdes", "sample" ),
                             #grid = FALSE,
                             verbose = TRUE,
+                            multi.MTP.ok = TRUE,
                             ... ) {
     
     params = list( ... )
@@ -921,10 +938,13 @@ check_pump_call = function( design,
     mdes.call = call == "mdes"
     ss.call = call == "sample"
     params$design = design
+    
+    
     quiet_validate_inputs = silently( validate_inputs )
     cres = quiet_validate_inputs( design = design, params.list = params, 
                                  power.call = power.call, mdes.call = mdes.call, ss.call = ss.call, 
-                                 verbose = verbose )
+                                 verbose = verbose,
+                                 multi.MTP.ok = multi.MTP.ok )
     
     res = list()
     res$ok = is.null( cres$error )

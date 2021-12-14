@@ -10,7 +10,8 @@ validate_inputs(
   power.call = FALSE,
   mdes.call = FALSE,
   ss.call = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  multi.MTP.ok = FALSE
 )
 }
 \arguments{

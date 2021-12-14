@@ -178,7 +178,7 @@ update.pumpresult = function( object, ... ) {
 #' and combined.  The return values from the `grid` functions will just return
 #' data frames in general.
 #'
-#' @seealso updateå
+#' @seealso update
 #' @seealso update_grid
 #'
 #' @param x a pumpresult object (except for is.pumpresult, where it is a generic
