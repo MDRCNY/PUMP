@@ -28,7 +28,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 
   if ( drop_unique_columns ) {
     grid <- dplyr::select(
-      grid, 
+      grid,
       dplyr::any_of( c("MDES", "numZero" ) ) |
         tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
@@ -102,6 +102,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                              ICC.2 = NULL, ICC.3 = NULL,
                              omega.2 = NULL, omega.3 = NULL,
                              rho,
+                             long.table = FALSE,
                              verbose = FALSE,
                              use_furrr = FALSE,
                              drop_unique_columns = TRUE,
@@ -126,9 +127,18 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
   nulls <- purrr::map_lgl( args, is.null )
   args <- args[ !nulls ]
 
-  grid <- run_grid( args, pum_function = pump_power, verbose = verbose,
+  grid <- run_grid( args, pum_function = pump_power,
+                    long.table = long.table,
+                    verbose = verbose,
                     drop_unique_columns = drop_unique_columns,
                     MTP = MTP, ..., use_furrr = use_furrr )
+
+  grid <- make.pumpgrid(
+    grid, "power",
+    params.list = args[names(args) != 'design'],
+    design = design,
+    multiple_MTP = TRUE,
+    long.table = long.table )
 
   return( grid )
 }

@@ -14,7 +14,7 @@ pump_info <- function( comment = TRUE) {
         "d1.1_m1c",     "n/a",
             "1 lvl, lvl 1 rand / constant impacts model",
             "R2.1",
-        
+
         # 2 level designs, randomization at level 1
         "d2.1_m2fc",    "bira2_1c",
             "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
@@ -28,13 +28,13 @@ pump_info <- function( comment = TRUE) {
         "d2.1_m2rr",    "n/a",
             "2 lvls, lvl 1 rand / random intercepts & impacts (RIRC)",
             "R2.1, ICC.2, omega.2",
-        
+
         # 2 lvl design, rand at lvl 2
         "d2.2_m2rc",    "cra2_2r",
             "2 lvls, lvl 2 rand / random intercepts, constant impacts",
             "R2.1, R2.2, ICC.2",
-        
-        
+
+
         # 3 lvl design, rand at lvl 1
         "d3.1_m3rr2rr", "bira3_1r ",
             "3 lvls, lvl 1 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, random impacts",
@@ -48,7 +48,7 @@ pump_info <- function( comment = TRUE) {
             "R2.1, R2.2, ICC.2, ICC.3",
         "d3.2_m3rr2rc", "bcra3_2r",
             "3 lvls, lvl 2 rand / lvl 3 random intercepts, random impacts, lvl 2 random intercepts, constant impacts",
-            "R2.1, R2.2, ICC.2",
+            "R2.1, R2.2, ICC.2, ICC.3, omega.3",
         # 3 lvl design, rand at lvl 3
         "d3.3_m3rc2rc", "cra3_3r",
             "3 lvls, lvl 3 rand / lvl 3 random intercepts, constant impacts, lvl 2 random intercepts, constant impacts",
@@ -181,37 +181,37 @@ calc_SE <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, om
 
     if(design %in% c('d1.1_m1c'))
     {
-        Q.m <- sqrt( ( (1 - R2.1) ) /(Tbar * (1-Tbar) * nbar) )
+        Q.m <- sqrt( ( (1 - R2.1) )  /(Tbar * (1-Tbar) * nbar) )
     } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
-        Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) /(Tbar * (1-Tbar) * J * nbar) )
+        Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1-Tbar) * J * nbar) )
     } else if (design == 'd2.1_m2fr' || design == 'd2.1_m2rr' )
     {
         Q.m <- sqrt( (ICC.2 * omega.2)/J +
-                         ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
+                    ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
     } else if (design == 'd3.1_m3rr2rr')
     {
         Q.m <- sqrt( (ICC.3 * omega.3) / K +
-                         (ICC.2 * omega.2) / (J * K) +
-                         ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
+                     (ICC.2 * omega.2) / (J * K) +
+                    ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
     } else if (design == 'd2.2_m2rc')
     {
         Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
-                         (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
+                     (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
     } else if (design == 'd3.3_m3rc2rc')
     {
         Q.m <- sqrt( (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
-                         (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
-                         ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
+                     (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+                    ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
     } else if (design == 'd3.2_m3ff2rc' || design == 'd3.2_m3fc2rc' )
     {
         Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-                         ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
+                    ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
     } else if (design == 'd3.2_m3rr2rc' )
     {
         Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +
-                         ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-                         ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar)))
+                     ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
+                    ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar)))
     } else
     {
         stop(paste('Design not implemented:', design))
@@ -484,7 +484,7 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
             message('Assumed full MDES vector:', 'c(', paste(MDES, collapse = ', '), ')')
         }
     }
-    
+
     if(length(MDES) != M)
     {
         if ( length(MDES) == 1 ) {
@@ -494,7 +494,7 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
                        MDES, 'M =', M))
         }
     }
-    
+
     MDES
 }
 
@@ -542,7 +542,7 @@ validate_inputs <- function( design, params.list,
     if( !is.null( params.list$MTP ) && params.list$MTP == "raw") {
         params.list$MTP = "None"
     }
-    
+
     if(params.list$M == 1)
     {
         if ( !is.null( params.list$MTP ) && (params.list$MTP != "None" ) )
@@ -554,7 +554,7 @@ validate_inputs <- function( design, params.list,
     {
         stop('Please provide a multiple test procedure (MTP).')
     }
-    
+
 
     if(length( params.list$MTP ) > 1)
     {
@@ -565,8 +565,8 @@ validate_inputs <- function( design, params.list,
     {
         stop( sprintf( '"%s" is an invalid MTP.', params.list$MTP ) )
     }
-    
-    
+
+
     #-------------------------------------------------------#
     # Drop inputs that we can ignore, depending on model
     #-------------------------------------------------------#
@@ -574,7 +574,7 @@ validate_inputs <- function( design, params.list,
     # check for three-level parameters when working with two level models
     if( par_design$levels <= 2 )
     {
-        
+
         if( ( !is.null(params.list$K) && params.list$K > 1 ) |
             ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
             ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
@@ -589,7 +589,7 @@ validate_inputs <- function( design, params.list,
             params.list$omega.3 <- NULL
         }
     }
-    
+
     if( par_design$levels == 3 && par_design$FE.3 )
     {
         if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
@@ -601,9 +601,9 @@ validate_inputs <- function( design, params.list,
             params.list$R2.3 <- NULL
         }
     }
-    
-    
-    
+
+
+
     #-------------------------------------------------------#
     # MDES
     #-------------------------------------------------------#
@@ -616,10 +616,10 @@ validate_inputs <- function( design, params.list,
             stop( sprintf( "You cannot specify %s zeros with %s outcomes", params.list$numZero, params.list$M ) )
         }
     } else {
-        params.list$MDES = make_MDES_vector( params.list$MDES, params.list$M, params.list$numZero, 
+        params.list$MDES = make_MDES_vector( params.list$MDES, params.list$M, params.list$numZero,
                                              verbose = verbose )
     }
-    
+
 
     #---------------------------------------------------------------#
     # convert all params from scalar to vector, if they are non-null
@@ -755,8 +755,8 @@ validate_inputs <- function( design, params.list,
             warning('Two level design with single unit at level 2')
         }
     }
-    
-   
+
+
     # three level models
     if( par_design$levels == 3 )
     {
@@ -909,12 +909,12 @@ silently <- function(.f, otherwise = NULL) {
 #'   messages will have the error as the first string in the list.
 #' @import purrr
 #' @export
-check_pump_call = function( design, 
+check_pump_call = function( design,
                             call = c( "power", "mdes", "sample" ),
                             #grid = FALSE,
                             verbose = TRUE,
                             ... ) {
-    
+
     params = list( ... )
     call = match.arg(call)
     power.call = call == "power"
@@ -922,10 +922,10 @@ check_pump_call = function( design,
     ss.call = call == "sample"
     params$design = design
     quiet_validate_inputs = silently( validate_inputs )
-    cres = quiet_validate_inputs( design = design, params.list = params, 
-                                 power.call = power.call, mdes.call = mdes.call, ss.call = ss.call, 
+    cres = quiet_validate_inputs( design = design, params.list = params,
+                                 power.call = power.call, mdes.call = mdes.call, ss.call = ss.call,
                                  verbose = verbose )
-    
+
     res = list()
     res$ok = is.null( cres$error )
 
