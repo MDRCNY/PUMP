@@ -109,24 +109,29 @@ test_that("having no covariates is fine", {
   expect_equal( dim( pp ), c(2,8) )
 })
 
+
+
+
 test_that("pump_power works with multiple MTP", {
   pp <- pump_power( design = "d3.2_m3ff2rc",
                     MTP = c( "Holm", "Bonferroni" ),
                     MDES = rep( 0.10, 3 ),
                     M = 3,
-                    J = 3, # number of schools/block
+                    J = 20, # number of schools/block
                     K = 21, # number RA blocks
-                    nbar = 258,
-                    Tbar = 0.50, # prop Tx
+                    nbar = 12,
+                    Tbar = 0.20, # prop Tx
                     alpha = 0.15, # significance level
-                    numCovar.1 = 1, numCovar.2 = 1,
+                    numCovar.1 = 4, numCovar.2 = 1,
                     R2.1 = 0.1, R2.2 = 0.7,
-                    ICC.2 = 0.05, ICC.3 = 0.9,
+                    ICC.2 = 0.05, ICC.3 = 0.1,
                     rho = 0.4, tnum = 200
   ) # how correlated outcomes are
   expect_equal( dim( pp ), c(3,8) )
 
 })
+
+
 
 test_that("M = 1 runs successfully", {
 

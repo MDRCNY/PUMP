@@ -79,7 +79,7 @@ and combined.  The return values from the `grid` functions will just return
 data frames in general.
 }
 \seealso{
-updateå
+update
 
 update_grid
 }

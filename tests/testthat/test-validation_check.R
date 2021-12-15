@@ -113,4 +113,18 @@ test_that("validation works at least vaguely", {
   expect_true( !p$ok )
 
   
+  
+  p <- check_pump_call(  design = "d2.1_m2fc",
+                         MTP = c( "Holm", "Bonferroni" ),
+                         call = "mdes",
+                         J = 10,
+                         nbar = 200,
+                         M = 20,
+                         Tbar = 0.50, alpha = 0.05,
+                         numCovar.1 = 1, numCovar.2 = 1,
+                         R2.1 = 0.9, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                         rho = 0.95 )
+  p
+  expect_true( p$ok )
+  
 } )
