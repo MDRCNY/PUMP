@@ -1,15 +1,15 @@
-Package: pum # KP change to pump?
+Package: PUMP
 Type: Package
-Title: Power Under Multiplicity # KP change to Power Under Multiplicity Project?
+Title: Power Under Multiplicity Project
 Version: 0.1.0
 Authors@R: c(
-  person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("cre")),
-  person("Luke", "Miratrix",, "luke_miratrix@gse.harvard.edu", c("aut")),
-  person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut")),
-  person("Zarni", "Htet",,"zarni.htet@mdrc.org", c("aut"))
-  )
-Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu> 
+  person("Kristin", "Porter", "kristin.porter@mdrc.org", c("aut", "cre")),
+  person("Luke", "Miratrix", "luke_miratrix@gse.harvard.edu", c("aut", "cre")),
+  person("Kristen", "Hunter", "kristenbhunter@gmail.com", c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
+  person("Zarni", "Htet", "zarni.htet@mdrc.org", c("aut"))
+)
 Description: This package details provides functions for calculating power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The calculations take into account the use of multiple testing procedures.
+URL: https://github.com/MDRCNY/PUMP
 Depends:
      R (>= 3.5.0)
 Imports:
@@ -27,15 +27,13 @@ Imports:
      tidyr,
      tidyselect,
      tidyverse
-Additional_repositories: 
-License: MIT + file LICENSE # I reviewed this file and noticed my name. Could you add MDRC and add Luke too since he is the maintainer? Open to other considerations!
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.1.2
 Suggests: 
     testthat,
     knitr,
     furrr,
     future,
     PowerUpR
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
