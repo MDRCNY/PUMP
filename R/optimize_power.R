@@ -43,7 +43,7 @@ optimize_power <- function(design, search.type, MTP, target.power, power.definit
       myK <- test_point
     }
 
-    if(search.type == 'mdes'){ 
+    if(search.type == 'mdes'){
       MDES <- make_MDES_vector( test_point, M, numZero, verbose = FALSE )
     }
 
@@ -304,12 +304,12 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
 
   pp <- params(p)
   pp$start.tnum = NULL
-  
+
   #Zero this out since we will be calling optimize power, which doesn't allow
   #for a rho matrix.
   # pp$numZero <- NULL
   pp$rho.matrix <- NULL
-  
+
   sp <- attr(p, "search.range" )
   test.pts <- search_path(p)
   if ( is.null( low ) ) {
@@ -633,118 +633,4 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
 
 
 
-#' Examine search path of the power search.
-#'
-#' This will give two plots about how the search narrowed down into the final
-#' estimate.  Can be useful to gauge where convergence went poorly.
-#'
-#' @param pwr Result from the pump_sample or pump_mdes
-#' @param plot.points flag; whether to plot individual points on curve
-#'
-#' @export
-plot_power_curve <- function( pwr, plot.points = TRUE ) {
-  if(is.na(pwr$Sample.size))
-  {
-    stop('plot_power_curve() does not work if optimizer has not converged. Try plot_power_search() for additional information.')
-  }
-  if ( is.pumpresult( pwr ) ) {
-    test.pts <- power_curve(pwr, all = TRUE )
-    x_label <- pump_type(pwr)
-  } else {
-    stopifnot( is.data.frame(pwr) )
-    test.pts <- pwr
-    x_label <- "parameter"
-  }
 
-  tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
-  fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
-
-  xrng = range( test.pts$pt )
-  #lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
-  limsX <- grDevices::extendrange( r = xrng, 0.15 )
-
-  plot1 <-  ggplot2::ggplot( test.pts ) +
-    ggplot2::geom_hline( yintercept = test.pts$target.power[[1]], col = "purple" ) +
-    ggplot2::theme_minimal() +
-    ggplot2::stat_function( col="red", fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
-    ggplot2::guides(colour="none", size="none") +
-    ggplot2::coord_cartesian( ylim=c(0,1), xlim = limsX ) +  
-    ggplot2::labs( x = x_label, y = "power" )
-
-  delrange = diff( xrng )
-  if ( delrange >= 2 && delrange <= 10 ) {
-    xpt = seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
-    plot1 = plot1 +   ggplot2::scale_x_log10( breaks = xpt )
-  } else {
-    plot1 = plot1 +  ggplot2::scale_x_log10()
-  }
-
-
-  if ( plot.points ) {
-    plot1 <- plot1 + ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 )
-  }
-
-  return( plot1 )
-
-}
-
-
-
-
-
-#' Examine search path of the power search.
-#'
-#' This will give two plots about how the search narrowed down into the final
-#' estimate.  Can be useful to gauge where convergence went poorly.
-#'
-#' @param pwr Result from the pump_sample or pump_mdes
-#'
-#' @export
-plot_power_search <- function( pwr ) {
-  if ( is.pumpresult(pwr) ) {
-    test.pts <- search_path(pwr)
-  } else if ( is.data.frame(pwr) ) {
-    test.pts <- pwr
-  } else {
-    test.pts <- pwr$test.pts
-  }
-
-  if(is.null(test.pts))
-  {
-    stop('Algorithm converged in one iteration. No search path.')
-  }
-
-  tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
-  fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
-
-  lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm=TRUE ), 0.15 )
-  plot1 <-  ggplot2::ggplot( test.pts ) +
-    ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
-    ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 ) +
-    ggplot2::theme_minimal() +
-    ggplot2::geom_text( ggplot2::aes( .data$pt, .data$power, label = .data$step ), vjust = "bottom", nudge_y = 0.01, size=3 ) +
-    ggplot2::stat_function( col = "red", fun = function(x) { bounded_logistic_curve( x, params =fit ) } ) +
-    ggplot2::guides(colour = "none", size="none") +
-    ggplot2::coord_cartesian(ylim = lims ) +
-    ggplot2::scale_x_log10()
-
-
-  plot2 <-  ggplot2::ggplot( test.pts, ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
-    ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
-    ggplot2::geom_point( alpha = 0.5 ) +
-    ggplot2::scale_x_continuous( breaks=0:max(test.pts$step) ) +
-    ggplot2::theme_minimal()+
-    ggplot2::coord_cartesian(ylim=lims ) +
-    ggplot2::guides(colour="none", size="none")
-
-  plot3 <-  ggplot2::ggplot( test.pts, ggplot2::aes(.data$step, .data$pt, size = .data$w) ) +
-    ggplot2::geom_point( alpha = 0.5 ) +
-    ggplot2::scale_x_continuous( breaks=0:max(test.pts$step) ) +
-    ggplot2::theme_minimal() +
-    ggplot2::guides(colour="none", size="none")+
-    ggplot2::scale_y_log10()
-
-  gridExtra::grid.arrange(plot1, plot2, plot3, ncol=3) #+
-  #title( "Search path for optimize_power" )
-
-}

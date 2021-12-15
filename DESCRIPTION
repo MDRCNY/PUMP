@@ -3,10 +3,9 @@ Type: Package
 Title: Power Under Multiplicity
 Version: 0.1.0
 Authors@R: c(
-  person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("aut", "cre")),
+  person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("cre")),
   person("Luke", "Miratrix",, "luke_miratrix@gse.harvard.edu", c("aut")),
   person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut")),
-  person("Deni", "Chen",, "deni.chen@mdrc.org", c("aut")),
   person("Zarni", "Htet",,"zarni.htet@mdrc.org", c("aut"))
   )
 Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>

@@ -8,7 +8,7 @@ check_pump_call(
   design,
   call = c("power", "mdes", "sample"),
   verbose = TRUE,
-  multi.MTP.ok = FALSE,
+  multi.MTP.ok = TRUE,
   ...
 )
 }

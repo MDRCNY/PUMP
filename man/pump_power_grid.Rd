@@ -26,6 +26,7 @@ pump_power_grid(
   omega.2 = NULL,
   omega.3 = NULL,
   rho,
+  long.table = FALSE,
   verbose = FALSE,
   use_furrr = FALSE,
   drop_unique_columns = TRUE,
@@ -89,6 +90,9 @@ variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+
+\item{long.table}{TRUE for table with power as rows, correction as columns,
+and with more verbose names.  See `transpose_power_table`.}
 
 \item{verbose}{TRUE means print out some text as calls processed.  FALSE do
 not.}

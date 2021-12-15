@@ -36,6 +36,23 @@ make.pumpresult = function( x,
 }
 
 
+make.pumpgrid = function( x,
+                          type = c( "power", "mdes", "sample" ),
+                          design = design,
+                          params.list = NULL,
+                          ... ) {
+  type <- match.arg(type)
+  class(x) <- c( "pumpgrid", class(x) )
+  attr(x, "type" ) <- type
+  attr(x, "params.list") <- params.list
+  attr(x, "design") <- design
+  ll = list(...)
+  for ( l in names(ll) ) {
+    attr(x, l) <- ll[[ l ]]
+  }
+  return( x )
+}
+
 
 
 #' Update a single pump call to a grid call
@@ -122,12 +139,12 @@ update.pumpresult = function( object, ... ) {
             slvl = attr(object, "sample.level" )
             params[[slvl]] = ss
         }
-        
+
         if ((params$type == "mdes" || params$type == "sample") && result_type == "power" ) {
             params["max.tnum"] = params["tnum"]
             params["tnum"] = NULL
         }
-        
+
         if ( params$type == "power" && (result_type == "mdes" || result_type == "sample") ) {
             params["start.tnum"] = NULL
             params["tnum"] = params["max.tnum"]
@@ -135,7 +152,7 @@ update.pumpresult = function( object, ... ) {
             params["final.tnum"] = NULL
             params["max.steps"] = NULL
         }
-        
+
         result_type = params$type
     }
     params$type = NULL
@@ -187,6 +204,22 @@ update.pumpresult = function( object, ... ) {
 NULL
 
 
+#' @title pumpresult object for results of grid power calculations
+#' @name pumpgrid
+#'
+#' @description
+#' The pumpgrid object is an S3 class that holds the results from
+#' `pump_power_grid()`, `pump_sample_grid()`, and `pump_mdes_grid()`.
+#'
+#' It has several methods that pull different information from this object, and
+#' some printing methods for getting nicely formatted results.
+#'
+#'
+#' @param x a pumpgrid object (except for is.pumpresult, where it is a generic
+#'   object to check).
+#' @rdname pumpgrid
+NULL
+
 
 
 #' Get parameters for pump result
@@ -196,7 +229,7 @@ NULL
 #' @rdname pumpresult
 #' @export
 params <- function( x, ... ) {
-    stopifnot( is.pumpresult( x ) )
+    stopifnot( is.pumpresult( x ) | is.pumpgrid( x ) )
 
     pp = attr( x, "params.list" )
     pp_pow = attr(x, "power.params.list" )
@@ -291,6 +324,14 @@ is.pumpresult = function( x ) {
     inherits(x, "pumpresult")
 }
 
+#' @return is.pumpresult: TRUE if object is a pumpgrid object.
+#'
+#' @export
+#'
+#' @rdname pumpgrid
+is.pumpgrid = function( x ) {
+  inherits(x, "pumpgrid")
+}
 
 
 
@@ -352,15 +393,15 @@ print.pumpresult = function( x, n = 10,
             scat( "\t(%d steps in search)\n", nrow(tr) )
         }
     }
-    
+
     invisible( x )
 }
 
 
 #' Print the search history of a pump result object
-#' 
+#'
 #' For pump_mdes and pump_sample, print the search history.
-#' 
+#'
 #' @inheritParams print.pumpresult
 #' @return Number of steps in search.
 #' @export
@@ -500,7 +541,7 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
         scat( "\t(%s)\n",
               paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
     }
-    
+
     invisible( x )
 }
 
