@@ -284,9 +284,10 @@ test_that( "different values for different outcomes", {
 })
 
 
-test_that("M > 1 with MTP None runs successfully", {
+test_that("M > 1 with MTP None", {
     
-    pmdes <- expect_warning(pump_mdes(   design = "d2.1_m2fc",
+    pmdes <- expect_warning(pump_mdes(
+                          design = "d2.1_m2fc",
                           target.power = 0.8,
                           power.definition = 'D1indiv',
                           MTP = "None",
@@ -301,4 +302,19 @@ test_that("M > 1 with MTP None runs successfully", {
                           rho = 0.4
     ))
     expect_true( nrow( pmdes ) == 1 )
+    
+    expect_error(expect_warning(pump_mdes( design = "d2.1_m2fc",
+                         target.power = 0.8,
+                         power.definition = "complete",
+                         MTP = "None",
+                         M = 3,
+                         J = 3, # number of schools/block
+                         nbar = 258,
+                         Tbar = 0.50, # prop Tx
+                         alpha = 0.05, # significance level
+                         numCovar.1 = 5,
+                         R2.1 = 0.1,
+                         ICC.2 = 0.05,
+                         rho = 0.4
+    )))
 })

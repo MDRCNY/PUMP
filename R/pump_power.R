@@ -7,22 +7,24 @@ parse_power_definition <- function( power.definition, M ) {
   powertype <- list( min = FALSE,
                      complete = FALSE,
                      indiv = FALSE )
-
-  if ( stringr::str_detect( power.definition, "min" ) ) {
-    powertype$min <- TRUE
-    powertype$min_k <- readr::parse_number( power.definition )
-    stopifnot( is.numeric( powertype$min_k ) )
-  } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-    powertype$min <- TRUE
-    powertype$complete <- TRUE
-    powertype$min_k <- M
-  } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
-    powertype$indiv <- TRUE
-    powertype$indiv_k <- NULL
-  } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-    powertype$indiv <- TRUE
-    powertype$indiv_k <- readr::parse_number( power.definition )
-    stopifnot( is.numeric( powertype$indiv_k ) )
+  if( !is.null(power.definition) )
+  {
+      if ( stringr::str_detect( power.definition, "min" ) ) {
+          powertype$min <- TRUE
+          powertype$min_k <- readr::parse_number( power.definition )
+          stopifnot( is.numeric( powertype$min_k ) )
+      } else if ( stringr::str_detect( power.definition, "complete" ) ) {
+          powertype$min <- TRUE
+          powertype$complete <- TRUE
+          powertype$min_k <- M
+      } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
+          powertype$indiv <- TRUE
+          powertype$indiv_k <- NULL
+      } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
+          powertype$indiv <- TRUE
+          powertype$indiv_k <- readr::parse_number( power.definition )
+          stopifnot( is.numeric( powertype$indiv_k ) )
+      }
   }
 
   return( powertype )
@@ -232,7 +234,9 @@ pump_power <- function(
     if ( verbose ) {
       scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
-    validate_MTP( MTP=MTP, power.call = TRUE, M=M, multi.MTP.ok=TRUE )
+    validate_MTP( MTP = MTP,
+                  power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
+                  M = M, pdef = NULL, multi.MTP.ok = TRUE )
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
@@ -282,7 +286,8 @@ pump_power <- function(
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
-      rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum
+      rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum,
+      power.definition = NULL
     )
 
     params.list <- validate_inputs(design, params.list, power.call = TRUE, verbose = verbose )
@@ -299,8 +304,9 @@ pump_power <- function(
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   } else {
-    params.list = NULL
+    params.list <- NULL
   }
+  params.list <- params.list[names(params.list) != 'power.definition']
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc_SE(

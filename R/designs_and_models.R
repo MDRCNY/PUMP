@@ -495,11 +495,11 @@ make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
         }
     }
 
-    MDES
+    return( MDES )
 }
 
 
-validate_MTP = function( MTP, power.call, M, multi.MTP.ok = FALSE ) {
+validate_MTP = function( MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP.ok = FALSE ) {
 
     if( !multi.MTP.ok && length( MTP ) > 1 )
     {
@@ -521,7 +521,10 @@ validate_MTP = function( MTP, power.call, M, multi.MTP.ok = FALSE ) {
         if(is.null(MTP))
         {
             stop('Please provide a multiple test procedure (MTP).') 
-        } else if( any(MTP == 'None' ))
+        } else if( (mdes.call || ss.call) && any( MTP == 'None' ) && !pdef$indiv )
+        {
+            stop('For all minimum or complete power specifications, you must provide a MTP.')
+        } else if( any( MTP == 'None' ) )
         {
             warning('Proceeding with multiple outcomes and no MTP.')
         }
@@ -583,11 +586,17 @@ validate_inputs <- function( design, params.list,
     }
 
     par.design <- parse_design(design)
-
+    pdef <- parse_power_definition( params.list$power.definition, params.list$M )
+    
     params.list$MTP = validate_MTP( MTP = params.list$MTP,
                                     power.call = power.call,
+                                    mdes.call = mdes.call,
+                                    ss.call = ss.call,
                                     M = params.list$M,
+                                    pdef = pdef,
                                     multi.MTP.ok = multi.MTP.ok )
+    
+
     #-------------------------------------------------------#
     # MDES
     #-------------------------------------------------------#
@@ -599,6 +608,7 @@ validate_inputs <- function( design, params.list,
         if ( !is.null( params.list$numZero ) && params.list$numZero >= params.list$M ) {
             stop( sprintf( "You cannot specify %s zeros with %s outcomes", params.list$numZero, params.list$M ) )
         }
+        
     } else {
         params.list$MDES = make_MDES_vector( params.list$MDES, params.list$M, params.list$numZero,
                                              verbose = verbose )

@@ -112,7 +112,8 @@ pump_mdes <- function(
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
     rho = rho, rho.matrix = rho.matrix, B = B,
-    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum
+    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
+    power.definition = power.definition
   )
   ##
   params.list <- validate_inputs(design, params.list, mdes.call = TRUE, verbose = verbose )
@@ -129,15 +130,11 @@ pump_mdes <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
+  power.definition <- params.list$power.definition
+  params.list <- params.list[names(params.list) != 'power.definition']
 
   # extract power definition
   pdef <- parse_power_definition( power.definition, M )
-
-  # validate MTP
-  if(MTP == 'None' & !pdef$indiv )
-  {
-    stop('For all minimum or complete power specifications, you must provide a MTP.')
-  }
 
   # information that will be returned to the user
   mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
@@ -215,12 +212,12 @@ pump_mdes <- function(
     mdes.bf.list  <- Q.m * (crit.alphaxM - crit.beta)
   }
 
-  mdes.raw <- min(mdes.raw.list)
-  mdes.bf <- max(mdes.bf.list)
+  mdes.low <- min(mdes.raw.list)
+  mdes.high <- max(mdes.bf.list)
 
   # MDES is already calculated for individual power for raw and Bonferroni
   if ( pdef$indiv & MTP == "Bonferroni") {
-    mdes.results <- data.frame(MTP, mdes.bf, target.power)
+    mdes.results <- data.frame(MTP, mdes.high, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
                              design = design,
@@ -229,17 +226,13 @@ pump_mdes <- function(
   }
 
   if ( MTP == "None") {
-    mdes.results <- data.frame(MTP, mdes.raw, target.power)
+    mdes.results <- data.frame(MTP, mdes.low, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
                              design = design,
                              power.params.list = pow_params,
                              params.list = params.list ) )
   }
-
-  # MDES will be between raw and bonferroni for many power types
-  mdes.low <- mdes.raw
-  mdes.high <- mdes.bf
 
   # adjust bounds to capture needed range for minimum or complete power.
   # bounds note: complete power is a special case of minimum power

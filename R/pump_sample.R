@@ -278,7 +278,8 @@ pump_sample <- function(
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
     rho = rho, rho.matrix = rho.matrix, B = B,
-    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum
+    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
+    power.definition = power.definition
   )
   ##
   params.list <- validate_inputs(design, params.list, ss.call = TRUE, verbose = verbose )
@@ -295,6 +296,8 @@ pump_sample <- function(
   omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
   rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
   B <- params.list$B
+  power.definition <- params.list$power.definition
+  params.list <- params.list[names(params.list) != 'power.definition']
 
   if ( is.null( numZero ) ) {
     numZero = 0
@@ -308,12 +311,6 @@ pump_sample <- function(
                       power.definition = power.definition,
                       tol = tol )
 
-  # validate MTP
-  if(MTP == 'None' & !pdef$indiv )
-  {
-    stop('For minimum or complete power, you must provide a MTP.')
-  }
-
   # Delete parameter we are actually going to search over.
   if ( typesample == "nbar" ) {
     nbar <- NULL
@@ -326,8 +323,8 @@ pump_sample <- function(
   output.colnames <- c("MTP", "Sample.type", "Sample.size",
                        paste(power.definition, "power") )
 
-  # check if zero power
-  if(round(target.power, 2) == 0)
+  # power checks
+  if(round(target.power, 2) <= 0)
   {
     message('Target power of 0 requested')
     ss.results <- data.frame(MTP, typesample, 0, 0)
@@ -338,6 +335,18 @@ pump_sample <- function(
                              design = design,
                              sample.level = typesample,
                              power.params.list = pow_params) )
+  }
+  if(target.power > 1)
+  {
+      message('Target power of >1 requested')
+      ss.results <- data.frame(MTP, typesample, Inf, 1)
+      colnames(ss.results) <- output.colnames
+      return( make.pumpresult( ss.results, type = "sample",
+                               params.list = params.list,
+                               tries = NULL,
+                               design = design,
+                               sample.level = typesample,
+                               power.params.list = pow_params) )
   }
 
   msg <- paste("Estimating sample size of type", typesample, "for",
@@ -477,6 +486,16 @@ pump_sample <- function(
                              design = design,
                              sample.level = typesample,
                              power.params.list = pow_params) )
+  }
+  # Done if None is what we are looking for
+  if (MTP == "None" ) {
+      ss.results <- data.frame(MTP, typesample, ss.low, target.power)
+      colnames(ss.results) <- output.colnames
+      return( make.pumpresult( ss.results, tries = NULL,
+                               type = "sample", params.list = params.list,
+                               design = design,
+                               sample.level = typesample,
+                               power.params.list = pow_params) )
   }
 
 
