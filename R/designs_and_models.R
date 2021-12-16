@@ -568,6 +568,14 @@ validate_inputs <- function( design, params.list,
                              multi.MTP.ok = FALSE )
 {
 
+    verbose_message <- function( msg )
+    {
+        if(verbose)
+        {
+            warning( msg )
+        }
+    }
+    
     #-------------------------------------------------------#
     # basic checks of inputs
     #-------------------------------------------------------#
@@ -777,15 +785,15 @@ validate_inputs <- function( design, params.list,
     {
       if ( params.list$J == 1 )
       {
-        warning('Running a model with >= 2 levels with J = 1')
+            warning('Running a model with >= 2 levels with J = 1')
       }
       if( any(params.list$ICC.2 == 0 ) )
       {
-        warning('Running a model with >= 2 levels with ICC.2 = 0')
+            verbose_message('Running a model with >= 2 levels with ICC.2 = 0')
       }
       if( par.design$rand_level == 2 && any( params.list$R2.2 == 0 ) )
       {
-        warning('Assuming R2.2 = 0')
+          verbose_message('Assuming R2.2 = 0')
       }
       if( par.design$FE.2 &
           (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
@@ -797,7 +805,7 @@ validate_inputs <- function( design, params.list,
       }
       if( par.design$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
       {
-        warning('Assuming omega.2 = 0')
+          verbose_message('Assuming omega.2 = 0')
       }
       # constant treatment effects models: level 2
       if( par.design$model2.p[2] == 'c' )
@@ -820,19 +828,19 @@ validate_inputs <- function( design, params.list,
       }
       if( params.list$K == 1 )
       {
-        warning('Running a 3-level model with K = 1')
+         warning('Running a 3-level model with K = 1')
       }
       if( any( params.list$ICC.3 == 0 ) )
       {
-        warning('Running a 3-level model with ICC.3 = 0')
+          verbose_message('Running a 3-level model with ICC.3 = 0')
       }
       if( par.design$rand_level == 3 & any(params.list$R2.3 == 0 ) )
       {
-        warning('Assuming R2.3 = 0')
+          verbose_message('Assuming R2.3 = 0')
       }
       if( par.design$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
       {
-        warning('Assuming omega.3 = 0')
+          verbose_message('Assuming omega.3 = 0')
       }
       if( par.design$FE.3 &
          (( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
