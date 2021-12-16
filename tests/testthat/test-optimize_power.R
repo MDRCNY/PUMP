@@ -1,4 +1,5 @@
-
+# library( PUMP )
+# library( testthat )
 
 
 test_that( "optimize bounded logistic elements work", {

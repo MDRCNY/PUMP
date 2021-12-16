@@ -1,4 +1,4 @@
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 test_that("pump_power_grid works", {

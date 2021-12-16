@@ -1,4 +1,4 @@
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 test_that("parameters that result in 80% power for raw D1indiv", {

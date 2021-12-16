@@ -1,5 +1,5 @@
-# library(testthat)
-# library(pum)
+# library( PUMP )
+# library( testthat )
 
 #--------------------------------------------------------------------------#
 # all outcomes are nonzero

@@ -1,4 +1,4 @@
-library(testthat)
-library(pum)
+library( testthat )
+library( PUMP )
 
-test_check("pum")
+test_check("PUMP")

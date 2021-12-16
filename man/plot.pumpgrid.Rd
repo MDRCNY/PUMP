@@ -4,7 +4,7 @@
 \alias{plot.pumpgrid}
 \title{Plot a pump grid object}
 \usage{
-\method{plot}{pumpgrid}(x, power.definition, var.vary)
+\method{plot}{pumpgrid}(x, power.definition, var.vary, ...)
 }
 \arguments{
 \item{x}{pumpgrid object}

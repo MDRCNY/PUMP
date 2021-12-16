@@ -517,18 +517,24 @@ validate_MTP = function( MTP, power.call, M, multi.MTP.ok = FALSE ) {
             warning("Multiple testing corrections are not needed when M = 1.")
         }
         MTP <- "None"
-    } else if( power.call && (is.null(MTP) || MTP == 'None')) {
-        stop('Please provide a multiple test procedure (MTP).')
+    } else {
+        if(is.null(MTP))
+        {
+            stop('Please provide a multiple test procedure (MTP).') 
+        } else if( any(MTP == 'None' ))
+        {
+            warning('Proceeding with multiple outcomes and no MTP.')
+        }
     }
 
-    chk = MTP %in% pump_info()$Adjustment$Method
+    chk <- MTP %in% pump_info()$Adjustment$Method
 
     if( ! all( chk ) ) {
         if ( length( MTP ) > 1 ) {
-            msg = sprintf( 'You have at least one invalid MTP: %s',
+            msg <- sprintf( 'You have at least one invalid MTP: %s',
                        paste( "'", MTP[!chk], "'", sep = "", collapse = ", " ) )
         } else {
-            msg = sprintf( '"%s" is an invalid MTP.', MTP )
+            msg <- sprintf( '"%s" is an invalid MTP.', MTP )
         }
         stop( msg )
     }
@@ -579,7 +585,7 @@ validate_inputs <- function( design, params.list,
     par.design <- parse_design(design)
 
     params.list$MTP = validate_MTP( MTP = params.list$MTP,
-                                    power.call= power.call,
+                                    power.call = power.call,
                                     M = params.list$M,
                                     multi.MTP.ok = multi.MTP.ok )
     #-------------------------------------------------------#
