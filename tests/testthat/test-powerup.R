@@ -22,7 +22,7 @@ test_that("testing of d2.1_m2fc", {
     J = 30
   )
 
-  pump.power <- pump_power(
+  pump.power <- expect_warning( pump_power(
     design = "d2.1_m2fc",
     MTP = 'None',
     nbar = 50,
@@ -33,7 +33,7 @@ test_that("testing of d2.1_m2fc", {
     numCovar.1 = 1,
     R2.1 = 0.1, ICC.2 = 0, rho = 0,
     tnum = 100000
-  )
+  ) )
 
   expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
 
@@ -270,7 +270,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     K = 10
   )
 
-  pump.power <- pump_power(
+  pump.power <- expect_warning( pump_power(
     design = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
@@ -282,7 +282,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
     tnum = 100000
-  )
+  ) )
 
   expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
 
@@ -300,7 +300,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     K = 10
   )
 
-  pump.mdes <- pump_mdes(
+  pump.mdes <- expect_warning( pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
     design = "d3.2_m3ff2rc",
@@ -312,7 +312,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
-  )
+  ) )
 
   expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
 
@@ -332,7 +332,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     K = 10
   )
 
-  pump.ss <- pump_sample(
+  pump.ss <- expect_warning( pump_sample(
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'K',
@@ -345,7 +345,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
-  )
+  ) )
 
   expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = 0.1)
 
@@ -371,7 +371,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     K = 10
   )
 
-  pump.power <- pump_power(
+  pump.power <- expect_warning( pump_power(
     design = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
@@ -383,7 +383,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
     tnum = 100000
-  )
+  ) )
 
   expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
 
@@ -401,7 +401,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     K = 10
   )
 
-  pump.mdes <- pump_mdes(
+  pump.mdes <- expect_warning( pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
     design = "d3.2_m3ff2rc",
@@ -413,7 +413,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
-  )
+  ) )
 
   expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
 
@@ -433,7 +433,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     K = 10
   )
 
-  pump.ss <- pump_sample(
+  pump.ss <- expect_warning( pump_sample(
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'K',
@@ -446,7 +446,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
-  )
+  ) )
 
   expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = 0.5)
 

@@ -120,8 +120,8 @@ test_that("Bonferroni for non individual power", {
                     M = 3,
                     MDES = rep(0.05, 3),
                     Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
-                    numCovar.1 = 5, numCovar.2 = 1,
-                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                    numCovar.1 = 5,
+                    R2.1 = 0.1, ICC.2 = 0.05,
                     rho = 0.4 )
   p
 
@@ -134,8 +134,8 @@ test_that("Bonferroni for non individual power", {
                         MDES = 0.05, target.power = p$min1[2],
                         tol = 0.01,
                         Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
 
 
@@ -152,8 +152,8 @@ test_that("plot_power_curve", {
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   expect_true(!is.null(plot_power_curve(ss1)))
 
@@ -165,8 +165,8 @@ test_that("plot_power_curve", {
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   expect_true(!is.null(plot_power_curve(ss2)))
 } )
@@ -181,8 +181,8 @@ test_that("plot_power_search", {
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   expect_error(plot_power_search(ss1))
 
@@ -194,8 +194,8 @@ test_that("plot_power_search", {
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   expect_true(!is.null(plot_power_search(ss2)))
 } )
@@ -210,8 +210,8 @@ test_that("pump_sample 2 level/2 level", {
                         M = 3,
                         MDES = 0.05, target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   ss2
 
@@ -222,8 +222,8 @@ test_that("pump_sample 2 level/2 level", {
                     M = 3,
                     MDES = rep(0.05, 3),
                     Tbar = 0.50, alpha = 0.05,
-                    numCovar.1 = 5, numCovar.2 = 1,
-                    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                    numCovar.1 = 5,
+                    R2.1 = 0.1,  ICC.2 = 0.05,
                     rho = 0.4 )
 
   p2
@@ -312,8 +312,8 @@ test_that("Sample with different correlations", {
                       M = 20,
                       MDES = rep(0.05, 20),
                       Tbar = 0.50, alpha = 0.05,
-                      numCovar.1 = 5, numCovar.2 = 1,
-                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
                       rho = 0 )
     p
 
@@ -326,8 +326,8 @@ test_that("Sample with different correlations", {
                           MDES = 0.05, target.power = p$min1[2],
                           tol = 0.01,
                           Tbar = 0.50, alpha = 0.05,
-                          numCovar.1 = 5, numCovar.2 = 1,
-                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1, ICC.2 = 0.05,
                           rho = 0 )
 
 
@@ -342,8 +342,8 @@ test_that("Sample with different correlations", {
                       M = 20,
                       MDES = rep(0.05, 20),
                       Tbar = 0.50, alpha = 0.05,
-                      numCovar.1 = 5, numCovar.2 = 1,
-                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
                       rho = 0.95 )
     p
 
@@ -356,8 +356,8 @@ test_that("Sample with different correlations", {
                           MDES = 0.05, target.power = p$min1[2],
                           tol = 0.01,
                           Tbar = 0.50, alpha = 0.05,
-                          numCovar.1 = 5, numCovar.2 = 1,
-                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1, ICC.2 = 0.05,
                           rho = 0.95 )
 
 
@@ -453,8 +453,8 @@ test_that( "different values for different outcomes", {
     M = 3,
     MDES = 0.05,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4 )
 
   # sanity check: higher ICC means higher power
@@ -471,8 +471,8 @@ test_that( "different values for different outcomes", {
     M = 3,
     MDES = 0.05,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 
@@ -486,8 +486,8 @@ test_that( "different values for different outcomes", {
     M = 3,
     MDES = 0.05,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5, 
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 
@@ -501,8 +501,8 @@ test_that( "different values for different outcomes", {
     M = 3,
     MDES = 0.05,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 
@@ -532,8 +532,8 @@ test_that( "different MDES values work", {
     MDES = c( 0.10, 0.05, 0.6, 0.05, 0.7 ),
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8,0,0.4), ICC.3 = 0.1,
-    rho = 0.4 )
+    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8, 0.01, 0.4),
+    rho = 0.4 ) 
   pow
   
   ss1 = update( pow, type="sample",

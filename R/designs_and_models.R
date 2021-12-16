@@ -117,10 +117,10 @@ parse_design <- function( design ) {
     if ( levels == 3 ) {
         l3 <- substr( des[3], 3, 4)
         l3.p <- strsplit( l3, "" )[[1]]
-        l2 <- substr( des[3], 6, 8 )
+        l2 <- substr( des[3], 6, 7 )
         l2.p <- strsplit( l2, "" )[[1]]
     } else if ( levels == 2 ) {
-        l2 <- substr( des[3], 2, 4 )
+        l2 <- substr( des[3], 3, 4 )
         l2.p <- strsplit( l2, "" )[[1]]
         l3 <- NULL
         l3.p <- NULL
@@ -236,7 +236,7 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 
     if(design == 'd1.1_m1c')
     {
-        df <- J * nbar - numCovar.1 - 1
+        df <- nbar - numCovar.1 - 1
     } else if(design == 'd2.1_m2fc')
     {
         df <- J * (nbar - 1) - numCovar.1 - 1
@@ -576,50 +576,12 @@ validate_inputs <- function( design, params.list,
         }
     }
 
-    par_design <- parse_design(design)
+    par.design <- parse_design(design)
 
     params.list$MTP = validate_MTP( MTP = params.list$MTP,
                                     power.call= power.call,
                                     M = params.list$M,
                                     multi.MTP.ok = multi.MTP.ok )
-
-    #-------------------------------------------------------#
-    # Drop inputs that we can ignore, depending on model
-    #-------------------------------------------------------#
-
-    # check for three-level parameters when working with two level models
-    if( par_design$levels <= 2 )
-    {
-
-        if( ( !is.null(params.list$K) && params.list$K > 1 ) |
-            ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-            ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
-            ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
-        {
-            warning('The following parameters are only valid for three-level designs, and will be ignored:\n
-              K, numCovar.3, R2.3, ICC.3, omega.3')
-            params.list$K <- NULL
-            params.list$numCovar.3 <- NULL
-            params.list$R2.3 <- NULL
-            params.list$ICC.3 <- NULL
-            params.list$omega.3 <- NULL
-        }
-    }
-
-    if( par_design$levels == 3 && par_design$FE.3 )
-    {
-        if( ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
-            ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) )
-        {
-            warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
-              numCovar.3, R2.3')
-            params.list$numCovar.3 <- NULL
-            params.list$R2.3 <- NULL
-        }
-    }
-
-
-
     #-------------------------------------------------------#
     # MDES
     #-------------------------------------------------------#
@@ -640,6 +602,7 @@ validate_inputs <- function( design, params.list,
     #---------------------------------------------------------------#
     # convert all params from scalar to vector, if they are non-null
     #---------------------------------------------------------------#
+
     if(!(length(params.list$R2.1) %in% c(1, params.list$M)))
     {
         stop("R2.1: Please provide a scalar parameter or a vector of length M.")
@@ -703,9 +666,6 @@ validate_inputs <- function( design, params.list,
         params.list$omega.3 <- rep(params.list$omega.3, params.list$M)
     }
 
-
-
-
     #-------------------------------------------------------#
     # Basic checks of data parameters
     #-------------------------------------------------------#
@@ -746,98 +706,137 @@ validate_inputs <- function( design, params.list,
         stop('Please provide a non-negative value of Omega')
     }
 
+    # ICC
+    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && any(params.list$ICC.2 + params.list$ICC.3 > 1))
+    {
+      stop('ICC.2 + ICC.3 must be <= 1')
+    }
+
+    # invalid rho
+    if(params.list$rho > 1 | params.list$rho < -1)
+    {
+      stop('Please provide rho as a correlation between -1 and 1')
+    }
 
     #-------------------------------------------------------#
     # check for inconsistent user inputs
     #-------------------------------------------------------#
 
     # one level models
-    if( par_design$levels == 1 ) {
-        if ( !is.null( params.list$J ) && params.list$J != 1 ) {
-            stop( "Can't have multiple units at 2nd level for the d1.1_m2cc design" )
-        }
+    if( par.design$levels == 1 ) {
+      if( (!is.null( params.list$J ) && params.list$J != 1 ) ||
+          (!is.null( params.list$numCovar.2 ) && params.list$numCovar.2 > 0 ) ||
+          (!is.null( params.list$R2.2 ) && any(params.list$R2.2 > 0 ) ) ||
+          (!is.null( params.list$ICC.2 ) && any(params.list$ICC.2 > 0 ) ) ||
+          (!is.null( params.list$omega.2 ) && any(params.list$omega.2 > 0 ) ) )
 
-        #  if ( !is.null( params.list$numCovar.2 ) || !is.null( params.list$numCovar.3 ) || !is.null( params.list$R2.2 ) || !is.null( params.list$ICC.2 ) ) {
-        #   stop( "Can't have numCovar.2, numCovar.3, R2.2, or ICC.2 for d1.1_m2cc design (single level design" )
-        #  }
-
+        warning('The following parameters are not valid for one-level designs, and will be ignored:\n
+              J, numCovar.2, R2.2, ICC.2, omega.2')
+      params.list$J <- NULL
+      params.list$R2.2 <- NULL
+      params.list$ICC.2 <- NULL
+      params.list$omega.2 <- NULL
     }
 
-    # two level models
-    if( par_design$levels <= 2 )
+    # check for three-level parameters when working with one or two level models
+    if( par.design$levels <= 2 )
     {
-        if ( par_design$levels == 2 & params.list$J == 1 )
+      if( ( !is.null(params.list$K) && params.list$K > 1 ) |
+          ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+          ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
+          ( !is.null(params.list$ICC.3)) && any( params.list$ICC.3 > 0 ) |
+          ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
+      {
+        warning('The following parameters are only valid for three-level designs, and will be ignored:\n
+              K, numCovar.3, R2.3, ICC.3, omega.3')
+        params.list$K <- NULL
+        params.list$R2.3 <- NULL
+        params.list$ICC.3 <- NULL
+        params.list$omega.3 <- NULL
+      }
+    }
+
+    # two level models and above
+    if( par.design$levels >= 2 )
+    {
+      if ( params.list$J == 1 )
+      {
+        warning('Running a model with >= 2 levels with J = 1')
+      }
+      if( any(params.list$ICC.2 == 0 ) )
+      {
+        warning('Running a model with >= 2 levels with ICC.2 = 0')
+      }
+      if( par.design$rand_level == 2 && any( params.list$R2.2 == 0 ) )
+      {
+        warning('Assuming R2.2 = 0')
+      }
+      if( par.design$FE.2 &
+          (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
+           ( !is.null(params.list$R2.2) && any( params.list$R2.2 > 0 ) ) ))
+      {
+        warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
+              numCovar.2, R2.2')
+        params.list$R2.2 <- NULL
+      }
+      if( par.design$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
+      {
+        warning('Assuming omega.2 = 0')
+      }
+      # constant treatment effects models: level 2
+      if( par.design$model2.p[2] == 'c' )
+      {
+        if(any(params.list$omega.2 > 0))
         {
-            warning('Two level design with single unit at level 2')
+          warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
+          params.list$omega.2 <- NULL
         }
+      }
     }
 
 
     # three level models
-    if( par_design$levels == 3 )
+    if( par.design$levels == 3 )
     {
-        if(is.null(params.list$K) || params.list$K < 1 )
-        {
-            stop('You must specify K, with K >= 1 (number of units at level 3) for three-level designs' )
-        }
-        if(params.list$K == 1)
-        {
-            warning('Running a 3-level model with K = 1')
-        }
-    }
+      if(is.null(params.list$K) || params.list$K < 1 )
+      {
+        stop('You must specify K, with K >= 1 (number of units at level 3) for three-level designs' )
+      }
+      if( params.list$K == 1 )
+      {
+        warning('Running a 3-level model with K = 1')
+      }
+      if( any( params.list$ICC.3 == 0 ) )
+      {
+        warning('Running a 3-level model with ICC.3 = 0')
+      }
+      if( par.design$rand_level == 3 & any(params.list$R2.3 == 0 ) )
+      {
+        warning('Assuming R2.3 = 0')
+      }
+      if( par.design$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
+      {
+        warning('Assuming omega.3 = 0')
+      }
+      if( par.design$FE.3 &
+         (( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
+          ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) ))
+      {
+        warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
+              numCovar.3, R2.3')
+        params.list$R2.3 <- NULL
+      }
 
-    # three level models, continued.
-    if( par_design$levels == 3 && !par_design$FE.3 )
-    {
-        if( is.null(params.list$numCovar.3) | is.null(params.list$R2.3))
+      # constant treatment effects models: level 3
+      if( par.design$model3.p[[2]] == 'c' )
+      {
+        if(any(params.list$omega.3 > 0))
         {
-            stop('You must specify both numCovar.3 and R2.3 for three-level designs with random effects')
+          warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
+          params.list$omega.3 <- NULL
         }
-    }
+      }
 
-    # ICC
-    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) && any(params.list$ICC.2 + params.list$ICC.3 > 1))
-    {
-        stop('ICC.2 + ICC.3 must be <= 1')
-    }
-
-    # constant treatment effects models: level 2
-    if( par_design$levels >= 2 && par_design$model2.p[[2]] == 'c' )
-    {
-        if(any(params.list$omega.2 > 0))
-        {
-            warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
-            params.list$omega.2 <- 0
-        }
-    }
-
-    # constant treatment effects models: level 3
-    if( par_design$levels == 3 && par_design$model3 %in% c('rc', 'cc'))
-    {
-        if(!is.null(params.list$omega.3) && any(params.list$omega.3 > 0))
-        {
-            warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.3 value')
-            params.list$omega.3 <- 0
-        }
-    }
-
-    # If 3 level model allows treatment variation, we need omega
-    if( par_design$levels == 3 && par_design$model3.p[2] != 'c' )
-    {
-        if(is.null(params.list$omega.3))
-        {
-            stop('Omega.3 is required for this design.')
-        }
-    }
-
-    # NOTE: Used to be this:     design %in% c('d3.1_m3rr2rr', 'd3.2_m3rr2rc'))
-    # But shouldn't all three level designs need ICC.3 (possibly = 0, of course).
-    if( par_design$levels == 3 )
-    {
-        if(is.null(params.list$ICC.3))
-        {
-            stop('ICC.3 is required for this design.')
-        }
     }
 
     # number covariates
@@ -860,7 +859,7 @@ validate_inputs <- function( design, params.list,
     #-------------------------------------------------------#
     #  rho
     #-------------------------------------------------------#
-    if(is.null(params.list$rho.matrix) & is.null(params.list$rho))
+    if(is.null(params.list$rho.matrix) && is.null(params.list$rho))
     {
         stop( sprintf( 'Please provide either a %d x %d rho.matrix or default scalar rho.',
                        params.list$M, params.list$M ) )
@@ -872,13 +871,11 @@ validate_inputs <- function( design, params.list,
         {
             stop('Correlation matrix of invalid dimensions. Please provide valid correlation matrix.')
         }
-    } else {
-        if(params.list$rho > 1 | params.list$rho < -1)
+        if(any(params.list$rho.matrix < -1) | any(params.list$rho.matrix > 1) )
         {
-            stop('Please provide rho as a correlation between -1 and 1')
+          stop('Please provide a rho matrix with values between -1 and 1.')
         }
     }
-
     return(params.list)
 
 }
@@ -887,7 +884,7 @@ validate_inputs <- function( design, params.list,
 
 # Stolen from development purrr
 silently <- function(.f, otherwise = NULL) {
-    .f <- as_mapper(.f)
+    .f <- purrr::as_mapper(.f)
     function(...) {
         ret <-
             purrr:::capture_output(

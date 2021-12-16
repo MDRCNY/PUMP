@@ -12,8 +12,8 @@ test_that("pump_mdes runs for Bonferroni", {
                        power.definition = "D2indiv",
                        M = 3,
                        target.power = 0.80, tol = 0.01,
-                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                       R2.1 = 0.1,ICC.2 = 0.05,
                        max.tnum = 300,
                        rho = 0.4 )
   pmdesB
@@ -26,8 +26,8 @@ test_that("pump_mdes runs for Bonferroni", {
                        power.definition = "D2indiv",
                        M = 3,
                        target.power = 0.80, tol = 0.01,
-                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                       R2.1 = 0.1,ICC.2 = 0.05,
                        max.tnum = 300,
                        rho = 0.4 )
   expect_true( pmdesR$`Adjusted.MDES` > 0 )
@@ -42,8 +42,8 @@ test_that("pump_mdes runs for Bonferroni", {
                       power.definition = "min1",
                       M = 3,
                       target.power = 0.80, tol = 0.01,
-                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
                       max.tnum = 1000,
                       rho = 0.4 )
   pmdesBmin
@@ -57,8 +57,8 @@ test_that("pump_mdes runs for Bonferroni", {
                            power.definition = "complete",
                            M = 3,
                            target.power = 0.80, tol = 0.01,
-                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                           Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                           R2.1 = 0.1, ICC.2 = 0.05,
                            max.tnum = 300,
                            rho = 0.4 )
   pmdes_comp
@@ -71,8 +71,8 @@ test_that("pump_mdes runs for Bonferroni", {
                    MDES = rep( pmdes_comp$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                   R2.1 = 0.1, ICC.2 = 0.05,
                    rho = 0.4 )
 
   ppBcomp
@@ -85,8 +85,8 @@ test_that("pump_mdes runs for Bonferroni", {
                    MDES = rep( pmdesBmin$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                   R2.1 = 0.1,ICC.2 = 0.05,
                    rho = 0.4 )
   ppBmin
   expect_true( abs( ppBmin[2,"min1"] - 0.80 ) <= 0.02)
@@ -103,8 +103,8 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                       power.definition = "D1indiv",
                       M = 3,
                       target.power = 0.80, tol = 0.01,
-                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
                       max.tnum = 300,
                       rho = 0.4 )
 
@@ -117,8 +117,8 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                    MDES = rep( pmdes$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
-                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                   R2.1 = 0.1, ICC.2 = 0.05,
                    rho = 0.4 )
   pp
   expect_true( abs( pp[2,2] - 0.80 ) <= 0.02)
@@ -155,8 +155,8 @@ test_that("No adjustment", {
                         power.definition = "D1indiv",
                         M = 3,
                         target.power = 0.80, tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         max.tnum = 300,
                         rho = 0.4 )
 
@@ -166,8 +166,8 @@ test_that("No adjustment", {
                         power.definition = "min2",
                         M = 3,
                         target.power = 0.80, tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                        R2.1 = 0.1,ICC.2 = 0.05,
                         max.tnum = 300,
                         rho = 0.4 ))
 
@@ -178,8 +178,8 @@ test_that("No adjustment", {
                         power.definition = "D1indiv",
                         M = 3,
                         target.power = 0.80, tol = 0.01,
-                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                        R2.1 = 0.1, ICC.2 = 0.05,
                         max.tnum = 300,
                         rho = 0.4 )
 })
@@ -192,8 +192,8 @@ test_that("power definitions", {
                       power.definition = "indiv.mean",
                       M = 3,
                       target.power = 0.80, tol = 0.01,
-                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-                      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+                      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
                       max.tnum = 300,
                       rho = 0.4 )
   expect_true(!is.null(pmdes))
@@ -209,8 +209,8 @@ test_that( "errors out when providing MDES", {
     power.definition = "indiv.mean",
     M = 3,
     target.power = 0.80, tol = 0.01,
-    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,
+    Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = 0.05,
     max.tnum = 300,
     rho = 0.4 ))
   
@@ -229,8 +229,8 @@ test_that( "different values for different outcomes", {
     M = 3,
     MDES = 0.05,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4 )
 
   # sanity check: higher ICC means higher power
@@ -246,8 +246,8 @@ test_that( "different values for different outcomes", {
     nbar = 200,
     M = 3,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 
@@ -260,8 +260,8 @@ test_that( "different values for different outcomes", {
     nbar = 200,
     M = 3,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 
@@ -274,8 +274,8 @@ test_that( "different values for different outcomes", {
     nbar = 200,
     M = 3,
     Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8), ICC.3 = 0.1,
+    numCovar.1 = 5,
+    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
     rho = 0.4
   )
 

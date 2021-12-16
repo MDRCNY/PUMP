@@ -25,7 +25,7 @@ test_that("Single Scenario plot works", {
 
 test_that("Grid plot works", {
 
-  grid <- pump_power_grid( design = "d3.2_m3ff2rc",
+  grid <- expect_warning( pump_power_grid( design = "d3.2_m3ff2rc",
                            MTP = "Bonferroni",
                            MDES = 0.1,
                            M = 3,
@@ -40,13 +40,13 @@ test_that("Grid plot works", {
                            ICC.3 = seq( 0, 0.45, 0.15 ),
                            rho = 0.4,
                            tnum = 100,
-                           long.table = TRUE)
+                           long.table = TRUE) )
   grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
 
   expect_true(!is.null(grid.plot))
 
 
-  grid <- pump_power_grid( design = "d3.2_m3ff2rc",
+  grid <- expect_warning( pump_power_grid( design = "d3.2_m3ff2rc",
                            MTP = "Bonferroni",
                            MDES = 0.1,
                            M = 3,
@@ -61,7 +61,7 @@ test_that("Grid plot works", {
                            ICC.3 = seq( 0, 0.45, 0.15 ),
                            rho = 0.4,
                            tnum = 100,
-                           long.table = TRUE)
+                           long.table = TRUE) )
 
   expect_error(grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3') )
 })
