@@ -24,7 +24,7 @@ test_that("Single Scenario plot works", {
 
 })
 
-test_that("Grid plot works", {
+test_that("Grid plot works for power", {
 
   grid <- pump_power_grid( design = "d3.2_m3ff2rc",
                            MTP = "Bonferroni",
@@ -47,6 +47,7 @@ test_that("Grid plot works", {
   expect_true(!is.null(grid.plot))
 
 
+  # does not work if you vary multiple parameters
   grid <- pump_power_grid( design = "d3.2_m3ff2rc",
                            MTP = "Bonferroni",
                            MDES = 0.1,
@@ -67,3 +68,50 @@ test_that("Grid plot works", {
   expect_error(grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3') )
 })
 
+
+test_that("Grid plot works for MDES", {
+    
+    grid <- pump_mdes_grid(  design = "d3.2_m3ff2rc",
+                             MTP = "Bonferroni",
+                             target.power = 0.8,
+                             power.definition = 'min1',
+                             M = 3,
+                             J = 3, # number of schools/block
+                             K = 21, # number RA blocks
+                             nbar = 258,
+                             Tbar = 0.50, # prop Tx
+                             alpha = 0.05, # significance level
+                             numCovar.1 = 5, numCovar.2 = 3,
+                             R2.1 = 0.1, R2.2 = 0.7,
+                             ICC.2 = 0.3,
+                             ICC.3 = seq( 0, 0.45, 0.15 ),
+                             rho = 0.4)
+    grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
+    
+    expect_true(!is.null(grid.plot))
+
+})
+
+test_that("Grid plot works for SS", {
+    
+    grid <- pump_sample_grid(  design = "d3.2_m3ff2rc",
+                             MTP = "Holm",
+                             target.power = 0.8,
+                             power.definition = 'complete',
+                             typesample = 'J',
+                             MDES = 0.2,
+                             M = 3,
+                             K = 21, # number RA blocks
+                             nbar = 258,
+                             Tbar = 0.50, # prop Tx
+                             alpha = 0.05, # significance level
+                             numCovar.1 = 5, numCovar.2 = 3,
+                             R2.1 = 0.1, R2.2 = 0.7,
+                             ICC.2 = 0.3,
+                             ICC.3 = seq( 0, 0.45, 0.15 ),
+                             rho = 0.4)
+    grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
+    
+    expect_true(!is.null(grid.plot))
+    
+})

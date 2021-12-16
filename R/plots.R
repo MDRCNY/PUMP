@@ -136,8 +136,6 @@ plot.pumpresult <- function( x, ... )
       dplyr::select(-.data$indiv.mean) %>%
       tidyr::pivot_longer(!.data$MTP, names_to = "powerType", values_to = "power")
 
-    mtpname <- levels(as.factor(plot.data$MTP))[1]
-
     # Creating power type as a factor for ordering on x axis
     M <- params(x)$M
     dPowers <- paste0("D",1:M,"indiv")
@@ -217,9 +215,17 @@ plot.pumpgrid <- function( x, power.definition, var.vary, ... )
       dplyr::filter(.data$power %in% def_power_filter) %>%
       dplyr::mutate(power = ifelse(.data$power == "mean individual", "individual power", .data$power))
 
-    plot.data <- plot.data %>%
-      dplyr::select(-.data$MDES) %>%
-      dplyr::relocate(.data$design)
+    if(var.vary == 'MDES')
+    {
+        plot.data <- plot.data %>%
+            dplyr::relocate(design)
+    } else
+    {
+        plot.data <- plot.data %>%
+            dplyr::select(-.data$MDES) %>%
+            dplyr::relocate(.data$design)
+    }
+
 
     plot.data <-
       plot.data %>%
@@ -245,7 +251,6 @@ plot.pumpgrid <- function( x, power.definition, var.vary, ... )
     plot.data[[1]] <- as.factor(plot.data[[1]])
 
     # name of MTP
-    mtpname <- levels(as.factor(plot.data$MTP))[1]
     powerType <- levels(as.factor(plot.data$powerType))[1]
 
     if(powerType == "individual power"){
@@ -271,12 +276,133 @@ plot.pumpgrid <- function( x, power.definition, var.vary, ... )
                                       hjust = 0.5),
             axis.text = ggplot2::element_text(size = 10))
 
-  } else if(power.type(x) == 'mdes')
+  } else if(pump_type(x) == 'mdes')
   {
-    stop('Not yet implemented')
-  }  else if(power.type(x) == 'sample')
+      powerColName <- names(x)[ncol(x)]
+      
+      # change individual.mean power to individual power
+      plot.data <- x %>%
+          dplyr::mutate(power.definition = 
+                        ifelse(power.definition == "indiv.mean", "individual power", power.definition))
+      
+      plot.data <- plot.data[, c("design", "power.definition", var.vary, "Adjusted.MDES",powerColName, "MTP")]
+      
+      # Adjusting the data table for graphing
+      plot.data <-
+          plot.data %>%
+          dplyr::select_all() %>%
+          dplyr::arrange(desc(Adjusted.MDES))
+      
+      # converting data type for graphing purposes
+      plot.data <- plot.data %>%
+          dplyr::mutate(Adjusted.MDES = as.numeric(Adjusted.MDES),
+                        power.definition = as.factor(power.definition))
+      
+      # Converting to factor the variable that we are varying
+      plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
+      
+      powerType <- plot.data$power.definition[1]
+      
+      if(powerType == "individual power"){
+          powerType <- "individual"
+      }
+      
+      grid.plot <- ggplot2::ggplot(
+          data = plot.data,
+          ggplot2::aes_string(x = var.vary,
+                     y = "Adjusted.MDES",
+                     color = "MTP",
+                     shape = "MTP")) +
+          ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
+          ggplot2::ggtitle(paste0("MDES for ", powerType, " power when ", var.vary, " varies")) + 
+          #scale_colour_manual(values = allcolorsvalues) +
+          ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
+               y = "MDES",
+               color = "",
+               shape = "") +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
+                                          face = "bold",
+                                          vjust = 1,
+                                          hjust = 0.5),
+                axis.text = ggplot2::element_text(size = 10))
+      
+  }  else if(pump_type(x) == 'sample')
   {
-    stop('Not yet implemented')
+      powerColNames <- names(x)[8]
+      mtpColNames <- names(x)[1]
+      
+      plot.data <- x %>%
+          dplyr::mutate(power.definition = ifelse(power.definition == "indiv.mean", "individual power", power.definition),
+                        Sample.size = round(Sample.size))
+      
+      if(var.vary == 'MDES')
+      {
+          plot.data <- plot.data %>%
+              dplyr::relocate(design)
+          
+          plot.data <- dat[, c("design",var.vary,"Sample.type",
+                         "Sample.size","power.definition",mtpColNames)]
+      } else
+      {
+          plot.data <- plot.data %>%
+              dplyr::select(-MDES)
+          
+          plot.data <- plot.data[, c("design",var.vary,"Sample.type",
+                         "Sample.size","power.definition",powerColNames,mtpColNames)]
+      }
+
+      
+      plot.data <- plot.data[, c("design",var.vary,"Sample.type",
+                     "Sample.size","power.definition",powerColNames,mtpColNames)]
+      
+      # Pulling out the variable that we are varying
+      varVaryItem <- var.vary
+      sampleType <- plot.data[["Sample.type"]][1]
+      
+      # Adjusting the data table for graphing
+      plot.data <-
+          plot.data %>%
+          dplyr::select_all() %>%
+          dplyr::arrange(desc(Sample.size))
+      
+      # converting data type for graphing purposes
+      plot.data <- plot.data %>%
+          dplyr::mutate(Sample.size = as.numeric(Sample.size),
+                        power.definition = as.factor(power.definition))
+      
+      # Converting to factor the variable that we are varying
+      plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
+      
+      # # pulling out Power Type Levels to match with all colors
+      powerType <- levels(plot.data$power.definition)[1]
+      
+      if(powerType == "individual power"){
+          
+          powerType <- "individual"
+          
+      }
+      
+      grid.plot <- ggplot2::ggplot(
+              data = plot.data,
+              ggplot2::aes_string(x = var.vary,
+                         y = "Sample.size",
+                         color = "MTP",
+                         shape = "MTP")) +
+          ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
+          ggplot2::scale_y_continuous(breaks = scales::pretty_breaks()) + 
+          ggplot2::ggtitle(paste0(sampleType, " for ", powerType, " power when ", var.vary, " varies")) + 
+          #scale_colour_manual(values = allcolorsvalues) +
+          ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
+               y = "Sample size",
+               color = "",
+               shape = "") +
+          ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
+                                          face = "bold",
+                                          vjust = 1,
+                                          hjust = 0.5),
+                axis.text = ggplot2::element_text(size = 10),
+                legend.title = ggplot2::element_blank())
+      
   } else
   {
     stop('Invalid pumpresult type.')

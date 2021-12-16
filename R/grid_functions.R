@@ -154,7 +154,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
 #'
 #' @export
 pump_mdes_grid <- function( design, MTP, M,
-                            target.power, power.definition, tol,
+                            target.power, power.definition, tol = 0.01,
                             nbar, J = 1, K = 1,
                             Tbar, alpha,
                             numCovar.1 = NULL,
@@ -190,6 +190,13 @@ pump_mdes_grid <- function( design, MTP, M,
                     verbose = verbose,
                     drop_unique_columns = drop_unique_columns,
                     tol = tol, ..., use_furrr = use_furrr )
+  
+  grid <- make.pumpgrid(
+      grid, "mdes",
+      params.list = args[names(args) != 'design'],
+      design = design,
+      multiple_MTP = TRUE)
+  
 
   return( grid )
 }
@@ -204,7 +211,7 @@ pump_mdes_grid <- function( design, MTP, M,
 #'
 #' @export
 pump_sample_grid <- function( design, MTP, M,
-                              target.power, power.definition, tol,
+                              target.power, power.definition, tol = 0.01,
                               MDES = NULL,
                               typesample,
                               nbar = NULL, J = NULL, K = NULL,
@@ -244,5 +251,11 @@ pump_sample_grid <- function( design, MTP, M,
                    drop_unique_columns = drop_unique_columns,
                    tol = tol, ..., use_furrr = use_furrr )
 
+  grid <- make.pumpgrid(
+      grid, "sample",
+      params.list = args[names(args) != 'design'],
+      design = design,
+      multiple_MTP = TRUE )
+  
   return( grid )
 }
