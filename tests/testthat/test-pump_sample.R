@@ -511,13 +511,6 @@ test_that( "different values for different outcomes", {
 
 })
 
-
-
-
-
-
-
-
 test_that( "different MDES values work", {
   
   set.seed(034443)
@@ -551,3 +544,40 @@ test_that( "different MDES values work", {
 
 })
 
+test_that("M > 1 with MTP None", {
+    
+    ss <- expect_warning(pump_sample(
+        design = "d2.1_m2fc",
+        target.power = 0.8,
+        power.definition = 'D1indiv',
+        typesample = 'J',
+        MTP = "None",
+        MDES = 0.2,
+        M = 3,
+        nbar = 258,
+        Tbar = 0.50, # prop Tx
+        alpha = 0.05, # significance level
+        numCovar.1 = 5,
+        R2.1 = 0.1,
+        ICC.2 = 0.05,
+        rho = 0.4
+    ))
+    expect_true( nrow( ss ) == 1 )
+    
+    expect_error(expect_warning(pump_sample(
+        design = "d2.1_m2fc",
+        target.power = 0.8,
+        power.definition = 'min2',
+        typesample = 'J',
+        MTP = "None",
+        MDES = 0.2,
+        M = 3,
+        nbar = 258,
+        Tbar = 0.50, # prop Tx
+        alpha = 0.05, # significance level
+        numCovar.1 = 5,
+        R2.1 = 0.1,
+        ICC.2 = 0.05,
+        rho = 0.4
+    )))
+})
