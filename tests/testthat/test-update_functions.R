@@ -1,3 +1,5 @@
+# library( PUMP )
+# library( testthat )
 
 test_that( "update generally works", {
 

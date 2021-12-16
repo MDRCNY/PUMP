@@ -1,4 +1,4 @@
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 test_that("pump_power works without crashing", {
@@ -215,12 +215,11 @@ test_that("unblocked designs", {
 
 test_that("Correct MTP parameter validation.", {
 
-    expect_error(pp <- pump_power(   design = "d2.1_m2fc",
+    pp <- expect_warning(pump_power(   design = "d2.1_m2fc",
                                        MTP = "None",
                                        MDES = rep( 0.10, 3 ),
                                        M = 3,
                                        J = 3, # number of schools/block
-                                       K = 21, # number RA blocks
                                        nbar = 258,
                                        Tbar = 0.50, # prop Tx
                                        alpha = 0.05, # significance level
@@ -351,4 +350,23 @@ test_that("do not report invalid power values", {
   expect_true(is.na(pp$min2[1]))
   expect_true(is.na(pp$complete[1]))
 })
+
+test_that("M > 1 with MTP None runs successfully", {
+    
+    pp <- expect_warning(pump_power(   design = "d2.1_m2fc",
+                        MTP = "None",
+                        MDES = 0.10,
+                        M = 3,
+                        J = 3, # number of schools/block
+                        nbar = 258,
+                        Tbar = 0.50, # prop Tx
+                        alpha = 0.05, # significance level
+                        numCovar.1 = 5,
+                        R2.1 = 0.1,
+                        ICC.2 = 0.05,
+                        rho = 0.4, tnum = 200
+    ))
+    expect_true( nrow( pp ) == 1 )
+})
+
 

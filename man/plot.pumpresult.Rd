@@ -4,7 +4,7 @@
 \alias{plot.pumpresult}
 \title{Plot a single scenario pump object}
 \usage{
-\method{plot}{pumpresult}(x)
+\method{plot}{pumpresult}(x, ...)
 }
 \arguments{
 \item{x}{pumpresult object}

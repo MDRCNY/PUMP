@@ -1,5 +1,4 @@
-
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 
@@ -381,7 +380,7 @@ test_that("No adjustment", {
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
   )
 
-  nbar <- pump_sample(
+  nbar <- expect_warning(pump_sample(
     design = "d2.2_m2rc",
     MTP = 'None',
     power.definition = 'D1indiv',
@@ -392,9 +391,9 @@ test_that("No adjustment", {
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
-  )
+  ))
 
-  expect_error(nbar <- pump_sample(
+  expect_error(nbar <- expect_warning(pump_sample(
     design = "d2.2_m2rc",
     MTP = 'None',
     power.definition = 'complete',
@@ -405,7 +404,7 @@ test_that("No adjustment", {
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
-  ))
+  )))
 
 })
 

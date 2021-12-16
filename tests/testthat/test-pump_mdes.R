@@ -1,7 +1,5 @@
-
-# library( pum )
+# library( PUMP )
 # library( testthat )
-
 
 test_that("pump_mdes runs for Bonferroni", {
   set.seed( 2424424 )
@@ -20,7 +18,7 @@ test_that("pump_mdes runs for Bonferroni", {
   expect_true( pmdesB$`Adjusted.MDES` > 0 )
   expect_true( abs(pmdesB$`D2indiv power` - 0.80) <  0.01 )
 
-  pmdesR <- pump_mdes( design = "d2.1_m2fc",
+  pmdesR <- expect_warning( pump_mdes( design = "d2.1_m2fc",
                        MTP = "None",
                        nbar = 200, J = 50,
                        power.definition = "D2indiv",
@@ -29,7 +27,7 @@ test_that("pump_mdes runs for Bonferroni", {
                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                        R2.1 = 0.1,ICC.2 = 0.05,
                        max.tnum = 300,
-                       rho = 0.4 )
+                       rho = 0.4 ) )
   expect_true( pmdesR$`Adjusted.MDES` > 0 )
   expect_true( abs(pmdesR$`D2indiv power` - 0.80) <  0.01 )
   expect_true( pmdesR$`Adjusted.MDES` < pmdesB$`Adjusted.MDES`)
@@ -149,7 +147,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
 
 test_that("No adjustment", {
 
-    pmdes <- pump_mdes( design = "d2.1_m2fc",
+    pmdes <- expect_warning( pump_mdes( design = "d2.1_m2fc",
                         MTP = "None",
                         nbar = 200, J = 50,
                         power.definition = "D1indiv",
@@ -158,9 +156,9 @@ test_that("No adjustment", {
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                         R2.1 = 0.1, ICC.2 = 0.05,
                         max.tnum = 300,
-                        rho = 0.4 )
+                        rho = 0.4 ) )
 
-    expect_error(pmdes <- pump_mdes( design = "d2.1_m2fc",
+    expect_error(expect_warning(pmdes <- pump_mdes( design = "d2.1_m2fc",
                         MTP = "None",
                         nbar = 200, J = 50,
                         power.definition = "min2",
@@ -169,7 +167,7 @@ test_that("No adjustment", {
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                         R2.1 = 0.1,ICC.2 = 0.05,
                         max.tnum = 300,
-                        rho = 0.4 ))
+                        rho = 0.4 )))
 
 
     pmdes <- pump_mdes( design = "d2.1_m2fc",
@@ -285,3 +283,22 @@ test_that( "different values for different outcomes", {
 
 })
 
+
+test_that("M > 1 with MTP None runs successfully", {
+    
+    pmdes <- expect_warning(pump_mdes(   design = "d2.1_m2fc",
+                          target.power = 0.8,
+                          power.definition = 'D1indiv',
+                          MTP = "None",
+                          M = 3,
+                          J = 3, # number of schools/block
+                          nbar = 258,
+                          Tbar = 0.50, # prop Tx
+                          alpha = 0.05, # significance level
+                          numCovar.1 = 5,
+                          R2.1 = 0.1,
+                          ICC.2 = 0.05,
+                          rho = 0.4
+    ))
+    expect_true( nrow( pmdes ) == 1 )
+})

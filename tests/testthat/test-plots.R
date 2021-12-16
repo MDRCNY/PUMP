@@ -1,4 +1,5 @@
-# library(testthat)
+# library( PUMP )
+# library( testthat )
 
 test_that("Single Scenario plot works", {
 

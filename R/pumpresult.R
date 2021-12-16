@@ -367,7 +367,7 @@ summary.pumpresult = function( object, ... ) {
 #'   mdes or sample.
 #' @rdname pumpresult
 print.pumpresult = function( x, n = 10,
-                             header=TRUE,
+                             header = TRUE,
                              search = FALSE,
                              ... ) {
     result_type = attr( x, "type" )

@@ -119,7 +119,7 @@ plot_power_search <- function( pwr ) {
 #' @param x pumpresult object
 #'
 #' @export
-plot.pumpresult <- function( x )
+plot.pumpresult <- function( x, ... )
 {
   stopifnot( is.pumpresult( x ) )
 
@@ -133,8 +133,8 @@ plot.pumpresult <- function( x )
     plot.data <-
       x %>%
       dplyr::select_all() %>%
-      dplyr::select(-indiv.mean) %>%
-      tidyr::pivot_longer(!MTP, names_to = "powerType", values_to = "power")
+      dplyr::select(-.data$indiv.mean) %>%
+      tidyr::pivot_longer(!.data$MTP, names_to = "powerType", values_to = "power")
 
     mtpname <- levels(as.factor(plot.data$MTP))[1]
 
@@ -152,10 +152,10 @@ plot.pumpresult <- function( x )
     # single scenario plot
     ss.plot <- ggplot2::ggplot(
       data = plot.data,
-      ggplot2::aes(x = powerType,
-          y = power,
-          shape = MTP,
-          colour = MTP)) +
+      ggplot2::aes(x = .data$powerType,
+          y = .data$power,
+          shape = .data$MTP,
+          colour = .data$MTP)) +
       ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(0.25)) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across different definitions of power")) +
@@ -188,7 +188,7 @@ plot.pumpresult <- function( x )
 #' @param x pumpgrid object
 #'
 #' @export
-plot.pumpgrid <- function( x, power.definition, var.vary )
+plot.pumpgrid <- function( x, power.definition, var.vary, ... )
 {
   stopifnot( is.pumpgrid( x ) )
 
@@ -214,32 +214,32 @@ plot.pumpgrid <- function( x, power.definition, var.vary )
     # Pulling out only that power definition
     plot.data <-
       x %>%
-      dplyr::filter(power %in% def_power_filter) %>%
-      dplyr::mutate(power = ifelse(power == "mean individual", "individual power", power))
+      dplyr::filter(.data$power %in% def_power_filter) %>%
+      dplyr::mutate(power = ifelse(.data$power == "mean individual", "individual power", .data$power))
 
     plot.data <- plot.data %>%
-      dplyr::select(-MDES) %>%
-      dplyr::relocate(design)
+      dplyr::select(-.data$MDES) %>%
+      dplyr::relocate(.data$design)
 
     plot.data <-
       plot.data %>%
       dplyr::select_all() %>%
-      dplyr::select(-design) %>%
-      dplyr::arrange(desc(power)) %>%
-      dplyr::rename(powerType = power) %>%
-      tidyr::pivot_longer(!c(var.vary, powerType), names_to = "MTP", values_to = "power") %>%
-      dplyr::filter(!stringr::str_detect(powerType, "individual outcome")) %>%
-      dplyr::mutate(powerType = ifelse(MTP == "None",
+      dplyr::select(-.data$design) %>%
+      dplyr::arrange(desc(.data$power)) %>%
+      dplyr::rename(powerType = .data$power) %>%
+      tidyr::pivot_longer(!c(var.vary, .data$powerType), names_to = "MTP", values_to = "power") %>%
+      dplyr::filter(!stringr::str_detect(.data$powerType, "individual outcome")) %>%
+      dplyr::mutate(powerType = ifelse(.data$MTP == "None",
                                        "raw mean individual",
-                                       powerType))
+                                       .data$powerType))
 
     # converting Power Type to a factor for coloring
     plot.data$powerType <- factor(plot.data$powerType)
 
     # converting data type for graphing purposes
     plot.data <- plot.data %>%
-      dplyr::mutate(target.power = as.numeric(power),
-                    MTP = as.factor(MTP))
+      dplyr::mutate(target.power = as.numeric(.data$power),
+                    MTP = as.factor(.data$MTP))
 
     # Converting to factor the variable that we are varying
     plot.data[[1]] <- as.factor(plot.data[[1]])

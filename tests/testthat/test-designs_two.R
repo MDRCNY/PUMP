@@ -1,5 +1,4 @@
-
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #

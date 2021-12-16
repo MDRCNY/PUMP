@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 library( tidyverse )
 library( knitr )
-library( pum )
+library( PUMP )
 
 set.seed( 524235326 )
 ```

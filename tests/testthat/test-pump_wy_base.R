@@ -1,5 +1,5 @@
-# library(testthat)
-# source(here::here("R", "pump_wy.R"))
+# library( PUMP )
+# library( testthat )
 
 #--------------------------------------------------------------------------#
 # single step

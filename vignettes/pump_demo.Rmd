@@ -1,8 +1,8 @@
 ---
-title: "Demonstration of the `pum-p` package"
+title: "Demonstration of the `PUMP` package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Demonstration of the pum-p package}
+  %\VignetteIndexEntry{Demonstration of the PUMP package}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -14,7 +14,7 @@ geometry: margin=1.5in
 
 
 ```{r initialize, include = FALSE}
-library( pum )
+library( PUMP )
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -31,10 +31,10 @@ library( knitr )
 theme_set( theme_minimal() )
 ```
 
-# Demo of using the pum-p package for a simple power calculation
+# Demo of using the PUMP package for a simple power calculation
 
 
-To illustrate the `pum-p` package we conduct a power analysis for a blocked cluster-randomized RCT (this is a three level design with the random assignment at level two).
+To illustrate the `PUMP` package we conduct a power analysis for a blocked cluster-randomized RCT (this is a three level design with the random assignment at level two).
 In particular, we follow the general design of the Diplomas Now evaluation conducted by MDRC (see, e.g., https://www.mdrc.org/project/diplomas-now#overview).
 
 As taken from the above site, Diplomas Now "is a secondary school model focused on meeting the holistic needs of all students in grades six through twelve. It is designed to be robust and intense enough to transform or turn around high-poverty and high-needs middle grade and high schools attended by many students who fall off the path to high school graduation. Diplomas Now combines programming developed by each of the three organizations that created it: Talent Development, City Year, and Communities In Schools."
@@ -112,12 +112,12 @@ We believe the attendance measures would be fairly related, so we select `rho = 
 Now we have initial values for all needed parameters.
 Of course, in a full power analysis, we would explore ranges of values to see how power changes across a range of specifications; we discuss this further below.
 We could also specify different values for the $R^2$s and $ICC$s for the different outcomes, if we thought they had different characteristics; for simplicity we do not do this here.
-The `pum-p` package also allows specifying different pairwise correlations between the different outcomes via a matrix of $\rho$s rather than a single $\rho$; also for simplicity, we do not do that here.
+The `PUMP` package also allows specifying different pairwise correlations between the different outcomes via a matrix of $\rho$s rather than a single $\rho$; also for simplicity, we do not do that here.
 
 Given a specific set of parameters, we calculate the power of our design using `pump_power()` as follows:
 
 ```{r setup}
-library(pum)
+library( PUMP )
 
 p <- pump_power( design = "d3.2_m3fc2rc", # choice of design and analysis strategy
             MTP = "Bonferroni", # multiple testing procedure
@@ -227,7 +227,7 @@ For example, for multisite experiments ("d2.1" designs), *CITE Miratrix and Weis
 Different choices here can imply different targeted estimands, which in turn can impact power.
 In particular, methods that target superpopulation averages vs. finite sample averages will generally have lower power if there is treatment impact variation.
 
-In `pum-p` these choices are specified by different `design` arguments.
+In `PUMP` these choices are specified by different `design` arguments.
 For our context, for example, we could use a random effects model at level 3 instead of a fixed effects model, setting `design = "d3.2_m3rr2rc"` instead of `"d3.2_m3fc2rc"`; this would target a superpopulation average, viewing the blocks as a random sample, vs. a finite population where the blocks are considered fixed.
 
 Random effects models allow for level 3 covariates, which we would need to specify via `numCovar.3` and `R2.3` to capture how many there are and how predictive they are:
@@ -360,7 +360,7 @@ For the `grid()` functions, we have a single MDES value for the non-null outcome
  
 # Calculating MDES 
 
-We can use `pum-p` to calculate MDESes as well as power.
+We can use `PUMP` to calculate MDESes as well as power.
 To identify the MDES of a given design we use the `pump_mdes` method, which conducts a search for a MDES that achieves a target level of power.
 Along with the $p$-value adjustment procedure and the design parameters discussed above, you therefore also need to specify the type (`power.definition`) and desired (`target.power`) power.
 
