@@ -236,7 +236,7 @@ pump_power <- function(
     }
     validate_MTP( MTP = MTP,
                   power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
-                  M = M, multi.MTP.ok = TRUE )
+                  M = M, pdef = NULL, multi.MTP.ok = TRUE )
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
