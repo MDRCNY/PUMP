@@ -143,8 +143,8 @@ test_that("M = 1 runs successfully", {
                       nbar = 258,
                       Tbar = 0.50, # prop Tx
                       alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1,
                       ICC.2 = 0.05,
                       rho = 0.4, tnum = 200
   )
@@ -196,9 +196,8 @@ test_that("unblocked designs", {
                       nbar = 258,
                       Tbar = 0.50, # prop Tx
                       alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1,
                       rho = 0.4, tnum = 200
   )
 
@@ -207,7 +206,6 @@ test_that("unblocked designs", {
   ES
   R2.2 = 0.6102
   pump_power(design = "d1.1_m1c", MTP = "Holm", MDES = ES,
-             R2.2 = R2.2, numCovar.2 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 
 
@@ -226,8 +224,8 @@ test_that("Correct MTP parameter validation.", {
                                        nbar = 258,
                                        Tbar = 0.50, # prop Tx
                                        alpha = 0.05, # significance level
-                                       numCovar.1 = 5, numCovar.2 = 3,
-                                       R2.1 = 0.1, R2.2 = 0.7,
+                                       numCovar.1 = 5,
+                                       R2.1 = 0.1,
                                        ICC.2 = 0.05,
                                        rho = 0.4, tnum = 200
     ))
@@ -240,8 +238,8 @@ test_that("Correct MTP parameter validation.", {
                                      nbar = 258,
                                      Tbar = 0.50, # prop Tx
                                      alpha = 0.05, # significance level
-                                     numCovar.1 = 5, numCovar.2 = 3,
-                                     R2.1 = 0.1, R2.2 = 0.7,
+                                     numCovar.1 = 5,
+                                     R2.1 = 0.1,
                                      ICC.2 = 0.05,
                                      rho = 0.4, tnum = 200
     ))
@@ -254,8 +252,8 @@ test_that("Correct MTP parameter validation.", {
                                    nbar = 258,
                                    Tbar = 0.50, # prop Tx
                                    alpha = 0.05, # significance level
-                                   numCovar.1 = 5, numCovar.2 = 3,
-                                   R2.1 = 0.1, R2.2 = 0.7,
+                                   numCovar.1 = 5,
+                                   R2.1 = 0.1,
                                    ICC.2 = 0.05,
                                    rho = 0.4, tnum = 200
     )
@@ -315,6 +313,7 @@ test_that("numZero has expected behavior", {
                     M = 5,
                     nbar = 100,
                     MDES = rep( 0.2, 2 ),
+                    ICC.2 = 0.1, R2.2 = 0.3, numCovar.2 = 1,
                     numZero = 3,
                     Tbar = 0.50,
                     rho = 1)
@@ -327,6 +326,7 @@ test_that("numZero has expected behavior", {
                     M = 4,
                     nbar = 100,
                     MDES = rep( 0.2, 2 ),
+                    ICC.2 = 0.1, R2.2 = 0.3, numCovar.2 = 1,
                     numZero = 3,
                     Tbar = 0.50,
                     rho = 1)
@@ -343,6 +343,8 @@ test_that("do not report invalid power values", {
                     nbar = 100,
                     MDES = 0.2,
                     Tbar = 0.50,
+                    ICC.2 = 0.1,
+                    R2.2 = 0.1, numCovar.2 = 1,
                     rho = 0.4)
 
   expect_true(is.na(pp$min1[1]))

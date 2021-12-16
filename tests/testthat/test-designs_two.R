@@ -161,8 +161,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
   J1
   expect_equal(J1$`Sample.size`, 60, tolerance = 0.1)
 
@@ -178,8 +178,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+    numCovar.1 = 1, 
+    R2.1 = 0.1, ICC.2 = 0.05,
     rho = 0.2)
   nbar1
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
@@ -232,8 +232,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
   J1
   expect_equal(J1$`Sample.size`, 60, tolerance = 0.1)
 
@@ -249,8 +249,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05,
     rho = 0.2)
   nbar1
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
@@ -264,8 +264,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
     nbar = 50,
     M = 3,
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05,
     rho = 0.2)
   expect_equal(mdes1$Adjusted.MDES, 0.125, tolerance = 0.1)
 
@@ -306,8 +306,8 @@ test_that("testing of d2.1_m2ff one-tailed", {
     M = 3,
     MDES = 0.125,
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
 
   expect_equal(60, vals$J, tol = 0.1 )
   expect_equal(50, vals$nbar, tol = 0.1 )
@@ -331,8 +331,8 @@ test_that("testing of d2.1_m2fr one-tailed", {
       M = 3,
       MDES = rep(0.125, 3),
       Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-      numCovar.1 = 1, numCovar.2 = 1, tnum = 100000,
-      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+      numCovar.1 = 1, tnum = 100000,
+      R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
     pp_power <- pp1$D1indiv[2]
   }
 
@@ -346,8 +346,8 @@ test_that("testing of d2.1_m2fr one-tailed", {
                             M = 3,
                             MDES = 0.125,
                             Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-                            numCovar.1 = 1, numCovar.2 = 1,
-                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+                            numCovar.1 = 1, 
+                            R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
   vals[1:2]
   warning_pattern(vals)
 
@@ -371,13 +371,13 @@ test_that("testing of d2.1_m2fr two-tailed", {
       M = 3,
       MDES = rep(0.125, 3),
       Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-      numCovar.1 = 1, numCovar.2 = 1, tnum = 100000,
-      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+      numCovar.1 = 1, tnum = 100000,
+      R2.1 = 0.1, ICC.2 = 0.05, omega.2 = 0.1, rho = 0.2)
     pp1
     pp_power <- pp1$D1indiv[2]
   }
 
-  pp_power <- 0.94273
+  pp_power <- 0.92552
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 60, K = NULL,
                             seed = 22422422,
@@ -387,8 +387,8 @@ test_that("testing of d2.1_m2fr two-tailed", {
                             M = 3,
                             MDES = 0.125,
                             Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-                            numCovar.1 = 1, numCovar.2 = 1,
-                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+                            numCovar.1 = 1,
+                            R2.1 = 0.1, ICC.2 = 0.05, omega.2 = 0.1, rho = 0.2)
   vals[1:2]
   warning_pattern(vals)
 
@@ -405,8 +405,9 @@ test_that("testing of d2.1_m2fr two-tailed", {
     J = 60,
     M = 3,
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05, omega.2 = 0.1,
+    rho = 0.2)
   expect_equal(mdes1$Adjusted.MDES, 0.125, tolerance = 0.1)
 
 })

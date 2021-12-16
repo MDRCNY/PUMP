@@ -11,9 +11,9 @@ test_that( "update generally works", {
                           MDES = 0.05, target.power = 0.8,
                           tol = 0.05,
                           Tbar = 0.50, alpha = 0.05,
-                          numCovar.1 = 5, numCovar.2 = 1,
-                          R2.1 = 0.1, R2.2 = 0.7,
-                          ICC.2 = 0.05, ICC.3 = 0.4,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1,
+                          ICC.2 = 0.05,
                           rho = 0,
                           final.tnum = 1000 )
 
@@ -44,7 +44,7 @@ test_that( "update generally works", {
 
 
     tp2 = update( topow, design = "d3.2_m3ff2rc", K = 10,
-                  MDES = 0.02 )
+                  MDES = 0.02, ICC.3 = 0.4, R2.2 = 0.1, numCovar.2 = 1)
     tp2
     expect_true( design(tp2) == "d3.2_m3ff2rc" )
 })
@@ -61,9 +61,9 @@ test_that( "update_grid generally works", {
                         M = 3, target.power = 0.5,
                         tol = 0.02,
                         Tbar = 0.50, alpha = 0.05,
-                        numCovar.1 = 5, numCovar.2 = 1,
-                        R2.1 = 0.1, R2.2 = 0.7,
-                        ICC.2 = 0.05, ICC.3 = 0.4,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1,
+                        ICC.2 = 0.05,
                         rho = 0,
                         final.tnum = 1000 )
     ss
@@ -73,7 +73,7 @@ test_that( "update_grid generally works", {
     expect_true( nrow( gd ) == 3 )
 
     s2 = update( ss, type="power", MDES = 0.10 )
-    gd2 = update_grid( s2, R2.2 = c( 0.3, 0.5 ) )
+    gd2 = update_grid( s2, R2.1 = c( 0.3, 0.5 ) )
     expect_true( nrow( gd2 ) == 4 )
 
     s3 = update( s2, type="sample", typesample="J",

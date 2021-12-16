@@ -3,11 +3,12 @@ Type: Package
 Title: Power Under Multiplicity Project
 Version: 0.1.0
 Authors@R: c(
-  person("Kristin", "Porter", "kristin.porter@mdrc.org", c("aut", "cre")),
-  person("Luke", "Miratrix", "luke_miratrix@gse.harvard.edu", c("aut", "cre")),
-  person("Kristen", "Hunter", "kristenbhunter@gmail.com", c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
-  person("Zarni", "Htet", "zarni.htet@mdrc.org", c("aut"))
-)
+  person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("aut")),
+  person("Luke", "Miratrix",, "luke_miratrix@gse.harvard.edu", c("aut", "cre")),
+  person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
+  person("Zarni", "Htet",, "zarni.htet@mdrc.org", c("aut"))
+  )
+Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
 Description: This package details provides functions for calculating power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The calculations take into account the use of multiple testing procedures.
 URL: https://github.com/MDRCNY/PUMP
 Depends:
@@ -16,6 +17,7 @@ Imports:
      dplyr,
      ggplot2,
      gridExtra,
+     future,
      magrittr,
      mvtnorm,
      purrr,
@@ -31,7 +33,6 @@ Suggests:
     testthat,
     knitr,
     furrr,
-    future,
     PowerUpR
 License: MIT + file LICENSE
 Encoding: UTF-8
