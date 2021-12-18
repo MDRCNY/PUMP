@@ -8,7 +8,6 @@ scat = function( str, ... ) {
 
 
 
-
 make.pumpresult = function( x,
                             type = c( "power", "mdes", "sample" ),
                             design = design,
@@ -33,24 +32,6 @@ make.pumpresult = function( x,
         attr( x, "flat" ) <- flat
     }
     return( x )
-}
-
-
-make.pumpgrid = function( x,
-                          type = c( "power", "mdes", "sample" ),
-                          design = design,
-                          params.list = NULL,
-                          ... ) {
-  type <- match.arg(type)
-  class(x) <- c( "pumpgrid", class(x) )
-  attr(x, "type" ) <- type
-  attr(x, "params.list") <- params.list
-  attr(x, "design") <- design
-  ll = list(...)
-  for ( l in names(ll) ) {
-    attr(x, l) <- ll[[ l ]]
-  }
-  return( x )
 }
 
 
@@ -204,22 +185,6 @@ update.pumpresult = function( object, ... ) {
 NULL
 
 
-#' @title pumpresult object for results of grid power calculations
-#' @name pumpgrid
-#'
-#' @description
-#' The pumpgrid object is an S3 class that holds the results from
-#' `pump_power_grid()`, `pump_sample_grid()`, and `pump_mdes_grid()`.
-#'
-#' It has several methods that pull different information from this object, and
-#' some printing methods for getting nicely formatted results.
-#'
-#'
-#' @param x a pumpgrid object (except for is.pumpresult, where it is a generic
-#'   object to check).
-#' @rdname pumpgrid
-NULL
-
 
 
 #' Get parameters for pump result
@@ -229,7 +194,7 @@ NULL
 #' @rdname pumpresult
 #' @export
 params <- function( x, ... ) {
-    stopifnot( is.pumpresult( x ) | is.pumpgrid( x ) )
+    stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
 
     pp = attr( x, "params.list" )
     pp_pow = attr(x, "power.params.list" )
@@ -249,7 +214,7 @@ params <- function( x, ... ) {
 #' @rdname pumpresult
 #' @export
 design <- function( x, ... ) {
-    stopifnot( is.pumpresult( x ) )
+    stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
 
     pp <- attr( x, "design" )
     return( pp )
@@ -305,13 +270,98 @@ power_curve <- function( x, all = FALSE,
     fin_pts
 }
 
+
+
 #' @return pump_type: power, mdes, or sample, as a string.
 #'
 #' @rdname pumpresult
 #' @export
 pump_type <- function( x ) {
-    return( attr(x, "type" ) )
+  stopifnot( is.pumpresult(x) || is.pumpgridresult(x) )
+  return( attr(x, "type" ) )
 }
+
+
+
+is_long_table = function( power_table ) {
+  
+  stopifnot( is.pumpresult(power_table) )
+  
+  lt = attr( power_table, "long.table" )
+  if ( !is.null( lt ) && lt == TRUE ) {
+    return( TRUE )
+  } else {
+    return( FALSE )
+  }
+}
+
+
+
+
+#' Convert power table from wide to long
+#'
+#' Transform table returned from pump_power to a long format table or to a wide
+#' format table.
+#'
+#' @param power_table pumpresult object for a power result (not mdes or sample).
+#'   (It can also take a raw dataframe of the wide table to convert to long, as
+#'   an internal helper method.)
+#'
+#' @export
+transpose_power_table <- function( power_table ) {
+  
+  ptorig = power_table
+  pp <- NA
+  
+  if ( is.pumpresult(power_table) ) {
+    stopifnot( pump_type( power_table ) == "power" )
+    
+    if ( is_long_table(power_table) ) {
+      pp <- attr( power_table, "wide.table" )
+    } else {
+      power_table = as.data.frame( power_table )
+    }
+  }
+  
+  if ( length(pp) == 1 && is.na( pp ) ) {
+
+    cname = power_table$MTP
+    power_table$MTP = NULL
+    pp <- t( power_table )
+    colnames(pp) <- cname
+    #if ( ncol( pp ) > 1 ) {
+    #  pp = pp[ , ncol(pp):1 ]
+    #}
+    pows <- rownames(pp)
+    pp <- pp %>% # pp[ nrow(pp):1, ] %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column( var="power" )
+    
+    pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
+    pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
+    pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+  
+  }
+  
+  if( is.pumpresult( ptorig ) ) {
+    att = attributes(ptorig)
+    att["names"] = NULL
+    att["row.names"] = NULL
+    att["long.table"] = !att[["long.table"]]
+    for ( i in 1:length(att) ) {
+      attr( pp, names(att)[[i]] ) <- att[[ i ]]
+    }    
+    
+    if ( att[["long.table"]] ) {
+      attr( pp, "wide.table" ) <- as.data.frame( ptorig )
+    }
+  }
+  
+  pp
+}
+
+
+
 
 
 
@@ -324,13 +374,24 @@ is.pumpresult = function( x ) {
     inherits(x, "pumpresult")
 }
 
-#' @return is.pumpresult: TRUE if object is a pumpgrid object.
+
+#' @return `[`: pull out rows and columns of the dataframe.
 #'
+#' @rdname pumpresult
 #' @export
+`[.pumpresult` <- function( x, ... ) {
+  as.data.frame(x)[...] 
+}
+
+
+
+
+#' @return `[[`: pull out single element of dataframe.
 #'
-#' @rdname pumpgrid
-is.pumpgrid = function( x ) {
-  inherits(x, "pumpgrid")
+#' @rdname pumpresult
+#' @export
+`[[.pumpresult` <- function( x, ... ) {
+  as.data.frame(x)[[...]] 
 }
 
 
@@ -340,7 +401,7 @@ is.pumpgrid = function( x ) {
 #' @rdname pumpresult
 #' @export
 dim.pumpresult <- function( x, ... ) {
-    c( length( x[[1]] ), length(x) )
+  return( dim( as.data.frame(x) ) )
 }
 
 
@@ -437,7 +498,8 @@ print_search <- function( x, n = 10 ) {
 #' @export
 print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...  ) {
 
-
+    is_grid = is.pumpgridresult(x)
+    
     reduce_vec = function( vec ) {
         if ( is.null(vec) ) {
             return( NULL )
@@ -479,14 +541,29 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
         }
     }
 
-    scat( "%s result: %s design with %s outcomes",
-          result_type, design(x), params$M )
-    if ( !is.null( params$numZero ) ) {
-        scat( " (%s zeros)\n", params$numZero )
+    # adjust for grid printout
+    if ( is_grid ) {
+      print_grid_header( x )
+      
+      varnames = attr( x, "var_names" )
+      for ( v in varnames ) {
+        params[[v]] = "***"
+      }
+      
+      if ( "MDES" %in% varnames ) {
+        MDESv = "MDES varying"
+      } 
     } else {
-        scat( "\n" )
+  
+      scat( "%s result: %s design with %s outcomes",
+            result_type, design(x), params$M )
+      if ( !is.null( params$numZero ) ) {
+          scat( " (%s zeros)\n", params$numZero )
+      } else {
+          scat( "\n" )
+      }
     }
-
+    
     if ( result_type == "mdes" || result_type == "sample" ) {
         pow_params = attr( x, "power.params.list" )
         scat( "  target %s power: %.2f\n", pow_params$power.definition,

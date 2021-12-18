@@ -7,9 +7,12 @@
 plot_power_search(pwr)
 }
 \arguments{
-\item{pwr}{Result from the pump_sample or pump_mdes}
+\item{pwr}{Result from a pump_sample or pump_mdes call.}
+}
+\value{
+a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 }
 \description{
-This will give two plots about how the search narrowed down into the final
+This will give a triple-plots about how the search narrowed down into the final
 estimate.  Can be useful to gauge where convergence went poorly.
 }

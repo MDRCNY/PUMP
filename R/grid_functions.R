@@ -10,11 +10,19 @@
 run_grid <- function( args, pum_function, verbose = FALSE,
                       drop_unique_columns, ...,
                       use_furrr = FALSE ) {
+  
+  # check for duplicate values
+  lens = purrr::map_dbl( args, length )
+  for ( nm in names(lens)[lens>1] ) {
+    if ( length( args[[nm]] ) != length( unique( args[[nm]] ) ) ) {
+      stop( sprintf( "Cannot pass repeats of same value of %s in a grid call.", nm ) )
+    }
+  }
+  
   grid <- do.call( tidyr::expand_grid, args )
   if ( verbose ) {
     scat( "Processing %d calls\n", nrow(grid) )
   }
-
 
   if ( use_furrr ) {
     # TODO: To be fixed later
@@ -26,19 +34,34 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 
   }
 
+  cnts <- dplyr::summarise( grid, across( everything(),  ~ length( unique( .x ) ) ) )
+  var_names = names(cnts)[ as.numeric( cnts ) > 1 ]
+  var_names = setdiff( var_names, "res" )
+  
+  if ( verbose ) {
+    message( sprintf( "Grid search across multiple %s\n",
+                      paste0( var_names, collapse = ", " ) ) )
+  }
+  
   if ( drop_unique_columns ) {
-    grid <- dplyr::select(
-      grid,
-      dplyr::any_of( c("MDES", "numZero" ) ) |
-        tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
+    grid <- dplyr::select( grid, dplyr::any_of( unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) )
+      #    grid <- dplyr::select(
+      #      grid,
+      #      dplyr::any_of( c("MDES", "numZero" ) ) |
+      #        tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   grid$res <- purrr::map( grid$res, as.data.frame )
   grid$MTP <- NULL
+  
+  corenames = colnames( grid$res[[1]] )
+  
   grid <- tidyr::unnest( grid, .data$res )
   if ( "MTP" %in% names(grid) ) {
     grid <- grid %>% dplyr::arrange( .data$MTP ) %>%
     dplyr::relocate( .data$MTP )
   }
+
+  attr( grid, "var_names" ) <- var_names 
 
   return( grid )
 }
@@ -133,7 +156,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                     drop_unique_columns = drop_unique_columns,
                     MTP = MTP, ..., use_furrr = use_furrr )
 
-  grid <- make.pumpgrid(
+  grid <- make.pumpgridresult(
     grid, "power",
     params.list = args[names(args) != 'design'],
     design = design,
@@ -191,7 +214,7 @@ pump_mdes_grid <- function( design, MTP, M,
                     drop_unique_columns = drop_unique_columns,
                     tol = tol, ..., use_furrr = use_furrr )
   
-  grid <- make.pumpgrid(
+  grid <- make.pumpgridresult(
       grid, "mdes",
       params.list = args[names(args) != 'design'],
       design = design,
@@ -251,10 +274,11 @@ pump_sample_grid <- function( design, MTP, M,
                    drop_unique_columns = drop_unique_columns,
                    tol = tol, ..., use_furrr = use_furrr )
 
-  grid <- make.pumpgrid(
+  grid <- make.pumpgridresult(
       grid, "sample",
       params.list = args[names(args) != 'design'],
       design = design,
+      sample.level = typesample,
       multiple_MTP = TRUE )
   
   return( grid )

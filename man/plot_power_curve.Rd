@@ -12,6 +12,7 @@ plot_power_curve(pwr, plot.points = TRUE)
 \item{plot.points}{flag; whether to plot individual points on curve}
 }
 \description{
-This will give two plots about how the search narrowed down into the final
-estimate.  Can be useful to gauge where convergence went poorly.
+This will give a plot of power vs. mdes or sample size.
+It can be useful to see how quickly power changes as a function of these design parameters.
+Can also be useful to gauge where convergence went poorly.
 }

@@ -10,7 +10,7 @@ pump_mdes_grid(
   M,
   target.power,
   power.definition,
-  tol,
+  tol = 0.01,
   nbar,
   J = 1,
   K = 1,

@@ -63,11 +63,11 @@ test_that("validation works at least vaguely", {
                          numCovar.1 = 5, numCovar.2 = 1,
                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                          R2.3 = 0.5, omega.3 = 0.4,
-                         rho = 0.2,  tnum=1000)
+                         rho = 0.2,  tnum=1000, verbose = TRUE )
   
   chk
   expect_true( !chk$ok )
-  # expect_true( length( chk$messages ) == 2 )
+  expect_true( length( chk$messages ) == 1 )
   expect_true( startsWith(chk$messages[[1]], "Provided values of J" ) )
 
   

@@ -1,0 +1,110 @@
+
+
+
+make.pumpgridresult = function( x,
+                                type = c( "power", "mdes", "sample" ),
+                                design = design,
+                                params.list = NULL,
+                                ... ) {
+    type <- match.arg(type)
+    class(x) <- c( "pumpgridresult", class(x) )
+    attr(x, "type" ) <- type
+    attr(x, "params.list") <- params.list
+    attr(x, "design") <- design
+    
+    ll = list(...)
+    for ( l in names(ll) ) {
+        attr(x, l) <- ll[[ l ]]
+    }
+    
+    return( x )
+}
+
+
+
+
+#' @title pumpresult object for results of grid power calculations
+#' 
+#' @name pumpgridresult
+#'
+#' @description
+#' The pumpgridresult object is an S3 class that holds the results from
+#' `pump_power_grid()`, `pump_sample_grid()`, and `pump_mdes_grid()`.
+#'
+#' It has several methods that pull different information from this object, and
+#' some printing methods for getting nicely formatted results.
+#'
+#'
+#' @param x a pumpgridresult object (except for is.pumpresult, where it is a generic
+#'   object to check).
+#' @rdname pumpgridresult
+NULL
+
+
+
+
+
+
+#' @return is.pumpgridresult: TRUE if object is a pumpgridresult object.
+#'
+#' @export
+#'
+#' @rdname pumpgridresult
+is.pumpgridresult = function( x ) {
+    inherits(x, "pumpgridresult")
+}
+
+
+
+print_grid_header = function( x ) {
+    result_type = attr( x, "type" )
+    
+    scat( "%s grid result: %s design with %d outcomes\n",
+          result_type, design(x), params(x)$M )
+    
+    scat( "Varying across %s\n",
+          paste0( attr( x, "var_names" ), collapse = ", " ) )
+    
+    if ( result_type == "mdes" || result_type == "sample" ) {
+        pow_params = attr( x, "power.params.list" )
+        scat( "  target %s power: %.2f\n", pow_params$power.definition,
+              pow_params$target.power )
+    }
+}
+
+
+#' Pretty print pump grid result
+#'
+#' @export
+#' @param ... No extra options passed.
+#' @param header FALSE means skip some header info on the result, just print
+#'   the data.frame of actual results.
+#' @rdname pumpresult
+print.pumpgridresult = function( x,
+                             header = TRUE,
+                             ... ) {
+    
+    if ( header ) {
+       print_grid_header( x )
+    }
+    
+    print( as.data.frame( x ), row.names=FALSE )
+    
+    invisible( x )
+}
+
+
+
+
+#' Pretty print pump grid result with parameters
+#'
+#' @export
+#' @param object Object to summarize.
+#' @param ... Extra options passed to print.pumpresult
+#' @rdname pumpgridresult
+summary.pumpgridresult = function( object, ... ) {
+    print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
+}
+
+
+

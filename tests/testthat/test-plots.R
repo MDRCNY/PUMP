@@ -19,7 +19,7 @@ test_that("Single Scenario plot works", {
                     tnum = 200
   )
   ss.plot <- plot(pp)
-
+  #ss.plot
   expect_true(!is.null(ss.plot))
 
 })
@@ -43,7 +43,7 @@ test_that("Grid plot works for power", {
                            tnum = 100,
                            long.table = TRUE)
   grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
-
+  # grid.plot
   expect_true(!is.null(grid.plot))
 
 
@@ -65,6 +65,8 @@ test_that("Grid plot works for power", {
                            tnum = 100,
                            long.table = TRUE)
 
+  #plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
+  
   expect_error(grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3') )
 })
 
@@ -85,9 +87,9 @@ test_that("Grid plot works for MDES", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.3,
                              ICC.3 = seq( 0, 0.45, 0.15 ),
-                             rho = 0.4)
+                             rho = 0.4, start.tnum = 100, tol = 0.45 )
     grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
-    
+  # grid.plot    
     expect_true(!is.null(grid.plot))
 
 })
@@ -95,7 +97,7 @@ test_that("Grid plot works for MDES", {
 test_that("Grid plot works for SS", {
     
     grid <- pump_sample_grid(  design = "d3.2_m3ff2rc",
-                             MTP = "Holm",
+                             MTP = c( "Holm", "BH" ),
                              target.power = 0.8,
                              power.definition = 'complete',
                              typesample = 'J',
@@ -109,8 +111,10 @@ test_that("Grid plot works for SS", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.3,
                              ICC.3 = seq( 0, 0.45, 0.15 ),
-                             rho = 0.4)
-    grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
+                             rho = 0.4, start.tnum = 100, tol = 0.45 )
+    grid
+    grid.plot <- plot(grid, power.definition = 'complete', var.vary = 'ICC.3')
+    # grid.plot
     
     expect_true(!is.null(grid.plot))
     

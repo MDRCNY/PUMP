@@ -30,31 +30,7 @@ parse_power_definition <- function( power.definition, M ) {
   return( powertype )
 }
 
-#' Convert power table from wide to long
-#'
-#' Transform table returned from pump_power to a long format table.
-#'
-#' @param power_table pumpresult object for a power result (not mdes or sample).
-#'
-transpose_power_table <- function( power_table ) {
 
-  cname = power_table$MTP
-  power_table$MTP = NULL
-  pp <- t( power_table )
-  colnames(pp) <- cname
-  #if ( ncol( pp ) > 1 ) {
-  #  pp = pp[ , ncol(pp):1 ]
-  #}
-  pows <- rownames(pp)
-  pp <- pp %>% # pp[ nrow(pp):1, ] %>%
-    as.data.frame() %>%
-    tibble::rownames_to_column( var="power" )
-
-  pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
-  pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
-  pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
-  pp
-}
 
 
 #' Calculates different definitions of power
@@ -389,11 +365,17 @@ pump_power <- function(
   } else {
     power.results <- cbind('MTP' = 'None', power.results.raw)
   }
-  if ( long.table ) {
-    power.results <- transpose_power_table( power.results )
-  }
-  return( make.pumpresult( power.results, "power",
+  wide.results = power.results
+  if ( !long.table ) {
+    return( make.pumpresult( power.results, "power",
                            params.list = params.list,
                            design = design,
                            long.table = long.table ) )
+  } else {
+    return( make.pumpresult( transpose_power_table( power.results ), "power",
+                             params.list = params.list,
+                             design = design,
+                             long.table = long.table,
+                             wide.table = power.results ) )
+  }
 }

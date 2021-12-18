@@ -286,4 +286,18 @@ test_that( "grid breaks with invalid inputs", {
     Tbar = 0.8,
     numCovar.1 = 2,
     rho = 0.2))
+  
+  expect_error(pp <- pump_mdes_grid(
+    design = "d2.2_m2rc",
+    MTP = c("Holm"),
+    J = c(10, 30),
+    M = 5,
+    nbar = c( 50, 100, 50 ),
+    target.power = 0.8,
+    power.definition = "indiv.mean",
+    alpha = 0.5,
+    Tbar = 0.8,
+    numCovar.1 = 2, start.tnum = 100,
+    rho = 0.2, tol = 0.5))
+  
 })

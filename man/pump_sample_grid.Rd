@@ -10,7 +10,7 @@ pump_sample_grid(
   M,
   target.power,
   power.definition,
-  tol,
+  tol = 0.01,
   MDES = NULL,
   typesample,
   nbar = NULL,
