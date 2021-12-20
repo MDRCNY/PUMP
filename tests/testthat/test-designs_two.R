@@ -492,7 +492,8 @@ test_that("testing of d2.2_m2rc", {
  
   expect_true(is.na(ss2$Sample.size))
   
-  
+  # can achieve target
+  # checks power curve works for Bonferroni
   ss3 <- pump_sample(
       design = "d2.2_m2rc",
       MTP = 'Bonferroni',
