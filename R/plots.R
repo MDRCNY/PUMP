@@ -119,6 +119,7 @@ plot_power_search <- function( pwr ) {
 #' Plot a single scenario pump object
 #'
 #' @param x pumpresult object
+#' @param ... Additional parameters
 #'
 #' @export
 plot.pumpresult <- function( x, ... )
@@ -267,6 +268,8 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 #' Plot a pump grid result object
 #'
 #' @param x pumpgridresult object
+#' @param power.definition Definition of power to plot
+#' @param var.vary Variable to vary on X axis
 #'
 #' @export
 plot.pumpgridresult <- function( x, power.definition, var.vary, ... )

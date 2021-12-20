@@ -8,6 +8,10 @@
 }
 \arguments{
 \item{x}{pumpgridresult object}
+
+\item{power.definition}{Definition of power to plot}
+
+\item{var.vary}{Variable to vary on X axis}
 }
 \description{
 Plot a pump grid result object

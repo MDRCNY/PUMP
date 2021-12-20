@@ -478,17 +478,20 @@ test_that("testing of d2.2_m2rc", {
   
   expect_true(is.na(ss1$Sample.size))
   
-  pp2 <- pump_power(
+  expect_warning(ss2 <- pump_sample(
       design = "d2.2_m2rc",
       MTP = 'Holm',
-      nbar = 50,
+      typesample = 'nbar',
+      target.power = 0.8,
+      power.definition = 'D1indiv',
       J = 20,
       M = 5,
       numZero = 0,
       MDES = 0.125,
       Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
       numCovar.1 = 1, numCovar.2 = 1,
-      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
+  ))
  
   expect_true(is.na(ss2$Sample.size))
   
@@ -509,6 +512,6 @@ test_that("testing of d2.2_m2rc", {
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.3, rho = 0.2
   )
   
-  expect_true(!is.null(plot_power_curve(ss3)))
+  expect_true(!is.null(expect_warning(plot_power_curve(ss3))))
   
 })

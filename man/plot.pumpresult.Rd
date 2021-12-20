@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{pumpresult object}
+
+\item{...}{Additional parameters}
 }
 \description{
 Plot a single scenario pump object

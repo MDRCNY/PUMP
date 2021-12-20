@@ -557,6 +557,8 @@ validate_MTP = function( MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP
 #' @param power.call flag for power estimation
 #' @param ss.call flag for sample size estimation
 #' @param mdes.call flag for MDES estimation
+#' @param verbose whether to print out warnings
+#' @param multi.MTP.ok whether validation allows for multiple MTPs to be passed in
 #'
 #' @return params.list
 #'
