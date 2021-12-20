@@ -226,7 +226,8 @@ pump_power <- function(
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
                       tnum = tnum, B = B, cl = cl,
-                      updateProgress = updateProgress )
+                      updateProgress = updateProgress,
+                      validate.inputs = validate.inputs )
 
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
@@ -295,7 +296,8 @@ pump_power <- function(
   t.df <- calc_df(
     design = design, J = J, K = K,
     nbar = nbar,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+    validate = validate.inputs
   )
   t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum))
 
