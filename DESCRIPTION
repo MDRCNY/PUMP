@@ -21,6 +21,7 @@ Imports:
      magrittr,
      mvtnorm,
      purrr,
+     randomizr,
      readr,
      rlang,
      stats,

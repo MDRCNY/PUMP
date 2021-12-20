@@ -24,6 +24,10 @@ validate_inputs(
 \item{mdes.call}{flag for MDES estimation}
 
 \item{ss.call}{flag for sample size estimation}
+
+\item{verbose}{whether to print out warnings}
+
+\item{multi.MTP.ok}{whether validation allows for multiple MTPs to be passed in}
 }
 \value{
 params.list
