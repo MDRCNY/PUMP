@@ -305,13 +305,13 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   pp <- params(p)
   pp$start.tnum = NULL
 
-  #Zero this out since we will be calling optimize power, which doesn't allow
-  #for a rho matrix.
-  # pp$numZero <- NULL
+  # Zero this out since we will be calling optimize power,
+  # which doesn't allow for a rho matrix.
   pp$rho.matrix <- NULL
 
   sp <- attr(p, "search.range" )
   test.pts <- search_path(p)
+  
   if ( is.null( low ) ) {
     low <- sp[[1]]
   }
@@ -322,7 +322,7 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   # for Bonferroni
   if(length(low) == 0)
   {
-    low <- 0
+    low <- 1
   }
   if(length(high) == 0)
   {

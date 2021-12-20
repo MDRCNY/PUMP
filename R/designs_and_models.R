@@ -793,7 +793,7 @@ validate_inputs <- function( design, params.list,
       }
       if( par.design$rand_level == 2 && any( params.list$R2.2 == 0 ) )
       {
-          verbose_message('Assuming R2.2 = 0')
+            verbose_message('Assuming R2.2 = 0')
       }
       if( par.design$FE.2 &
           (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
@@ -801,11 +801,11 @@ validate_inputs <- function( design, params.list,
       {
         warning('The following parameters are not valid for fixed effect designs, and will be ignored:\n
               numCovar.2, R2.2')
-        params.list$R2.2 <- NULL
+            params.list$R2.2 <- NULL
       }
       if( par.design$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
       {
-          verbose_message('Assuming omega.2 = 0')
+            verbose_message('Assuming omega.2 = 0')
       }
       # constant treatment effects models: level 2
       if( par.design$model2.p[2] == 'c' )

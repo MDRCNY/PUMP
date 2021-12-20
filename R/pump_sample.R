@@ -135,7 +135,7 @@ pump_sample_raw <- function(
 
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
-    df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+    df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
@@ -446,7 +446,7 @@ pump_sample <- function(
       )
     }
   }
-
+  
   ss.low.vals <- sapply(ss.low.list, function(x) x$ss)
   which.ss.low <- which.min(ss.low.vals)
   # check if everything is NA
@@ -464,6 +464,7 @@ pump_sample <- function(
   if(length(which.ss.high) > 0)
   {
     ss.high <- ss.high.list[[which.ss.high]]$ss
+    default.max <- FALSE
   } else
   {
     if( typesample == 'nbar')
@@ -473,31 +474,49 @@ pump_sample <- function(
     {
       ss.high <- max_sample_size_JK
     }
-    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
+    default.max <- TRUE
   }
-
 
   # Done if Bonferroni is what we are looking for
   if (MTP == "Bonferroni" & pdef$indiv ) {
-    ss.results <- data.frame(MTP, typesample, ss.high, target.power)
-    colnames(ss.results) <- output.colnames
-    return( make.pumpresult( ss.results, tries = NULL,
-                             type = "sample", params.list = params.list,
-                             design = design,
-                             sample.level = typesample,
-                             power.params.list = pow_params) )
-  }
-  # Done if None is what we are looking for
-  if (MTP == "None" ) {
-      ss.results <- data.frame(MTP, typesample, ss.low, target.power)
+      ss.results <- data.frame(MTP, typesample, ss.high, target.power)
       colnames(ss.results) <- output.colnames
+      
+      if(default.max)
+      {
+        warning('Cannot achieve target power with given parameters.')
+        ss.results <- data.frame(MTP, typesample, NA, target.power)
+        colnames(ss.results) <- output.colnames
+      }
       return( make.pumpresult( ss.results, tries = NULL,
                                type = "sample", params.list = params.list,
                                design = design,
                                sample.level = typesample,
                                power.params.list = pow_params) )
   }
-
+  # Done if None is what we are looking for
+  if (MTP == "None" ) {
+      ss.results <- data.frame(MTP, typesample, ss.low, target.power)
+      colnames(ss.results) <- output.colnames
+      
+      if(default.max)
+      {
+        warning('Cannot achieve target power with given parameters.')
+        ss.results <- data.frame(MTP, typesample, NA, target.power)
+        colnames(ss.results) <- output.colnames
+      }
+      
+      return( make.pumpresult( ss.results, tries = NULL,
+                               type = "sample", params.list = params.list,
+                               design = design,
+                               sample.level = typesample,
+                               power.params.list = pow_params) )
+  }
+  
+  if(default.max)
+  {
+    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
+  }
 
   # search in the grid from min to max.
   test.pts <- optimize_power(

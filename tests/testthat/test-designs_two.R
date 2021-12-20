@@ -460,4 +460,55 @@ test_that("testing of d2.2_m2rc", {
   expect_equal(50, vals$nbar, tol = 0.1 )
   expect_equal( warning_pattern(vals), c(FALSE, FALSE) )
   
+  # cannot achieve target power with given parameters
+  expect_warning(ss1 <- pump_sample(
+      design = "d2.2_m2rc",
+      MTP = 'Bonferroni',
+      typesample = 'nbar',
+      target.power = 0.8,
+      power.definition = 'D1indiv',
+      J = 20,
+      M = 5,
+      numZero = 0,
+      MDES = 0.125,
+      Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+      numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
+  ))
+  
+  expect_true(is.na(ss1$Sample.size))
+  
+  pp2 <- pump_power(
+      design = "d2.2_m2rc",
+      MTP = 'Holm',
+      nbar = 50,
+      J = 20,
+      M = 5,
+      numZero = 0,
+      MDES = 0.125,
+      Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+      numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2)
+ 
+  expect_true(is.na(ss2$Sample.size))
+  
+  # can achieve target
+  # checks power curve works for Bonferroni
+  ss3 <- pump_sample(
+      design = "d2.2_m2rc",
+      MTP = 'Bonferroni',
+      typesample = 'J',
+      target.power = 0.8,
+      power.definition = 'D1indiv',
+      nbar = 200,
+      M = 5,
+      numZero = 0,
+      MDES = 0.125,
+      Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+      numCovar.1 = 1, numCovar.2 = 1,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.3, rho = 0.2
+  )
+  
+  expect_true(!is.null(plot_power_curve(ss3)))
+  
 })
