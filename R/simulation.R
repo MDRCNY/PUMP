@@ -314,7 +314,11 @@ convert_params <- function(model.params.list) {
     
     convert.scalar = function(x, M)
     {
-        if(length(x) == 1) {
+        if( is.null(x) )
+        {
+            return( rep(0, M) )
+        } else if( length(x) == 1 )
+        {
             return( rep(x, M) )
         } else
         {
@@ -466,22 +470,18 @@ gen_simple_assignments <- function(J, K, nbar){
 #' @export
 gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 {
-    # unblocked d_ms
     if(startsWith(d_m, 'd1.1'))
     {
         T.x <- randomizr::simple_ra(N = nbar, prob = Tbar)
-        # blocked d_ms
     } else if(startsWith(d_m, 'd2.1') | startsWith(d_m, 'd3.1'))
     {
         T.x <- randomizr::block_ra( S.id, prob = Tbar )
-        # cluster d_ms
     } else if(startsWith(d_m, 'd2.2'))
     { 
         T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
     } else if(startsWith(d_m, 'd3.3'))
     {
         T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-        # blocked cluster d_ms
     } else if(startsWith(d_m, 'd3.2'))
     {
         T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
