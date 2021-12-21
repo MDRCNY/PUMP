@@ -292,7 +292,7 @@ convert_params <- function(model.params.list) {
         has.level.three <- FALSE
         ICC.3 <- rep(0, M)
         R2.3 <- rep(0, M)
-        omega.3 <- 0
+        omega.3 <- rep(0, M)
         K <- 1
     }
     
