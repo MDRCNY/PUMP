@@ -24,7 +24,6 @@ X[3,] <- -4 * T.x + rnorm(N)
 # calc rawt
 rawt <- apply(X, 1, function(x){ return(t.test(x[T.x == 1], x[T.x == 0])$statistic) })
 
-
 # multtest
 set.seed(0217)
 # suppress output
@@ -46,8 +45,8 @@ for(b in 1:B)
   nullt <- rbind(nullt, nullt.b)
 }
 
-ind.B <- t(apply(nullt, 1, comp.rawt.sd, rawt = rawt, rawt.order = rawt.order))
-exp.adjp <- get.adjp.minp(ind.B, rawt.order)
+ind.B <- t(apply(nullt, 1, comp_rawt_sd, rawt = rawt, rawt.order = rawt.order))
+exp.adjp <- get_adjp_minp(ind.B, rawt.order)
 
 test_that("P value output matches within 5%", {
   expect_equal(mult.adjp, exp.adjp, tol = 0.05)

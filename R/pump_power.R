@@ -99,6 +99,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
   # subset to only nonzero where relevant
   power.ind <- power.ind[ind.nonzero]
   power.min <- power.min[ind.nonzero]
+  # rename to be more sensible if there are zeros in the middle
+  names(power.min) <- paste0('min',1:length(power.min))
+      
   power.ind.mean <- mean(power.ind)
   names(power.ind.mean) = 'indiv.mean'
   names(power.complete) = 'complete'
@@ -108,8 +111,16 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
   {
     power.min <- power.min[1:(M - 1)]
   }
+  
+  if(M > 1)
+  {
+      power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
+  # don't return min and complete for M = 1
+  } else
+  {
+      power.vec <- c(power.ind)
+  }
 
-  power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
   power.vec <- sapply(power.vec, as.numeric)
 
   if(num.nonzero == 0)
@@ -135,7 +146,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+#'   None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 #'   to automatically re-run for each procedure on the list.
 #' @param MDES scalar or vector; the desired MDES values for each outcome. Please
 #'   provide a scalar, a vector of length M, or vector of values for non-zero
@@ -197,7 +208,7 @@ pump_power <- function(
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
-  tnum = 10000, B = 3000,
+  tnum = 10000, B = 1000,
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -205,6 +216,12 @@ pump_power <- function(
   verbose = FALSE
 )
 {
+  # do not duplicate 'None'
+  if(length(MTP) > 1 && any(MTP == 'None'))
+  {
+    MTP <- MTP[which(MTP != 'None')]
+  }
+    
   # Call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
     if ( verbose ) {
@@ -247,10 +264,6 @@ pump_power <- function(
                              design = design,
                              multiple_MTP = TRUE,
                              long.table = long.table ) )
-
-    #des = map( des, ~ .x[nrow(.x),] ) %>%
-    #  dplyr::bind_rows()
-    #return( des )
   }
 
   if(validate.inputs)
@@ -334,12 +347,12 @@ pump_power <- function(
   } else if (MTP == "WY-SS"){
 
     adjp.mat <- adjp_wyss(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df)
+                          Sigma = Sigma, t.df = t.df)
 
   } else if (MTP == "WY-SD"){
 
     adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df, cl = cl)
+                          Sigma = Sigma, t.df = t.df, cl = cl)
 
   } else
   {
@@ -367,7 +380,8 @@ pump_power <- function(
   } else {
     power.results <- cbind('MTP' = 'None', power.results.raw)
   }
-  wide.results = power.results
+
+  wide.results <- power.results
   if ( !long.table ) {
     return( make.pumpresult( power.results, "power",
                            params.list = params.list,

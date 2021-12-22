@@ -101,7 +101,7 @@ get_adjp_minp <- function(ind.B, rawt.order)
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp_wyss <- function(rawt.mat, B, Sigma, t.df) {
+adjp_wyss <- function(rawt.mat, B, Sigma, t.df, verbose = TRUE) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.mat)
@@ -128,7 +128,12 @@ adjp_wyss <- function(rawt.mat, B, Sigma, t.df) {
       end.time = Sys.time()
       iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
       finish.time = round((iter.time * tnum)/60)
-      message(paste('Estimated time to finish ', tnum, ' WY iterations:', finish.time, 'minutes'))
+      if(verbose)
+      {
+        message(paste('Estimated time to finish ', tnum,
+                      ' WY iterations with B =', B, ':',
+                      finish.time, 'minutes'))
+      }
     }
   }
   return(adjp)
@@ -155,7 +160,7 @@ adjp_wyss <- function(rawt.mat, B, Sigma, t.df) {
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp_wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
+adjp_wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL, verbose = TRUE) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawt.mat)
@@ -193,7 +198,12 @@ adjp_wysd <- function(rawt.mat, B, Sigma, t.df, cl = NULL) {
       end.time = Sys.time()
       iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
       finish.time = round((iter.time * tnum)/60)
-      message(paste('Estimated time to finish WY iterations:', finish.time, 'minutes'))
+      if(verbose)
+      {
+          message(paste('Estimated time to finish ', tnum,
+                        ' WY iterations with B =', B, ':',
+                        finish.time, 'minutes'))
+      }
     }
   }
   return(adjp)

@@ -149,6 +149,22 @@ test_that("M = 1 runs successfully", {
                       rho = 0.4, tnum = 200
   )
   expect_true( nrow( pp ) == 1 )
+  
+  pp <- pump_power(   design = "d2.1_m2fc",
+                      MTP = "None",
+                      MDES = 0.10,
+                      M = 1,
+                      J = 3, # number of schools/block
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5,
+                      R2.1 = 0.1,
+                      ICC.2 = 0.05,
+                      rho = 0.4, tnum = 200
+  )
+  expect_true( nrow( pp ) == 1 )
+  expect_true( ncol( pp ) == 2 )
 })
 
 test_that("J = 1 runs successfully", {
@@ -367,6 +383,40 @@ test_that("M > 1 with MTP None runs successfully", {
                         rho = 0.4, tnum = 200
     ))
     expect_true( nrow( pp ) == 1 )
+    
+    pp <- pump_power(   design = "d2.1_m2fc",
+                                       MTP = c("Bonferroni", "None"),
+                                       MDES = 0.10,
+                                       M = 3,
+                                       J = 3, # number of schools/block
+                                       nbar = 258,
+                                       Tbar = 0.50, # prop Tx
+                                       alpha = 0.05, # significance level
+                                       numCovar.1 = 5,
+                                       R2.1 = 0.1,
+                                       ICC.2 = 0.05,
+                                       rho = 0.4, tnum = 200
+    )
+    expect_true( nrow( pp ) == 2)
 })
 
+test_that("zero MDES values in middle of vector", {
+    
+    pp <- pump_power(   design = "d2.1_m2fc",
+                                       MTP = "Holm",
+                                       MDES = c(0.1, 0, 0.1),
+                                       M = 3,
+                                       J = 3, # number of schools/block
+                                       nbar = 258,
+                                       Tbar = 0.50, # prop Tx
+                                       alpha = 0.05, # significance level
+                                       numCovar.1 = 5,
+                                       R2.1 = 0.1,
+                                       ICC.2 = 0.05,
+                                       rho = 0.4, tnum = 200
+    )
+    
+    expect_true(all(colnames(pp) == c('MTP', 'D1indiv', 'D3indiv', 'indiv.mean', 'min1', 'min2', 'complete')))
+
+})
 
