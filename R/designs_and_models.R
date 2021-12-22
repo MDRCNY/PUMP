@@ -825,8 +825,8 @@ validate_inputs <- function( design, params.list,
       {
         if(any(params.list$omega.2 > 0))
         {
-          warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
-          params.list$omega.2 <- NULL
+            verbose_message('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
+            params.list$omega.2 <- NULL
         }
       }
     }
