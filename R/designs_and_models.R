@@ -461,7 +461,7 @@ calc_K <- function(design, MT, MDES, J, nbar, Tbar,
     return(K)
 }
 
-
+#### Parameter and call validation code ####
 
 make_MDES_vector = function( MDES, M, numZero = NULL, verbose = TRUE ) {
     if( !is.null(numZero) ) {
@@ -908,26 +908,6 @@ validate_inputs <- function( design, params.list,
 
 
 
-# Stolen from development purrr
-silently <- function(.f, otherwise = NULL) {
-    .f <- purrr::as_mapper(.f)
-    function(...) {
-        ret <-
-            purrr:::capture_output(
-                purrr:::capture_error(.f(...), otherwise, quiet=TRUE)
-            )
-        # reformat output to an un-nested list
-        list(
-            result = ret$result$result,
-            output = ret$output,
-            messages = ret$messages,
-            warnings = ret$warnings,
-            error = ret$result$error
-        )
-    }
-}
-
-
 # Not yet implemented
 # #' @param grid Flag of whether call is a grid call or non-grid call.
 
@@ -984,12 +964,6 @@ check_pump_call = function( design,
     }
     res$messages = messages
     return( res )
-}
-
-
-# print out results cleanly
-scat <- function( str, ... ) {
-    cat( sprintf( str, ... ) )
 }
 
 

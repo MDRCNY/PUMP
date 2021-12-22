@@ -3,7 +3,7 @@
 
 
 scat = function( str, ... ) {
-    cat( sprintf( str, ... ) )
+  cat( sprintf( str, ... ) )
 }
 
 
@@ -15,23 +15,23 @@ make.pumpresult = function( x,
                             tries = NULL,
                             flat = FALSE,
                             ... ) {
-    type <- match.arg(type)
-    class(x) <- c( "pumpresult", class(x) )
-    attr(x, "type" ) <- type
-    attr(x, "params.list") <- params.list
-    attr(x, "design") <- design
-    ll = list(...)
-    for ( l in names(ll) ) {
-        attr(x, l) <- ll[[ l ]]
-    }
-    if ( !is.null( tries ) ) {
-        attr( x, "tries" ) <- tries
-        attr( x, "search.range" ) <- c( min = min( tries$pt, na.rm = TRUE ),
-                                        final = tries$pt[ nrow(tries) ],
-                                        max = max( tries$pt, na.rm = TRUE ) )
-        attr( x, "flat" ) <- flat
-    }
-    return( x )
+  type <- match.arg(type)
+  class(x) <- c( "pumpresult", class(x) )
+  attr(x, "type" ) <- type
+  attr(x, "params.list") <- params.list
+  attr(x, "design") <- design
+  ll = list(...)
+  for ( l in names(ll) ) {
+    attr(x, l) <- ll[[ l ]]
+  }
+  if ( !is.null( tries ) ) {
+    attr( x, "tries" ) <- tries
+    attr( x, "search.range" ) <- c( min = min( tries$pt, na.rm = TRUE ),
+                                    final = tries$pt[ nrow(tries) ],
+                                    max = max( tries$pt, na.rm = TRUE ) )
+    attr( x, "flat" ) <- flat
+  }
+  return( x )
 }
 
 
@@ -47,34 +47,34 @@ make.pumpresult = function( x,
 #'
 #' @export
 update_grid = function( x, ... ) {
-    params = attr(x,"param")
-    params["design"] = design(x)
-    for ( p in names(params) ) {
-        params[[p]] = unique( params[[p]] )
+  params = attr(x,"param")
+  params["design"] = design(x)
+  for ( p in names(params) ) {
+    params[[p]] = unique( params[[p]] )
+  }
+  pparam = attr( x, "power.params.list" )
+  params = c( params, pparam )
+  
+  dts = list(...)
+  for ( d in names(dts) ) {
+    params[[d]] = dts[[d]]
+  }
+  result_type = attr( x, "type" )
+  if ( result_type == "power" ) {
+    params["MDES"] = unique(params[["MDES"]])
+    do.call(pump_power_grid, params)
+  } else if ( result_type == "mdes" ) {
+    do.call( pump_mdes_grid, params )
+  } else if ( result_type == "sample" ) {
+    params["MDES"] = unique(params[["MDES"]])
+    if ( is.null( params[["typesample"]] ) ) {
+      params["typesample"] = attr( x, "sample.level" )
     }
-    pparam = attr( x, "power.params.list" )
-    params = c( params, pparam )
-
-    dts = list(...)
-    for ( d in names(dts) ) {
-        params[[d]] = dts[[d]]
-    }
-    result_type = attr( x, "type" )
-    if ( result_type == "power" ) {
-        params["MDES"] = unique(params[["MDES"]])
-        do.call(pump_power_grid, params)
-    } else if ( result_type == "mdes" ) {
-        do.call( pump_mdes_grid, params )
-    } else if ( result_type == "sample" ) {
-        params["MDES"] = unique(params[["MDES"]])
-        if ( is.null( params[["typesample"]] ) ) {
-            params["typesample"] = attr( x, "sample.level" )
-        }
-        params[params$typesample] = NULL
-        do.call( pump_sample_grid, params )
-    } else {
-        stop( sprintf( "Unrecognized type, %s, in update_grid()", result_type ) )
-    }
+    params[params$typesample] = NULL
+    do.call( pump_sample_grid, params )
+  } else {
+    stop( sprintf( "Unrecognized type, %s, in update_grid()", result_type ) )
+  }
 }
 
 
@@ -98,63 +98,63 @@ update_grid = function( x, ... ) {
 #'
 #' @export
 update.pumpresult = function( object, ... ) {
-    params = params(object)
-    params["design"] = design(object)
-    result_type = attr(object, "type" )
-    params["type"] = result_type
-
-    dts = list(...)
-    for ( d in names(dts) ) {
-        params[[d]] = dts[[d]]
+  params = params(object)
+  params["design"] = design(object)
+  result_type = attr(object, "type" )
+  params["type"] = result_type
+  
+  dts = list(...)
+  for ( d in names(dts) ) {
+    params[[d]] = dts[[d]]
+  }
+  
+  # Are we changing what kind of calculation we want to perform?  If so,
+  # adjust some parameters as needed.
+  # result_type - the old type
+  # params$type - the new type
+  if ( params$type != result_type ) {
+    
+    # Copy over sample size from the pump_sampel call
+    if ( result_type == "sample" ) {
+      ss = object$`Sample.size`
+      slvl = attr(object, "sample.level" )
+      params[[slvl]] = ss
     }
-
-    # Are we changing what kind of calculation we want to perform?  If so,
-    # adjust some parameters as needed.
-    # result_type - the old type
-    # params$type - the new type
-    if ( params$type != result_type ) {
-
-        # Copy over sample size from the pump_sampel call
-        if ( result_type == "sample" ) {
-            ss = object$`Sample.size`
-            slvl = attr(object, "sample.level" )
-            params[[slvl]] = ss
-        }
-
-        if ((params$type == "mdes" || params$type == "sample") && result_type == "power" ) {
-            params["max.tnum"] = params["tnum"]
-            params["tnum"] = NULL
-        }
-
-        if ( params$type == "power" && (result_type == "mdes" || result_type == "sample") ) {
-            params["start.tnum"] = NULL
-            params["tnum"] = params["max.tnum"]
-            params["max.tnum"] = NULL
-            params["final.tnum"] = NULL
-            params["max.steps"] = NULL
-        }
-
-        result_type = params$type
+    
+    if ((params$type == "mdes" || params$type == "sample") && result_type == "power" ) {
+      params["max.tnum"] = params["tnum"]
+      params["tnum"] = NULL
     }
-    params$type = NULL
-
-    if ( result_type == "power" ) {
-        params["target.power"] = NULL
-        params["power.definition"] = NULL
-        params["tol"] = NULL
-        do.call(pump_power, params)
-    } else if ( result_type == "mdes" ) {
-        params["MDES"] = NULL
-        do.call( pump_mdes, params )
-    } else if ( result_type == "sample" ) {
-        if ( is.null( params[["typesample"]] ) ) {
-            params["typesample"] = attr( object, "sample.level" )
-        }
-        params[params$typesample] = NULL
-        do.call( pump_sample, params )
-    } else {
-        stop( sprintf( "Unrecognized type, %s, in update()", result_type ) )
+    
+    if ( params$type == "power" && (result_type == "mdes" || result_type == "sample") ) {
+      params["start.tnum"] = NULL
+      params["tnum"] = params["max.tnum"]
+      params["max.tnum"] = NULL
+      params["final.tnum"] = NULL
+      params["max.steps"] = NULL
     }
+    
+    result_type = params$type
+  }
+  params$type = NULL
+  
+  if ( result_type == "power" ) {
+    params["target.power"] = NULL
+    params["power.definition"] = NULL
+    params["tol"] = NULL
+    do.call(pump_power, params)
+  } else if ( result_type == "mdes" ) {
+    params["MDES"] = NULL
+    do.call( pump_mdes, params )
+  } else if ( result_type == "sample" ) {
+    if ( is.null( params[["typesample"]] ) ) {
+      params["typesample"] = attr( object, "sample.level" )
+    }
+    params[params$typesample] = NULL
+    do.call( pump_sample, params )
+  } else {
+    stop( sprintf( "Unrecognized type, %s, in update()", result_type ) )
+  }
 }
 
 
@@ -194,14 +194,14 @@ NULL
 #' @rdname pumpresult
 #' @export
 params <- function( x, ... ) {
-    stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
-
-    pp = attr( x, "params.list" )
-    pp_pow = attr(x, "power.params.list" )
-    if ( !is.null( pp_pow ) ) {
-        pp = c( pp, pp_pow )
-    }
-    return( pp )
+  stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
+  
+  pp = attr( x, "params.list" )
+  pp_pow = attr(x, "power.params.list" )
+  if ( !is.null( pp_pow ) ) {
+    pp = c( pp, pp_pow )
+  }
+  return( pp )
 }
 
 
@@ -214,10 +214,10 @@ params <- function( x, ... ) {
 #' @rdname pumpresult
 #' @export
 design <- function( x, ... ) {
-    stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
-
-    pp <- attr( x, "design" )
-    return( pp )
+  stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
+  
+  pp <- attr( x, "design" )
+  return( pp )
 }
 
 
@@ -228,12 +228,12 @@ design <- function( x, ... ) {
 #'
 #' @export
 search_path = function( x, ... ) {
-    stopifnot( is.pumpresult( x ) )
-    rs <- attr( x, "tries" )
-    if ( !is.null( rs ) ) {
-        rs$delta = rs$power - rs$target.power
-    }
-    return( rs )
+  stopifnot( is.pumpresult( x ) )
+  rs <- attr( x, "tries" )
+  if ( !is.null( rs ) ) {
+    rs$delta = rs$power - rs$target.power
+  }
+  return( rs )
 }
 
 
@@ -255,19 +255,19 @@ search_path = function( x, ... ) {
 #' @export
 power_curve <- function( x, all = FALSE,
                          low = NULL, high = NULL, grid.size = 5, tnum = 2000 ) {
-    stopifnot( is.pumpresult( x ) )
-    fin_pts <- attr( x, "final.pts" )
-    if ( is.null( fin_pts ) ) {
-        fin_pts = estimate_power_curve( x )
-    }
-    srch = search_path( x )
-    if ( all && !is.null( srch ) ) {
-        srch = dplyr::filter( srch, .data$pt < max( fin_pts$pt * 1.1 ) )
-        fin_pts = dplyr::bind_rows( fin_pts, srch ) %>%
-            dplyr::arrange( .data$pt ) %>%
-            dplyr::select( .data$MTP, .data$target.power, .data$pt, .data$w, .data$power )
-    }
-    fin_pts
+  stopifnot( is.pumpresult( x ) )
+  fin_pts <- attr( x, "final.pts" )
+  if ( is.null( fin_pts ) ) {
+    fin_pts = estimate_power_curve( x )
+  }
+  srch = search_path( x )
+  if ( all && !is.null( srch ) ) {
+    srch = dplyr::filter( srch, .data$pt < max( fin_pts$pt * 1.1 ) )
+    fin_pts = dplyr::bind_rows( fin_pts, srch ) %>%
+      dplyr::arrange( .data$pt ) %>%
+      dplyr::select( .data$MTP, .data$target.power, .data$pt, .data$w, .data$power )
+  }
+  fin_pts
 }
 
 
@@ -285,7 +285,7 @@ pump_type <- function( x ) {
 
 is_long_table = function( power_table ) {
   
-  stopifnot( is.pumpresult(power_table) )
+  stopifnot( is.pumpresult(power_table) || is.pumpgridresult(power_table) )
   
   lt = attr( power_table, "long.table" )
   if ( !is.null( lt ) && lt == TRUE ) {
@@ -306,44 +306,63 @@ is_long_table = function( power_table ) {
 #' @param power_table pumpresult object for a power result (not mdes or sample).
 #'   (It can also take a raw dataframe of the wide table to convert to long, as
 #'   an internal helper method.)
+#' @param M Set if power_table is a data.frame without set number of outcomes.
+#'   Usually ignore this.
 #'
 #' @export
-transpose_power_table <- function( power_table ) {
+transpose_power_table <- function( power_table, M = NULL ) {
   
   ptorig = power_table
+  
   pp <- NA
   
-  if ( is.pumpresult(power_table) ) {
+  pr = is.pumpresult(power_table) || is.pumpgridresult(power_table)
+  if ( pr ) {
     stopifnot( pump_type( power_table ) == "power" )
-    
-    if ( is_long_table(power_table) ) {
-      pp <- attr( power_table, "wide.table" )
-    } else {
-      power_table = as.data.frame( power_table )
-    }
+    M = params(power_table)$M
+  } else {
+    stopifnot( !is.null(M) )
   }
   
-  if ( length(pp) == 1 && is.na( pp ) ) {
-
-    cname = power_table$MTP
-    power_table$MTP = NULL
-    pp <- t( power_table )
-    colnames(pp) <- cname
-    #if ( ncol( pp ) > 1 ) {
-    #  pp = pp[ , ncol(pp):1 ]
-    #}
-    pows <- rownames(pp)
-    pp <- pp %>% # pp[ nrow(pp):1, ] %>%
+  
+  if ( !pr || !is_long_table(power_table) ) {
+    pnames = get_power_names(M, long=TRUE)
+    
+    pp <- power_table %>% 
       as.data.frame() %>%
-      tibble::rownames_to_column( var="power" )
-    
-    pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
-    pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
-    pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+      tidyr::pivot_longer( cols = any_of( names(pnames) ),
+                           names_to = "power",
+                           values_to = "power_val" ) %>%
+      tidyr::pivot_wider( names_from="MTP", values_from="power_val" ) %>%
+      dplyr::mutate( power = pnames[ .data$power] )
+  } else {
+    pnames = get_power_names(M)
+    pp <- power_table %>%
+      dplyr::mutate( power = pnames[ .data$power ] ) %>%
+      tidyr::pivot_longer( cols = any_of( c( "None", params(power_table)$MTP ) ),
+                           names_to = "MTP",
+                           values_to = "power_val" ) %>%
+      tidyr::pivot_wider( names_from="power", values_from="power_val" )
+  } 
   
-  }
   
-  if( is.pumpresult( ptorig ) ) {
+  # cname = power_table$MTP
+  # power_table$MTP = NULL
+  # pp <- t( power_table )
+  # colnames(pp) <- cname
+  # #if ( ncol( pp ) > 1 ) {
+  # #  pp = pp[ , ncol(pp):1 ]
+  # #}
+  # pows <- rownames(pp)
+  # pp <- pp %>% # pp[ nrow(pp):1, ] %>%
+  #   as.data.frame() %>%
+  #   tibble::rownames_to_column( var="power" )
+  # 
+  # pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
+  # pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
+  # pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
+  
+  if( is.pumpresult( ptorig ) || is.pumpgridresult(ptorig) ) {
     att = attributes(ptorig)
     att["names"] = NULL
     att["row.names"] = NULL
@@ -351,10 +370,6 @@ transpose_power_table <- function( power_table ) {
     for ( i in 1:length(att) ) {
       attr( pp, names(att)[[i]] ) <- att[[ i ]]
     }    
-    
-    if ( att[["long.table"]] ) {
-      attr( pp, "wide.table" ) <- as.data.frame( ptorig )
-    }
   }
   
   pp
@@ -371,7 +386,7 @@ transpose_power_table <- function( power_table ) {
 #'
 #' @rdname pumpresult
 is.pumpresult = function( x ) {
-    inherits(x, "pumpresult")
+  inherits(x, "pumpresult")
 }
 
 
@@ -412,7 +427,7 @@ dim.pumpresult <- function( x, ... ) {
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
 summary.pumpresult = function( object, ... ) {
-    print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
+  print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
@@ -431,31 +446,31 @@ print.pumpresult = function( x, n = 10,
                              header = TRUE,
                              search = FALSE,
                              ... ) {
-    result_type = attr( x, "type" )
-
-    if ( header ) {
-        scat( "%s result: %s design with %d outcomes\n",
-              result_type, design(x), params(x)$M )
-
-        if ( result_type == "mdes" || result_type == "sample" ) {
-            pow_params = attr( x, "power.params.list" )
-            scat( "  target %s power: %.2f\n", pow_params$power.definition,
-                  pow_params$target.power )
-        }
+  result_type = attr( x, "type" )
+  
+  if ( header ) {
+    scat( "%s result: %s design with %d outcomes\n",
+          result_type, design(x), params(x)$M )
+    
+    if ( result_type == "mdes" || result_type == "sample" ) {
+      pow_params = attr( x, "power.params.list" )
+      scat( "  target %s power: %.2f\n", pow_params$power.definition,
+            pow_params$target.power )
     }
-
-    print( as.data.frame( x ), row.names=FALSE )
-
-    if ( search ) {
-        print_search( x )
-    } else {
-        tr = attr( x, "tries" )
-        if ( !is.null( tr ) ) {
-            scat( "\t(%d steps in search)\n", nrow(tr) )
-        }
+  }
+  
+  print( as.data.frame( x ), row.names=FALSE )
+  
+  if ( search ) {
+    print_search( x )
+  } else {
+    tr = attr( x, "tries" )
+    if ( !is.null( tr ) ) {
+      scat( "\t(%d steps in search)\n", nrow(tr) )
     }
-
-    invisible( x )
+  }
+  
+  invisible( x )
 }
 
 
@@ -467,23 +482,23 @@ print.pumpresult = function( x, n = 10,
 #' @return Number of steps in search.
 #' @export
 print_search <- function( x, n = 10 ) {
-    tr = attr( x, "tries" )
-    if ( !is.null( tr )  ) {
-        cat( "\nSearch history\n")
-        nr = nrow( tr )
-        if ( nr >= n ) {
-            print( utils::head( tr, max(n/2,1) ) )
-            scat( "\t...  %s steps total ...\n", nr )
-            if ( n >= 2 ) {
-                print( utils::tail( tr, n/2 ) )
-            }
-        } else {
-            print( tr )
-        }
-        invisible( nr )
+  tr = attr( x, "tries" )
+  if ( !is.null( tr )  ) {
+    cat( "\nSearch history\n")
+    nr = nrow( tr )
+    if ( nr >= n ) {
+      print( utils::head( tr, max(n/2,1) ) )
+      scat( "\t...  %s steps total ...\n", nr )
+      if ( n >= 2 ) {
+        print( utils::tail( tr, n/2 ) )
+      }
     } else {
-        invisible( 0 )
+      print( tr )
     }
+    invisible( nr )
+  } else {
+    invisible( 0 )
+  }
 }
 
 
@@ -497,129 +512,129 @@ print_search <- function( x, n = 10 ) {
 #'
 #' @export
 print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...  ) {
-
-    is_grid = is.pumpgridresult(x)
-    
-    reduce_vec = function( vec ) {
-        if ( is.null(vec) ) {
-            return( NULL )
-        }
-        if ( is.numeric( vec ) ) {
-        if ( all( round( vec ) == vec ) ) {
-            vec = as.character( as.integer(vec) )
-        } else {
-            vec = as.character( round( vec, digits=2 ) )
-        }
-        }
-        if ( length( unique( vec ) ) == 1 ) {
-            vec[[1]]
-        } else {
-            paste( vec, collapse=" / " )
-        }
-    }
-
-    params = params(x)
-    MDESv = params$MDES
-    params = sapply( params, reduce_vec, simplify = FALSE )
-
-    design = design(x)
-    des = parse_design(design)
-    if ( des$levels < 3 ) {
-        params$K = "none"
-    }
-
-    result_type = attr( x, "type" )
-
-    if ( result_type == "sample" ) {
-        smp_type = attr(x, "sample.level" )
-        if ( smp_type == "nbar" ) {
-            params$nbar = "*"
-        } else if ( smp_type == "J" ) {
-            params$J = "*"
-        } else if ( smp_type == "K" ) {
-            params$K = "*"
-        }
-    }
-
-    # adjust for grid printout
-    if ( is_grid ) {
-      print_grid_header( x )
-      
-      varnames = attr( x, "var_names" )
-      for ( v in varnames ) {
-        params[[v]] = "***"
-      }
-      
-      if ( "MDES" %in% varnames ) {
-        MDESv = "MDES varying"
-      } 
-    } else {
   
-      scat( "%s result: %s design with %s outcomes",
-            result_type, design(x), params$M )
-      if ( !is.null( params$numZero ) ) {
-          scat( " (%s zeros)\n", params$numZero )
+  is_grid = is.pumpgridresult(x)
+  
+  reduce_vec = function( vec ) {
+    if ( is.null(vec) ) {
+      return( NULL )
+    }
+    if ( is.numeric( vec ) ) {
+      if ( all( round( vec ) == vec ) ) {
+        vec = as.character( as.integer(vec) )
       } else {
-          scat( "\n" )
+        vec = as.character( round( vec, digits=2 ) )
       }
     }
-    
-    if ( result_type == "mdes" || result_type == "sample" ) {
-        pow_params = attr( x, "power.params.list" )
-        scat( "  target %s power: %.2f\n", pow_params$power.definition,
-              pow_params$target.power )
-    }
-
-    if ( !is.null( MDESv ) ) {
-        scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
-    }
-
-    scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
-          params$nbar, params$J, params$K, params$Tbar )
-    scat( "  alpha: %s\t\n", params$alpha)
-    scat( "  Level:\n    1: R2: %s (%s covariate)\n",
-          params$R2.1, params$numCovar.1 )
-    if ( des$levels >= 2 ) {
-        scat( "    2: ")
-        if ( des$FE.2 ) {
-            scat( "  fixed effects  " )
-        } else {
-            scat( "R2: %s (%s covariate)", params$R2.2, params$numCovar.2)
-        }
-        scat( "\tICC: %s\tomega: %s\n", params$ICC.2, params$omega.2 )
-    }
-    if ( des$levels >= 3 ) {
-        scat( "    3: ")
-        if ( des$FE.3 ) {
-            scat( "  fixed effects  " )
-        } else {
-            scat( "R2: %s (%s covariate)", params$R2.3, params$numCovar.3)
-        }
-        scat( "\tICC: %s\tomega: %s\n", params$ICC.3, params$omega.3 )
-    }
-    if ( !is.null( params$rho.matrix ) ) {
-        cat( "Rho matrix:\n" )
-        print( params$rho.matrix )
+    if ( length( unique( vec ) ) == 1 ) {
+      vec[[1]]
     } else {
-        scat( "  rho = %s\n", params$rho )
+      paste( vec, collapse=" / " )
     }
-
-    if ( insert_results ) {
-        print.pumpresult(x, header=FALSE, search=FALSE, ... )
+  }
+  
+  params = params(x)
+  MDESv = params$MDES
+  params = sapply( params, reduce_vec, simplify = FALSE )
+  
+  design = design(x)
+  des = parse_design(design)
+  if ( des$levels < 3 ) {
+    params$K = "none"
+  }
+  
+  result_type = attr( x, "type" )
+  
+  if ( result_type == "sample" ) {
+    smp_type = attr(x, "sample.level" )
+    if ( smp_type == "nbar" ) {
+      params$nbar = "*"
+    } else if ( smp_type == "J" ) {
+      params$J = "*"
+    } else if ( smp_type == "K" ) {
+      params$K = "*"
     }
-
-    if ( insert_control ) {
-        ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
-        if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
-            ex_params$B = NULL
-        }
-        no_inc = sapply( ex_params, is.null )
-        ex_params = ex_params[ !no_inc ]
-        scat( "\t(%s)\n",
-              paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
+  }
+  
+  # adjust for grid printout
+  if ( is_grid ) {
+    print_grid_header( x )
+    
+    varnames = attr( x, "var_names" )
+    for ( v in varnames ) {
+      params[[v]] = "***"
     }
-
-    invisible( x )
+    
+    if ( "MDES" %in% varnames ) {
+      MDESv = "MDES varying"
+    } 
+  } else {
+    
+    scat( "%s result: %s design with %s outcomes",
+          result_type, design(x), params$M )
+    if ( !is.null( params$numZero ) ) {
+      scat( " (%s zeros)\n", params$numZero )
+    } else {
+      scat( "\n" )
+    }
+  }
+  
+  if ( result_type == "mdes" || result_type == "sample" ) {
+    pow_params = attr( x, "power.params.list" )
+    scat( "  target %s power: %.2f\n", pow_params$power.definition,
+          pow_params$target.power )
+  }
+  
+  if ( !is.null( MDESv ) ) {
+    scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
+  }
+  
+  scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
+        params$nbar, params$J, params$K, params$Tbar )
+  scat( "  alpha: %s\t\n", params$alpha)
+  scat( "  Level:\n    1: R2: %s (%s covariate)\n",
+        params$R2.1, params$numCovar.1 )
+  if ( des$levels >= 2 ) {
+    scat( "    2: ")
+    if ( des$FE.2 ) {
+      scat( "  fixed effects  " )
+    } else {
+      scat( "R2: %s (%s covariate)", params$R2.2, params$numCovar.2)
+    }
+    scat( "\tICC: %s\tomega: %s\n", params$ICC.2, params$omega.2 )
+  }
+  if ( des$levels >= 3 ) {
+    scat( "    3: ")
+    if ( des$FE.3 ) {
+      scat( "  fixed effects  " )
+    } else {
+      scat( "R2: %s (%s covariate)", params$R2.3, params$numCovar.3)
+    }
+    scat( "\tICC: %s\tomega: %s\n", params$ICC.3, params$omega.3 )
+  }
+  if ( !is.null( params$rho.matrix ) ) {
+    cat( "Rho matrix:\n" )
+    print( params$rho.matrix )
+  } else {
+    scat( "  rho = %s\n", params$rho )
+  }
+  
+  if ( insert_results ) {
+    print.pumpresult(x, header=FALSE, search=FALSE, ... )
+  }
+  
+  if ( insert_control ) {
+    ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
+    if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
+      ex_params$B = NULL
+    }
+    no_inc = sapply( ex_params, is.null )
+    ex_params = ex_params[ !no_inc ]
+    scat( "\t(%s)\n",
+          paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
+  }
+  
+  invisible( x )
 }
 
 
@@ -638,9 +653,9 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
 #'
 #' @export
 as.data.frame.pumpresult = function( x, row.names = NULL, optional = FALSE, ... ) {
-    class(x) = "list"
-    as.data.frame( x, row.names = row.names, optional = optional, ... )
-
+  class(x) = "list"
+  as.data.frame( x, row.names = row.names, optional = optional, ... )
+  
 }
 
 

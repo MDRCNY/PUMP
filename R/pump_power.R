@@ -1,35 +1,3 @@
-#' Parse the power definition
-#'
-#' @param power.definition i.e. D1indiv, min1, complete
-#' @param M number of outcomes
-#' @return information about power type
-parse_power_definition <- function( power.definition, M ) {
-  powertype <- list( min = FALSE,
-                     complete = FALSE,
-                     indiv = FALSE )
-  if( !is.null(power.definition) )
-  {
-      if ( stringr::str_detect( power.definition, "min" ) ) {
-          powertype$min <- TRUE
-          powertype$min_k <- readr::parse_number( power.definition )
-          stopifnot( is.numeric( powertype$min_k ) )
-      } else if ( stringr::str_detect( power.definition, "complete" ) ) {
-          powertype$min <- TRUE
-          powertype$complete <- TRUE
-          powertype$min_k <- M
-      } else if ( stringr::str_detect( power.definition, "indiv.mean" ) ) {
-          powertype$indiv <- TRUE
-          powertype$indiv_k <- NULL
-      } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
-          powertype$indiv <- TRUE
-          powertype$indiv_k <- readr::parse_number( power.definition )
-          stopifnot( is.numeric( powertype$indiv_k ) )
-      }
-  }
-
-  return( powertype )
-}
-
 
 
 
@@ -208,11 +176,12 @@ pump_power <- function(
   # Call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
     if ( verbose ) {
-      scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
+      smessage( "Multiple MTPs leading to %d calls\n", length(MTP) )
     }
     validate_MTP( MTP = MTP,
                   power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
+    
     des = purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
@@ -231,6 +200,7 @@ pump_power <- function(
 
     plist = attr( des[[1]], "params.list" )
     plist$MTP = MTP
+    
     if ( long.table ) {
       ftable = des[[1]]
       for ( i in 2:length(des) ) {
@@ -242,10 +212,10 @@ pump_power <- function(
         ftable = dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
     }
+    
     return( make.pumpresult( ftable, "power",
                              params.list = plist,
                              design = design,
-                             multiple_MTP = TRUE,
                              long.table = long.table ) )
 
     #des = map( des, ~ .x[nrow(.x),] ) %>%
@@ -374,10 +344,10 @@ pump_power <- function(
                            design = design,
                            long.table = long.table ) )
   } else {
-    return( make.pumpresult( transpose_power_table( power.results ), "power",
+    return( make.pumpresult( transpose_power_table( power.results, M = M ), 
+                             "power",
                              params.list = params.list,
                              design = design,
-                             long.table = long.table,
-                             wide.table = power.results ) )
+                             long.table = long.table ) )
   }
 }
