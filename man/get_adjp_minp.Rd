@@ -4,13 +4,13 @@
 \alias{get_adjp_minp}
 \title{Helper function for Westfall Young}
 \usage{
-get_adjp_minp(ind.B, rawt.order)
+get_adjp_minp(ind.B, rawp.order)
 }
 \arguments{
 \item{ind.B}{matrix of indicator variables for if each raw test statistic exceeds
 the null test statistics. dimensions: nrow = tnum, ncol = M.}
 
-\item{rawt.order}{order of raw test statistics in descending order}
+\item{rawp.order}{order of raw p-values in ascending order}
 }
 \value{
 returns adjusted p-value matrix

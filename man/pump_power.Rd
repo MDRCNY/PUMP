@@ -29,7 +29,7 @@ pump_power(
   rho = NULL,
   rho.matrix = NULL,
   tnum = 10000,
-  B = 3000,
+  B = 1000,
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -41,7 +41,7 @@ pump_power(
 \item{design}{a single RCT design (see list/naming convention)}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
-none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{MDES}{scalar or vector; the desired MDES values for each outcome. Please

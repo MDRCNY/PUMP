@@ -2,6 +2,7 @@
 # library( testthat )
 library(PowerUpR)
 
+default.tol <- 0.01
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # ------------- d2.1_m2fc -------------
@@ -35,7 +36,33 @@ test_that("testing of d2.1_m2fc", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  
+  powerup.power <- PowerUpR::power.bira2c1(
+      es = 0.125,
+      alpha = 0.05,
+      two.tailed = TRUE,
+      p = 0.5,
+      g1 = 1,
+      r21 = 0.1,
+      n = 50,
+      J = 30
+  )
+  
+  pump.power <- pump_power(
+      design = "d2.1_m2fc",
+      MTP = 'None',
+      nbar = 50,
+      J = 30,
+      M = 1,
+      MDES = 0.125,
+      Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+      numCovar.1 = 1,
+      R2.1 = 0.1, ICC.2 = 0, rho = 0,
+      tnum = 100000
+  )
+  
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   sink()
 
@@ -78,7 +105,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   powerup.mdes <- expect_warning(PowerUpR::mdes.bira2r1(
     power = 0.8,
@@ -108,7 +135,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
+  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
 
 
   powerup.ss <- expect_warning(PowerUpR::mrss.bira2r1(
@@ -140,7 +167,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = 0.1)
+  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
 
   sink()
 
@@ -179,7 +206,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   powerup.mdes <- expect_warning(PowerUpR::mdes.bira2r1(
     power = 0.8,
@@ -209,7 +236,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
+  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
 
 
   powerup.ss <- expect_warning(PowerUpR::mrss.bira2r1(
@@ -241,7 +268,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = 0.1)
+  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
 
   sink()
 
@@ -284,7 +311,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   powerup.mdes <- PowerUpR::mdes.bcra3f2(
     power = 0.8,
@@ -314,7 +341,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
+  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
 
 
   powerup.ss <- PowerUpR::mrss.bcra3f2(
@@ -347,7 +374,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
   )
 
-  expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = 0.1)
+  expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = default.tol)
 
   sink()
 
@@ -385,7 +412,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = 0.1)
+  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   powerup.mdes <- PowerUpR::mdes.bcra3f2(
     power = 0.8,
@@ -415,7 +442,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = 0.1)
+  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
 
 
   powerup.ss <- PowerUpR::mrss.bcra3f2(
