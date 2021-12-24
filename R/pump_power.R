@@ -356,17 +356,13 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    # adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
-    #                       Sigma = Sigma, t.df = t.df)
-      adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
-                            Sigma = Sigma, t.df = t.df, two.tailed = two.tailed)
+    adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed)
 
   } else if (MTP == "WY-SD"){
 
-    # adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
-    #                       Sigma = Sigma, t.df = t.df, cl = cl)
-      adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
-                            Sigma = Sigma, t.df = t.df, two.tailed = two.tailed, cl = cl)
+    adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed, cl = cl)
 
   } else
   {
