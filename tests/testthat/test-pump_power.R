@@ -416,7 +416,92 @@ test_that("zero MDES values in middle of vector", {
                                        rho = 0.4, tnum = 200
     )
     
-    expect_true(all(colnames(pp) == c('MTP', 'D1indiv', 'D3indiv', 'indiv.mean', 'min1', 'min2', 'complete')))
+    expect_true(
+        all(colnames(pp) ==
+        c('MTP', 'D1indiv', 'D3indiv', 'indiv.mean', 'min1', 'min2', 'complete'))
+    )
+    
+})
+
+
+test_that("testing against Porter 2017", {
+
+    # NOTE: compare to Figure 1, setting with:
+    # all outcomes have effects
+    # 3 outcomes
+    
+    set.seed(13434)
+    pp1 <- pump_power(
+        design = "d2.1_m2fc",
+        MTP = c('Bonferroni', 'Holm', 'BH', 'WY-SS', 'WY-SD'),
+        nbar = 50,
+        J = 20,
+        M = 3,
+        MDES = 0.125,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+        numCovar.1 = 1, tnum = 1000, B = 1000,
+        R2.1 = 0.5, ICC.2 = 0, rho = 0.2)
+    
+    expect_equal(0.65, pp1$D1indiv[2], tol = 0.01)
+    expect_equal(0.71, pp1$D1indiv[3], tol = 0.01)
+    expect_equal(0.76, pp1$D1indiv[4], tol = 0.01)
+    expect_equal(0.67, pp1$D1indiv[5], tol = 0.01)
+    expect_equal(0.75, pp1$D1indiv[6], tol = 0.01)
+    
+    set.seed(13434)
+    pp2 <- pump_power(
+        design = "d2.1_m2fc",
+        MTP = c('Bonferroni', 'Holm', 'BH', 'WY-SS', 'WY-SD'),
+        nbar = 50,
+        J = 20,
+        M = 3,
+        MDES = 0.125,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+        numCovar.1 = 1, tnum = 1000, B = 1000,
+        R2.1 = 0.5, ICC.2 = 0, rho = 0.8)
+
+    expect_equal(0.65, pp2$D1indiv[2], tol = 0.01)
+    expect_equal(0.71, pp2$D1indiv[3], tol = 0.01)
+    expect_equal(0.75, pp2$D1indiv[4], tol = 0.01)
+    expect_equal(0.71, pp2$D1indiv[5], tol = 0.01)
+    expect_equal(0.76, pp2$D1indiv[6], tol = 0.01)
 
 })
 
+
+test_that("MTP behavior", {
+
+    set.seed(13434)
+    pp <- pump_power( design = "d3.2_m3ff2rc",
+                      MTP = c("Bonferroni", "Holm", "BH", "WY-SS", "WY-SD"),
+                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
+                      M = 5,
+                      J = 3, # number of schools/block
+                      K = 10, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 1000, B = 1000
+    )
+    pp
+
+    # for biggest effect, Bonferroni same as Holm
+    expect_equal(pp$D5indiv[pp$MTP == 'Bonferroni'], pp$D5indiv[pp$MTP == 'Holm'], tol = 0.1)
+    # for smaller effects, Holm more powerful than Bonf
+    expect_true(pp$D1indiv[pp$MTP == 'Bonferroni'] <pp$D1indiv[pp$MTP == 'Holm'])
+
+    # BH least conservative (for small effects)
+    expect_true(pp$D1indiv[pp$MTP == 'Bonferroni'] < pp$D1indiv[pp$MTP == 'BH'])
+
+    # WY more powerful than Bonferroni
+    expect_true(pp$D5indiv[pp$MTP == 'Bonferroni'] < pp$D5indiv[pp$MTP == 'WY-SS'])
+    # for biggest effect, WY-SD similar to WY-SS for largest outcome
+    expect_equal(pp$D1indiv[pp$MTP == 'WY-SS'], pp$D1indiv[pp$MTP == 'WY-SD'], tol = 0.1)
+    # for smaller effects, WY-SD more powerful than WY-SS for largest outcome
+    expect_true(pp$D1indiv[pp$MTP == 'WY-SS'] < pp$D1indiv[pp$MTP == 'WY-SD'])
+
+})

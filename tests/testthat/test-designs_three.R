@@ -254,9 +254,9 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
     vals[1:3]
 
     # nbar is flat!
-    expect_equal(vals$K, 10, tol = 0.1)
-    expect_equal(vals$J, 30, tol = 0.1)
-    expect_equal(vals$nbar, 50, tol = 0.4)
+    expect_equal(10, vals$K, tol = 0.1)
+    expect_equal(30, vals$J, tol = 0.1)
+    expect_equal(50, vals$nbar, tol = 0.4)
 
 })
 

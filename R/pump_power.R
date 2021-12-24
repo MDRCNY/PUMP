@@ -30,6 +30,25 @@ parse_power_definition <- function( power.definition, M ) {
   return( powertype )
 }
 
+#' Calculates p-values from t-values
+#' 
+#' @param rawt.matrix matrix of t statistics
+#' @param t.df degrees of freedom
+#' @param two.tailed whether to calculate 1 or 2-tailed p-values
+#'
+#' @return power results for individual, minimum, complete power
+#' @export
+calc_pval <- function(rawt, t.df, two.tailed)
+{
+  if(two.tailed)
+  {
+    rawp <- 2*(1 - stats::pt(abs(rawt), df = t.df))
+  } else
+  {
+    rawp <- 1 - stats::pt(rawt, df = t.df) 
+  }
+  return(rawp)
+}
 
 
 
@@ -47,26 +66,17 @@ parse_power_definition <- function( power.definition, M ) {
 #' @return power results for individual, minimum, complete power
 #' @export
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
-                              ind.nonzero, alpha, two.tailed,
+                              ind.nonzero, alpha,
                               adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
-  if(two.tailed)
-  {
-    # rejected tests
-    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
-    # unadjusted
-    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
-  } else
-  {
-    # rejected tests
-    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-    # unadjusted
-    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  }
 
+  # rejected tests
+  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  # unadjusted
+  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
   power.ind <- apply(rejects, 2, mean)
@@ -323,10 +333,10 @@ pump_power <- function(
   {
     Sigma <- rho.matrix
   }
-
+  
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
-  rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
-  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df)
+  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat, nrow = tnum, ncol = M)
+  rawp.mat <- calc_pval(rawt.mat, t.df, two.tailed)
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
@@ -346,13 +356,13 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    adjp.mat <- adjp_wyss(rawt.mat = rawt.mat, B = B,
-                          Sigma = Sigma, t.df = t.df)
+    adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed)
 
   } else if (MTP == "WY-SD"){
 
-    adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
-                          Sigma = Sigma, t.df = t.df, cl = cl)
+    adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed, cl = cl)
 
   } else
   {
@@ -367,13 +377,13 @@ pump_power <- function(
 
   power.results.raw <- get_power_results(
     adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
-    ind.nonzero, alpha, two.tailed, adj = FALSE
+    ind.nonzero, alpha, adj = FALSE
   )
 
   if ( MTP != 'None' ) {
     power.results.proc <- get_power_results(
       adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
-      ind.nonzero, alpha, two.tailed, adj = TRUE
+      ind.nonzero, alpha, adj = TRUE
     )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
