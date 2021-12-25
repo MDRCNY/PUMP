@@ -36,80 +36,84 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' @export
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
                               ind.nonzero, alpha,
+                              drop.zero.outcomes = TRUE,
                               adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
-
-  # rejected tests
-  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  # unadjusted
-  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
-
-  # individual power
-  power.ind <- apply(rejects, 2, mean)
-  names(power.ind) <- paste0('D', 1:M, 'indiv')
-
-  # minimum power
-  power.min <- rep(NA, M)
-  names(power.min) <- paste0('min',1:M)
-
-  # complete power
-  power.complete <- NA
-
-  # if unadjusted, don't report minimum or complete power
-  if(adj)
+  # if all zeros, short circuit
+  if(num.nonzero == 0 & drop.zero.outcomes)
   {
-    # complete power
-    if(all(ind.nonzero))
-    {
-      complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
-      power.complete <- mean(complete.rejects)
-    }
-    # minimum power
-    for(m in 1:M)
-    {
-      min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
-      power.min[m] <- mean(min.rejects)
-    }
-  }
-
-  # subset to only nonzero where relevant
-  power.ind <- power.ind[ind.nonzero]
-  power.min <- power.min[ind.nonzero]
-  # rename to be more sensible if there are zeros in the middle
-  names(power.min) <- paste0('min',1:length(power.min))
+      all.power.results <- data.frame('D1indiv' = NA)
+  } else
+  {
+      # rejected tests
+      rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+      # unadjusted
+      rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
       
-  power.ind.mean <- mean(power.ind)
-  names(power.ind.mean) = 'indiv.mean'
-  names(power.complete) = 'complete'
-
-  # remove redundant min column
-  if(sum(num.nonzero) == M)
-  {
-    power.min <- power.min[1:(M - 1)]
-  }
-  
-  if(M > 1)
-  {
-      power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
-  # don't return min and complete for M = 1
-  } else
-  {
-      power.vec <- c(power.ind)
-  }
-
-  power.vec <- sapply(power.vec, as.numeric)
-
-  if(num.nonzero == 0)
-  {
-    all.power.results <- data.frame('D1indiv' = NA)
-  } else
-  {
-    # combine all power for all definitions
-    all.power.results <- data.frame(matrix(power.vec, nrow = 1))
-    colnames(all.power.results) <- names(power.vec)
+      # individual power
+      power.ind <- apply(rejects, 2, mean)
+      names(power.ind) <- paste0('D', 1:M, 'indiv')
+      
+      # minimum power
+      power.min <- rep(NA, M)
+      names(power.min) <- paste0('min',1:M)
+      
+      # complete power
+      power.complete <- NA
+      
+      # if unadjusted, don't report minimum or complete power
+      if(adj)
+      {
+          # complete power
+          if(all(ind.nonzero))
+          {
+              complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+              power.complete <- mean(complete.rejects)
+          }
+          # minimum power
+          for(m in 1:M)
+          {
+              min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
+              power.min[m] <- mean(min.rejects)
+          }
+      }
+      
+      # subset to only nonzero where relevant
+      if(drop.zero.outcomes)
+      {
+          power.ind <- power.ind[ind.nonzero]
+          power.min <- power.min[ind.nonzero]
+          # rename to be more sensible if there are zeros in the middle
+          names(power.min) <- paste0('min',1:length(power.min))
+      }
+      
+      power.ind.mean <- mean(power.ind)
+      names(power.ind.mean) = 'indiv.mean'
+      names(power.complete) = 'complete'
+      
+      # remove redundant min column
+      if(sum(num.nonzero) == M)
+      {
+          power.min <- power.min[1:(M - 1)]
+      }
+      
+      if(M > 1)
+      {
+          power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
+          # don't return min and complete for M = 1
+      } else
+      {
+          power.vec <- c(power.ind)
+      }
+      
+      power.vec <- sapply(power.vec, as.numeric)
+      
+      # combine all power for all definitions
+      all.power.results <- data.frame(matrix(power.vec, nrow = 1))
+      colnames(all.power.results) <- names(power.vec)
   }
 
   return(all.power.results)
@@ -165,6 +169,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
@@ -188,6 +193,7 @@ pump_power <- function(
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 1000,
+  drop.zero.outcomes = TRUE,
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -348,13 +354,15 @@ pump_power <- function(
 
   power.results.raw <- get_power_results(
     adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
-    ind.nonzero, alpha, adj = FALSE
+    ind.nonzero = ind.nonzero, alpha = alpha,
+    drop.zero.outcomes = drop.zero.outcomes, adj = FALSE
   )
 
   if ( MTP != 'None' ) {
     power.results.proc <- get_power_results(
       adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
-      ind.nonzero, alpha, adj = TRUE
+      ind.nonzero = ind.nonzero, alpha = alpha,
+      drop.zero.outcomes = drop.zero.outcomes, adj = TRUE
     )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)

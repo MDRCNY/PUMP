@@ -435,8 +435,9 @@ test_that("M > 1 with MTP None runs successfully", {
     expect_true( nrow( pp ) == 2)
 })
 
-test_that("zero MDES values in middle of vector", {
+test_that("zero MDES values", {
     
+    # zero in middle of vector
     pp <- pump_power(   design = "d2.1_m2fc",
                                        MTP = "Holm",
                                        MDES = c(0.1, 0, 0.1),
@@ -456,6 +457,41 @@ test_that("zero MDES values in middle of vector", {
         c('MTP', 'D1indiv', 'D3indiv', 'indiv.mean', 'min1', 'min2', 'complete'))
     )
     
+    # all zero, don't drop zero outcomes
+    pp <- pump_power(   design = "d2.1_m2fc",
+                        MTP = "Holm",
+                        MDES = 0,
+                        M = 3,
+                        J = 3, # number of schools/block
+                        nbar = 258,
+                        Tbar = 0.50, # prop Tx
+                        alpha = 0.05, # significance level
+                        numCovar.1 = 5,
+                        R2.1 = 0.1,
+                        ICC.2 = 0.05,
+                        rho = 0.4, tnum = 200,
+                        drop.zero.outcomes = FALSE
+    )
+    expect_true(nrow(pp) == 2)
+    
+    
+    # all zero, do drop zero outcomes
+    pp <- pump_power(   design = "d2.1_m2fc",
+                        MTP = "Holm",
+                        MDES = 0,
+                        M = 3,
+                        J = 3, # number of schools/block
+                        nbar = 258,
+                        Tbar = 0.50, # prop Tx
+                        alpha = 0.05, # significance level
+                        numCovar.1 = 5,
+                        R2.1 = 0.1,
+                        ICC.2 = 0.05,
+                        rho = 0.4, tnum = 200,
+                        drop.zero.outcomes = TRUE
+    )
+    
+    expect_true(is.na(pp$D1indiv[1]) && is.na(pp$D1indiv[2]))
 })
 
 
