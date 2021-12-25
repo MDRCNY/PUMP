@@ -635,6 +635,22 @@ validate_inputs <- function( design, params.list,
                                              verbose = verbose )
     }
 
+    #---------------------------------------------------------------#
+    # enforce scalar parameters
+    #---------------------------------------------------------------#
+    if(!is.null(params.list$numCovar.1) && length(params.list$numCovar.1) != 1)
+    {
+        stop("numCovar.1: Please provide a scalar.")
+    }
+    if(!is.null(params.list$numCovar.2) && length(params.list$numCovar.2) != 1)
+    {
+        stop("numCovar.2: Please provide a scalar.")
+    }
+    if(!is.null(params.list$numCovar.3) && length(params.list$numCovar.3) != 1)
+    {
+        stop("numCovar.3: Please provide a scalar.")
+    }
+    
 
     #---------------------------------------------------------------#
     # convert all params from scalar to vector, if they are non-null
