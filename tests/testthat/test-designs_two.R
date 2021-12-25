@@ -6,7 +6,7 @@
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-source( "testing_code.R" )
+source( here::here( "tests/testthat/testing_code.R" ) )
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # -----------------------------------------------#
 # test pump sample raw
@@ -72,7 +72,7 @@ test_that("testing of d2.2_m2rc raw", {
                         Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
                         numCovar.1 = 5, numCovar.2 = 1,
                         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                        max.tnum = 1000,
+                        tnum = 1000,
                         rho = 0.2)
 
   calcJ
@@ -183,7 +183,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
   nbar1
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
 
-  mdes1 <-  expect_warning(pump_mdes(
+  set.seed( 44304044 )
+  mdes1 <- pump_mdes(
     design = "d2.1_m2fc",
     MTP = 'Holm',
     power.definition = 'D1indiv',
@@ -192,12 +193,13 @@ test_that("testing of d2.1_m2fc one-tailed", {
     nbar = 50,
     M = 3,
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-    rho = 0.2))
-  expect_equal(mdes1$Adjusted.MDES, 0.125, tolerance = 0.1)
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05,
+    rho = 0.2)
+  expect_equal(0.125, mdes1$Adjusted.MDES, tolerance = 0.1)
 
 })
+
 
 test_that("testing of d2.1_m2fc two-tailed", {
 
@@ -234,7 +236,7 @@ test_that("testing of d2.1_m2fc two-tailed", {
     numCovar.1 = 1,
     R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
   J1
-  expect_equal(J1$`Sample.size`, 60, tolerance = 0.1)
+  expect_equal(60, J1$`Sample.size`, tolerance = 0.1)
 
   # converges
   set.seed(8598)
@@ -254,7 +256,7 @@ test_that("testing of d2.1_m2fc two-tailed", {
   nbar1
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
 
-  mdes1 <-  pump_mdes(
+  mdes1 <- pump_mdes(
     design = "d2.1_m2fc",
     MTP = 'Holm',
     power.definition = 'D1indiv',
@@ -266,9 +268,12 @@ test_that("testing of d2.1_m2fc two-tailed", {
     numCovar.1 = 1,
     R2.1 = 0.1, ICC.2 = 0.05,
     rho = 0.2)
-  expect_equal(mdes1$Adjusted.MDES, 0.125, tolerance = 0.1)
+  expect_equal(0.125, mdes1$Adjusted.MDES, tolerance = 0.1)
 
 })
+
+
+
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # -------------  d2.1_m2ff -------------
@@ -442,6 +447,7 @@ test_that("testing of d2.2_m2rc", {
     pp_power
   }
 
+  set.seed( 4133333 )
   pp_power <- 0.67724
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 20, NULL, 2244323,
@@ -478,7 +484,8 @@ test_that("testing of d2.2_m2rc", {
   
   expect_true(is.na(ss1$Sample.size))
   
-  expect_warning(ss2 <- pump_sample(
+  expect_warning(
+    ss2 <- pump_sample(
       design = "d2.2_m2rc",
       MTP = 'Holm',
       typesample = 'nbar',
@@ -491,7 +498,8 @@ test_that("testing of d2.2_m2rc", {
       Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
       numCovar.1 = 1, numCovar.2 = 1,
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
-  ))
+  )
+  )
  
   expect_true(is.na(ss2$Sample.size))
   

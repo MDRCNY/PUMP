@@ -157,6 +157,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                     MTP = MTP, ..., use_furrr = use_furrr )
 
   args$MTP = MTP
+  args = c( args, list(...) )
   grid <- make.pumpgridresult(
     grid, "power",
     params.list = args[names(args) != 'design'],
@@ -213,6 +214,8 @@ pump_mdes_grid <- function( design, MTP, M,
                     verbose = verbose,
                     drop_unique_columns = drop_unique_columns,
                     tol = tol, ..., use_furrr = use_furrr )
+  
+  args = c( args, list(...) )
   
   grid <- make.pumpgridresult(
       grid, "mdes",
@@ -273,6 +276,8 @@ pump_sample_grid <- function( design, MTP, M,
                    drop_unique_columns = drop_unique_columns,
                    tol = tol, ..., use_furrr = use_furrr )
 
+  args = c( args, list(...) )
+  
   grid <- make.pumpgridresult(
       grid, "sample",
       params.list = args[names(args) != 'design'],

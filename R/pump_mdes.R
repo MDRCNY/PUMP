@@ -15,8 +15,8 @@
 #'   `final.tnum` iterations) is within `tol`, the search stops.
 #'
 #' @param max.steps how many steps allowed before terminating
-#' @param start.tnum number of samples for first iteration of search algorithm
-#' @param max.tnum maximum cumulative number of samples
+#' @param tnum Max number of samples for first iteration of search algorithm
+#' @param start.tnum number of samples to start search (this will increase with each step).
 #' @param final.tnum number of samples for final draw
 #' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
@@ -38,7 +38,8 @@ pump_mdes <- function(
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
   B = 1000,
-  max.steps = 20, max.tnum = 2000, start.tnum = 200, final.tnum = 4*max.tnum,
+  max.steps = 20, 
+  tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
   cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
@@ -64,7 +65,7 @@ pump_mdes <- function(
   #                     omega.2 = omega.2, omega.3 = omega.3,
   #                     rho = rho, rho.matrix = rho.matrix,
   #                     B = B,
-  #                     max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
+  #                     max.steps = max.steps, tnum = tnum, tnum = tnum, final.tnum = final.tnum,
   #                     cl = cl, updateProgress = updateProgress, give.optimizer.warnings = give.optimizer.warnings,
   #                     verbose = verbose )
   #
@@ -89,7 +90,7 @@ pump_mdes <- function(
 
   if ( verbose ) {
     scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations (%d perms for WY if used)\n",
-          max.tnum, start.tnum, final.tnum, B )
+          start.tnum, tnum, final.tnum, B )
   }
 
   if ( missing( "target.power" ) ||  missing( "power.definition" )  ) {
@@ -112,7 +113,8 @@ pump_mdes <- function(
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
     rho = rho, rho.matrix = rho.matrix, B = B,
-    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
+    max.steps = max.steps, 
+    start.tnum = start.tnum, tnum = tnum, final.tnum = final.tnum,
     power.definition = power.definition
   )
   ##
@@ -275,7 +277,6 @@ pump_mdes <- function(
 
   test.pts <- optimize_power(design, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
-                             start.tnum,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
                              M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, 
@@ -287,8 +288,9 @@ pump_mdes <- function(
                              ICC.2 = ICC.2, ICC.3 = ICC.3,
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                              B = B, cl = cl,
-                             max.steps = max.steps, max.tnum = max.tnum,
-                             final.tnum = final.tnum, give.warnings = give.optimizer.warnings)
+                             max.steps = max.steps, 
+                             tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum, 
+                             give.warnings = give.optimizer.warnings)
 
 
   mdes.results <- data.frame(

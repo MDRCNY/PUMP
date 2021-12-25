@@ -1,20 +1,30 @@
+
+
+
 #' Examine search path of the power search.
 #'
-#' This will give a plot of power vs. mdes or sample size.
-#' It can be useful to see how quickly power changes as a function of these design parameters.
-#' Can also be useful to gauge where convergence went poorly.
+#' This will give a plot of power vs. mdes or sample size. It can be useful to
+#' see how quickly power changes as a function of these design parameters. Can
+#' also be useful to gauge where convergence went poorly.
 #'
-#' @param pwr Result from the pump_sample or pump_mdes
-#' @param plot.points flag; whether to plot individual points on curve
+#' @param pwr Result from the pump_sample or pump_mdes (or data frame from,
+#'   e.g., power_curve()).
+#' @param plot.points flag; whether to plot individually tested points on curve
+#' @param fit A four parameter bounded logstic curve (if NULL will fit one to passed
+#'   points).
+#'
+#' @inheritParams power_curve
 #'
 #' @export
-plot_power_curve <- function( pwr, plot.points = TRUE ) {
-  if(is.na(pwr$Sample.size))
-  {
-    stop('plot_power_curve() does not work if optimizer has not converged. Try plot_power_search() for additional information.')
-  }
+plot_power_curve <- function( pwr, plot.points = TRUE,
+                              all = FALSE,
+                              low = NULL, high = NULL, grid.size = 5, tnum = 2000,
+                              fit = NULL ) {
+  
+
   if ( is.pumpresult( pwr ) ) {
-    test.pts <- power_curve(pwr, all = TRUE )
+    test.pts <- power_curve(pwr, low=low, high=high, grid.size = grid.size,
+                            tnum = params(pwr)$tnum, all = all )
     x_label <- pump_type(pwr)
   } else {
     stopifnot( is.data.frame(pwr) )
@@ -23,12 +33,25 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
   }
 
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
-  fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
-
+  
+  if ( is.null(fit) ) {
+    fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
+  }
+  
   xrng = range( test.pts$pt )
   #lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
   limsX <- grDevices::extendrange( r = xrng, 0.15 )
-
+  
+  # sample size or MDES?  If dataframe passed, we don't know what we are
+  # plotting so we turn to the scale of X to determine the lower bound.
+  if ( limsX[1] <= 0 ) {
+    if ( xrng[[2]] > 10 ) {
+      limsX[1] = 1
+    } else {
+      limsX[1] = 0.0001
+    }
+  }
+  
   plot1 <-  ggplot2::ggplot( test.pts ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[[1]], col = "purple" ) +
     ggplot2::theme_minimal() +
@@ -38,16 +61,20 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
     ggplot2::labs( x = x_label, y = "power" )
 
   delrange = diff( xrng )
-  if ( delrange >= 2 && delrange <= 10 ) {
+  if ( delrange < 2 ) {
+    # Use normal scale.
+  } else if ( delrange >= 2 && delrange <= 10 ) {
+    # Tick marks for each sample size.
     xpt = seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
-    plot1 = plot1 +  ggplot2::scale_x_log10( breaks = xpt )
+    plot1 = plot1 +  ggplot2::scale_x_continuous( breaks = xpt )
   } else {
     plot1 = plot1 +  ggplot2::scale_x_log10()
   }
 
 
   if ( plot.points ) {
-    plot1 <- plot1 + ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 )
+    plot1 <- plot1 + ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), 
+                                          alpha = 0.5 )
   }
 
   return( plot1 )
@@ -64,10 +91,12 @@ plot_power_curve <- function( pwr, plot.points = TRUE ) {
 #' estimate.  Can be useful to gauge where convergence went poorly.
 #'
 #' @param pwr Result from a pump_sample or pump_mdes call.
+#' @param fit A fitted curve to the search.
+#' 
 #' @return a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 #'
 #' @export
-plot_power_search <- function( pwr ) {
+plot_power_search <- function( pwr, fit = NULL, target_line = NULL) {
   if ( is.pumpresult(pwr) ) {
     test.pts <- search_path(pwr)
   } else if ( is.data.frame(pwr) ) {
@@ -82,19 +111,27 @@ plot_power_search <- function( pwr ) {
   }
 
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
-  fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
-
+  
+  if ( is.null( fit ) ) {
+    fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
+  }
+  
   lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm=TRUE ), 0.15 )
+  
   plot1 <-  ggplot2::ggplot( test.pts ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
     ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 ) +
     ggplot2::theme_minimal() +
     ggplot2::geom_text( ggplot2::aes( .data$pt, .data$power, label = .data$step ), vjust = "bottom", nudge_y = 0.01, size=3 ) +
-    ggplot2::stat_function( col = "red", fun = function(x) { bounded_logistic_curve( x, params =fit ) } ) +
+    ggplot2::stat_function( col = "red", fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
     ggplot2::guides(colour = "none", size="none") +
     ggplot2::coord_cartesian(ylim = lims ) +
     ggplot2::scale_x_log10()
 
+  if ( !is.null( target_line ) ) {
+    plot1 <- plot1 + ggplot2::geom_vline( xintercept = target_line, col = "purple" )
+  }
+  
 
   plot2 <-  ggplot2::ggplot( test.pts, ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
@@ -110,6 +147,11 @@ plot_power_search <- function( pwr ) {
     ggplot2::theme_minimal() +
     ggplot2::guides(colour="none", size="none")+
     ggplot2::scale_y_log10()
+  
+  if ( !is.null( target_line ) ) {
+    plot3 <- plot3 + ggplot2::geom_hline( yintercept = target_line, col = "purple" )
+  }
+    
 
   gridExtra::grid.arrange(plot1, plot2, plot3, ncol=3) #+
   #title( "Search path for optimize_power" )

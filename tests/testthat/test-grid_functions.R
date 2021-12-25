@@ -151,7 +151,7 @@ test_that("pump_mdes_grid works", {
                            R2.1 = 0.1, R2.2 = 0.7,
                            ICC.2 = 0.05, ICC.3 = 0.9,
                            rho = 0.4, # how correlated outcomes are
-                           verbose = FALSE, max.tnum = 1000,
+                           verbose = FALSE, tnum = 1000,
   )
   pp
   expect_equal( nrow(pp), 2 * 2)
@@ -177,7 +177,7 @@ test_that("pump_sample_grid works", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.25, ICC.3 = 0.25,
                              rho = 0.4, # how correlated outcomes are
-                             verbose = FALSE, max.tnum = 400
+                             verbose = FALSE, tnum = 400
 
   )
   pp
@@ -203,7 +203,7 @@ test_that( "grid allows multiple MTP and power definitions", {
                            R2.1 = 0.1, R2.2 = 0.7,
                            ICC.2 = 0.05, ICC.3 = 0.9,
                            rho = 0.4, # how correlated outcomes are
-                           verbose = FALSE, max.tnum = 500,
+                           verbose = FALSE, tnum = 500,
   )
   pp
   expect_equal( nrow( pp ), 4 )
@@ -226,7 +226,7 @@ test_that( "grid allows multiple MTP and power definitions", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.05, ICC.3 = 0.9,
                              rho = 0.4, # how correlated outcomes are
-                             verbose = FALSE, max.tnum = 500,
+                             verbose = FALSE, tnum = 500,
   )
   pp
   expect_true( nrow( pp ) == 4 )
@@ -297,7 +297,7 @@ test_that( "grid breaks with invalid inputs", {
     power.definition = "indiv.mean",
     alpha = 0.5,
     Tbar = 0.8,
-    numCovar.1 = 2, start.tnum = 100,
+    numCovar.1 = 2, tnum = 100,
     rho = 0.2, tol = 0.5))
   
 })

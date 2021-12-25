@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimize_power.R
 \name{find_best}
 \alias{find_best}
-\title{Extract roots from quadratic curve based on given evaluated points}
+\title{Determine next point to check for correct power level.}
 \usage{
 find_best(test.pts, target.power, gamma = 1.5)
 }
@@ -21,5 +21,5 @@ List of estimate of when curve reaches target.power, derivative of
   curve at that point, and parameters of the fit curve.
 }
 \description{
-Extract roots from quadratic curve based on given evaluated points
+Extract roots from power curve fit to given evaluated points
 }

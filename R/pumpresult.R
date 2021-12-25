@@ -92,68 +92,77 @@ update_grid = function( x, ... ) {
 #' @param object Pump result object.
 #' @param ... Parameters as specified in `pump_power`, `pump_mdes`, and
 #'   `pump_sample` that should be overwritten.
+#' @param type Can be "power", "mdes" or "sample", sets the type of the updated
+#'   call (can be different from original).
 #'
 #' @return Results of a new call using parameters of old object with newly
 #'   specified parameters replaced.
 #'
 #' @export
-update.pumpresult = function( object, ... ) {
+update.pumpresult = function( object, type = NULL, ... ) {
   params = params(object)
+  orig_result_type = attr(object, "type" )
+  params["type"] = orig_result_type
   params["design"] = design(object)
-  result_type = attr(object, "type" )
-  params["type"] = result_type
   
+  # Get new parameters
   dts = list(...)
-  for ( d in names(dts) ) {
-    params[[d]] = dts[[d]]
-  }
   
-  # Are we changing what kind of calculation we want to perform?  If so,
-  # adjust some parameters as needed.
-  # result_type - the old type
-  # params$type - the new type
-  if ( params$type != result_type ) {
+  # Are we changing what kind of calculation we want to perform?  If so, adjust
+  # some parameters as needed.
+  
+  # orig_result_type - the old type
+  # type - the new type
+  if ( !is.null(type) && type != orig_result_type ) {
     
-    # Copy over sample size from the pump_sampel call
-    if ( result_type == "sample" ) {
+    # Copy over sample size from the pump_sample call
+    if ( orig_result_type == "sample" ) {
       ss = object$`Sample.size`
       slvl = attr(object, "sample.level" )
       params[[slvl]] = ss
     }
     
-    if ((params$type == "mdes" || params$type == "sample") && result_type == "power" ) {
-      params["max.tnum"] = params["tnum"]
-      params["tnum"] = NULL
-    }
-    
-    if ( params$type == "power" && (result_type == "mdes" || result_type == "sample") ) {
+    if ( type == "power" ) {
+      params["target.power"] = NULL
+      params["power.definition"] = NULL
+      params["tol"] = NULL
       params["start.tnum"] = NULL
-      params["tnum"] = params["max.tnum"]
-      params["max.tnum"] = NULL
       params["final.tnum"] = NULL
       params["max.steps"] = NULL
     }
     
-    result_type = params$type
+    if ( type == "sample" ) {
+      if ( !is.null( dts$typesample) ) {
+        params[dts$typesample] = NULL
+      } else {
+        stop( "Need to specify typesample for update to sample call" )
+      }
+    }
+    
+    if ( type == "mdes" ) {
+      params["MDES"] = NULL
+    }
+    
+  } else {
+    if ( orig_result_type == "sample" ) {
+        params["typesample"] = attr( object, "sample.level" )
+    }
+    type = orig_result_type
+  }
+  
+  for ( d in names(dts) ) {
+    params[[d]] = dts[[d]]
   }
   params$type = NULL
   
-  if ( result_type == "power" ) {
-    params["target.power"] = NULL
-    params["power.definition"] = NULL
-    params["tol"] = NULL
+  if ( type == "power" ) {
     do.call(pump_power, params)
-  } else if ( result_type == "mdes" ) {
-    params["MDES"] = NULL
+  } else if ( type == "mdes" ) {
     do.call( pump_mdes, params )
-  } else if ( result_type == "sample" ) {
-    if ( is.null( params[["typesample"]] ) ) {
-      params["typesample"] = attr( object, "sample.level" )
-    }
-    params[params$typesample] = NULL
+  } else if ( type == "sample" ) {
     do.call( pump_sample, params )
   } else {
-    stop( sprintf( "Unrecognized type, %s, in update()", result_type ) )
+    stop( sprintf( "Unrecognized type, %s, in update()", type ) )
   }
 }
 
@@ -258,7 +267,10 @@ power_curve <- function( x, all = FALSE,
   stopifnot( is.pumpresult( x ) )
   fin_pts <- attr( x, "final.pts" )
   if ( is.null( fin_pts ) ) {
-    fin_pts = estimate_power_curve( x )
+    fin_pts = estimate_power_curve( x, 
+                                    low = low, high = high, 
+                                    grid.size=grid.size,
+                                    tnum = tnum )
   }
   srch = search_path( x )
   if ( all && !is.null( srch ) ) {
@@ -431,6 +443,11 @@ summary.pumpresult = function( object, ... ) {
 }
 
 
+calc_binomial_SE = function( prop, tnum ) {
+  pp = (tnum * prop + 2) / (tnum + 4)
+  pp * (1-pp) / sqrt(tnum + 4)
+}
+
 
 #' Pretty print pump result
 #'
@@ -459,10 +476,39 @@ print.pumpresult = function( x, n = 10,
     }
   }
   
-  print( as.data.frame( x ), row.names=FALSE )
+  tnum =  params(x)$tnum
+  
+  if ( is.pumpresult(x) ) {
+    
+    if ( pump_type(x) == "power" ) {
+      SEh = 0.5 + min( abs( 0.5 - x[,-1] ), na.rm=TRUE )
+      SEh = calc_binomial_SE( SEh, tnum )
+      SEl = 0.5 + max( abs( 0.5 - x[,-1] ), na.rm=TRUE )
+      SEl = calc_binomial_SE( SEl, tnum )
+      print( as.data.frame( x ), row.names=FALSE )
+      
+      scat("\t%.3f <= SE <= %.3f\n", SEl, SEh )
+    } else if ( pump_type(x) == "sample" ) {
+      SE = pmax( x[1,4], 1 - x[1,4] ) + 2/tnum
+      SE = calc_binomial_SE( SE, tnum ) 
+      x$SE = round( SE, digits = 2 )
+      print( as.data.frame( x ), row.names=FALSE )
+      
+    } else {
+      SE = pmax( x[1,2], 1 - x[1,2] ) + 2/tnum
+      SE = calc_binomial_SE( SE, tnum )
+      x$SE = SE
+      print( as.data.frame( x ), row.names=FALSE )
+    }
+  } else {
+    nc = ncol(x)
+    pvs =  x[,nc][[1]]
+    x$SE = calc_binomial_SE( pvs, tnum )
+    print( as.data.frame(x) )
+  }
   
   if ( search ) {
-    print_search( x )
+    print_search( x, n = n )
   } else {
     tr = attr( x, "tries" )
     if ( !is.null( tr ) ) {
@@ -470,9 +516,20 @@ print.pumpresult = function( x, n = 10,
     }
   }
   
+  if ( !is.pumpgridresult(x) && pump_type(x) != "power" && attr(x, "flat" ) ) {
+    scat( "   Note: Optimization was relatively flat\n" )
+  }
   invisible( x )
 }
 
+#' Get search path
+#' 
+#' @return Dataframe of search path, in sequential order.
+#' @export
+search_path = function( x ) {
+  tr = attr( x, "tries" )
+  return( tr )
+}
 
 #' Print the search history of a pump result object
 #'
@@ -482,7 +539,8 @@ print.pumpresult = function( x, n = 10,
 #' @return Number of steps in search.
 #' @export
 print_search <- function( x, n = 10 ) {
-  tr = attr( x, "tries" )
+  tr = search_path( x )
+  
   if ( !is.null( tr )  ) {
     cat( "\nSearch history\n")
     nr = nrow( tr )
@@ -594,6 +652,7 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
   scat( "  alpha: %s\t\n", params$alpha)
   scat( "  Level:\n    1: R2: %s (%s covariate)\n",
         params$R2.1, params$numCovar.1 )
+  
   if ( des$levels >= 2 ) {
     scat( "    2: ")
     if ( des$FE.2 ) {
@@ -624,7 +683,7 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
   }
   
   if ( insert_control ) {
-    ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "max.tnum", "final.tnum", "tol") ]
+    ex_params = params[ c("B", "max.steps", "tnum", "start.tnum", "final.tnum", "tol") ]
     if ( params$MTP != "WY-SS" && params$MTP != "WY-SD" ) {
       ex_params$B = NULL
     }

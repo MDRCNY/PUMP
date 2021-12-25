@@ -22,7 +22,7 @@ params(x, ...)
 
 design(x, ...)
 
-search_path(x, ...)
+search_path(x)
 
 pump_type(x)
 

@@ -100,7 +100,7 @@ test_that("Grid plot works for MDES", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.3,
                              ICC.3 = seq( 0, 0.45, 0.15 ),
-                             rho = 0.4, start.tnum = 100, tol = 0.45 )
+                             rho = 0.4, tnum = 100, tol = 0.45 )
     
     grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
   # grid.plot    
@@ -128,7 +128,7 @@ test_that("Grid plot works for SS", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = 0.3,
                              ICC.3 = seq( 0, 0.45, 0.15 ),
-                             rho = 0.4, start.tnum = 100, tol = 0.45 )
+                             rho = 0.4, tnum = 100, tol = 0.45 )
     # grid
     grid.plot <- plot(grid, power.definition = 'complete', var.vary = 'ICC.3')
     # grid.plot
@@ -160,7 +160,7 @@ test_that("Two variable plot works for SS", {
                              R2.1 = 0.1, R2.2 = 0.7,
                              ICC.2 = c( 0, 0.3 ),
                              ICC.3 = c( 0, 0.3, 0.6 ),
-                             rho = 0.4, start.tnum = 100, tol = 0.45 ) )
+                             rho = 0.4, tnum = 100, tol = 0.45 ) )
   # grid
   grid.plot <- plot(grid, power.definition = 'complete', var.vary = 'ICC.3')
   # grid.plot
@@ -171,3 +171,41 @@ test_that("Two variable plot works for SS", {
 
 
 
+
+
+test_that( "power curve works", {
+  
+  set.seed( 101010 )
+  up <- pump_sample(    design = "d2.1_m2fc",
+                        MTP = "Holm",
+                        typesample = "J",
+                        nbar = 10,
+                        power.definition = "min1",
+                        M = 5,
+                        MDES = 0.05, target.power = 0.8,
+                        tol = 0.05,
+                        Tbar = 0.50, alpha = 0.05,
+                        numCovar.1 = 5,
+                        R2.1 = 0.1,
+                        ICC.2 = 0.05,
+                        rho = 0,
+                        final.tnum = 100 )
+  
+  up
+  
+  pc = power_curve( up, low = 5, high = 1000, tnum = 200, grid.size=20, all=TRUE )
+  expect_true( is.data.frame(pc) )
+  expect_true( nrow(pc) > 20 )
+  
+  pt <- plot_power_curve(pc)
+  # pt
+  expect_true( !is.null( pt ) )
+  
+  
+  pc = power_curve( up, low = 250, high = 1000, tnum = 100, grid.size=20, all=FALSE )
+  expect_true( is.data.frame(pc) )
+  expect_true( nrow(pc) == 20 )
+  expect_true( all( pc$w == 100 ) )
+
+  #plot_power_curve(pc)
+})

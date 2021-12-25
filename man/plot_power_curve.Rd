@@ -4,15 +4,35 @@
 \alias{plot_power_curve}
 \title{Examine search path of the power search.}
 \usage{
-plot_power_curve(pwr, plot.points = TRUE)
+plot_power_curve(
+  pwr,
+  plot.points = TRUE,
+  all = FALSE,
+  low = NULL,
+  high = NULL,
+  grid.size = 5,
+  tnum = 2000,
+  fit = NULL
+)
 }
 \arguments{
-\item{pwr}{Result from the pump_sample or pump_mdes}
+\item{pwr}{Result from the pump_sample or pump_mdes (or data frame from,
+e.g., power_curve()).}
 
-\item{plot.points}{flag; whether to plot individual points on curve}
+\item{plot.points}{flag; whether to plot individually tested points on curve}
+
+\item{all}{If TRUE, merge in the search path from the original search.}
+
+\item{low}{Low range for the plot x-axis.}
+
+\item{high}{High range for the plot.}
+
+\item{grid.size}{Number of points to calculate power.}
+
+\item{tnum}{Number of iterations to calculate power at each grid point.}
 }
 \description{
-This will give a plot of power vs. mdes or sample size.
-It can be useful to see how quickly power changes as a function of these design parameters.
-Can also be useful to gauge where convergence went poorly.
+This will give a plot of power vs. mdes or sample size. It can be useful to
+see how quickly power changes as a function of these design parameters. Can
+also be useful to gauge where convergence went poorly.
 }

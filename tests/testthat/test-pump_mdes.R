@@ -12,7 +12,7 @@ test_that("pump_mdes runs for Bonferroni", {
                        target.power = 0.80, tol = 0.01,
                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                        R2.1 = 0.1,ICC.2 = 0.05,
-                       max.tnum = 300,
+                       tnum = 300,
                        rho = 0.4 )
   pmdesB
   expect_true( pmdesB$`Adjusted.MDES` > 0 )
@@ -26,7 +26,7 @@ test_that("pump_mdes runs for Bonferroni", {
                        target.power = 0.80, tol = 0.01,
                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                        R2.1 = 0.1,ICC.2 = 0.05,
-                       max.tnum = 300,
+                       tnum = 300,
                        rho = 0.4 ) )
   expect_true( pmdesR$`Adjusted.MDES` > 0 )
   expect_true( abs(pmdesR$`D2indiv power` - 0.80) <  0.01 )
@@ -42,7 +42,7 @@ test_that("pump_mdes runs for Bonferroni", {
                       target.power = 0.80, tol = 0.01,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      max.tnum = 1000,
+                      tnum = 1000,
                       rho = 0.4 )
   pmdesBmin
   expect_true( pmdesBmin$`Adjusted.MDES` < pmdesR$`Adjusted.MDES` )
@@ -54,15 +54,19 @@ test_that("pump_mdes runs for Bonferroni", {
                            nbar = 200, J = 50,
                            power.definition = "complete",
                            M = 3,
-                           target.power = 0.80, tol = 0.01,
+                           target.power = 0.80, tol = 0.02,
                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                            R2.1 = 0.1, ICC.2 = 0.05,
-                           max.tnum = 300,
+                           tnum = 300,
                            rho = 0.4 )
   pmdes_comp
   expect_true( pmdes_comp$`Adjusted.MDES` > pmdesB$`Adjusted.MDES` )
-  expect_true( abs( pmdes_comp$`complete power` - 0.80) <  0.01 )
+  expect_true( abs( pmdes_comp$`complete power` - 0.80) <  0.02 )
 
+  sp <- search_path( pmdes_comp )
+  expect_true( is.data.frame(sp) )
+  expect_true( max( sp$w ) == 300*4 )
+  
   ppBcomp <- pump_power(
                    design = "d2.1_m2fc",
                    MTP = "Bonferroni",
@@ -103,7 +107,7 @@ test_that("pump_mdes runs for D1indiv, Holm", {
                       target.power = 0.80, tol = 0.01,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      max.tnum = 300,
+                      tnum = 1000,
                       rho = 0.4 )
 
   pmdes
@@ -130,7 +134,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
   pmdes <- pump_mdes(design = "d1.1_m1c", MTP = "Holm",
                      target.power = 0.80, power.definition = "min1", tol = 0.02,
                      R2.1 = R2.1, numCovar.1 = 1, J = 1,
-                     max.tnum = 1000,
+                     tnum = 1000,
                      M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5)
   pmdes
 
@@ -152,10 +156,10 @@ test_that("No adjustment", {
                         nbar = 200, J = 50,
                         power.definition = "D1indiv",
                         M = 3,
-                        target.power = 0.80, tol = 0.01,
+                        target.power = 0.80, tol = 0.02,
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                         R2.1 = 0.1, ICC.2 = 0.05,
-                        max.tnum = 300,
+                        tnum = 300,
                         rho = 0.4 ) )
 
     expect_error(expect_warning(pmdes <- pump_mdes( design = "d2.1_m2fc",
@@ -166,7 +170,7 @@ test_that("No adjustment", {
                         target.power = 0.80, tol = 0.01,
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                         R2.1 = 0.1,ICC.2 = 0.05,
-                        max.tnum = 300,
+                        tnum = 300,
                         rho = 0.4 )))
 
 
@@ -175,10 +179,10 @@ test_that("No adjustment", {
                         nbar = 200, J = 50,
                         power.definition = "D1indiv",
                         M = 3,
-                        target.power = 0.80, tol = 0.01,
+                        target.power = 0.80, tol = 0.02,
                         Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                         R2.1 = 0.1, ICC.2 = 0.05,
-                        max.tnum = 300,
+                        tnum = 500,
                         rho = 0.4 )
 })
 
@@ -189,10 +193,10 @@ test_that("power definitions", {
                       nbar = 200, J = 50,
                       power.definition = "indiv.mean",
                       M = 3,
-                      target.power = 0.80, tol = 0.01,
+                      target.power = 0.80, tol = 0.02,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      max.tnum = 300,
+                      tnum = 300,
                       rho = 0.4 )
   expect_true(!is.null(pmdes))
 })
@@ -209,7 +213,7 @@ test_that( "errors out when providing MDES", {
     target.power = 0.80, tol = 0.01,
     Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
     R2.1 = 0.1, ICC.2 = 0.05,
-    max.tnum = 300,
+    tnum = 300,
     rho = 0.4 ))
   
 

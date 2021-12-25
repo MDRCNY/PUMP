@@ -11,7 +11,6 @@ optimize_power(
   target.power,
   power.definition,
   tol,
-  start.tnum,
   start.low,
   start.high,
   MDES = NULL,
@@ -37,8 +36,9 @@ optimize_power(
   B = NULL,
   cl = NULL,
   max.steps = 20,
-  max.tnum = 2000,
-  final.tnum = 4 * max.tnum,
+  tnum = 1000,
+  start.tnum = tnum/10,
+  final.tnum = 4 * tnum,
   give.warnings = FALSE,
   grid.only = FALSE,
   grid.size = 5
@@ -61,8 +61,6 @@ function, i.e. D1indiv, min1, etc.}
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
 controls when the search is done: when estimated power (checked with
 `final.tnum` iterations) is within `tol`, the search stops.}
-
-\item{start.tnum}{number of samples for first iteration of search algorithm}
 
 \item{start.low}{lower bound for optimization procedure}
 
@@ -127,7 +125,9 @@ variation).}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.tnum}{maximum cumulative number of samples}
+\item{tnum}{scalar; the number of test statistics (samples)}
+
+\item{start.tnum}{number of samples to start search (this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw}
 

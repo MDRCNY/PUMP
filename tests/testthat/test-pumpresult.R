@@ -65,3 +65,32 @@ test_that( "pumpresult dimensions work", {
 
 
 
+
+
+test_that( "pumpresult for sample and mdes work", {
+    
+    set.seed( 10101033 )
+    ss <- pump_sample(   design = "d2.1_m2fc",
+                         MTP = "BH",
+                         nbar = 200,
+                         typesample = "J",
+                         power.definition = "min1",
+                         target.power = 0.80,
+                         M = 5,
+                         MDES = 0.05,
+                         Tbar = 0.50, alpha = 0.05,
+                         numCovar.1 = 5,
+                         R2.1 = 0.1,
+                         ICC.2 = 0.05,
+                         rho = 0, start.tnum = 100, tnum = 100,
+                         tol = 0.03 )
+    
+    
+    dim(ss)
+    
+    expect_equal( dim(ss), c(1,4) )
+    
+    
+})
+
+

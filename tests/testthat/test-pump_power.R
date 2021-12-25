@@ -29,6 +29,41 @@ test_that("pump_power works without crashing", {
 })
 
 
+test_that( "pump_power handles small MDES right", {
+  
+  set.seed(58554343)
+  
+  aa <- pump_power(
+    design = "d2.1_m2fc",
+    MTP = 'Holm',
+    MDES = 0.000001,
+    J = 60,
+    nbar = 50,
+    M = 3,
+    Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05,
+    rho = 0.2)
+  aa
+  
+  expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
+  
+  aa <- pump_power(
+    design = "d2.1_m2fc",
+    MTP = 'Holm',
+    MDES = 0.000001,
+    J = 60,
+    nbar = 50,
+    M = 3,
+    Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+    numCovar.1 = 1,
+    R2.1 = 0.1, ICC.2 = 0.05,
+    rho = 0.2)
+  aa
+  expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
+  
+})
+
 
 
 test_that("pump_power long.table", {

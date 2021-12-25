@@ -15,13 +15,12 @@ test_that( "update generally works", {
                           Tbar = 0.50, alpha = 0.05,
                           numCovar.1 = 5,
                           R2.1 = 0.1,
-                          ICC.2 = 0.05,
+                          ICC.2 = 0.15,
                           rho = 0,
                           final.tnum = 1000 )
 
-    up = update(ss, nbar = 10)
-    ss$`Sample.size`
-    up$`Sample.size`
+    up = update(ss, nbar = 10, tnum = 5000 )
+    
     expect_true( up$`Sample.type` == ss$`Sample.type` )
 
     pm = params( up )
@@ -30,19 +29,19 @@ test_that( "update generally works", {
     expect_true( all( pm$MDES == upm$MDES ) )
     expect_true( ss$`Sample.size` < up$`Sample.size`)
 
-    up$`Sample.size`
-    topow = update( up, type = "power", J = 40 )
+    topow = update( up, type = "power", J = 20 )
     expect_true( topow$min1[[2]] < up$`min1 power` )
 
 
+    set.seed( 4440404 )
     tomdes = update( topow, type="mdes",
                      target.power = 0.95,
-                     power.definition = "min2" )
+                     power.definition = "min2", tol=0.02, tnum=500 )
     expect_true( tomdes$`Adjusted.MDES` > params( topow )$MDES[[1]] )
 
     bsamp = update( tomdes, type="sample", typesample = "nbar",
                     MDES = 0.10 )
-    expect_true( bsamp$`Sample.size` < params(tomdes)$nbar )
+    expect_true( bsamp$`Sample.size` > params(tomdes)$nbar )
 
 
     tp2 = update( topow, design = "d3.2_m3ff2rc", K = 10,

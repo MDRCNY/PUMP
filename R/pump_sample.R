@@ -238,7 +238,7 @@ pump_sample <- function(
   rho = NULL, rho.matrix = NULL,
   omega.2 = 0, omega.3 = 0,
   B = 1000,
-  max.steps = 20, max.tnum = 2000, start.tnum = 1000, final.tnum = 4*max.tnum,
+  max.steps = 20, tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
   cl = NULL, updateProgress = NULL,
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
@@ -248,7 +248,7 @@ pump_sample <- function(
 
   if ( verbose ) {
     scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations.\n\tMax steps %d\n\t%d perms for WY if used\n",
-          max.tnum, start.tnum, final.tnum, max.steps, B )
+          tnum, start.tnum, final.tnum, max.steps, B )
   }
 
 
@@ -278,7 +278,8 @@ pump_sample <- function(
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
     rho = rho, rho.matrix = rho.matrix, B = B,
-    max.steps = max.steps, max.tnum = max.tnum, start.tnum = start.tnum, final.tnum = final.tnum,
+    max.steps = max.steps, 
+    start.tnum = start.tnum, tnum = tnum, final.tnum = final.tnum,
     power.definition = power.definition
   )
   ##
@@ -314,10 +315,13 @@ pump_sample <- function(
   # Delete parameter we are actually going to search over.
   if ( typesample == "nbar" ) {
     nbar <- NULL
+    params.list["nbar"] = NULL
   } else if ( typesample == "J" ) {
     J <- NULL
+    params.list["J"] <- NULL
   } else if ( typesample == "K" ) {
     K <- NULL
+    params.list["K"] <- NULL
   }
 
   output.colnames <- c("MTP", "Sample.type", "Sample.size",
@@ -515,14 +519,14 @@ pump_sample <- function(
   
   if(default.max)
   {
-    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time." )
+    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time.", call. = FALSE )
   }
 
   # search in the grid from min to max.
   test.pts <- optimize_power(
     design = design, search.type = typesample,
     MTP, target.power, power.definition, tol,
-    start.tnum = start.tnum, start.low = ss.low, start.high = ss.high,
+    start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = J, K = K, nbar = nbar,
     M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
@@ -530,8 +534,8 @@ pump_sample <- function(
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
     B = B, cl = cl,
-    max.steps = max.steps, max.tnum = max.tnum,
-    final.tnum = final.tnum,
+    max.steps = max.steps, 
+    tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum,
     give.warnings = give.optimizer.warnings
   )
 
@@ -548,7 +552,7 @@ pump_sample <- function(
 
 
   # if it has converged, give notice about possible flatness
-  if(!is.na(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(is.finite(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.005 )
   {
     msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")

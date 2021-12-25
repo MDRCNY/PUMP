@@ -4,10 +4,13 @@
 \alias{update.pumpresult}
 \title{Update a pump call, tweaking some parameters}
 \usage{
-\method{update}{pumpresult}(object, ...)
+\method{update}{pumpresult}(object, type = NULL, ...)
 }
 \arguments{
 \item{object}{Pump result object.}
+
+\item{type}{Can be "power", "mdes" or "sample", sets the type of the updated
+call (can be different from original).}
 
 \item{...}{Parameters as specified in `pump_power`, `pump_mdes`, and
 `pump_sample` that should be overwritten.}

@@ -103,7 +103,8 @@ print.pumpgridresult = function( x,
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpgridresult
 summary.pumpgridresult = function( object, ... ) {
-    print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
+    print_design( object, 
+                  insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 

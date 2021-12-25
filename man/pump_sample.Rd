@@ -33,9 +33,9 @@ pump_sample(
   omega.3 = 0,
   B = 1000,
   max.steps = 20,
-  max.tnum = 2000,
-  start.tnum = 1000,
-  final.tnum = 4 * max.tnum,
+  tnum = 1000,
+  start.tnum = tnum/10,
+  final.tnum = 4 * tnum,
   cl = NULL,
   updateProgress = NULL,
   max_sample_size_nbar = 10000,
@@ -118,9 +118,9 @@ variation).}
 
 \item{max.steps}{how many steps allowed before terminating}
 
-\item{max.tnum}{maximum cumulative number of samples}
+\item{tnum}{Max number of samples for first iteration of search algorithm}
 
-\item{start.tnum}{number of samples for first iteration of search algorithm}
+\item{start.tnum}{number of samples to start search (this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw}
 

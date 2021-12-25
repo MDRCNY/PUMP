@@ -4,10 +4,12 @@
 \alias{plot_power_search}
 \title{Examine search path of the power search.}
 \usage{
-plot_power_search(pwr)
+plot_power_search(pwr, fit = NULL, target_line = NULL)
 }
 \arguments{
 \item{pwr}{Result from a pump_sample or pump_mdes call.}
+
+\item{fit}{A fitted curve to the search.}
 }
 \value{
 a ggplot plot (a gridExtra arrangement of 3 plots, technically).

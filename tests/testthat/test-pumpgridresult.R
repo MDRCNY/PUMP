@@ -59,13 +59,15 @@ test_that( "pumpgridresult dimensions work", {
     ssLW <- pump_mdes_grid(    design = "d2.1_m2fc",
                                MTP = c( "Holm", "BH" ),
                                nbar = 200, J = 40,
-                               target.power = 0.80, power.definition="D2indiv",
+                               target.power = 0.80, 
+                               power.definition="D2indiv",
                                M = 5,
                                Tbar = 0.50, alpha = 0.05,
                                numCovar.1 = 5,
                                R2.1 = c( 0.1, 0.4 ),
                                ICC.2 = 0.05,
-                               rho = 0, start.tnum = 100, tol = 0.5,
+                               rho = 0, tnum = 500, start.tnum = 100, 
+                               tol = 0.5,
                                drop_unique_columns = FALSE)
     
     ssLW
@@ -81,7 +83,8 @@ test_that( "pumpgridresult dimensions work", {
                                numCovar.1 = 5,
                                R2.1 = c( 0.1, 0.4 ),
                                ICC.2 = 0.05,
-                               rho = 0, start.tnum = 100, tol = 0.45,
+                               rho = 0, start.tnum = 100,
+                               tnum = 100, tol = 0.45,
                                drop_unique_columns = TRUE)
     
     ssLW
@@ -100,7 +103,7 @@ test_that( "pumpgridresult dimensions work", {
                                numCovar.1 = 5,
                                R2.1 = c( 0.1, 0.4 ),
                                ICC.2 = 0.05,
-                               rho = 0, start.tnum = 100, tol = 0.45,
+                               rho = 0, tnum = 100, tol = 0.45,
                                drop_unique_columns = TRUE)
     
     ssLW
