@@ -1,4 +1,24 @@
 
+#' Calculates p-values from t-values
+#' 
+#' @param rawt.matrix matrix of t statistics
+#' @param t.df degrees of freedom
+#' @param two.tailed whether to calculate 1 or 2-tailed p-values
+#'
+#' @return power results for individual, minimum, complete power
+#' @export
+calc_pval <- function(rawt, t.df, two.tailed)
+{
+  if(two.tailed)
+  {
+    rawp <- 2*(1 - stats::pt(abs(rawt), df = t.df))
+  } else
+  {
+    rawp <- 1 - stats::pt(rawt, df = t.df) 
+  }
+  return(rawp)
+}
+
 
 
 #' Calculates different definitions of power
@@ -15,26 +35,17 @@
 #' @return power results for individual, minimum, complete power
 #' @export
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
-                              ind.nonzero, alpha, two.tailed,
+                              ind.nonzero, alpha,
                               adj = TRUE)
 {
   M <- ncol(adj.pval.mat)
   num.nonzero <- sum(ind.nonzero)
 
-  if(two.tailed)
-  {
-    # rejected tests
-    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
-    # unadjusted
-    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha/2) })
-  } else
-  {
-    # rejected tests
-    rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
-    # unadjusted
-    rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
-  }
 
+  # rejected tests
+  rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
+  # unadjusted
+  rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
 
   # individual power
   power.ind <- apply(rejects, 2, mean)
@@ -67,6 +78,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
   # subset to only nonzero where relevant
   power.ind <- power.ind[ind.nonzero]
   power.min <- power.min[ind.nonzero]
+  # rename to be more sensible if there are zeros in the middle
+  names(power.min) <- paste0('min',1:length(power.min))
+      
   power.ind.mean <- mean(power.ind)
   names(power.ind.mean) = 'indiv.mean'
   names(power.complete) = 'complete'
@@ -76,8 +90,16 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
   {
     power.min <- power.min[1:(M - 1)]
   }
+  
+  if(M > 1)
+  {
+      power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
+  # don't return min and complete for M = 1
+  } else
+  {
+      power.vec <- c(power.ind)
+  }
 
-  power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
   power.vec <- sapply(power.vec, as.numeric)
 
   if(num.nonzero == 0)
@@ -103,7 +125,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'
 #' @param design a single RCT design (see list/naming convention)
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   none, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+#'   None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 #'   to automatically re-run for each procedure on the list.
 #' @param MDES scalar or vector; the desired MDES values for each outcome. Please
 #'   provide a scalar, a vector of length M, or vector of values for non-zero
@@ -165,7 +187,7 @@ pump_power <- function(
   ICC.2 = 0, ICC.3 = 0,
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
-  tnum = 10000, B = 3000,
+  tnum = 10000, B = 1000,
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -173,6 +195,12 @@ pump_power <- function(
   verbose = FALSE
 )
 {
+  # do not duplicate 'None'
+  if(length(MTP) > 1 && any(MTP == 'None'))
+  {
+    MTP <- MTP[which(MTP != 'None')]
+  }
+    
   # Call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
     if ( verbose ) {
@@ -217,10 +245,6 @@ pump_power <- function(
                              params.list = plist,
                              design = design,
                              long.table = long.table ) )
-
-    #des = map( des, ~ .x[nrow(.x),] ) %>%
-    #  dplyr::bind_rows()
-    #return( des )
   }
 
   if(validate.inputs)
@@ -280,10 +304,10 @@ pump_power <- function(
   {
     Sigma <- rho.matrix
   }
-
+  
   # generate t values and p values under alternative hypothesis using multivariate t-distribution
-  rawt.mat <- mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat
-  rawp.mat <- stats::pt(-abs(rawt.mat), df = t.df)
+  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat, nrow = tnum, ncol = M)
+  rawp.mat <- calc_pval(rawt.mat, t.df, two.tailed)
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {
     updateProgress(message = "P-values have been generated!")
@@ -303,13 +327,13 @@ pump_power <- function(
 
   } else if (MTP == "WY-SS"){
 
-    adjp.mat <- adjp_wyss(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df)
+    adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed)
 
   } else if (MTP == "WY-SD"){
 
-    adjp.mat <- adjp_wysd(rawt.mat = rawt.mat, B = B,
-                      Sigma = Sigma, t.df = t.df, cl = cl)
+    adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
+                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed, cl = cl)
 
   } else
   {
@@ -324,20 +348,21 @@ pump_power <- function(
 
   power.results.raw <- get_power_results(
     adj.pval.mat = rawp.mat, unadj.pval.mat = rawp.mat,
-    ind.nonzero, alpha, two.tailed, adj = FALSE
+    ind.nonzero, alpha, adj = FALSE
   )
 
   if ( MTP != 'None' ) {
     power.results.proc <- get_power_results(
       adj.pval.mat = adjp.mat, unadj.pval.mat = rawp.mat,
-      ind.nonzero, alpha, two.tailed, adj = TRUE
+      ind.nonzero, alpha, adj = TRUE
     )
     power.results <- data.frame(rbind(power.results.raw, power.results.proc))
     power.results <- cbind('MTP' = c('None', MTP), power.results)
   } else {
     power.results <- cbind('MTP' = 'None', power.results.raw)
   }
-  wide.results = power.results
+
+  wide.results <- power.results
   if ( !long.table ) {
     return( make.pumpresult( power.results, "power",
                            params.list = params.list,

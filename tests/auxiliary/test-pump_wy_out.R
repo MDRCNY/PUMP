@@ -1,4 +1,4 @@
-# library( pum )
+# library( PUMP )
 # library( testthat )
 
 small.B <- 1000
@@ -14,8 +14,8 @@ test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
                        nbar = 300,
                        Tbar = 0.50, # prop Tx
                        alpha = 0.05, # significance level
-                       numCovar.1 = 5, numCovar.2 = 3,
-                       R2.1 = 0.1, R2.2 = 0.4,
+                       numCovar.1 = 5,
+                       R2.1 = 0.1, 
                        ICC.2 = 0.05,
                        rho = 0.4, tnum = 1000,
                        B = small.B
@@ -29,8 +29,8 @@ test_that("WY-SS results are stable for design: d2.1_m2fc (constant)", {
                           nbar = 300,
                           Tbar = 0.50, # prop Tx
                           alpha = 0.05, # significance level
-                          numCovar.1 = 5, numCovar.2 = 3,
-                          R2.1 = 0.1, R2.2 = 0.4,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1,
                           ICC.2 = 0.05,
                           rho = 0.4, tnum = 1000,
                           B = small.B
@@ -52,8 +52,8 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
-                     R2.1 = 0.1, R2.2 = 0.4,
+                     numCovar.1 = 5,
+                     R2.1 = 0.1,
                      ICC.2 = 0.05,
                      rho = 0.4, tnum = 1000,
                      B = small.B
@@ -67,8 +67,8 @@ test_that("WY-SD results are stable for design: d2.1_m2fc (constant)", {
                      nbar = 300,
                      Tbar = 0.50, # prop Tx
                      alpha = 0.05, # significance level
-                     numCovar.1 = 5, numCovar.2 = 3,
-                     R2.1 = 0.1, R2.2 = 0.4,
+                     numCovar.1 = 5,
+                     R2.1 = 0.1,
                      ICC.2 = 0.05,
                      rho = 0.4, tnum = 1000,
                      B = small.B

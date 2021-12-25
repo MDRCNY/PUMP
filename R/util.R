@@ -34,7 +34,6 @@ parse_power_definition <- function( power.definition, M ) {
 
 
 
-
 get_power_names = function( M, long=FALSE ) {
     
     nms <- c( paste('D', 1:M, "indiv", sep="" ),

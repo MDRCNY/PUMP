@@ -112,6 +112,7 @@ test_that("pump_sample_raw works", {
 
 test_that("Bonferroni for non individual power", {
 
+  set.seed( 44941112 )
   p <- pump_power(  design = "d2.1_m2fc",
                     MTP = "Bonferroni",
                     J = 10,

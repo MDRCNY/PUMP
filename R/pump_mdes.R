@@ -172,11 +172,6 @@ pump_mdes <- function(
                   "power of", round(target.power, 4)))
   }
 
-  if (MTP == "WY-SD" && B < 1000){
-    warning(paste("For the step-down Westfall-Young procedure,
-                  it is recommended that sample (B) be at least 1000. Current B:", B))
-  }
-
   # Compute Q.m and df
   Q.m <- calc_SE(
     design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,

@@ -4,25 +4,29 @@
 \alias{adjp_wyss}
 \title{Westfall-Young Single Step Adjustment Function}
 \usage{
-adjp_wyss(rawt.mat, B, Sigma, t.df)
+adjp_wyss(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE)
 }
 \arguments{
-\item{rawt.mat}{a matrix of test statistics under H1. dimension: nrow = tnum, ncol = M}
+\item{rawp.mat}{a matrix of raw p-values under H1. dimension: nrow = tnum, ncol = M}
 
-\item{B}{the number of samples for which test statistics under the alternative hypothesis
-are compared with the distribution (matrix) of test statistics under the complete null (this distribution
+\item{B}{the number of samples for which p-values under the alternative hypothesis
+are compared with the distribution (matrix) of p-values under the complete null (this distribution
 is obtained through drawing test values under H0 with a default of 10,000)}
 
-\item{Sigma}{correlation matrix of null test statistics}
+\item{Sigma}{correlation matrix of null p-values}
 
-\item{t.df}{degrees of freedom of null test statistics}
+\item{t.df}{degrees of freedom of null p-values}
+
+\item{two.tailed}{one or two-tailed test}
+
+\item{verbose}{whether to print out messaging}
 }
 \value{
 a matrix of adjusted p-values
 }
 \description{
-This adjustment function utilizes the comp.rawt.ss helper function to compare
-each row of the matrix sample test statistics under
-alternative hypothesis to all the rows in the matrix of the test statistics
+This adjustment function utilizes the comp_rawp_ss helper function to compare
+each row of the matrix sample p-values under
+alternative hypothesis to all the rows in the matrix of the p-values
 under the complete null.
 }

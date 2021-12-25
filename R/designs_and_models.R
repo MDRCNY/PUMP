@@ -524,12 +524,12 @@ validate_MTP = function( MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP
         } else if( (mdes.call || ss.call) && any( MTP == 'None' ) && !pdef$indiv )
         {
             stop('For all minimum or complete power specifications, you must provide a MTP.')
-        } else if( any( MTP == 'None' ) )
+        } else if( length( MTP ) == 1 && MTP == 'None' )
         {
             warning('Proceeding with multiple outcomes and no MTP.')
         }
     }
-
+    
     chk <- MTP %in% pump_info()$Adjustment$Method
 
     if( ! all( chk ) ) {
@@ -606,6 +606,17 @@ validate_inputs <- function( design, params.list,
                                     pdef = pdef,
                                     multi.MTP.ok = multi.MTP.ok )
     
+    #-------------------------------------------------------#
+    # Westfall-Young
+    #-------------------------------------------------------#
+    
+    if ( (params.list$MTP == "WY-SD" || params.list$MTP == "WY-SS") &&
+         params.list$B < 1000 )
+    {
+        warning(paste("For the step-down Westfall-Young procedure,
+                       it is recommended that sample (B) be at least 1000. Current B:",
+                       params.list$B))
+    }
 
     #-------------------------------------------------------#
     # MDES
@@ -814,8 +825,8 @@ validate_inputs <- function( design, params.list,
       {
         if(any(params.list$omega.2 > 0))
         {
-          warning('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
-          params.list$omega.2 <- NULL
+            verbose_message('Omega is assumed to be 0 for constant treatment effects models. Ignoring input omega.2 value')
+            params.list$omega.2 <- NULL
         }
       }
     }

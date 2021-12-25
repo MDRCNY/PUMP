@@ -62,7 +62,7 @@ test_that( "optimize_power solves", {
         design = "d2.1_m2fc", search.type = "J",
         start.low = 56, start.high = 75,
         M = 3,
-        MDES = 0.05, target.power = 0.80, tol = 0.01,
+        MDES = 0.05, target.power = 0.80, tol = 0.025,
         Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
         numCovar.1 = 5, numCovar.2 = 1,
         R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.4,

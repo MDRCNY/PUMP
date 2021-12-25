@@ -30,6 +30,9 @@ e.g., power_curve()).}
 \item{grid.size}{Number of points to calculate power.}
 
 \item{tnum}{Number of iterations to calculate power at each grid point.}
+
+\item{fit}{A four parameter bounded logstic curve (if NULL will fit one to passed
+points).}
 }
 \description{
 This will give a plot of power vs. mdes or sample size. It can be useful to

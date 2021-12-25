@@ -62,6 +62,8 @@ test_that("testing of d2.2_m2rc raw", {
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
+  set.seed( 1041010 )
+  
   calcJ <- pump_sample( design = "d2.2_m2rc",
                         typesample = "J",
                         power.definition = "min1",
@@ -448,7 +450,7 @@ test_that("testing of d2.2_m2rc", {
   }
 
   set.seed( 4133333 )
-  pp_power <- 0.67724
+  pp_power <- 0.66245
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 20, NULL, 2244323,
                             design = "d2.2_m2rc",
