@@ -1,13 +1,4 @@
 
-
-
-
-scat = function( str, ... ) {
-  cat( sprintf( str, ... ) )
-}
-
-
-
 make.pumpresult = function( x,
                             type = c( "power", "mdes", "sample" ),
                             design = design,

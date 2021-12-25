@@ -1,5 +1,3 @@
-
-
 #' Parse the power definition
 #'
 #' @param power.definition i.e. D1indiv, min1, complete
