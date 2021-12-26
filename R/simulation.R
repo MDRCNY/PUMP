@@ -369,7 +369,7 @@ convert_params <- function(model.params.list) {
     eta1.sq <- omega.3 * (eta0.sq + xi^2)
     
     # grand mean impact
-    Xi1 <- model.params.list[['Xi0']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
+    Xi1 <- model.params.list[['MDES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
     
     dgp.params.list <- list(
         has.level.three = has.level.three
@@ -397,9 +397,6 @@ convert_params <- function(model.params.list) {
     dgp.params.list <- c( dgp.params.list, list(
         # -------------------------------------------- level 2
         delta = delta                                    # M-vector of coefficients of school covariates
-        #-------temp
-        , psi = model.params.list[['psi']]               # coefficient of school covariate in treatment effect
-        #-------temp
         , rho.X = model.params.list[['rho.X']]           # MxM correlation matrix of school covariates
         , tau0.sq = tau0.sq                              # M-vector of variances of school random effects
         , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
