@@ -30,6 +30,7 @@ pump_power(
   rho.matrix = NULL,
   tnum = 10000,
   B = 1000,
+  drop.zero.outcomes = TRUE,
   cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -104,6 +105,8 @@ rho or rho.matrix, but not both.}
 \item{tnum}{scalar; the number of test statistics (samples)}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
+
+\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
 
 \item{cl}{cluster object to use for parallel processing}
 

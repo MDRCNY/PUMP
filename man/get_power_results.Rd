@@ -4,7 +4,14 @@
 \alias{get_power_results}
 \title{Calculates different definitions of power}
 \usage{
-get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
+get_power_results(
+  adj.pval.mat,
+  unadj.pval.mat,
+  ind.nonzero,
+  alpha,
+  drop.zero.outcomes = TRUE,
+  adj = TRUE
+)
 }
 \arguments{
 \item{adj.pval.mat}{matrix of adjusted p-values, columns are outcomes}
@@ -15,9 +22,9 @@ get_power_results(adj.pval.mat, unadj.pval.mat, ind.nonzero, alpha, adj = TRUE)
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{adj}{whether p-values are unadjusted or not}
+\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{adj}{whether p-values are unadjusted or not}
 }
 \value{
 power results for individual, minimum, complete power

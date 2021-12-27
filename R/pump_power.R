@@ -1,7 +1,7 @@
 
 #' Calculates p-values from t-values
 #' 
-#' @param rawt.matrix matrix of t statistics
+#' @param rawt vector of t statistics
 #' @param t.df degrees of freedom
 #' @param two.tailed whether to calculate 1 or 2-tailed p-values
 #'
@@ -29,7 +29,7 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
+#' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
