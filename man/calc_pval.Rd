@@ -7,11 +7,11 @@
 calc_pval(rawt, t.df, two.tailed)
 }
 \arguments{
+\item{rawt}{vector of t statistics}
+
 \item{t.df}{degrees of freedom}
 
 \item{two.tailed}{whether to calculate 1 or 2-tailed p-values}
-
-\item{rawt.matrix}{matrix of t statistics}
 }
 \value{
 power results for individual, minimum, complete power
