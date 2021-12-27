@@ -217,7 +217,6 @@ pump_sample_raw <- function(
 #' @inheritParams pump_mdes
 #'
 #' @param typesample type of sample size to calculate: "nbar", "J", or "K".
-#' @param two.tailed whether or not to calculate two tailed or one tailed power.
 #' @param MDES scalar; the MDES value for all outcomes.
 #' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
 #' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
