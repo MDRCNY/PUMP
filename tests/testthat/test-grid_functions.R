@@ -300,4 +300,16 @@ test_that( "grid breaks with invalid inputs", {
     numCovar.1 = 2, tnum = 100,
     rho = 0.2, tol = 0.5))
   
+  expect_error(pp <- pump_power_grid(
+      design = "d2.2_m2rc",
+      MTP = c("Holm"),
+      MDES = 0.125,
+      J = 10,
+      M = 5,
+      nbar = 50,
+      alpha = 0.5,
+      Tbar = 0.8,
+      numCovar.1 = 2,
+      rho = c(0.2, 0.2)))
+  
 })

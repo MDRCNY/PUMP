@@ -41,7 +41,8 @@ pump_mdes <- function(
   B = 1000,
   max.steps = 20, 
   tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
-  cl = NULL, updateProgress = NULL, give.optimizer.warnings = FALSE,
+  parallel.WY.clusters = parallel.WY.clusters,
+  updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
 {
@@ -283,7 +284,7 @@ pump_mdes <- function(
                              R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
                              ICC.2 = ICC.2, ICC.3 = ICC.3,
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                             B = B, cl = cl,
+                             B = B, parallel.WY.clusters = parallel.WY.clusters,
                              max.steps = max.steps, 
                              tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum, 
                              give.warnings = give.optimizer.warnings)

@@ -238,7 +238,7 @@ pump_sample <- function(
   omega.2 = 0, omega.3 = 0,
   B = 1000,
   max.steps = 20, tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
-  cl = NULL, updateProgress = NULL,
+  parallel.WY.clusters = 1, updateProgress = NULL,
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
   tol = 0.01, give.optimizer.warnings = FALSE,
@@ -532,7 +532,7 @@ pump_sample <- function(
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-    B = B, cl = cl,
+    B = B, parallel.WY.clusters = parallel.WY.clusters,
     max.steps = max.steps, 
     tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum,
     give.warnings = give.optimizer.warnings
