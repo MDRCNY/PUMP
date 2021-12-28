@@ -23,6 +23,10 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
   
 
   if ( is.pumpresult( pwr ) ) {
+    if( is.na( pwr$Sample.size ) )
+    {
+        stop('plot_power_curve() does not work if algorithm has not converged.')
+    }
     test.pts <- power_curve(pwr, low=low, high=high, grid.size = grid.size,
                             tnum = params(pwr)$tnum, all = all )
     x_label <- pump_type(pwr)
