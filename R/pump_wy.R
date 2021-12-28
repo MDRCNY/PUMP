@@ -108,7 +108,6 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
   M <- ncol(rawp.mat)
   tnum <- nrow(rawp.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
-  finish.time <- NULL
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
@@ -177,7 +176,6 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL,
   M <- ncol(rawp.mat)
   tnum <- nrow(rawp.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
-  finish.time <- NULL
 
   if(!is.null(cl))
   {
