@@ -248,7 +248,7 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
         df <- J - numCovar.1 - 1
     } else if (design == 'd3.1_m3rr2rr')
     {
-        df <- K - numCovar.3 - 1
+        df <- K - 1
     } else if (design == 'd2.2_m2rc')
     {
         df <- J - numCovar.1 - 2
@@ -258,11 +258,12 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
     } else if (design == 'd3.2_m3ff2rc' )
     {
         df <- K * (J - 2) - numCovar.2
-    } else if (design == 'd3.2_m3fc2rc' ) {
+    } else if (design == 'd3.2_m3fc2rc' )
+    {
         df <- K * (J - 1) - numCovar.2
     } else if (design == 'd3.2_m3rr2rc')
     {
-        df <- K - numCovar.3 - 1
+        df <- K - 1
     } else
     {
         stop(paste('Design not implemented:', design))

@@ -56,7 +56,8 @@ to automatically re-run for each procedure on the list.}
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
-function, i.e. D1indiv, min1, etc.}
+function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+Complete power is 'complete'.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
 controls when the search is done: when estimated power (checked with
