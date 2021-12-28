@@ -335,7 +335,8 @@ pump_power <- function(
 
     adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
                           Sigma = Sigma, t.df = t.df,
-                          two.tailed = two.tailed)
+                          two.tailed = two.tailed,
+                          updateProgress = updateProgress)
 
   } else if (MTP == "WY-SD"){
 
@@ -349,7 +350,8 @@ pump_power <- function(
       
     adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
                           Sigma = Sigma, t.df = t.df,
-                          two.tailed = two.tailed, cl = cl)
+                          two.tailed = two.tailed, cl = cl,
+                          updateProgress = updateProgress)
     
     if( parallel.WY.clusters > 1 )
     {

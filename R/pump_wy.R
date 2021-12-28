@@ -101,12 +101,14 @@ get_adjp_minp <- function(ind.B, rawp.order)
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE) {
+adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
+                      verbose = TRUE, updateProgress = NULL) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawp.mat)
   tnum <- nrow(rawp.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
+  finish.time <- NULL
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
@@ -126,15 +128,20 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE) {
 
     if(t == 10)
     {
-      end.time = Sys.time()
-      iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
-      finish.time = round((iter.time * tnum)/60)
-      if(verbose)
-      {
-        message(paste('Estimated time to finish ', tnum,
-                      ' WY iterations with B =', B, ':',
-                      finish.time, 'minutes'))
-      }
+        end.time <- Sys.time()
+        iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
+        finish.time <- round((iter.time * tnum)/60)
+        msg <- paste('Estimated time to finish ', tnum,
+                     ' WY iterations with B =', B, ':',
+                     finish.time, 'minutes')
+        if(verbose)
+        {
+            message(msg)
+        }
+        if (is.function(updateProgress))
+        {
+            updateProgress(msg)
+        }
     }
   }
   return(adjp)
@@ -163,12 +170,14 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE) {
 #' @return a matrix of adjusted p-values
 #' @export
 
-adjp_wysd <- function(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL, verbose = TRUE) {
+adjp_wysd <- function(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL,
+                      verbose = TRUE, updateProgress = NULL) {
 
   # creating the matrix to store the adjusted test values
   M <- ncol(rawp.mat)
   tnum <- nrow(rawp.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
+  finish.time <- NULL
 
   if(!is.null(cl))
   {
@@ -199,14 +208,19 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL, verbose =
 
     if(t == 10)
     {
-      end.time = Sys.time()
-      iter.time = difftime(end.time, start.time, 'secs')[[1]]/10
-      finish.time = round((iter.time * tnum)/60)
+      end.time <- Sys.time()
+      iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
+      finish.time <- round((iter.time * tnum)/60)
+      msg <- paste('Estimated time to finish ', tnum,
+                   ' WY iterations with B =', B, ':',
+                   finish.time, 'minutes')
       if(verbose)
       {
-          message(paste('Estimated time to finish ', tnum,
-                        ' WY iterations with B =', B, ':',
-                        finish.time, 'minutes'))
+          message(msg)
+      }
+      if (is.function(updateProgress))
+      {
+          updateProgress(msg)
       }
     }
   }
