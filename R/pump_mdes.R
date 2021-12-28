@@ -19,7 +19,6 @@
 #' @param tnum Max number of samples for first iteration of search algorithm
 #' @param start.tnum number of samples to start search (this will increase with each step).
 #' @param final.tnum number of samples for final draw
-#' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
 #' @param give.optimizer.warnings whether to return verbose optimizer warnings
@@ -41,7 +40,7 @@ pump_mdes <- function(
   B = 1000,
   max.steps = 20, 
   tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
-  parallel.WY.clusters = parallel.WY.clusters,
+  parallel.WY.clusters = 1,
   updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
