@@ -25,7 +25,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
                            numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
-                           B = NULL, parallel.WY.clusters = 1,
+                           B = NULL, parallel.WY.cores = 1,
                            max.steps = 20,
                            tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
                            give.warnings = FALSE,
@@ -61,7 +61,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-      B = B, parallel.WY.clusters = parallel.WY.clusters,
+      B = B, parallel.WY.cores = parallel.WY.cores,
       validate.inputs = FALSE
     )
 

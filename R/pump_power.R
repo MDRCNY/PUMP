@@ -167,7 +167,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param parallel.WY.clusters scalar; number of clusters to use for parallel processing of WY
+#' @param parallel.WY.cores scalar; number of cores to use for parallel processing of WY
 #' @param drop.zero.outcomes TRUE/FALSE; whether to report power results for outcomes with MDES = 0
 #' @param updateProgress function; the callback function to update the progress bar (User
 #'   does not have to input anything)
@@ -191,7 +191,7 @@ pump_power <- function(
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 1000,
-  parallel.WY.clusters = 1,
+  parallel.WY.cores = 1,
   drop.zero.outcomes = TRUE,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -226,7 +226,7 @@ pump_power <- function(
                       ICC.2 = ICC.2, ICC.3 = ICC.3,
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
-                      tnum = tnum, B = B, parallel.WY.clusters = parallel.WY.clusters,
+                      tnum = tnum, B = B, parallel.WY.cores = parallel.WY.cores,
                       updateProgress = updateProgress,
                       validate.inputs = validate.inputs )
 
@@ -338,9 +338,9 @@ pump_power <- function(
 
   } else if (MTP == "WY-SD"){
 
-    if( parallel.WY.clusters > 1 )
+    if( parallel.WY.cores > 1 )
     {
-      cl <- parallel::makeCluster(parallel.WY.clusters)
+      cl <- parallel::makeCluster(parallel.WY.cores)
     } else
     {
       cl <- NULL
@@ -351,7 +351,7 @@ pump_power <- function(
                           two.tailed = two.tailed, cl = cl,
                           updateProgress = updateProgress)
     
-    if( parallel.WY.clusters > 1 )
+    if( parallel.WY.cores > 1 )
     {
         parallel::stopCluster(cl)
     }
