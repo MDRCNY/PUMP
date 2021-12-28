@@ -139,7 +139,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
         }
         if (is.function(updateProgress))
         {
-            updateProgress(msg = msg)
+            updateProgress(message = msg)
         }
     }
   }
