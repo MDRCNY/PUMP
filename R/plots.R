@@ -219,12 +219,9 @@ plot.pumpresult <- function( x, ... )
             axis.title  = ggplot2::element_text(size = 10)
       ) +
       ggplot2::labs(colour = "MTP", shape = "")
-  } else if(power.type(x) == 'mdes')
+  } else if( power.type(x) %in% c('mdes', 'sample') )
   {
-    stop('Not yet implemented')
-  }  else if(power.type(x) == 'sample')
-  {
-    stop('Not yet implemented')
+    stop('plot() only works on pump_power() objects or grid objects, not pump_mdes() or pump_sample() objects.')
   } else
   {
     stop('Invalid pumpresult type.')

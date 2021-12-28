@@ -157,7 +157,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE) {
 #' @param Sigma correlation matrix of null p-values
 #' @param t.df degrees of freedom of null p-values
 #' @param two.tailed one or two-tailed test
-#' @param cl cluster
+#' @param cl clusters for parallel computing
 #' @param verbose verbose messaging
 #'
 #' @return a matrix of adjusted p-values

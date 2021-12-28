@@ -169,8 +169,8 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
+#' @param parallel.WY.clusters number of clusters to use for parallel processing of WY
 #' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
-#' @param cl cluster object to use for parallel processing
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
 #' @param long.table TRUE for table with power as rows, correction as columns,
@@ -193,8 +193,8 @@ pump_power <- function(
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 1000,
+  parallel.WY.clusters = 1,
   drop.zero.outcomes = TRUE,
-  cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
   long.table = FALSE,
@@ -228,7 +228,7 @@ pump_power <- function(
                       ICC.2 = ICC.2, ICC.3 = ICC.3,
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
-                      tnum = tnum, B = B, cl = cl,
+                      tnum = tnum, B = B, parallel.WY.clusters = parallel.WY.clusters,
                       updateProgress = updateProgress,
                       validate.inputs = validate.inputs )
 
@@ -334,12 +334,27 @@ pump_power <- function(
   } else if (MTP == "WY-SS"){
 
     adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
-                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed)
+                          Sigma = Sigma, t.df = t.df,
+                          two.tailed = two.tailed)
 
   } else if (MTP == "WY-SD"){
 
+    if( parallel.WY.clusters > 1 )
+    {
+      cl <- parallel::makeCluster(parallel.WY.clusters)
+    } else
+    {
+      cl <- NULL
+    }
+      
     adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
-                          Sigma = Sigma, t.df = t.df, two.tailed = two.tailed, cl = cl)
+                          Sigma = Sigma, t.df = t.df,
+                          two.tailed = two.tailed, cl = cl)
+    
+    if( parallel.WY.clusters > 1 )
+    {
+        parallel::stopCluster(cl)
+    }
 
   } else
   {

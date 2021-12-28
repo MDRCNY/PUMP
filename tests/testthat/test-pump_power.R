@@ -576,3 +576,49 @@ test_that("MTP behavior", {
     expect_true(pp$D1indiv[pp$MTP == 'WY-SS'] < pp$D1indiv[pp$MTP == 'WY-SD'])
 
 })
+
+
+test_that("parallel WY", {
+    
+    t1 <- Sys.time()
+    pp <- pump_power( design = "d3.2_m3ff2rc",
+                      MTP = c("WY-SD"),
+                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
+                      M = 5,
+                      J = 3, # number of schools/block
+                      K = 10, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 1000, B = 1000,
+                      parallel.WY.clusters = 1
+    )
+    t2 <- Sys.time()
+    time1 = difftime(t1, t2)
+    
+    t1 <- Sys.time()
+    pp <- pump_power( design = "d3.2_m3ff2rc",
+                      MTP = c("WY-SD"),
+                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
+                      M = 5,
+                      J = 3, # number of schools/block
+                      K = 10, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 1000, B = 1000,
+                      parallel.WY.clusters = 3
+    )
+    t2 <- Sys.time()
+    time2 = difftime(t1, t2)
+    
+    expect_true(time1 > time2)
+})
