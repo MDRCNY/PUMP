@@ -5,7 +5,7 @@
 \title{Calculate power using PUMP method}
 \usage{
 pump_power(
-  design,
+  d_m,
   MTP = NULL,
   MDES,
   numZero = NULL,
@@ -30,8 +30,8 @@ pump_power(
   rho.matrix = NULL,
   tnum = 10000,
   B = 1000,
+  parallel.WY.clusters = 1,
   drop.zero.outcomes = TRUE,
-  cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
   long.table = FALSE,
@@ -39,10 +39,10 @@ pump_power(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{MDES}{scalar or vector; the desired MDES values for each outcome. Please
@@ -106,26 +106,24 @@ rho or rho.matrix, but not both.}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
+\item{parallel.WY.clusters}{scalar; number of clusters to use for parallel processing of WY}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{drop.zero.outcomes}{TRUE/FALSE; whether to report power results for outcomes with MDES = 0}
 
-\item{updateProgress}{the callback function to update the progress bar (User
+\item{updateProgress}{function; the callback function to update the progress bar (User
 does not have to input anything)}
 
-\item{validate.inputs}{whether or not to check whether parameters are valid
-given the choice of design}
+\item{validate.inputs}{TRUE/FALSE; whether or not to check whether parameters are valid
+given the choice of d_m}
 
-\item{long.table}{TRUE for table with power as rows, correction as columns,
+\item{long.table}{TRUE/FALSE; TRUE for table with power as rows, correction as columns,
 and with more verbose names.  See `transpose_power_table`.}
 
-\item{verbose}{Print out diagnostics of time, etc.}
+\item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
 \value{
 power results for MTP and unadjusted across all definitions of power
 }
 \description{
-This functions calculates power for all definitions of power (individual,
-d-minimal, complete) for all the different MTPs (none, Bonferroni, Holms,
-Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+This functions calculates power for all definitions of power for any MTP.
 }

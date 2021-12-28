@@ -3,10 +3,10 @@
 \name{calc_nbar}
 \alias{calc_nbar}
 \title{This function calculates needed nbar to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs}
+a difference in t-statistic) for all implemented d_ms}
 \usage{
 calc_nbar(
-  design,
+  d_m,
   MT = 2.8,
   MDES,
   J,
@@ -22,7 +22,7 @@ calc_nbar(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{MT}{Number of approximate effect-size unit SEs (adjusted for degrees of
 freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
@@ -59,9 +59,9 @@ variance of district-level random intercepts. Default to 0 (no treatment
 variation).}
 }
 \value{
-nbar, the number of individuals needed, or NA if not possible given design
+nbar, the number of individuals needed, or NA if not possible given d_m
 }
 \description{
 This function calculates needed nbar to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs
+a difference in t-statistic) for all implemented d_ms
 }

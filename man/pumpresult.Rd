@@ -4,7 +4,7 @@
 \alias{print.pumpgridresult}
 \alias{pumpresult}
 \alias{params}
-\alias{design}
+\alias{d_m}
 \alias{search_path}
 \alias{pump_type}
 \alias{is.pumpresult}
@@ -20,7 +20,7 @@
 
 params(x, ...)
 
-design(x, ...)
+d_m(x, ...)
 
 search_path(x)
 
@@ -63,7 +63,7 @@ mdes or sample.}
 \value{
 params: List of design parameters used.
 
-design: design used (as string)
+d_m: d_m used (as string)
 
 search_path: Dataframe describing search path, if it was saved in the pumpresult object.
 

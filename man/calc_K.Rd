@@ -5,7 +5,7 @@
 \title{Calculates K, the number of districts}
 \usage{
 calc_K(
-  design,
+  d_m,
   MT,
   MDES,
   J,
@@ -21,7 +21,7 @@ calc_K(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{MT}{multiplier}
 

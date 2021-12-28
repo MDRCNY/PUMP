@@ -4,12 +4,12 @@
 #'
 #' List all supported designs, with brief descriptions.
 #'
-#' @param comment = TRUE prints out description of each design or method.  FALSE does not.
+#' @param comment = TRUE prints out description of each d_m.  FALSE does not.
 #'
 #' @export
 pump_info <- function( comment = TRUE) {
-    design <- tibble::tribble(
-        ~ Code, ~PowerUp, ~ Comment, ~Params,
+    context <- tibble::tribble(
+        ~ d_m, ~PowerUp, ~ Comment, ~Params,
         # 1 level design
         "d1.1_m1c",     "n/a",
             "1 lvl, lvl 1 rand / constant impacts model",
@@ -55,13 +55,13 @@ pump_info <- function( comment = TRUE) {
             "R2.1, R2.2, ICC.2, R2.3, ICC.3"
     )
 
-    design <- tidyr::separate( design, .data$Code, into = c("Design", "Model"), remove = FALSE, sep = "_" )
+    context <- tidyr::separate( context, .data$d_m, into = c("Design", "Model"), remove = FALSE, sep = "_" )
 
     adjust <- tibble::tribble( ~ Method, ~ Comment,
-                               "None", "No adjustment",
-                               "Bonferroni", "The classic (and conservative) multiple testing correction",
-                               "Holm", "Step down version of Bonferroni",
-                               "BH", "Benjamini-Hochberg",
+                               "None",  "No adjustment",
+                               "BF",    "Bonferroni",
+                               "HO",    "Holm",
+                               "BH",    "Benjamini-Hochberg",
                                "WY-SS", "Westfall-Young, Single Step",
                                "WY-SD", "Westfall-Young, Step Down" )
 
@@ -83,21 +83,21 @@ pump_info <- function( comment = TRUE) {
     )
 
     if ( !comment ) {
-        design$Comment <- NULL
+        context$Comment <- NULL
         adjust$Comment <- NULL
     }
 
-    list( Design = design, Adjustment = adjust, Parameters = params )
+    list( Context = context, Adjustment = adjust, Parameters = params )
 }
 
 
 
 
-#' Return characteristics of a given design code
+#' Return characteristics of a given d_m code
 #'
-#' See the pump_info method to get a list of supported designs.
+#' See the pump_info method to get a list of supported d_ms.
 #'
-#' @param design String. Experimental design to parse.
+#' @param d_m String. Experimental d_m to parse.
 #'
 #' @return List of features including number of levels, level of randomization,
 #'   etc.
@@ -105,13 +105,13 @@ pump_info <- function( comment = TRUE) {
 #' @family pump_info
 #'
 #' @examples
-#' supported = pump_info()$Design
+#' supported = pump_info()$d_m
 #' supported$Code[[4]]
-#' parse_design( supported$Code[[4]] )
+#' parse_d_m( supported$Code[[4]] )
 #'
 #' @export
-parse_design <- function( design ) {
-    des <- stringr::str_split(design, "\\.|_")[[1]]
+parse_d_m <- function( d_m ) {
+    des <- stringr::str_split(d_m, "\\.|_")[[1]]
     nums <- readr::parse_number(des)
     levels <- nums[[1]]
     if ( levels == 3 ) {
@@ -153,9 +153,9 @@ parse_design <- function( design ) {
 #' Computes Q_m, the standard error of the effect size estimate
 #'
 #' Function to calculate the theoretical true (unadjusted) standard error of the
-#' ATE estimate for a given design and model, in effect size units.
+#' ATE estimate for a given d_m and model, in effect size units.
 #'
-#' @param design a single RCT design (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention)
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
@@ -177,101 +177,101 @@ parse_design <- function( design ) {
 #' @return Q_m, the standard error of the effect size estimate
 #' @export
 
-calc_SE <- function(design, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
+calc_SE <- function(d_m, J, K, nbar, Tbar, R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3) {
 
-    if(design %in% c('d1.1_m1c'))
+    if(d_m %in% c('d1.1_m1c'))
     {
         Q.m <- sqrt( ( (1 - R2.1) )  /(Tbar * (1-Tbar) * nbar) )
-    } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+    } else if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         Q.m <- sqrt( ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1-Tbar) * J * nbar) )
-    } else if (design == 'd2.1_m2fr' || design == 'd2.1_m2rr' )
+    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1_m2rr' )
     {
         Q.m <- sqrt( (ICC.2 * omega.2)/J +
                     ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * nbar) )
-    } else if (design == 'd3.1_m3rr2rr')
+    } else if (d_m == 'd3.1_m3rr2rr')
     {
         Q.m <- sqrt( (ICC.3 * omega.3) / K +
                      (ICC.2 * omega.2) / (J * K) +
                     ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1-Tbar) * J * K * nbar) )
-    } else if (design == 'd2.2_m2rc')
+    } else if (d_m == 'd2.2_m2rc')
     {
         Q.m <- sqrt( (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
                      (1 - ICC.2)*(1 - R2.1) / (Tbar * (1-Tbar) * J * nbar))
-    } else if (design == 'd3.3_m3rc2rc')
+    } else if (d_m == 'd3.3_m3rc2rc')
     {
         Q.m <- sqrt( (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
                      (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
                     ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1-Tbar) * J * K * nbar) )
-    } else if (design == 'd3.2_m3ff2rc' || design == 'd3.2_m3fc2rc' )
+    } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         Q.m <- sqrt( ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
                     ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar) ) )
-    } else if (design == 'd3.2_m3rr2rc' )
+    } else if (d_m == 'd3.2_m3rr2rc' )
     {
         Q.m <- sqrt( ( (ICC.3 * omega.3) / K ) +
                      ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
                     ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * K * nbar)))
     } else
     {
-        stop(paste('Design not implemented:', design))
+        stop(paste('d_m not implemented:', d_m))
     }
     return(Q.m)
 }
 
 
-#' Calculate the degrees of freedom for a particular design
+#' Calculate the degrees of freedom for a particular d_m
 #'
 #' Given sample sizes, return the used degrees of freedom (frequently
-#' conservative) for the design.
+#' conservative) for the d_m.
 #'
 #' @inheritParams pump_power
 #' @param validate whether or not to validate if output df is <= 0
 #'
-#' @return Degree of freedom for the design.
+#' @return Degree of freedom for the d_m.
 #'
 #' @export
 
-calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
+calc_df <- function(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE) {
 
-    if(design == 'd1.1_m1c')
+    if(d_m == 'd1.1_m1c')
     {
         df <- nbar - numCovar.1 - 1
-    } else if(design == 'd2.1_m2fc')
+    } else if(d_m == 'd2.1_m2fc')
     {
         df <- J * (nbar - 1) - numCovar.1 - 1
-    } else if (design == 'd2.1_m2ff')
+    } else if (d_m == 'd2.1_m2ff')
     {
         df <- J * (nbar - 2) - numCovar.1
-    } else if (design == 'd2.1_m2fr' || design == 'd2.1_m2rr' )
+    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1_m2rr' )
     {
         df <- J - numCovar.1 - 1
-    } else if (design == 'd3.1_m3rr2rr')
+    } else if (d_m == 'd3.1_m3rr2rr')
     {
         df <- K - 1
-    } else if (design == 'd2.2_m2rc')
+    } else if (d_m == 'd2.2_m2rc')
     {
         df <- J - numCovar.1 - 2
-    } else if (design == 'd3.3_m3rc2rc')
+    } else if (d_m == 'd3.3_m3rc2rc')
     {
         df <- K - numCovar.3 - 2
-    } else if (design == 'd3.2_m3ff2rc' )
+    } else if (d_m == 'd3.2_m3ff2rc' )
     {
         df <- K * (J - 2) - numCovar.2
-    } else if (design == 'd3.2_m3fc2rc' )
+    } else if (d_m == 'd3.2_m3fc2rc' )
     {
         df <- K * (J - 1) - numCovar.2
-    } else if (design == 'd3.2_m3rr2rc')
+    } else if (d_m == 'd3.2_m3rr2rc')
     {
         df <- K - 1
     } else
     {
-        stop(paste('Design not implemented:', design))
+        stop(paste('d_m not implemented:', d_m))
     }
 
     if(validate & df <= 0)
     {
-        stop('Invalid design parameters resulting in nonpositive degrees of freedom')
+        stop('Invalid d_m parameters resulting in nonpositive degrees of freedom')
     }
 
     return(df)
@@ -282,60 +282,60 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 
 
 #' This function calculates needed nbar to achieve a given power (as represented by
-#' a difference in t-statistic) for all implemented designs
+#' a difference in t-statistic) for all implemented d_ms
 #'
 #' @inheritParams calc_J
 #' @param J scalar; the number of schools
 #'
-#' @return nbar, the number of individuals needed, or NA if not possible given design
+#' @return nbar, the number of individuals needed, or NA if not possible given d_m
 #' @export
 
-calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
+calc_nbar <- function(d_m, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
                       R2.2, ICC.2, omega.2,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
-    if(design %in% c('d1.1_m1c'))
+    if(d_m %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J
         nbar <- (MT/MDES)^2 * numr/denom
-    } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+    } else if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J
         nbar <- (MT/MDES)^2 * numr/denom
-    } else if (design == 'd2.1_m2fr' || design == 'd2.1m2rr' )
+    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1m2rr' )
     {
         numr <- (1 - ICC.2)*(1 - R2.1)
         denom <- J * ((MDES/MT)^2) - ICC.2 * omega.2
         nbar <- numr / (Tbar*(1-Tbar)*denom)
-    } else if (design == 'd3.1_m3rr2rr') {
+    } else if (d_m == 'd3.1_m3rr2rr') {
         numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
         denom <- J*K*((MDES/MT)^2) - J*ICC.3*omega.3 - ICC.2*omega.2
         nbar <- numr / ( Tbar*(1-Tbar)*denom )
-    } else if (design == 'd2.2_m2rc')
+    } else if (d_m == 'd2.2_m2rc')
     {
         numr <- (1 - ICC.2)*(1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
-    } else if (design == 'd3.3_m3rc2rc')
+    } else if (d_m == 'd3.3_m3rc2rc')
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - J * ICC.3 * (1 - R2.3)  - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
-    } else if (design == 'd3.2_m3ff2rc' || design == 'd3.2_m3fc2rc' )
+    } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J * K * ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
-    } else if (design == 'd3.2_m3rr2rc')
+    } else if (d_m == 'd3.2_m3rr2rc')
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J * ( K * ((MDES/MT)^2) - ICC.3 * omega.3 ) - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
     } else
     {
-        stop(paste('Design not implemented:', design))
+        stop(paste('d_m not implemented:', d_m))
     }
     nbar <- ifelse( is.na( nbar ) || nbar < 0, NA, nbar )
     return( nbar )
@@ -345,11 +345,11 @@ calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 
 
 #' This function calculates needed J to achieve a given power (as represented by
-#' a difference in t-statistic) for all implemented designs
+#' a difference in t-statistic) for all implemented d_ms
 #'
 #' @inheritParams pump_power
 #'
-#' @param design a single RCT design (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention)
 #' @param MT Number of approximate effect-size unit SEs (adjusted for degrees of
 #'   freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
 #'   2.8 for normal theory.
@@ -359,60 +359,60 @@ calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
 #' @export
 
 calc_J <- function(
-    design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
+    d_m, MT = 2.8, MDES, K = NULL, nbar, Tbar,
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
 
-    if(design %in% c('d1.1_m1c'))
+    if(d_m %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
         J <- (MT/MDES)^2 * numr/denom
-    } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+    } else if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
         J <- (MT/MDES)^2 * numr/denom
-    } else if (design == 'd2.1_m2fr' || design == 'd2.1m2rr' )
+    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1m2rr' )
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
         J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) + numr / denom)
-    } else if (design == 'd3.1_m3rr2rr')
+    } else if (d_m == 'd3.1_m3rr2rr')
     {
         numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) + Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
         denom <- K * (MDES/MT)^2 - ICC.3 * omega.3
         J <- (1 / (Tbar * (1 - Tbar) * nbar)) * numr/denom
-    } else if (design == 'd2.2_m2rc')
+    } else if (d_m == 'd2.2_m2rc')
     {
         numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2) * (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * nbar
         J <- (MT/MDES)^2 * numr/denom
-    } else if (design == 'd3.3_m3rc2rc')
+    } else if (d_m == 'd3.3_m3rc2rc')
     {
         numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
         denom <- nbar * ( Tbar * (1 - Tbar) * K * (MDES/MT)^2 - ICC.3 * (1 - R2.3) )
         J <- numr/denom
-    } else if (design == 'd3.2_m3ff2rc' || design == 'd3.2_m3fc2rc' )
+    } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
         denom <- nbar * Tbar * (1 - Tbar) * K * (MDES/MT)^2
         J <- numr/denom
-    } else if (design == 'd3.2_m3rr2rc')
+    } else if (d_m == 'd3.2_m3rr2rc')
     {
         numr <- nbar * ICC.2 * (1 - R2.2) + (1 - ICC.2 - ICC.3) * (1 - R2.1)
         denom <- nbar * Tbar * (1 - Tbar) * ( K * (MDES/MT)^2 - ICC.3 * omega.3 )
         J <- numr/denom
     } else
     {
-        stop(paste('Design not implemented:', design))
+        stop(paste('d_m not implemented:', d_m))
     }
     return( J )
 }
 
 #' Calculates K, the number of districts
 #'
-#' @param design a single RCT design (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention)
 #' @param MT multiplier
 #' @param MDES scalar; the MDES value for all outcomes
 #' @param J scalar; the number of schools
@@ -430,34 +430,34 @@ calc_J <- function(
 #'
 #' @return K, the number of districts
 #' @export
-calc_K <- function(design, MT, MDES, J, nbar, Tbar,
+calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
                    omega.2, omega.3) {
 
     K <- NA
-    if(design == 'd3.1_m3rr2rr')
+    if(d_m == 'd3.1_m3rr2rr')
     {
         K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
                                  (ICC.2 * omega.2) / J +
                                  ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
-    } else if (design == 'd3.3_m3rc2rc')
+    } else if (d_m == 'd3.3_m3rc2rc')
     {
         K <- (MT/MDES)^2 * ( (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar)) +
                                  (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
                                  ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-    } else if (design == 'd3.2_m3ff2rc' || design == 'd3.2_m3fc2rc' )
+    } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         K <- (MT/MDES)^2 * ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
                                  ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
-    } else if (design == 'd3.2_m3rr2rc')
+    } else if (d_m == 'd3.2_m3rr2rc')
     {
         K <- (MT/MDES)^2 * ( (ICC.3 * omega.3) +
                                  (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
                                  ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
     } else
     {
-        stop(paste('Design not implemented:', design))
+        stop(paste('d_m not implemented:', d_m))
     }
     return(K)
 }
@@ -553,7 +553,7 @@ validate_MTP = function( MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP
 #' This functions takes in a list of user inputs. Depending on the inputs,
 #' it produces errors or warnings, and at times modifies inputs if necessary.
 #'
-#' @param design a single RCT design (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention)
 #' @param params.list a list of parameters input by a user
 #' @param power.call flag for power estimation
 #' @param ss.call flag for sample size estimation
@@ -563,7 +563,7 @@ validate_MTP = function( MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP
 #'
 #' @return params.list
 #'
-validate_inputs <- function( design, params.list,
+validate_inputs <- function( d_m, params.list,
                              power.call = FALSE,
                              mdes.call = FALSE,
                              ss.call = FALSE,
@@ -583,20 +583,20 @@ validate_inputs <- function( design, params.list,
     # basic checks of inputs
     #-------------------------------------------------------#
 
-    # allow either supported design names or PowerUp equivalents
+    # allow either supported d_m names or PowerUp equivalents
     info <- pump_info()
-    if(!(design %in% info$Design$Code))
+    if(!(d_m %in% info$Context$d_m))
     {
-        if(design %in% info$Design$PowerUp)
+        if(d_m %in% info$Context$PowerUp)
         {
-            design <- info$Design$Code[info$Design$PowerUp == design]
+            d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
         } else
         {
-            stop('Invalid design.')
+            stop('Invalid d_m.')
         }
     }
 
-    par.design <- parse_design(design)
+    par.d_m <- parse_d_m(d_m)
     pdef <- parse_power_definition( params.list$power.definition, params.list$M )
     
     params.list$MTP = validate_MTP( MTP = params.list$MTP,
@@ -777,7 +777,7 @@ validate_inputs <- function( design, params.list,
     #-------------------------------------------------------#
 
     # one level models
-    if( par.design$levels == 1 ) {
+    if( par.d_m$levels == 1 ) {
       if( (!is.null( params.list$J ) && params.list$J != 1 ) ||
           (!is.null( params.list$numCovar.2 ) && params.list$numCovar.2 > 0 ) ||
           (!is.null( params.list$R2.2 ) && any(params.list$R2.2 > 0 ) ) ||
@@ -793,7 +793,7 @@ validate_inputs <- function( design, params.list,
     }
 
     # check for three-level parameters when working with one or two level models
-    if( par.design$levels <= 2 )
+    if( par.d_m$levels <= 2 )
     {
       if( ( !is.null(params.list$K) && params.list$K > 1 ) |
           ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
@@ -811,7 +811,7 @@ validate_inputs <- function( design, params.list,
     }
 
     # two level models and above
-    if( par.design$levels >= 2 )
+    if( par.d_m$levels >= 2 )
     {
       if ( params.list$J == 1 )
       {
@@ -821,11 +821,11 @@ validate_inputs <- function( design, params.list,
       {
             verbose_message('Running a model with >= 2 levels with ICC.2 = 0')
       }
-      if( par.design$rand_level == 2 && any( params.list$R2.2 == 0 ) )
+      if( par.d_m$rand_level == 2 && any( params.list$R2.2 == 0 ) )
       {
             verbose_message('Assuming R2.2 = 0')
       }
-      if( par.design$FE.2 &
+      if( par.d_m$FE.2 &
           (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
            ( !is.null(params.list$R2.2) && any( params.list$R2.2 > 0 ) ) ))
       {
@@ -833,12 +833,12 @@ validate_inputs <- function( design, params.list,
               numCovar.2, R2.2')
             params.list$R2.2 <- NULL
       }
-      if( par.design$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
+      if( par.d_m$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
       {
             verbose_message('Assuming omega.2 = 0')
       }
       # constant treatment effects models: level 2
-      if( par.design$model2.p[2] == 'c' )
+      if( par.d_m$model2.p[2] == 'c' )
       {
         if(any(params.list$omega.2 > 0))
         {
@@ -850,7 +850,7 @@ validate_inputs <- function( design, params.list,
 
 
     # three level models
-    if( par.design$levels == 3 )
+    if( par.d_m$levels == 3 )
     {
       if(is.null(params.list$K) || params.list$K < 1 )
       {
@@ -864,15 +864,15 @@ validate_inputs <- function( design, params.list,
       {
           verbose_message('Running a 3-level model with ICC.3 = 0')
       }
-      if( par.design$rand_level == 3 & any(params.list$R2.3 == 0 ) )
+      if( par.d_m$rand_level == 3 & any(params.list$R2.3 == 0 ) )
       {
           verbose_message('Assuming R2.3 = 0')
       }
-      if( par.design$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
+      if( par.d_m$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
       {
           verbose_message('Assuming omega.3 = 0')
       }
-      if( par.design$FE.3 &
+      if( par.d_m$FE.3 &
          (( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
           ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) ))
       {
@@ -882,7 +882,7 @@ validate_inputs <- function( design, params.list,
       }
 
       # constant treatment effects models: level 3
-      if( par.design$model3.p[[2]] == 'c' )
+      if( par.d_m$model3.p[[2]] == 'c' )
       {
         if(any(params.list$omega.3 > 0))
         {
@@ -945,7 +945,7 @@ validate_inputs <- function( design, params.list,
 #' This functions takes in a list of user inputs and checks them for validity,
 #' producing a mix of errors or warnings.
 #'
-#' @param design a single RCT design (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention)
 #' @param call String denoting intended pump_power, pump_mdes, or pump_sample
 #'   call.
 #' @param verbose Keep and return smaller messages or not
@@ -958,7 +958,7 @@ validate_inputs <- function( design, params.list,
 #'   messages will have the error as the first string in the list.
 #' @import purrr
 #' @export
-check_pump_call = function( design,
+check_pump_call = function( d_m,
                             call = c( "power", "mdes", "sample" ),
                             #grid = FALSE,
                             verbose = TRUE,
@@ -970,11 +970,11 @@ check_pump_call = function( design,
     power.call = call == "power"
     mdes.call = call == "mdes"
     ss.call = call == "sample"
-    params$design = design
+    params$d_m = d_m
 
 
     quiet_validate_inputs = silently( validate_inputs )
-    cres = quiet_validate_inputs( design = design, params.list = params,
+    cres = quiet_validate_inputs( d_m = d_m, params.list = params,
                                  power.call = power.call, mdes.call = mdes.call, ss.call = ss.call,
                                  verbose = verbose,
                                  multi.MTP.ok = multi.MTP.ok )

@@ -3,8 +3,8 @@
 
 test_that("Single Scenario plot works", {
 
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = c( "Bonferroni", "BH" ),
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = c( "BF", "BH" ),
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
@@ -37,8 +37,8 @@ test_that("Single Scenario plot works", {
 
 test_that("Grid plot works for power", {
 
-  grid <- pump_power_grid( design = "d3.2_m3ff2rc",
-                           MTP = c( "Bonferroni", "BH" ),
+  grid <- pump_power_grid( d_m = "d3.2_m3ff2rc",
+                           MTP = c( "BF", "BH" ),
                            MDES = 0.1,
                            M = 3,
                            J = 3, # number of schools/block
@@ -60,8 +60,8 @@ test_that("Grid plot works for power", {
 
 
   
-  grid <- pump_power_grid( design = "d3.2_m3ff2rc",
-                           MTP = "Bonferroni",
+  grid <- pump_power_grid( d_m = "d3.2_m3ff2rc",
+                           MTP = "BF",
                            MDES = 0.1,
                            M = 3,
                            J = 3, # number of schools/block
@@ -86,8 +86,8 @@ test_that("Grid plot works for power", {
 
 test_that("Grid plot works for MDES", {
     
-    grid <- pump_mdes_grid(  design = "d3.2_m3ff2rc",
-                             MTP = "Bonferroni",
+    grid <- pump_mdes_grid(  d_m = "d3.2_m3ff2rc",
+                             MTP = "BF",
                              target.power = 0.8,
                              power.definition = 'min1',
                              M = 3,
@@ -113,8 +113,8 @@ test_that("Grid plot works for MDES", {
 
 test_that("Grid plot works for SS", {
     
-    grid <- pump_sample_grid(  design = "d3.2_m3ff2rc",
-                             MTP = c( "Holm", "BH" ),
+    grid <- pump_sample_grid(  d_m = "d3.2_m3ff2rc",
+                             MTP = c( "HO", "BH" ),
                              target.power = 0.8,
                              power.definition = 'complete',
                              typesample = 'J',
@@ -145,8 +145,8 @@ test_that("Grid plot works for SS", {
 
 test_that("Two variable plot works for SS", {
   
-  expect_warning( grid <- pump_sample_grid(  design = "d3.2_m3ff2rc",
-                             MTP = c( "Holm", "BH" ),
+  expect_warning( grid <- pump_sample_grid(  d_m = "d3.2_m3ff2rc",
+                             MTP = c( "HO", "BH" ),
                              target.power = 0.8,
                              power.definition = 'complete',
                              typesample = 'K',
@@ -176,8 +176,8 @@ test_that("Two variable plot works for SS", {
 test_that( "power curve works", {
   
   set.seed( 101010 )
-  up <- pump_sample(    design = "d2.1_m2fc",
-                        MTP = "Holm",
+  up <- pump_sample(    d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         typesample = "J",
                         nbar = 10,
                         power.definition = "min1",

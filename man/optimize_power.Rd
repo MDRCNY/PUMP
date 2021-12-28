@@ -5,7 +5,7 @@
 \title{Optimizes power to help in search for MDES or SS}
 \usage{
 optimize_power(
-  design,
+  d_m,
   search.type,
   MTP,
   target.power,
@@ -34,7 +34,7 @@ optimize_power(
   omega.3 = 0,
   rho,
   B = NULL,
-  cl = NULL,
+  parallel.WY.clusters = 1,
   max.steps = 20,
   tnum = 1000,
   start.tnum = tnum/10,
@@ -45,12 +45,12 @@ optimize_power(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
 \item{search.type}{type of optimization search being conducted. Options: K, J, nbar, mdes}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{target.power}{Target power to arrive at}
@@ -122,7 +122,7 @@ variation).}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{parallel.WY.clusters}{scalar; number of clusters to use for parallel processing of WY}
 
 \item{max.steps}{how many steps allowed before terminating}
 
@@ -140,6 +140,8 @@ than identifying a point of particular power).}
 
 \item{grid.size}{Number of points to check in initial search grid.  Grid will
 be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).}
+
+\item{cl}{cluster object to use for parallel processing}
 }
 \value{
 power

@@ -2,21 +2,12 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_df}
 \alias{calc_df}
-\title{Calculate the degrees of freedom for a particular design}
+\title{Calculate the degrees of freedom for a particular d_m}
 \usage{
-calc_df(
-  design,
-  J,
-  K,
-  nbar,
-  numCovar.1,
-  numCovar.2,
-  numCovar.3,
-  validate = TRUE
-)
+calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE)
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
 \item{J}{scalar; the number of schools}
 
@@ -34,9 +25,9 @@ including block dummies)}
 \item{validate}{whether or not to validate if output df is <= 0}
 }
 \value{
-Degree of freedom for the design.
+Degree of freedom for the d_m.
 }
 \description{
 Given sample sizes, return the used degrees of freedom (frequently
-conservative) for the design.
+conservative) for the d_m.
 }

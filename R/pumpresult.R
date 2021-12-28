@@ -1,7 +1,7 @@
 
 make.pumpresult = function( x,
                             type = c( "power", "mdes", "sample" ),
-                            design = design,
+                            d_m = d_m,
                             params.list = NULL,
                             tries = NULL,
                             flat = FALSE,
@@ -10,7 +10,7 @@ make.pumpresult = function( x,
   class(x) <- c( "pumpresult", class(x) )
   attr(x, "type" ) <- type
   attr(x, "params.list") <- params.list
-  attr(x, "design") <- design
+  attr(x, "d_m") <- d_m
   ll = list(...)
   for ( l in names(ll) ) {
     attr(x, l) <- ll[[ l ]]
@@ -39,7 +39,7 @@ make.pumpresult = function( x,
 #' @export
 update_grid = function( x, ... ) {
   params = attr(x,"param")
-  params["design"] = design(x)
+  params["d_m"] = d_m(x)
   for ( p in names(params) ) {
     params[[p]] = unique( params[[p]] )
   }
@@ -94,7 +94,7 @@ update.pumpresult = function( object, type = NULL, ... ) {
   params = params(object)
   orig_result_type = attr(object, "type" )
   params["type"] = orig_result_type
-  params["design"] = design(object)
+  params["d_m"] = d_m(object)
   
   # Get new parameters
   dts = list(...)
@@ -209,14 +209,14 @@ params <- function( x, ... ) {
 
 #' Get design for pump result
 #'
-#' @return design: design used (as string)
+#' @return d_m: d_m used (as string)
 #'
 #' @rdname pumpresult
 #' @export
-design <- function( x, ... ) {
+d_m <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
   
-  pp <- attr( x, "design" )
+  pp <- attr( x, "d_m" )
   return( pp )
 }
 
@@ -430,7 +430,7 @@ dim.pumpresult <- function( x, ... ) {
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
 summary.pumpresult = function( object, ... ) {
-  print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
+  print_d_m( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
@@ -457,8 +457,8 @@ print.pumpresult = function( x, n = 10,
   result_type = attr( x, "type" )
   
   if ( header ) {
-    scat( "%s result: %s design with %d outcomes\n",
-          result_type, design(x), params(x)$M )
+    scat( "%s result: %s d_m with %d outcomes\n",
+          result_type, d_m(x), params(x)$M )
     
     if ( result_type == "mdes" || result_type == "sample" ) {
       pow_params = attr( x, "power.params.list" )
@@ -552,7 +552,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' Print design of given pump result object
+#' Print d_m of given pump result object
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
@@ -560,7 +560,7 @@ print_search <- function( x, n = 10 ) {
 #' @param ... Extra arguments to pass to print.pumpresult.
 #'
 #' @export
-print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...  ) {
+print_d_m <- function( x, insert_results = FALSE, insert_control = FALSE, ...  ) {
   
   is_grid = is.pumpgridresult(x)
   
@@ -586,8 +586,8 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
   MDESv = params$MDES
   params = sapply( params, reduce_vec, simplify = FALSE )
   
-  design = design(x)
-  des = parse_design(design)
+  d_m = d_m(x)
+  des = parse_d_m(d_m)
   if ( des$levels < 3 ) {
     params$K = "none"
   }
@@ -619,8 +619,8 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
     } 
   } else {
     
-    scat( "%s result: %s design with %s outcomes",
-          result_type, design(x), params$M )
+    scat( "%s result: %s d_m with %s outcomes",
+          result_type, d_m(x), params$M )
     if ( !is.null( params$numZero ) ) {
       scat( " (%s zeros)\n", params$numZero )
     } else {

@@ -2,8 +2,8 @@
 # library( testthat )
 
 test_that("parameters that result in 80% power for raw D1indiv", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
@@ -21,9 +21,9 @@ test_that("parameters that result in 80% power for raw D1indiv", {
 })
 
 
-test_that("parameters that result in 80% power for Bonferroni D1indiv", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+test_that("parameters that result in 80% power for BF D1indiv", {
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 4, # number of schools/block
@@ -41,9 +41,9 @@ test_that("parameters that result in 80% power for Bonferroni D1indiv", {
 })
 
 
-test_that("parameters that result in 80% power for Bonferroni min1", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+test_that("parameters that result in 80% power for BF min1", {
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
@@ -60,9 +60,9 @@ test_that("parameters that result in 80% power for Bonferroni min1", {
   expect_equal( pp$min1[2], 0.8, tol = 0.05)
 })
 
-test_that("parameters that result in 80% power for Bonferroni min2", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+test_that("parameters that result in 80% power for BF min2", {
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 4, # number of schools/block
@@ -79,9 +79,9 @@ test_that("parameters that result in 80% power for Bonferroni min2", {
   expect_equal( pp$min2[2], 0.8, tol = 0.05)
 })
 
-test_that("parameters that result in 80% power for Bonferroni complete", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+test_that("parameters that result in 80% power for BF complete", {
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.09, 3 ),
                     M = 3,
                     J = 5, # number of schools/block

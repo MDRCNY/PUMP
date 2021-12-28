@@ -44,7 +44,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
   
   if ( drop_unique_columns ) {
-    grid <- dplyr::select( grid, dplyr::any_of( unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) )
+    grid <- dplyr::select( grid, dplyr::any_of( unique( c("d_m", "MDES", "numZero", var_names, "res" ) ) ) )
       #    grid <- dplyr::select(
       #      grid,
       #      dplyr::any_of( c("MDES", "numZero" ) ) |
@@ -115,7 +115,7 @@ setup_default_parallel_plan <- function() {
 #' @importFrom tidyselect vars_select_helpers
 #' @family grid functions
 #' @export
-pump_power_grid <- function( design, MTP, MDES, M, nbar,
+pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
                              J = 1, K = 1, numZero = NULL,
                              Tbar, alpha = 0.05,
                              numCovar.1 = NULL,
@@ -136,7 +136,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
          "Did you try to give a vector of varying MDES?" ))
   }
 
-  args <- list( design = design, M = M, MDES = MDES,
+  args <- list( d_m = d_m, M = M, MDES = MDES,
                 J = J, K = K,
                 nbar = nbar, numZero = numZero,
                 Tbar = Tbar, alpha = alpha,
@@ -160,8 +160,8 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
   args = c( args, list(...) )
   grid <- make.pumpgridresult(
     grid, "power",
-    params.list = args[names(args) != 'design'],
-    design = design,
+    params.list = args[names(args) != 'd_m'],
+    d_m = d_m,
     long.table = long.table )
 
   return( grid )
@@ -177,7 +177,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
 #' @family grid functions
 #'
 #' @export
-pump_mdes_grid <- function( design, MTP, M,
+pump_mdes_grid <- function( d_m, MTP, M,
                             target.power, power.definition, tol = 0.01,
                             nbar, J = 1, K = 1,
                             Tbar, alpha,
@@ -194,7 +194,7 @@ pump_mdes_grid <- function( design, MTP, M,
                             ... ) {
 
 
-  args <- list( design = design, M = M,
+  args <- list( d_m = d_m, M = M,
                 J = J, K = K, nbar = nbar,
                 target.power = target.power,
                 power.definition = power.definition,
@@ -219,8 +219,8 @@ pump_mdes_grid <- function( design, MTP, M,
   
   grid <- make.pumpgridresult(
       grid, "mdes",
-      params.list = args[names(args) != 'design'],
-      design = design )
+      params.list = args[names(args) != 'd_m'],
+      d_m = d_m )
   
 
   return( grid )
@@ -235,7 +235,7 @@ pump_mdes_grid <- function( design, MTP, M,
 #' @family grid functions
 #'
 #' @export
-pump_sample_grid <- function( design, MTP, M,
+pump_sample_grid <- function( d_m, MTP, M,
                               target.power, power.definition, tol = 0.01,
                               MDES = NULL,
                               typesample,
@@ -254,7 +254,7 @@ pump_sample_grid <- function( design, MTP, M,
                               ... ) {
 
 
-  args <- list( design = design, M = M, J = J, K = K,
+  args <- list( d_m = d_m, M = M, J = J, K = K,
                 power.definition = power.definition,
                 MTP = MTP,
                 MDES = MDES, nbar = nbar,
@@ -280,8 +280,8 @@ pump_sample_grid <- function( design, MTP, M,
   
   grid <- make.pumpgridresult(
       grid, "sample",
-      params.list = args[names(args) != 'design'],
-      design = design,
+      params.list = args[names(args) != 'd_m'],
+      d_m = d_m,
       sample.level = typesample )
   
   return( grid )

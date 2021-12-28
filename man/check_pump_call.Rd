@@ -5,7 +5,7 @@
 \title{Check user inputs}
 \usage{
 check_pump_call(
-  design,
+  d_m,
   call = c("power", "mdes", "sample"),
   verbose = TRUE,
   multi.MTP.ok = TRUE,
@@ -13,7 +13,7 @@ check_pump_call(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{call}{String denoting intended pump_power, pump_mdes, or pump_sample
 call.}

@@ -5,7 +5,7 @@
 \title{MDES (minimum detectable effect size) function}
 \usage{
 pump_mdes(
-  design,
+  d_m,
   MTP = NULL,
   numZero = NULL,
   M,
@@ -35,17 +35,17 @@ pump_mdes(
   tnum = 1000,
   start.tnum = tnum/10,
   final.tnum = 4 * tnum,
-  cl = NULL,
+  parallel.WY.clusters = parallel.WY.clusters,
   updateProgress = NULL,
   give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
@@ -121,14 +121,16 @@ rho or rho.matrix, but not both.}
 
 \item{final.tnum}{number of samples for final draw}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{parallel.WY.clusters}{scalar; number of clusters to use for parallel processing of WY}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 
-\item{verbose}{Print out diagnostics of time, etc.}
+\item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
+
+\item{cl}{cluster object to use for parallel processing}
 }
 \value{
 mdes results

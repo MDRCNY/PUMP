@@ -57,9 +57,9 @@ test_that( "optimize_power solves", {
 
     set.seed( 3042424 )
     op_pow <- PUMP:::optimize_power(
-        MTP = "Holm", nbar = 200,
+        MTP = "HO", nbar = 200,
         power.definition = "D1indiv",
-        design = "d2.1_m2fc", search.type = "J",
+        d_m = "d2.1_m2fc", search.type = "J",
         start.low = 56, start.high = 75,
         M = 3,
         MDES = 0.05, target.power = 0.80, tol = 0.025,

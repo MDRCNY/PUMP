@@ -30,7 +30,7 @@
 #'
 
 pump_mdes <- function(
-  design, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
+  d_m, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
   Tbar, alpha = 0.05, two.tailed = TRUE,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -57,7 +57,7 @@ pump_mdes <- function(
   #     scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
   #   }
   #   des = purrr::map( MTP,
-  #                     pump_mdes, design = design,
+  #                     pump_mdes, d_m = d_m,
   #                     target.power = target.power, power.definition = power.definition, tol = tol,
   #                     M = M, J = J, K = K, nbar = nbar,
   #                     Tbar = Tbar, alpha = alpha,
@@ -80,7 +80,7 @@ pump_mdes <- function(
   #
   #   return( make.pumpresult( ftable, "mdes",
   #                            params.list = plist,
-  #                            design = design,
+  #                            d_m = d_m,
   #                            multiple_MTP = TRUE ) )
   #
   #   #des = map( des, ~ .x[nrow(.x),] ) %>%
@@ -120,7 +120,7 @@ pump_mdes <- function(
     power.definition = power.definition
   )
   ##
-  params.list <- validate_inputs(design, params.list, mdes.call = TRUE, verbose = verbose )
+  params.list <- validate_inputs(d_m, params.list, mdes.call = TRUE, verbose = verbose )
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES; numZero = params.list$numZero
@@ -151,7 +151,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list) )
   }
@@ -164,7 +164,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list) )
   }
@@ -176,12 +176,12 @@ pump_mdes <- function(
 
   # Compute Q.m and df
   Q.m <- calc_SE(
-    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    d_m = d_m, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
   )
   t.df <- calc_df(
-    design = design, J = J, K = K, nbar = nbar,
+    d_m = d_m, J = J, K = K, nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
   )
 
@@ -215,11 +215,11 @@ pump_mdes <- function(
   mdes.high <- max(mdes.bf.list)
 
   # MDES is already calculated for individual power for raw and Bonferroni
-  if ( pdef$indiv & MTP == "Bonferroni") {
+  if ( pdef$indiv & MTP == "BF") {
     mdes.results <- data.frame(MTP, mdes.high, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list ) )
   }
@@ -228,7 +228,7 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, mdes.low, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list ) )
   }
@@ -272,7 +272,7 @@ pump_mdes <- function(
     mdes.low <- 0
   }
 
-  test.pts <- optimize_power(design, search.type = 'mdes', MTP,
+  test.pts <- optimize_power(d_m, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
@@ -311,7 +311,7 @@ pump_mdes <- function(
   return( make.pumpresult( mdes.results, type = "mdes",
                            tries = test.pts,
                            flat = flat,
-                           design = design,
+                           d_m = d_m,
                            params.list = params.list,
                            power.params.list = pow_params ) )
 }

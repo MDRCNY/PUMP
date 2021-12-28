@@ -4,7 +4,15 @@
 \alias{adjp_wyss}
 \title{Westfall-Young Single Step Adjustment Function}
 \usage{
-adjp_wyss(rawp.mat, B, Sigma, t.df, two.tailed, verbose = TRUE)
+adjp_wyss(
+  rawp.mat,
+  B,
+  Sigma,
+  t.df,
+  two.tailed,
+  verbose = TRUE,
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{rawp.mat}{a matrix of raw p-values under H1. dimension: nrow = tnum, ncol = M}

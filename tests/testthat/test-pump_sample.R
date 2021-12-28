@@ -4,7 +4,7 @@
 
 test_that("calc_nbar works", {
 
-  nbar <- calc_nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  d_m = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -13,7 +13,7 @@ test_that("calc_nbar works", {
   nbar
   expect_true( is.na( nbar ) )
 
-  nbar <- calc_nbar(  design = "d2.2_m2rc",
+  nbar <- calc_nbar(  d_m = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 305,
@@ -27,7 +27,7 @@ test_that("calc_nbar works", {
 
 test_that("calc_J works", {
 
-  J <- calc_J(  design = "d2.2_m2rc",
+  J <- calc_J(  d_m = "d2.2_m2rc",
                       MT = 2.8,
                       MDES = 0.20,
                       nbar = 200,
@@ -41,7 +41,7 @@ test_that("calc_J works", {
 test_that("pump_sample_raw works", {
 
   expect_error( calcnbar <- pump_sample_raw(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     typesample = "nbar",
     J = 5,
     MDES = 0.05, target.power = 0.80, tol = 0.01,
@@ -51,7 +51,7 @@ test_that("pump_sample_raw works", {
 
   )
 
-  calcnbar <- pump_sample_raw( design = "d2.2_m2rc",
+  calcnbar <- pump_sample_raw( d_m = "d2.2_m2rc",
                                typesample = "nbar",
                                J = 10,
                                MDES = 0.05, target.power = 0.80,
@@ -63,7 +63,7 @@ test_that("pump_sample_raw works", {
   expect_true( is.na( calcnbar$ss ) )
 
 
-  calcJ <- pump_sample_raw( design = "d2.1_m2fc",
+  calcJ <- pump_sample_raw( d_m = "d2.1_m2fc",
                             typesample = "J",
                             nbar = 258,
                             MDES = 0.05, target.power = 0.80,
@@ -74,7 +74,7 @@ test_that("pump_sample_raw works", {
   calcJ
   expect_true( !is.na( calcJ$ss ) )
 
-  calcn <- pump_sample_raw( design = "d2.1_m2fc",
+  calcn <- pump_sample_raw( d_m = "d2.1_m2fc",
                             typesample = "nbar",
                             J = calcJ$ss,
                             MDES = 0.05, target.power = 0.80,
@@ -85,7 +85,7 @@ test_that("pump_sample_raw works", {
   calcn
   expect_equal(258, calcn$ss, tol = 0.01)
 
-  calcJ2 <- pump_sample_raw( design = "d2.1_m2fc",
+  calcJ2 <- pump_sample_raw( d_m = "d2.1_m2fc",
                              typesample = "J",
                              nbar = calcn$ss,
                              MDES = 0.05, target.power = 0.80,
@@ -96,7 +96,7 @@ test_that("pump_sample_raw works", {
   calcJ2
   expect_equal(calcJ$ss, calcJ2$ss, tol = 0.01)
 
-  calcn2 <- pump_sample_raw( design = "d2.1_m2fc",
+  calcn2 <- pump_sample_raw( d_m = "d2.1_m2fc",
                              typesample = "nbar",
                              J = calcJ2$ss,
                              MDES = 0.05, target.power = 0.80,
@@ -110,11 +110,11 @@ test_that("pump_sample_raw works", {
 
 
 
-test_that("Bonferroni for non individual power", {
+test_that("BF for non individual power", {
 
   set.seed( 44941112 )
-  p <- pump_power(  design = "d2.1_m2fc",
-                    MTP = "Bonferroni",
+  p <- pump_power(  d_m = "d2.1_m2fc",
+                    MTP = "BF",
                     J = 10,
                     nbar = 200,
                     M = 3,
@@ -125,8 +125,8 @@ test_that("Bonferroni for non individual power", {
                     rho = 0.4 )
   p
 
-  ss <- pump_sample(    design = "d2.1_m2fc",
-                        MTP = "Bonferroni",
+  ss <- pump_sample(    d_m = "d2.1_m2fc",
+                        MTP = "BF",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "min1",
@@ -144,8 +144,8 @@ test_that("Bonferroni for non individual power", {
 
 
 test_that("plot_power_curve", {
-  ss1 <- pump_sample(   design = "d2.1_m2fc",
-                        MTP = "Bonferroni",
+  ss1 <- pump_sample(   d_m = "d2.1_m2fc",
+                        MTP = "BF",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "D1indiv",
@@ -157,8 +157,8 @@ test_that("plot_power_curve", {
                         rho = 0.4 )
   expect_true(!is.null(plot_power_curve(ss1)))
 
-  ss2 <- pump_sample(   design = "d2.1_m2fc",
-                        MTP = "Holm",
+  ss2 <- pump_sample(   d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "D1indiv",
@@ -173,8 +173,8 @@ test_that("plot_power_curve", {
 
 
 test_that("plot_power_search", {
-  ss1 <- pump_sample(   design = "d2.1_m2fc",
-                        MTP = "Bonferroni",
+  ss1 <- pump_sample(   d_m = "d2.1_m2fc",
+                        MTP = "BF",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "D1indiv",
@@ -186,8 +186,8 @@ test_that("plot_power_search", {
                         rho = 0.4 )
   expect_error(plot_power_search(ss1))
 
-  ss2 <- pump_sample(   design = "d2.1_m2fc",
-                        MTP = "Holm",
+  ss2 <- pump_sample(   d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "D1indiv",
@@ -202,8 +202,8 @@ test_that("plot_power_search", {
 
 
 test_that("pump_sample 2 level/2 level", {
-  ss2 <- pump_sample(   design = "d2.1_m2fc",
-                        MTP = "Holm",
+  ss2 <- pump_sample(   d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         typesample = "J",
                         nbar = 200,
                         power.definition = "D1indiv",
@@ -215,8 +215,8 @@ test_that("pump_sample 2 level/2 level", {
                         rho = 0.4 )
   ss2
 
-  p2 <- pump_power( design = "d2.1_m2fc",
-                    MTP = "Holm",
+  p2 <- pump_power( d_m = "d2.1_m2fc",
+                    MTP = "HO",
                     J = ss2$`Sample.size`,
                     nbar = 200,
                     M = 3,
@@ -234,8 +234,8 @@ test_that("pump_sample 2 level/2 level", {
 test_that("sample search when one end is missing", {
 
   set.seed( 20303 )
-  pow_ref <- pump_power( design = "d2.2_m2rc",
-                         MTP = "Holm",
+  pow_ref <- pump_power( d_m = "d2.2_m2rc",
+                         MTP = "HO",
                          M = 4,
                          J = 10,
                          nbar = 10000,
@@ -251,10 +251,10 @@ test_that("sample search when one end is missing", {
   # because the power curve is too flat
   set.seed( 20303 )
   expect_warning( nbar1 <- pump_sample(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     typesample = "nbar",
     power.definition = "min1",
-    MTP = "Holm",
+    MTP = "HO",
     M = 4,
     J = 10,
     MDES = 0.40, target.power = pow_ref$min1[2], tol = 0.01,
@@ -269,10 +269,10 @@ test_that("sample search when one end is missing", {
   # same problem happens with logit
   set.seed( 20303 )
   expect_warning( nbar2 <- pump_sample(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     typesample = "nbar",
     power.definition = "min1",
-    MTP = "Holm",
+    MTP = "HO",
     M = 4,
     J = 10,
     MDES = 0.40, target.power = pow_ref$min1[2], tol = 0.01,
@@ -286,10 +286,10 @@ test_that("sample search when one end is missing", {
   # Now an infeasible calculation where the correlation makes min1 not able to
   # achieve power, even though independence would.
   set.seed( 443434344 )
-  expect_warning(nbar3 <- pump_sample( design = "d2.2_m2rc",
+  expect_warning(nbar3 <- pump_sample( d_m = "d2.2_m2rc",
                                           typesample = "nbar",
                                           power.definition = "min1",
-                                          MTP = "Holm",
+                                          MTP = "HO",
                                           M = 4,
                                           J = 10,
                                           MDES = 0.39, target.power = 0.80, tol = 0.01,
@@ -305,8 +305,8 @@ test_that("sample search when one end is missing", {
 test_that("Sample with different correlations", {
 
     # zero correlation
-    p <- pump_power(  design = "d2.1_m2fc",
-                      MTP = "Holm",
+    p <- pump_power(  d_m = "d2.1_m2fc",
+                      MTP = "HO",
                       J = 10,
                       nbar = 200,
                       M = 20,
@@ -317,8 +317,8 @@ test_that("Sample with different correlations", {
                       rho = 0 )
     p
 
-    ss <- pump_sample(    design = "d2.1_m2fc",
-                          MTP = "Holm",
+    ss <- pump_sample(    d_m = "d2.1_m2fc",
+                          MTP = "HO",
                           typesample = "J",
                           nbar = 200,
                           power.definition = "min1",
@@ -335,8 +335,8 @@ test_that("Sample with different correlations", {
 
 
     # high correlation
-    p <- pump_power(  design = "d2.1_m2fc",
-                      MTP = "Holm",
+    p <- pump_power(  d_m = "d2.1_m2fc",
+                      MTP = "HO",
                       J = 10,
                       nbar = 200,
                       M = 20,
@@ -347,8 +347,8 @@ test_that("Sample with different correlations", {
                       rho = 0.95 )
     p
 
-    ss <- pump_sample(    design = "d2.1_m2fc",
-                          MTP = "Holm",
+    ss <- pump_sample(    d_m = "d2.1_m2fc",
+                          MTP = "HO",
                           typesample = "J",
                           nbar = 200,
                           power.definition = "min1",
@@ -369,8 +369,8 @@ test_that("Sample with different correlations", {
 test_that("No adjustment", {
 
   nbar <- pump_sample(
-    design = "d2.2_m2rc",
-    MTP = 'Bonferroni',
+    d_m = "d2.2_m2rc",
+    MTP = 'BF',
     power.definition = 'D1indiv',
     typesample = 'nbar',
     target.power = 0.8,
@@ -382,7 +382,7 @@ test_that("No adjustment", {
   )
 
   nbar <- expect_warning(pump_sample(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     MTP = 'None',
     power.definition = 'D1indiv',
     typesample = 'nbar',
@@ -395,7 +395,7 @@ test_that("No adjustment", {
   ))
 
   expect_error(nbar <- expect_warning(pump_sample(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     MTP = 'None',
     power.definition = 'complete',
     typesample = 'nbar',
@@ -411,8 +411,8 @@ test_that("No adjustment", {
 
 test_that( "sample errors out for MDES vector", {
   expect_error(pp <- pump_sample(
-    design = "d2.2_m2rc",
-    MTP = c("Holm"),
+    d_m = "d2.2_m2rc",
+    MTP = c("HO"),
     typesample = c("J"),
     MDES = rep(0.2, 5),
     M = 5,
@@ -426,8 +426,8 @@ test_that( "sample errors out for MDES vector", {
     rho = 0.2))
 
   expect_error(pp <- pump_sample(
-    design = "d2.2_m2rc",
-    MTP = c("Holm"),
+    d_m = "d2.2_m2rc",
+    MTP = c("HO"),
     typesample = c("J"),
     M = 5,
     numZero = 1,
@@ -446,8 +446,8 @@ test_that( "different values for different outcomes", {
   set.seed(03443)
 
   pow <- pump_power(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     J = 20,
     nbar = 200,
     M = 3,
@@ -462,8 +462,8 @@ test_that( "different values for different outcomes", {
   expect_true(pow$D3indiv[1] > pow$D2indiv[1])
 
   ss1 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     typesample = 'J',
     target.power = 0.8,
     power.definition = 'D1indiv',
@@ -477,8 +477,8 @@ test_that( "different values for different outcomes", {
   )
 
   ss2 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     typesample = 'J',
     target.power = 0.8,
     power.definition = 'D2indiv',
@@ -492,8 +492,8 @@ test_that( "different values for different outcomes", {
   )
 
   ss3 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     typesample = 'J',
     target.power = 0.8,
     power.definition = 'D3indiv',
@@ -517,7 +517,7 @@ test_that( "different MDES values work", {
   set.seed(034443)
   
   pow <- pump_power(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     MTP = "BH",
     J = 40,
     nbar = 100,
@@ -548,7 +548,7 @@ test_that( "different MDES values work", {
 test_that("M > 1 with MTP None", {
     
     ss <- expect_warning(pump_sample(
-        design = "d2.1_m2fc",
+        d_m = "d2.1_m2fc",
         target.power = 0.8,
         power.definition = 'D1indiv',
         typesample = 'J',
@@ -566,7 +566,7 @@ test_that("M > 1 with MTP None", {
     expect_true( nrow( ss ) == 1 )
     
     expect_error(expect_warning(pump_sample(
-        design = "d2.1_m2fc",
+        d_m = "d2.1_m2fc",
         target.power = 0.8,
         power.definition = 'min2',
         typesample = 'J',

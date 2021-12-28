@@ -4,8 +4,8 @@
 test_that( "pumpgridresult dimensions work", {
     
     set.seed( 101010 )
-    ss <- pump_power_grid(    design = "d2.1_m2fc",
-                              MTP = c( "Holm", "BH" ),
+    ss <- pump_power_grid(    d_m = "d2.1_m2fc",
+                              MTP = c( "HO", "BH" ),
                               nbar = 200, J = 40,
                               M = 5,
                               numZero = 2,
@@ -32,11 +32,11 @@ test_that( "pumpgridresult dimensions work", {
     
     capture_output( pp <- print( ss ) )
     
-    capture_output( pd <- print_design(ss) )
+    capture_output( pd <- print_d_m(ss) )
     
     set.seed( 1010310 )
-    ssL <- pump_power_grid(    design = "d2.1_m2fc",
-                              MTP = c( "Holm", "BH" ),
+    ssL <- pump_power_grid(    d_m = "d2.1_m2fc",
+                              MTP = c( "HO", "BH" ),
                               nbar = 200, J = 40,
                               M = 5,
                               MDES = c( 0.05, 0.10, 0.15 ),
@@ -56,8 +56,8 @@ test_that( "pumpgridresult dimensions work", {
     #ssL2 = transpose_power_table( ss )
     
     
-    ssLW <- pump_mdes_grid(    design = "d2.1_m2fc",
-                               MTP = c( "Holm", "BH" ),
+    ssLW <- pump_mdes_grid(    d_m = "d2.1_m2fc",
+                               MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,
                                target.power = 0.80, 
                                power.definition="D2indiv",
@@ -73,8 +73,8 @@ test_that( "pumpgridresult dimensions work", {
     ssLW
     
     
-    ssLW <- pump_mdes_grid(    design = "d2.1_m2fc",
-                               MTP = c( "Holm", "BH" ),
+    ssLW <- pump_mdes_grid(    d_m = "d2.1_m2fc",
+                               MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,
                                target.power = c( 0.60, 0.70 ), 
                                power.definition="D2indiv",
@@ -91,8 +91,8 @@ test_that( "pumpgridresult dimensions work", {
     
     
     
-    ssLW <- pump_sample_grid(    design = "d3.2_m3rr2rc",
-                               MTP = c( "Holm", "BH" ),
+    ssLW <- pump_sample_grid(    d_m = "d3.2_m3rr2rc",
+                               MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,
                                target.power = c( 0.60, 0.70 ), 
                                typesample = "K",

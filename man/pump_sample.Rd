@@ -5,7 +5,7 @@
 \title{Calculate sample size}
 \usage{
 pump_sample(
-  design,
+  d_m,
   MTP = NULL,
   typesample,
   MDES,
@@ -36,7 +36,7 @@ pump_sample(
   tnum = 1000,
   start.tnum = tnum/10,
   final.tnum = 4 * tnum,
-  cl = NULL,
+  parallel.WY.clusters = 1,
   updateProgress = NULL,
   max_sample_size_nbar = 10000,
   max_sample_size_JK = 1000,
@@ -46,10 +46,10 @@ pump_sample(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: "nbar", "J", or "K".}
@@ -125,7 +125,7 @@ variation).}
 
 \item{final.tnum}{number of samples for final draw}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{parallel.WY.clusters}{scalar; number of clusters to use for parallel processing of WY}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
@@ -140,7 +140,7 @@ controls when the search is done: when estimated power (checked with
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 
-\item{verbose}{Print out diagnostics of time, etc.}
+\item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
 \value{
 sample size results

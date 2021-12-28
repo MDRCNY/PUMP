@@ -42,7 +42,7 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 #'
 #' @export
 pump_sample_raw <- function(
-  design, MTP, typesample,
+  d_m, MTP, typesample,
   MDES,
   nbar = NULL, J = NULL, K = NULL,
   target.power,
@@ -75,7 +75,7 @@ pump_sample_raw <- function(
     stop('pump_sample_raw only takes scalar inputs')
   }
 
-  initial_df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  initial_df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
   stopifnot( initial_df > 0 )
 
   i <- 0
@@ -84,7 +84,7 @@ pump_sample_raw <- function(
   # Get initial size (will be low)
   MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
   if (typesample == "J") {
-    J <- calc_J( design, MT = MT, MDES = MDES[1],
+    J <- calc_J( d_m, MT = MT, MDES = MDES[1],
                  K = K, nbar = nbar, Tbar = Tbar,
                  R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                  ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -92,7 +92,7 @@ pump_sample_raw <- function(
     J <- round(J)
   } else if (typesample == "K") {
     K <- calc_K(
-      design, MT = MT, MDES = MDES[1],
+      d_m, MT = MT, MDES = MDES[1],
       J = J, nbar = nbar, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -101,14 +101,14 @@ pump_sample_raw <- function(
     K <- round(K)
   } else if (typesample == "nbar") {
     nbar <- calc_nbar(
-      design, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
+      d_m, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
       omega.2 = omega.2[1], omega.3 = omega.3[1]
     )
   }
 
-  df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+  df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
 
   if( df < 1 ) {
     while( df < 1 ) {
@@ -122,7 +122,7 @@ pump_sample_raw <- function(
         K <- K + 1
         min_samp_size <- K
       }
-      df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+      df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     }
     if ( warn.small ) {
       warning(
@@ -135,11 +135,11 @@ pump_sample_raw <- function(
 
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
-    df <- calc_df(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+    df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
     MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
 
     if (typesample == "J") {
-      J1 <- calc_J( design, MT = MT, MDES = MDES[1],
+      J1 <- calc_J( d_m, MT = MT, MDES = MDES[1],
                     K = K, nbar = nbar, Tbar = Tbar,
                     R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -156,7 +156,7 @@ pump_sample_raw <- function(
 
     } else if (typesample == "K") {
       K1 <- calc_K(
-        design, MT = MT, MDES = MDES[1],
+        d_m, MT = MT, MDES = MDES[1],
         J = J, nbar = nbar, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -170,7 +170,7 @@ pump_sample_raw <- function(
       }
     } else if (typesample == "nbar") {
       nbar1 <- calc_nbar(
-        design, MT = MT, MDES = MDES[1],
+        d_m, MT = MT, MDES = MDES[1],
         J = J, K = K, Tbar = Tbar,
         R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
@@ -225,7 +225,7 @@ pump_sample_raw <- function(
 #' @export
 
 pump_sample <- function(
-  design, MTP = NULL, typesample,
+  d_m, MTP = NULL, typesample,
   MDES, M, numZero = NULL,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
@@ -282,7 +282,7 @@ pump_sample <- function(
     power.definition = power.definition
   )
   ##
-  params.list <- validate_inputs(design, params.list, ss.call = TRUE, verbose = verbose )
+  params.list <- validate_inputs(d_m, params.list, ss.call = TRUE, verbose = verbose )
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES; numZero <- params.list$numZero
@@ -335,7 +335,7 @@ pump_sample <- function(
     return( make.pumpresult( ss.results, type = "sample",
                              params.list = params.list,
                              tries = NULL,
-                             design = design,
+                             d_m = d_m,
                              sample.level = typesample,
                              power.params.list = pow_params) )
   }
@@ -347,7 +347,7 @@ pump_sample <- function(
       return( make.pumpresult( ss.results, type = "sample",
                                params.list = params.list,
                                tries = NULL,
-                               design = design,
+                               d_m = d_m,
                                sample.level = typesample,
                                power.params.list = pow_params) )
   }
@@ -374,7 +374,7 @@ pump_sample <- function(
     for(m in 1:(M-numZero) )
     {
       ss.low.list[[m]] <- pump_sample_raw(
-        design = design, MTP = MTP, typesample = typesample,
+        d_m = d_m, MTP = MTP, typesample = typesample,
         MDES = MDES[m], J = J, K = K,
         target.power = target.power,
         nbar = nbar, Tbar = Tbar,
@@ -393,7 +393,7 @@ pump_sample <- function(
     for(m in 1:(M-numZero) )
     {
       ss.high.list[[m]] <- pump_sample_raw(
-        design = design, MTP = MTP, typesample = typesample,
+        d_m = d_m, MTP = MTP, typesample = typesample,
         MDES = MDES[m], J = J, K = K,
         target.power = target.power,
         nbar = nbar, Tbar = Tbar,
@@ -415,7 +415,7 @@ pump_sample <- function(
     for(m in 1:(M-numZero))
     {
       ss.low.list[[m]] <- pump_sample_raw(
-        design = design, MTP = MTP, typesample = typesample,
+        d_m = d_m, MTP = MTP, typesample = typesample,
         MDES = MDES[m], J = J, K = K,
         target.power = need_pow,
         nbar = nbar, Tbar = Tbar,
@@ -435,7 +435,7 @@ pump_sample <- function(
     for(m in 1:(M-numZero))
     {
       ss.high.list[[m]] <- pump_sample_raw(
-        design = design, MTP = MTP, typesample = typesample,
+        d_m = d_m, MTP = MTP, typesample = typesample,
         MDES = MDES[m], J = J, K = K,
         target.power = need_pow,
         nbar = nbar, Tbar = Tbar,
@@ -481,7 +481,7 @@ pump_sample <- function(
   }
 
   # Done if Bonferroni is what we are looking for
-  if (MTP == "Bonferroni" & pdef$indiv ) {
+  if (MTP == "BF" & pdef$indiv ) {
       ss.results <- data.frame(MTP, typesample, ss.high, target.power)
       colnames(ss.results) <- output.colnames
       
@@ -493,7 +493,7 @@ pump_sample <- function(
       }
       return( make.pumpresult( ss.results, tries = NULL,
                                type = "sample", params.list = params.list,
-                               design = design,
+                               d_m = d_m,
                                sample.level = typesample,
                                power.params.list = pow_params) )
   }
@@ -511,7 +511,7 @@ pump_sample <- function(
       
       return( make.pumpresult( ss.results, tries = NULL,
                                type = "sample", params.list = params.list,
-                               design = design,
+                               d_m = d_m,
                                sample.level = typesample,
                                power.params.list = pow_params) )
   }
@@ -523,7 +523,7 @@ pump_sample <- function(
 
   # search in the grid from min to max.
   test.pts <- optimize_power(
-    design = design, search.type = typesample,
+    d_m = d_m, search.type = typesample,
     MTP, target.power, power.definition, tol,
     start.low = ss.low, start.high = ss.high,
     MDES = MDES,
@@ -563,7 +563,7 @@ pump_sample <- function(
   }
 
   return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
-                           design = design,
+                           d_m = d_m,
                            sample.level = typesample,
                            power.params.list = pow_params,
                            tries = test.pts,

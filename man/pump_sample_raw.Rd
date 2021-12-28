@@ -5,7 +5,7 @@
 \title{Calculating Needed Sample Size for Raw (Unadjusted) Power}
 \usage{
 pump_sample_raw(
-  design,
+  d_m,
   MTP,
   typesample,
   MDES,
@@ -31,10 +31,10 @@ pump_sample_raw(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: J, K, or nbar}

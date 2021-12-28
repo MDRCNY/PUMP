@@ -3,10 +3,10 @@
 \name{calc_J}
 \alias{calc_J}
 \title{This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs}
+a difference in t-statistic) for all implemented d_ms}
 \usage{
 calc_J(
-  design,
+  d_m,
   MT = 2.8,
   MDES,
   K = NULL,
@@ -22,7 +22,7 @@ calc_J(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{MT}{Number of approximate effect-size unit SEs (adjusted for degrees of
 freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
@@ -63,5 +63,5 @@ J, the number of schools needed
 }
 \description{
 This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs
+a difference in t-statistic) for all implemented d_ms
 }

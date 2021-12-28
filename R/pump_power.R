@@ -123,13 +123,11 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 
 #' Calculate power using PUMP method
 #'
-#' This functions calculates power for all definitions of power (individual,
-#' d-minimal, complete) for all the different MTPs (none, Bonferroni, Holms,
-#' Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+#' This functions calculates power for all definitions of power for any MTP.
 #'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+#' @param d_m string; a single design and model code
+#' @param MTP string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+#'   None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 #'   to automatically re-run for each procedure on the list.
 #' @param MDES scalar or vector; the desired MDES values for each outcome. Please
 #'   provide a scalar, a vector of length M, or vector of values for non-zero
@@ -169,21 +167,21 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param parallel.WY.clusters number of clusters to use for parallel processing of WY
-#' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
-#' @param updateProgress the callback function to update the progress bar (User
+#' @param parallel.WY.clusters scalar; number of clusters to use for parallel processing of WY
+#' @param drop.zero.outcomes TRUE/FALSE; whether to report power results for outcomes with MDES = 0
+#' @param updateProgress function; the callback function to update the progress bar (User
 #'   does not have to input anything)
-#' @param long.table TRUE for table with power as rows, correction as columns,
+#' @param long.table TRUE/FALSE; TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
-#' @param verbose Print out diagnostics of time, etc.
-#' @param validate.inputs whether or not to check whether parameters are valid
-#' given the choice of design
+#' @param verbose TRUE/FALSE; Print out diagnostics of time, etc.
+#' @param validate.inputs TRUE/FALSE; whether or not to check whether parameters are valid
+#' given the choice of d_m
 #' @return power results for MTP and unadjusted across all definitions of power
 #' @export
 #'
 #'
 pump_power <- function(
-  design, MTP = NULL, MDES, numZero = NULL,
+  d_m, MTP = NULL, MDES, numZero = NULL,
   M,
   nbar, J = 1, K = 1, Tbar,
   alpha = 0.05, two.tailed = TRUE,
@@ -217,7 +215,7 @@ pump_power <- function(
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
     
     des = purrr::map( MTP,
-                      pump_power, design = design, MDES = MDES,
+                      pump_power, d_m = d_m, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero,
                       Tbar = Tbar,
@@ -249,7 +247,7 @@ pump_power <- function(
     
     return( make.pumpresult( ftable, "power",
                              params.list = plist,
-                             design = design,
+                             d_m = d_m,
                              long.table = long.table ) )
   }
 
@@ -267,7 +265,7 @@ pump_power <- function(
       power.definition = NULL
     )
 
-    params.list <- validate_inputs(design, params.list, power.call = TRUE, verbose = verbose )
+    params.list <- validate_inputs(d_m, params.list, power.call = TRUE, verbose = verbose )
 
     MTP <- params.list$MTP
     MDES <- params.list$MDES
@@ -287,14 +285,14 @@ pump_power <- function(
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc_SE(
-    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    d_m = d_m, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,
     omega.2 = omega.2, omega.3 = omega.3
   )
   t.shift <- MDES/Q.m
   t.df <- calc_df(
-    design = design, J = J, K = K,
+    d_m = d_m, J = J, K = K,
     nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     validate = validate.inputs
@@ -319,11 +317,11 @@ pump_power <- function(
     updateProgress(message = "P-values have been generated!")
   }
 
-  if (MTP == "Bonferroni"){
+  if (MTP == "BF"){
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
-  } else if (MTP == "Holm") {
+  } else if (MTP == "HO") {
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
 
@@ -391,13 +389,13 @@ pump_power <- function(
   if ( !long.table ) {
     return( make.pumpresult( power.results, "power",
                            params.list = params.list,
-                           design = design,
+                           d_m = d_m,
                            long.table = long.table ) )
   } else {
     return( make.pumpresult( transpose_power_table( power.results, M = M ), 
                              "power",
                              params.list = params.list,
-                             design = design,
+                             d_m = d_m,
                              long.table = long.table ) )
   }
 }

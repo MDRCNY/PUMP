@@ -1,11 +1,11 @@
 # library( PUMP )
 # library( testthat )
 
-test_that("pump_mdes runs for Bonferroni", {
+test_that("pump_mdes runs for BF", {
   set.seed( 2424424 )
 
-  pmdesB <- pump_mdes( design = "d2.1_m2fc",
-                       MTP = "Bonferroni",
+  pmdesB <- pump_mdes( d_m = "d2.1_m2fc",
+                       MTP = "BF",
                        nbar = 200, J = 50,
                        power.definition = "D2indiv",
                        M = 3,
@@ -18,7 +18,7 @@ test_that("pump_mdes runs for Bonferroni", {
   expect_true( pmdesB$`Adjusted.MDES` > 0 )
   expect_true( abs(pmdesB$`D2indiv power` - 0.80) <  0.01 )
 
-  pmdesR <- expect_warning( pump_mdes( design = "d2.1_m2fc",
+  pmdesR <- expect_warning( pump_mdes( d_m = "d2.1_m2fc",
                        MTP = "None",
                        nbar = 200, J = 50,
                        power.definition = "D2indiv",
@@ -34,8 +34,8 @@ test_that("pump_mdes runs for Bonferroni", {
 
   set.seed( 14444444 )
   pmdesBmin <- pump_mdes(
-                      design = "d2.1_m2fc",
-                      MTP = "Bonferroni",
+                      d_m = "d2.1_m2fc",
+                      MTP = "BF",
                       nbar = 200, J = 50,
                       power.definition = "min1",
                       M = 3,
@@ -49,8 +49,8 @@ test_that("pump_mdes runs for Bonferroni", {
   expect_true( abs( pmdesBmin$`min1 power` - 0.80) <  0.01 )
 
   set.seed( 444224 )
-  pmdes_comp <- pump_mdes( design = "d2.1_m2fc",
-                           MTP = "Bonferroni",
+  pmdes_comp <- pump_mdes( d_m = "d2.1_m2fc",
+                           MTP = "BF",
                            nbar = 200, J = 50,
                            power.definition = "complete",
                            M = 3,
@@ -68,8 +68,8 @@ test_that("pump_mdes runs for Bonferroni", {
   expect_true( max( sp$w ) == 300*4 )
   
   ppBcomp <- pump_power(
-                   design = "d2.1_m2fc",
-                   MTP = "Bonferroni",
+                   d_m = "d2.1_m2fc",
+                   MTP = "BF",
                    MDES = rep( pmdes_comp$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
@@ -82,8 +82,8 @@ test_that("pump_mdes runs for Bonferroni", {
 
   pmdesBmin$mdes.results
   ppBmin <- pump_power(
-                   design = "d2.1_m2fc",
-                   MTP = "Bonferroni",
+                   d_m = "d2.1_m2fc",
+                   MTP = "BF",
                    MDES = rep( pmdesBmin$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
@@ -96,11 +96,11 @@ test_that("pump_mdes runs for Bonferroni", {
 })
 
 
-test_that("pump_mdes runs for D1indiv, Holm", {
+test_that("pump_mdes runs for D1indiv, HO", {
 
   set.seed( 1010101 )
-  pmdes <- pump_mdes( design = "d2.1_m2fc",
-                      MTP = "Holm",
+  pmdes <- pump_mdes( d_m = "d2.1_m2fc",
+                      MTP = "HO",
                       nbar = 200, J = 50,
                       power.definition = "D1indiv",
                       M = 3,
@@ -114,8 +114,8 @@ test_that("pump_mdes runs for D1indiv, Holm", {
   expect_true( pmdes$`Adjusted.MDES` > 0 )
   expect_true( abs( pmdes$`D1indiv power` - 0.80) <  0.01 )
 
-  pp = pump_power( design = "d2.1_m2fc",
-                   MTP = "Holm",
+  pp = pump_power( d_m = "d2.1_m2fc",
+                   MTP = "HO",
                    MDES = rep( pmdes$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
                    M = 3,
@@ -131,7 +131,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
 
   set.seed( 10130103 )
   R2.1 = 0.61
-  pmdes <- pump_mdes(design = "d1.1_m1c", MTP = "Holm",
+  pmdes <- pump_mdes(d_m = "d1.1_m1c", MTP = "HO",
                      target.power = 0.80, power.definition = "min1", tol = 0.02,
                      R2.1 = R2.1, numCovar.1 = 1, J = 1,
                      tnum = 1000,
@@ -139,7 +139,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
   pmdes
 
   ES = pmdes$`Adjusted.MDES`
-  ppow <- pump_power(design = "d1.1_m1c", MTP = "Holm", MDES = ES,
+  ppow <- pump_power(d_m = "d1.1_m1c", MTP = "HO", MDES = ES,
              R2.1 = R2.1, numCovar.1 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
   ppow
@@ -151,7 +151,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
 
 test_that("No adjustment", {
 
-    pmdes <- expect_warning( pump_mdes( design = "d2.1_m2fc",
+    pmdes <- expect_warning( pump_mdes( d_m = "d2.1_m2fc",
                         MTP = "None",
                         nbar = 200, J = 50,
                         power.definition = "D1indiv",
@@ -162,7 +162,7 @@ test_that("No adjustment", {
                         tnum = 300,
                         rho = 0.4 ) )
 
-    expect_error(expect_warning(pmdes <- pump_mdes( design = "d2.1_m2fc",
+    expect_error(expect_warning(pmdes <- pump_mdes( d_m = "d2.1_m2fc",
                         MTP = "None",
                         nbar = 200, J = 50,
                         power.definition = "min2",
@@ -174,8 +174,8 @@ test_that("No adjustment", {
                         rho = 0.4 )))
 
 
-    pmdes <- pump_mdes( design = "d2.1_m2fc",
-                        MTP = "Holm",
+    pmdes <- pump_mdes( d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         nbar = 200, J = 50,
                         power.definition = "D1indiv",
                         M = 3,
@@ -188,8 +188,8 @@ test_that("No adjustment", {
 
 test_that("power definitions", {
 
-  pmdes <- pump_mdes( design = "d2.1_m2fc",
-                      MTP = "Holm",
+  pmdes <- pump_mdes( d_m = "d2.1_m2fc",
+                      MTP = "HO",
                       nbar = 200, J = 50,
                       power.definition = "indiv.mean",
                       M = 3,
@@ -204,9 +204,9 @@ test_that("power definitions", {
 
 test_that( "errors out when providing MDES", {
   expect_error(pmdes <- pump_mdes(
-    design = "d2.1_m2fc",
+    d_m = "d2.1_m2fc",
     MDES = rep(0.2, 5),
-    MTP = "Holm",
+    MTP = "HO",
     nbar = 200, J = 50,
     power.definition = "indiv.mean",
     M = 3,
@@ -224,8 +224,8 @@ test_that( "different values for different outcomes", {
   set.seed(03443)
 
   pow <- pump_power(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     J = 20,
     nbar = 200,
     M = 3,
@@ -240,8 +240,8 @@ test_that( "different values for different outcomes", {
   expect_true(pow$D3indiv[1] > pow$D2indiv[1])
 
   mdes1 <- pump_mdes(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     target.power = 0.8,
     power.definition = 'D1indiv',
     J = 20,
@@ -254,8 +254,8 @@ test_that( "different values for different outcomes", {
   )
 
   mdes2 <- pump_mdes(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     target.power = 0.8,
     power.definition = 'D2indiv',
     J = 20,
@@ -268,8 +268,8 @@ test_that( "different values for different outcomes", {
   )
 
   mdes3 <- pump_mdes(
-    design = "d2.1_m2fc",
-    MTP = "Holm",
+    d_m = "d2.1_m2fc",
+    MTP = "HO",
     target.power = 0.8,
     power.definition = 'D3indiv',
     J = 20,
@@ -291,7 +291,7 @@ test_that( "different values for different outcomes", {
 test_that("M > 1 with MTP None", {
     
     pmdes <- expect_warning(pump_mdes(
-                          design = "d2.1_m2fc",
+                          d_m = "d2.1_m2fc",
                           target.power = 0.8,
                           power.definition = 'D1indiv',
                           MTP = "None",
@@ -307,7 +307,7 @@ test_that("M > 1 with MTP None", {
     ))
     expect_true( nrow( pmdes ) == 1 )
     
-    expect_error(expect_warning(pump_mdes( design = "d2.1_m2fc",
+    expect_error(expect_warning(pump_mdes( d_m = "d2.1_m2fc",
                          target.power = 0.8,
                          power.definition = "complete",
                          MTP = "None",

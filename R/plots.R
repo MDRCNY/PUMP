@@ -266,9 +266,9 @@ plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
   
   plot.data <-
     plot.data %>%
-    dplyr::relocate(design) %>%
+    dplyr::relocate(d_m) %>%
     dplyr::select_all() %>%
-    dplyr::select(-.data$design) %>%
+    dplyr::select(-.data$d_m) %>%
     dplyr::arrange(desc(.data$power)) %>%
     dplyr::rename(powerType = .data$power) %>%
     tidyr::pivot_longer( cols = all_of( MTPs ),
@@ -327,7 +327,7 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  ) {
     dplyr::mutate(power.definition = 
                     ifelse(power.definition == "indiv.mean", "individual power", power.definition))
   
-  plot.data <- plot.data[, c("design", "power.definition", var.vary, 
+  plot.data <- plot.data[, c("d_m", "power.definition", var.vary, 
                              "Adjusted.MDES", powerColName, "MTP")]
   
   # Adjusting the data table for graphing
@@ -383,7 +383,7 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
                   Sample.size = round(Sample.size))
   
   plot.data = dplyr::select( plot.data,
-                             tidyselect::all_of( c( "design", vnames, "Sample.type",
+                             tidyselect::all_of( c( "d_m", vnames, "Sample.type",
                              "Sample.size", "power.definition", "MTP" ) ) )
   
 

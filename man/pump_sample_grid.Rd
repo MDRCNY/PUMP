@@ -5,7 +5,7 @@
 \title{Run pump_sample on combination of factors}
 \usage{
 pump_sample_grid(
-  design,
+  d_m,
   MTP,
   M,
   target.power,
@@ -36,10 +36,10 @@ pump_sample_grid(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single design and model code}
 
-\item{MTP}{Multiple adjustment procedure of interest. Supported options:
-None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
+\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
+None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
@@ -100,7 +100,7 @@ variation).}
 
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
-\item{verbose}{Print out diagnostics of time, etc.}
+\item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 
 \item{use_furrr}{Use parallel processing furrr package to fit grid.}
 

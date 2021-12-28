@@ -17,7 +17,7 @@
 #'   be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).
 #'
 #' @return power
-optimize_power <- function(design, search.type, MTP, target.power, 
+optimize_power <- function(d_m, search.type, MTP, target.power, 
                            power.definition, tol,
                            start.low, start.high,
                            MDES = NULL, J = NULL, K = 1, nbar = NULL,
@@ -50,7 +50,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
     }
 
     pt.power.results <- pump_power(
-      design, MTP = MTP,
+      d_m, MTP = MTP,
       MDES = MDES,
       nbar = ifelse(search.type == 'nbar', test_point, nbar),
       J = ifelse(search.type == 'J', test_point, J),
@@ -186,7 +186,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
           myK <- current.try
         }
         t.df <- calc_df(
-          design = design,
+          d_m = d_m,
           nbar = ifelse(search.type == 'nbar', current.try, nbar),
           J = ifelse(search.type == 'J', current.try, J),
           K = myK,
@@ -362,7 +362,7 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   pp$final.tnum = tnum
   
   final.pts <- do.call( optimize_power,
-                        c( design = design(p),
+                        c( d_m = d_m(p),
                            pp, 
                            search.type = search_type,
                            start.low = low,

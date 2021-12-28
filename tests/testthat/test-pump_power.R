@@ -3,8 +3,8 @@
 
 test_that("pump_power works without crashing", {
 
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
@@ -34,8 +34,8 @@ test_that( "pump_power handles small MDES right", {
   set.seed(58554343)
   
   aa <- pump_power(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     MDES = 0.000001,
     J = 60,
     nbar = 50,
@@ -49,8 +49,8 @@ test_that( "pump_power handles small MDES right", {
   expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
   
   aa <- pump_power(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     MDES = 0.000001,
     J = 60,
     nbar = 50,
@@ -70,8 +70,8 @@ test_that("pump_power long.table", {
 
   set.seed(9515)
 
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = "Bonferroni",
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = "BF",
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 3, # number of schools/block
@@ -88,18 +88,18 @@ test_that("pump_power long.table", {
   )
   pp
   expect_true( is.pumpresult( pp ) )
-  # expect_true( is.numeric( pp$Bonferroni ) )
+  # expect_true( is.numeric( pp$BF ) )
 
   expect_equal( dim( pp ), c(7,3) )
 
   expect_true( is.na( pp$None[5] ) )
   expect_true( is.na( pp$None[6] ) )
   expect_true( is.na( pp$None[7] ) )
-  expect_true( pp$Bonferroni[4] < pp$Bonferroni[5] )
-  expect_true( pp$Bonferroni[5] > pp$Bonferroni[6] )
-  expect_true( pp$Bonferroni[6] > pp$Bonferroni[7] )
-  expect_true( pp$Bonferroni[4] > pp$Bonferroni[7] )
-  expect_true( all ( ( pp$None >= pp$Bonferroni )[1:4] ) )
+  expect_true( pp$BF[4] < pp$BF[5] )
+  expect_true( pp$BF[5] > pp$BF[6] )
+  expect_true( pp$BF[6] > pp$BF[7] )
+  expect_true( pp$BF[4] > pp$BF[7] )
+  expect_true( all ( ( pp$None >= pp$BF )[1:4] ) )
 })
 
 
@@ -108,8 +108,8 @@ test_that("pump_power long.table", {
 
 test_that("skipping level three inputs for level 2 works", {
 
-  expect_warning(pp <- pump_power(   design = "d2.1_m2fc",
-                                     MTP = "Bonferroni",
+  expect_warning(pp <- pump_power(   d_m = "d2.1_m2fc",
+                                     MTP = "BF",
                                      MDES = rep( 0.10, 3 ),
                                      M = 3,
                                      J = 3, # number of schools/block
@@ -129,8 +129,8 @@ test_that("skipping level three inputs for level 2 works", {
 })
 
 test_that("having no covariates is fine", {
-  pp <- pump_power(   design = "d2.1_m2fc",
-                      MTP = "Bonferroni",
+  pp <- pump_power(   d_m = "d2.1_m2fc",
+                      MTP = "BF",
                       MDES = rep( 0.10, 3 ),
                       M = 3,
                       J = 3, # number of schools/block
@@ -148,8 +148,8 @@ test_that("having no covariates is fine", {
 
 
 test_that("pump_power works with multiple MTP", {
-  pp <- pump_power( design = "d3.2_m3ff2rc",
-                    MTP = c( "Holm", "Bonferroni" ),
+  pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                    MTP = c( "HO", "BF" ),
                     MDES = rep( 0.10, 3 ),
                     M = 3,
                     J = 20, # number of schools/block
@@ -170,7 +170,7 @@ test_that("pump_power works with multiple MTP", {
 
 test_that("M = 1 runs successfully", {
 
-  pp <- pump_power(   design = "d2.1_m2fc",
+  pp <- pump_power(   d_m = "d2.1_m2fc",
                       MTP = "None",
                       MDES = 0.10,
                       M = 1,
@@ -185,7 +185,7 @@ test_that("M = 1 runs successfully", {
   )
   expect_true( nrow( pp ) == 1 )
   
-  pp <- pump_power(   design = "d2.1_m2fc",
+  pp <- pump_power(   d_m = "d2.1_m2fc",
                       MTP = "None",
                       MDES = 0.10,
                       M = 1,
@@ -204,7 +204,7 @@ test_that("M = 1 runs successfully", {
 
 test_that("J = 1 runs successfully", {
 
-    expect_warning(pp <- pump_power(   design = "d2.1_m2fc",
+    expect_warning(pp <- pump_power(   d_m = "d2.1_m2fc",
                         MTP = "None",
                         MDES = 0.10,
                         M = 1,
@@ -221,8 +221,8 @@ test_that("J = 1 runs successfully", {
 })
 
 test_that("K = 1 runs successfully", {
-    expect_warning(pp <- pump_power( design = "d3.2_m3ff2rc",
-                      MTP = "Bonferroni",
+    expect_warning(pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = "BF",
                       MDES = rep( 0.10, 3 ),
                       M = 3,
                       J = 10, # number of schools/block
@@ -238,10 +238,10 @@ test_that("K = 1 runs successfully", {
     pp
 })
 
-test_that("unblocked designs", {
+test_that("unblocked d_ms", {
 
-  pp <- pump_power(   design = "d1.1_m1c",
-                      MTP = "Bonferroni",
+  pp <- pump_power(   d_m = "d1.1_m1c",
+                      MTP = "BF",
                       MDES = rep( 0.50, 3 ),
                       M = 3,
                       nbar = 258,
@@ -256,7 +256,7 @@ test_that("unblocked designs", {
   ES = log( 2 ) / 0.66
   ES
   R2.2 = 0.6102
-  pump_power(design = "d1.1_m1c", MTP = "Holm", MDES = ES,
+  pump_power(d_m = "d1.1_m1c", MTP = "HO", MDES = ES,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 
 
@@ -266,7 +266,7 @@ test_that("unblocked designs", {
 
 test_that("Correct MTP parameter validation.", {
 
-    pp <- expect_warning(pump_power(   design = "d2.1_m2fc",
+    pp <- expect_warning(pump_power(   d_m = "d2.1_m2fc",
                                        MTP = "None",
                                        MDES = rep( 0.10, 3 ),
                                        M = 3,
@@ -281,7 +281,7 @@ test_that("Correct MTP parameter validation.", {
     ))
 
     # no MTP provided
-    expect_error(pp <- pump_power( design = "d2.1_m2fc",
+    expect_error(pp <- pump_power( d_m = "d2.1_m2fc",
                                      MDES = 0.1,
                                      M = 3,
                                      J = 3, # number of schools/block
@@ -295,7 +295,7 @@ test_that("Correct MTP parameter validation.", {
     ))
 
     # no MTP provided with single outcome is fine.
-    pp <- pump_power( design = "d2.1_m2fc",
+    pp <- pump_power( d_m = "d2.1_m2fc",
                                    MDES = 0.1,
                                    M = 1,
                                    J = 3, # number of schools/block
@@ -312,8 +312,8 @@ test_that("Correct MTP parameter validation.", {
 
 test_that("different correlations", {
 
-    pp.rhomin <- pump_power( design = "d2.2_m2rc",
-                             MTP = "Bonferroni",
+    pp.rhomin <- pump_power( d_m = "d2.2_m2rc",
+                             MTP = "BF",
                              J = 10,
                              M = 4,
                              nbar = 100,
@@ -322,8 +322,8 @@ test_that("different correlations", {
                              R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
                              rho = 0)
 
-    pp.rhomed <- pump_power(   design = "d2.2_m2rc",
-                               MTP = "Bonferroni",
+    pp.rhomed <- pump_power(   d_m = "d2.2_m2rc",
+                               MTP = "BF",
                                J = 10,
                                M = 4,
                                nbar = 100,
@@ -332,8 +332,8 @@ test_that("different correlations", {
                                R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
                                rho = 0.4)
 
-    pp.rhomax <- pump_power(   design = "d2.2_m2rc",
-                               MTP = "Bonferroni",
+    pp.rhomax <- pump_power(   d_m = "d2.2_m2rc",
+                               MTP = "BF",
                                J = 10,
                                M = 4,
                                nbar = 100,
@@ -357,8 +357,8 @@ test_that("different correlations", {
 
 test_that("numZero has expected behavior", {
 
-  pp <- pump_power( design = "d2.2_m2rc",
-                    MTP = "Bonferroni",
+  pp <- pump_power( d_m = "d2.2_m2rc",
+                    MTP = "BF",
                     J = 10,
                     M = 5,
                     nbar = 100,
@@ -370,8 +370,8 @@ test_that("numZero has expected behavior", {
 
 
 
-  expect_error(pp <- pump_power( design = "d2.2_m2rc",
-                    MTP = "Bonferroni",
+  expect_error(pp <- pump_power( d_m = "d2.2_m2rc",
+                    MTP = "BF",
                     J = 10,
                     M = 4,
                     nbar = 100,
@@ -386,8 +386,8 @@ test_that("numZero has expected behavior", {
 
 test_that("do not report invalid power values", {
 
-  pp <- pump_power( design = "d2.2_m2rc",
-                    MTP = "Bonferroni",
+  pp <- pump_power( d_m = "d2.2_m2rc",
+                    MTP = "BF",
                     J = 10,
                     M = 3,
                     nbar = 100,
@@ -404,7 +404,7 @@ test_that("do not report invalid power values", {
 
 test_that("M > 1 with MTP None runs successfully", {
     
-    pp <- expect_warning(pump_power(   design = "d2.1_m2fc",
+    pp <- expect_warning(pump_power(   d_m = "d2.1_m2fc",
                         MTP = "None",
                         MDES = 0.10,
                         M = 3,
@@ -419,8 +419,8 @@ test_that("M > 1 with MTP None runs successfully", {
     ))
     expect_true( nrow( pp ) == 1 )
     
-    pp <- pump_power(   design = "d2.1_m2fc",
-                                       MTP = c("Bonferroni", "None"),
+    pp <- pump_power(   d_m = "d2.1_m2fc",
+                                       MTP = c("BF", "None"),
                                        MDES = 0.10,
                                        M = 3,
                                        J = 3, # number of schools/block
@@ -438,8 +438,8 @@ test_that("M > 1 with MTP None runs successfully", {
 test_that("zero MDES values", {
     
     # zero in middle of vector
-    pp <- pump_power(   design = "d2.1_m2fc",
-                                       MTP = "Holm",
+    pp <- pump_power(   d_m = "d2.1_m2fc",
+                                       MTP = "HO",
                                        MDES = c(0.1, 0, 0.1),
                                        M = 3,
                                        J = 3, # number of schools/block
@@ -458,8 +458,8 @@ test_that("zero MDES values", {
     )
     
     # all zero, don't drop zero outcomes
-    pp <- pump_power(   design = "d2.1_m2fc",
-                        MTP = "Holm",
+    pp <- pump_power(   d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         MDES = 0,
                         M = 3,
                         J = 3, # number of schools/block
@@ -476,8 +476,8 @@ test_that("zero MDES values", {
     
     
     # all zero, do drop zero outcomes
-    pp <- pump_power(   design = "d2.1_m2fc",
-                        MTP = "Holm",
+    pp <- pump_power(   d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         MDES = 0,
                         M = 3,
                         J = 3, # number of schools/block
@@ -503,8 +503,8 @@ test_that("testing against Porter 2017", {
     
     set.seed(13434)
     pp1 <- pump_power(
-        design = "d2.1_m2fc",
-        MTP = c('Bonferroni', 'Holm', 'BH', 'WY-SS', 'WY-SD'),
+        d_m = "d2.1_m2fc",
+        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
         nbar = 50,
         J = 20,
         M = 3,
@@ -521,8 +521,8 @@ test_that("testing against Porter 2017", {
     
     set.seed(13434)
     pp2 <- pump_power(
-        design = "d2.1_m2fc",
-        MTP = c('Bonferroni', 'Holm', 'BH', 'WY-SS', 'WY-SD'),
+        d_m = "d2.1_m2fc",
+        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
         nbar = 50,
         J = 20,
         M = 3,
@@ -543,8 +543,8 @@ test_that("testing against Porter 2017", {
 test_that("MTP behavior", {
 
     set.seed(13434)
-    pp <- pump_power( design = "d3.2_m3ff2rc",
-                      MTP = c("Bonferroni", "Holm", "BH", "WY-SS", "WY-SD"),
+    pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = c("BF", "HO", "BH", "WY-SS", "WY-SD"),
                       MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
                       M = 5,
                       J = 3, # number of schools/block
@@ -560,16 +560,16 @@ test_that("MTP behavior", {
     )
     pp
 
-    # for biggest effect, Bonferroni same as Holm
-    expect_equal(pp$D5indiv[pp$MTP == 'Bonferroni'], pp$D5indiv[pp$MTP == 'Holm'], tol = 0.1)
-    # for smaller effects, Holm more powerful than Bonf
-    expect_true(pp$D1indiv[pp$MTP == 'Bonferroni'] <pp$D1indiv[pp$MTP == 'Holm'])
+    # for biggest effect, BF same as HO
+    expect_equal(pp$D5indiv[pp$MTP == 'BF'], pp$D5indiv[pp$MTP == 'HO'], tol = 0.1)
+    # for smaller effects, HO more powerful than Bonf
+    expect_true(pp$D1indiv[pp$MTP == 'BF'] <pp$D1indiv[pp$MTP == 'HO'])
 
     # BH least conservative (for small effects)
-    expect_true(pp$D1indiv[pp$MTP == 'Bonferroni'] < pp$D1indiv[pp$MTP == 'BH'])
+    expect_true(pp$D1indiv[pp$MTP == 'BF'] < pp$D1indiv[pp$MTP == 'BH'])
 
-    # WY more powerful than Bonferroni
-    expect_true(pp$D5indiv[pp$MTP == 'Bonferroni'] < pp$D5indiv[pp$MTP == 'WY-SS'])
+    # WY more powerful than BF
+    expect_true(pp$D5indiv[pp$MTP == 'BF'] < pp$D5indiv[pp$MTP == 'WY-SS'])
     # for biggest effect, WY-SD similar to WY-SS for largest outcome
     expect_equal(pp$D1indiv[pp$MTP == 'WY-SS'], pp$D1indiv[pp$MTP == 'WY-SD'], tol = 0.1)
     # for smaller effects, WY-SD more powerful than WY-SS for largest outcome
@@ -577,56 +577,9 @@ test_that("MTP behavior", {
 
 })
 
-
 test_that("parallel WY", {
     
-    t1 <- Sys.time()
-    pp <- pump_power( design = "d3.2_m3ff2rc",
-                      MTP = c("WY-SD"),
-                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
-                      M = 5,
-                      J = 3, # number of schools/block
-                      K = 10, # number RA blocks
-                      nbar = 258,
-                      Tbar = 0.50, # prop Tx
-                      alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, # how correlated outcomes are
-                      tnum = 1000, B = 1000,
-                      parallel.WY.clusters = 1
-    )
-    t2 <- Sys.time()
-    time1 = difftime(t1, t2)
-    
-    t1 <- Sys.time()
-    pp <- pump_power( design = "d3.2_m3ff2rc",
-                      MTP = c("WY-SD"),
-                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
-                      M = 5,
-                      J = 3, # number of schools/block
-                      K = 10, # number RA blocks
-                      nbar = 258,
-                      Tbar = 0.50, # prop Tx
-                      alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, # how correlated outcomes are
-                      tnum = 1000, B = 1000,
-                      parallel.WY.clusters = 3
-    )
-    t2 <- Sys.time()
-    time2 = difftime(t1, t2)
-    
-    expect_true(time1 > time2)
-})
-
-
-test_that("parallel WY", {
-    
-    pp <- expect_warning(pump_power( design = "d3.2_m3ff2rc",
+    pp <- expect_warning(pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = c("WY-SD"),
                       MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
                       M = 5,
@@ -646,7 +599,7 @@ test_that("parallel WY", {
     expect_true(nrow(pp) == 2)
 
     
-    pp <- expect_warning(pump_power( design = "d3.2_m3ff2rc",
+    pp <- expect_warning(pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = c("WY-SD"),
                       MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
                       M = 5,

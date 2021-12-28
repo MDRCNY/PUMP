@@ -4,8 +4,8 @@
 
 test_that("validation works at least vaguely", {
 
- chk <- check_pump_call(design = "d2.2_m2rc",
-                        MTP = "Holm",
+ chk <- check_pump_call(d_m = "d2.2_m2rc",
+                        MTP = "HO",
                         M = 4,
                         J = 44,
                         nbar = 1000,
@@ -18,8 +18,8 @@ test_that("validation works at least vaguely", {
   expect_true( chk$ok )
   expect_true( length( chk$messages ) == 0 )
   
-  chk <- check_pump_call(design = "d2.2_m2rc",
-                         MTP = "Holm",
+  chk <- check_pump_call(d_m = "d2.2_m2rc",
+                         MTP = "HO",
                          M = 4,
                          J = -3,
                          nbar = 1000,
@@ -34,8 +34,8 @@ test_that("validation works at least vaguely", {
   expect_true( length( chk$ok ) == 1 )
   
   
-  chk <- check_pump_call(design = "d2.2_m2rc",
-                         MTP = "Holm",
+  chk <- check_pump_call(d_m = "d2.2_m2rc",
+                         MTP = "HO",
                          M = 4,
                          J = 3,
                          nbar = 1000,
@@ -52,8 +52,8 @@ test_that("validation works at least vaguely", {
   expect_true( length( chk$messages ) == 2 )
   
   
-  chk <- check_pump_call(design = "d2.2_m2rc",
-                         MTP = "Holm",
+  chk <- check_pump_call(d_m = "d2.2_m2rc",
+                         MTP = "HO",
                          M = 4,
                          J = -4,
                          K = 4,
@@ -72,8 +72,8 @@ test_that("validation works at least vaguely", {
 
   
   
-  p <- check_pump_call(  design = "d2.1_m2fc",
-                    MTP = "Holm",
+  p <- check_pump_call(  d_m = "d2.1_m2fc",
+                    MTP = "HO",
                     call = "sample",
                     J = 10,
                     nbar = 200,
@@ -86,8 +86,8 @@ test_that("validation works at least vaguely", {
   expect_true( p$ok )
 
   
-  p <- check_pump_call(  design = "d2.1_m2fc",
-                         MTP = "Holm",
+  p <- check_pump_call(  d_m = "d2.1_m2fc",
+                         MTP = "HO",
                          call = "mdes",
                          J = 10,
                          nbar = 200,
@@ -100,8 +100,8 @@ test_that("validation works at least vaguely", {
   expect_true( !p$ok )
 
   
-  p <- check_pump_call(  design = "d2.1_m2fc",
-                         MTP = "Holm",
+  p <- check_pump_call(  d_m = "d2.1_m2fc",
+                         MTP = "HO",
                          call = "mdes",
                          J = 10,
                          nbar = 200,
@@ -114,8 +114,8 @@ test_that("validation works at least vaguely", {
 
   
   
-  p <- check_pump_call(  design = "d2.1_m2fc",
-                         MTP = c( "Holm", "Bonferroni" ),
+  p <- check_pump_call(  d_m = "d2.1_m2fc",
+                         MTP = c( "HO", "BF" ),
                          call = "mdes",
                          J = 10,
                          nbar = 200,

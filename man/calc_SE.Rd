@@ -5,7 +5,7 @@
 \title{Computes Q_m, the standard error of the effect size estimate}
 \usage{
 calc_SE(
-  design,
+  d_m,
   J,
   K,
   nbar,
@@ -20,7 +20,7 @@ calc_SE(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{J}{scalar; the number of schools}
 
@@ -55,5 +55,5 @@ Q_m, the standard error of the effect size estimate
 }
 \description{
 Function to calculate the theoretical true (unadjusted) standard error of the
-ATE estimate for a given design and model, in effect size units.
+ATE estimate for a given d_m and model, in effect size units.
 }
