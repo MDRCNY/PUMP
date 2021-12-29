@@ -10,11 +10,14 @@ plot_power_search(pwr, fit = NULL, target_line = NULL)
 \item{pwr}{Result from a pump_sample or pump_mdes call.}
 
 \item{fit}{A fitted curve to the search.}
+
+\item{target_line}{If non-NULL, add a reference line for the true power (if
+known, e.g., from a pump_power call).}
 }
 \value{
 a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 }
 \description{
-This will give a triple-plots about how the search narrowed down into the final
-estimate.  Can be useful to gauge where convergence went poorly.
+This will give a triple-plots about how the search narrowed down into the
+final estimate.  Can be useful to gauge where convergence went poorly.
 }

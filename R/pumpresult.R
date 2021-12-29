@@ -223,7 +223,8 @@ design <- function( x, ... ) {
 
 #' Obtain search path of pump_mdes or pump_sample call
 #'
-#' @return search_path: Dataframe describing search path, if it was saved in the pumpresult object.
+#' @return search_path: Dataframe describing search path, if it was saved in the
+#'   pumpresult object.
 #' @rdname pumpresult
 #'
 #' @export
@@ -511,15 +512,6 @@ print.pumpresult = function( x, n = 10,
     scat( "Note: Power curve is relatively flat. \n" )
   }
   invisible( x )
-}
-
-#' Get search path
-#' 
-#' @return Dataframe of search path, in sequential order.
-#' @export
-search_path = function( x ) {
-  tr = attr( x, "tries" )
-  return( tr )
 }
 
 #' Print the search history of a pump result object

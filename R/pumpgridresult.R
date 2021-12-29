@@ -27,7 +27,7 @@ make.pumpgridresult = function( x,
 
 
 
-#' @title pumpresult object for results of grid power calculations
+#' @title result object for results of grid power calculations
 #' 
 #' @name pumpgridresult
 #'
@@ -39,7 +39,7 @@ make.pumpgridresult = function( x,
 #' some printing methods for getting nicely formatted results.
 #'
 #'
-#' @param x a pumpgridresult object (except for is.pumpresult, where it is a generic
+#' @param x a pumpgridresult object (except for is.pumpgridresult, where it is a generic
 #'   object to check).
 #' @rdname pumpgridresult
 NULL
@@ -83,7 +83,7 @@ print_grid_header = function( x ) {
 #' @param ... No extra options passed.
 #' @param header FALSE means skip some header info on the result, just print
 #'   the data.frame of actual results.
-#' @rdname pumpresult
+#' @rdname pumpgridresult
 print.pumpgridresult = function( x,
                              header = TRUE,
                              ... ) {
@@ -104,7 +104,7 @@ print.pumpgridresult = function( x,
 #'
 #' @export
 #' @param object Object to summarize.
-#' @param ... Extra options passed to print.pumpresult
+#' @param ... Extra options passed to print.pumpgridresult
 #' @rdname pumpgridresult
 summary.pumpgridresult = function( object, ... ) {
     print_grid_header( object )
