@@ -639,18 +639,26 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
     scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
   }
   
+  cname = function( numCov ) {
+    if ( numCov == "1" ) {
+      return( "1 covariate" )
+    } else {
+      return( sprintf( "%s covariates", numCov ) )
+    }
+  }
+  
   scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
         params$nbar, params$J, params$K, params$Tbar )
   scat( "  alpha: %s\t\n", params$alpha)
-  scat( "  Level:\n    1: R2: %s (%s covariate)\n",
-        params$R2.1, params$numCovar.1 )
+  scat( "  Level:\n    1: R2: %s (%s)\n",
+        params$R2.1, cname( params$numCovar.1 ) )
   
   if ( des$levels >= 2 ) {
     scat( "    2: ")
     if ( des$FE.2 ) {
       scat( "  fixed effects  " )
     } else {
-      scat( "R2: %s (%s covariate)", params$R2.2, params$numCovar.2)
+      scat( "R2: %s (%s)", params$R2.2, cname( params$numCovar.2) )
     }
     scat( "\tICC: %s\tomega: %s\n", params$ICC.2, params$omega.2 )
   }
@@ -659,7 +667,7 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
     if ( des$FE.3 ) {
       scat( "  fixed effects  " )
     } else {
-      scat( "R2: %s (%s covariate)", params$R2.3, params$numCovar.3)
+      scat( "R2: %s (%s)", params$R2.3, cname( params$numCovar.3) )
     }
     scat( "\tICC: %s\tomega: %s\n", params$ICC.3, params$omega.3 )
   }

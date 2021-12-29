@@ -9,7 +9,11 @@ make.pumpgridresult = function( x,
     type <- match.arg(type)
     class(x) <- c( "pumpgridresult", class(x) )
     attr(x, "type" ) <- type
-    attr(x, "params.list") <- params.list
+    if ( !is.null( params.list ) ) {
+        attr(x, "params.list") <- params.list
+    } else {
+        stopifnot( !is.null( attr(x,"params.list" ) ) )
+    }
     attr(x, "design") <- design
     
     ll = list(...)
@@ -103,8 +107,12 @@ print.pumpgridresult = function( x,
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpgridresult
 summary.pumpgridresult = function( object, ... ) {
+    print_grid_header( object )
+    
     print_design( object, 
                   insert_results = TRUE, insert_control = TRUE, ... )
+    
+    invisible( object )
 }
 
 
