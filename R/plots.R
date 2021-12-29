@@ -1,5 +1,25 @@
 
 
+get_sample_tick_marks = function( pt, breaks = 5, include.points = TRUE ) {
+  
+  pt = round( pt )
+  
+  #mn = round( min( pt ) )
+  #mx = ceiling( max( pt ) )
+  mn = min( pt )
+  mx = max( pt )
+  
+  sq = round( seq( mn, mx, length.out = breaks ) )
+  
+  pts = unique( c( sq, mn, mx ) )
+  
+  if ( include.points ) {
+    pts = union( pts, pt )
+  }
+  
+  return( sort( pts ) )
+}
+
 
 #' Examine search path of the power search.
 #'
@@ -64,15 +84,18 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
     ggplot2::coord_cartesian( ylim = c(0,1), xlim = limsX ) +
     ggplot2::labs( x = x_label, y = "power" )
 
+  xpt = get_sample_tick_marks(test.pts$pt, breaks = 7,
+                              include.points = plot.points )
+  
   delrange = diff( xrng )
-  if ( delrange < 2 ) {
-    # Use normal scale.
-  } else if ( delrange >= 2 && delrange <= 10 ) {
+  if ( delrange > 50 ) {
+    plot1 = plot1 +  ggplot2::scale_x_log10( breaks=xpt )
+  } else if ( delrange >= 2 && delrange <= 15 ) {
     # Tick marks for each sample size.
     xpt = seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
     plot1 = plot1 +  ggplot2::scale_x_continuous( breaks = xpt )
   } else {
-    plot1 = plot1 +  ggplot2::scale_x_log10()
+    plot1 = plot1 +  ggplot2::scale_x_continuous( breaks = xpt )
   }
 
 
@@ -120,23 +143,17 @@ plot_power_search <- function( pwr, fit = NULL, target_line = NULL) {
     fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
   }
   
-  lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm=TRUE ), 0.15 )
   
-  plot1 <-  ggplot2::ggplot( test.pts ) +
-    ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
-    ggplot2::geom_point( ggplot2::aes( .data$pt, .data$power, size = .data$w ), alpha = 0.5 ) +
-    ggplot2::theme_minimal() +
-    ggplot2::geom_text( ggplot2::aes( .data$pt, .data$power, label = .data$step ), vjust = "bottom", nudge_y = 0.01, size=3 ) +
-    ggplot2::stat_function( col = "red", fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
-    ggplot2::guides(colour = "none", size="none") +
-    ggplot2::coord_cartesian(ylim = lims ) +
-    ggplot2::scale_x_log10()
+  plot1 <-  plot_power_curve(test.pts, plot.points = TRUE )
 
   if ( !is.null( target_line ) ) {
     plot1 <- plot1 + ggplot2::geom_vline( xintercept = target_line, col = "purple" )
   }
   
 
+  lims <- grDevices::extendrange( r = range( test.pts$power, 
+                                             test.pts$target.power[[1]], 
+                                             na.rm=TRUE ), 0.15 )
   plot2 <-  ggplot2::ggplot( test.pts, ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[1], col = "purple" ) +
     ggplot2::geom_point( alpha = 0.5 ) +
@@ -218,7 +235,7 @@ plot.pumpresult <- function( x, ... )
             axis.text.y = ggplot2::element_text(size = 10),
             axis.title  = ggplot2::element_text(size = 10)
       ) +
-      ggplot2::labs(colour = "MTP", shape = "")
+      ggplot2::labs(colour = "MTP", shape = "MTP")
   } else if( power.type(x) %in% c('mdes', 'sample') )
   {
     stop('plot() only works on pump_power() objects or grid objects, not pump_mdes() or pump_sample() objects.')
@@ -448,6 +465,14 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 plot.pumpgridresult <- function( x, power.definition, var.vary, ... )
 {
   stopifnot( is.pumpgridresult( x ) )
+  
+  if ( !exists("power.definition" ) ) {
+    stop( "power.definition not supplied." )
+  }
+  
+  if ( !exists("var.vary" ) ) {
+    stop( "variable for x-axis (var.vary) not supplied." )
+  }
   
   var_names = attr(x, "var_names" )
   if ( is.null( var_names ) ) {
