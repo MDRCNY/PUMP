@@ -97,7 +97,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #' @return a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 #'
 #' @export
-plot_power_search <- function( pwr, fit = NULL, target_line = NULL) {
+plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   if ( is.pumpresult(pwr) ) {
     test.pts <- search_path(pwr)
   } else if ( is.data.frame(pwr) ) {
@@ -129,8 +129,8 @@ plot_power_search <- function( pwr, fit = NULL, target_line = NULL) {
     ggplot2::coord_cartesian(ylim = lims ) +
     ggplot2::scale_x_log10()
 
-  if ( !is.null( target_line ) ) {
-    plot1 <- plot1 + ggplot2::geom_vline( xintercept = target_line, col = "purple" )
+  if ( !is.null( target.line ) ) {
+    plot1 <- plot1 + ggplot2::geom_vline( xintercept = target.line, col = "purple" )
   }
   
 
@@ -149,8 +149,8 @@ plot_power_search <- function( pwr, fit = NULL, target_line = NULL) {
     ggplot2::guides(colour="none", size="none")+
     ggplot2::scale_y_log10()
   
-  if ( !is.null( target_line ) ) {
-    plot3 <- plot3 + ggplot2::geom_hline( yintercept = target_line, col = "purple" )
+  if ( !is.null( target.line ) ) {
+    plot3 <- plot3 + ggplot2::geom_hline( yintercept = target.line, col = "purple" )
   }
     
 
@@ -217,7 +217,7 @@ plot.pumpresult <- function( x, ... )
             axis.title  = ggplot2::element_text(size = 10)
       ) +
       ggplot2::labs(color = "", shape = "")
-  } else if( power.type(x) %in% c('mdes', 'sample') )
+  } else if( pump_type(x) %in% c('mdes', 'sample') )
   {
     stop('plot() only works on pump_power() objects or grid objects, not pump_mdes() or pump_sample() objects.')
   } else
@@ -232,10 +232,7 @@ plot.pumpresult <- function( x, ... )
 
 #' Plot a grid pump power object
 #'
-#' @param x pumpgridresult object
-#' @param power.definition user must choose one definition of power to plot
-#' @param var.vary a single parameter to show varying on the plot
-#' @param ... Additional parameters
+#' @inheritParams plot.pumpgridresult
 #'
 #' @export
 plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
@@ -276,7 +273,7 @@ plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
       dplyr::select_all() %>%
       dplyr::select(-.data$design) %>%
       dplyr::rename(powerType = .data$power) %>%
-      tidyr::pivot_longer( cols = all_of( MTPs ),
+      tidyr::pivot_longer( cols = tidyselect::all_of( MTPs ),
                            names_to = "MTP", values_to = "power")
 
   # convert to factors for plotting
@@ -327,7 +324,7 @@ plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
 
 #' Plot a grid pump mdes object
 #'
-#' @inheritParams plot.pumpgridresult.power
+#' @inheritParams plot.pumpgridresult
 #'
 #' @export
 plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
@@ -353,7 +350,7 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
 
   # converting data type for graphing purposes
   plot.data <- x %>%
-    dplyr::mutate(Adjusted.MDES = as.numeric(Adjusted.MDES))
+    dplyr::mutate(Adjusted.MDES = as.numeric(.data$Adjusted.MDES))
   plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
 
   # if two variables vary, send warning
@@ -387,7 +384,7 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
 
 #' Plot a grid pump sample object
 #'
-#' @inheritParams plot.pumpgridresult.power
+#' @inheritParams plot.pumpgridresult
 #'
 #' @export
 plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
@@ -414,7 +411,7 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
   
   # converting data type for graphing purposes
   plot.data <- x %>%
-    dplyr::mutate(Sample.size = as.numeric(Sample.size))
+    dplyr::mutate(Sample.size = as.numeric(.data$Sample.size))
   plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
 
   # if two variables vary, send warning
@@ -464,8 +461,9 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 #' Plot a pump grid result object
 #'
 #' @param x pumpgridresult object
-#' @param power.definition Definition of power to plot
-#' @param var.vary Variable to vary on X axis
+#' @param power.definition definition of power to plot
+#' @param var.vary variable to vary on X axis
+#' @param ... additional parameters
 #'
 #' @export
 plot.pumpgridresult <- function( x, power.definition, var.vary, ... )

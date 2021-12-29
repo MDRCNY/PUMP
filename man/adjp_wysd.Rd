@@ -31,6 +31,8 @@ is obtained through drawing test values under H0 with a default of 10,000)}
 \item{cl}{clusters for parallel computing}
 
 \item{verbose}{verbose messaging}
+
+\item{updateProgress}{function to update progress bar (only used for PUMP shiny app)}
 }
 \value{
 a matrix of adjusted p-values
