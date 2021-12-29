@@ -508,7 +508,7 @@ print.pumpresult = function( x, n = 10,
   }
   
   if ( !is.pumpgridresult(x) && pump_type(x) != "power" && !is.null(attr(x, "flat" )) && attr(x, "flat") ) {
-    scat( "   Note: Optimization was relatively flat\n" )
+    scat( "Note: Power curve is relatively flat. \n" )
   }
   invisible( x )
 }
