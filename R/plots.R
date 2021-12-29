@@ -193,7 +193,7 @@ plot.pumpresult <- function( x, ... )
   {
     if(attr( x, "long.table" ))
     {
-      x = transpose_power_table(x)
+      x <- transpose_power_table(x)
     }
 
     plot.data <-
@@ -213,18 +213,19 @@ plot.pumpresult <- function( x, ... )
       ordered = TRUE
     )
 
-    plot.data = plot.data %>%
+    # remove missing rows
+    plot.data <- plot.data %>%
       as.data.frame( plot.data ) %>%
       dplyr::filter( !is.na( .data$power ) )
     
     # single scenario plot
     ss.plot <- ggplot2::ggplot(
       data = plot.data,
-      ggplot2::aes(x = .data$powerType,
-          y = .data$power,
-          shape = .data$MTP,
-          colour = .data$MTP)) +
-      ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(0.25)) +
+      ggplot2::aes_string(x = "powerType",
+          y = "power",
+          shape = "MTP",
+          color = "MTP")) +
+      ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(0.25)) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across different definitions of power")) +
       ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
@@ -235,6 +236,7 @@ plot.pumpresult <- function( x, ... )
             axis.text.y = ggplot2::element_text(size = 10),
             axis.title  = ggplot2::element_text(size = 10)
       ) +
+
       ggplot2::labs(colour = "MTP", shape = "MTP")
   } else if( power.type(x) %in% c('mdes', 'sample') )
   {
@@ -249,68 +251,75 @@ plot.pumpresult <- function( x, ... )
 
 
 
-
-
+#' Plot a grid pump power object
+#'
+#' @param x pumpgridresult object
+#' @param power.definition user must choose one definition of power to plot
+#' @param var.vary a single parameter to show varying on the plot
+#' @param ... Additional parameters
+#'
+#' @export
 plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
   
-  M = params(x)$M
+  M <- params(x)$M
+  MTPs <- unique(c("None", params(x)$MTP))
   
-  res <- get_power_names( M, long=TRUE )
-  
-  if(!attr( x, "long.table" )) {
+  if(!attr( x, "long.table" ))
+  {
     x <- transpose_power_table(x)
   }
-  
-  
-  # Pulling out the power definition of interest matched with what's in the
-  # output table
-  def_power_filter <- res[[power.definition]]
-  
-  # Pulling out only that power definition
+ 
+  # extract renamed power definition
+  power.names <- get_power_names( M, long = TRUE )
+  if (M != 1)
+  {
+    powerType <- power.names[[power.definition]]
+  } else
+  {
+    powerType <- "individual outcome 1"
+  }
+
+  # filter to only relevant power definition
   plot.data <-
     x %>%
-    dplyr::filter(.data$power %in% def_power_filter) %>%
-    dplyr::mutate(power = ifelse(.data$power == "mean individual", 
-                                 "individual power", .data$power))
-  
+    dplyr::filter(.data$power == powerType)
+
+  # remove MDES unless we want to vary it
   if(var.vary != 'MDES')
   {
     plot.data <- plot.data %>%
       dplyr::select(-.data$MDES)
   }
   
-  MTPs = params(x)$MTP
-  
+  # pivot to long table
   plot.data <-
-    plot.data %>%
-    dplyr::relocate(design) %>%
-    dplyr::select_all() %>%
-    dplyr::select(-.data$design) %>%
-    dplyr::arrange(desc(.data$power)) %>%
-    dplyr::rename(powerType = .data$power) %>%
-    tidyr::pivot_longer( cols = all_of( MTPs ),
-                        names_to = "MTP", values_to = "power") %>%
-    dplyr::filter(!stringr::str_detect(.data$powerType, "individual outcome")) %>%
-    dplyr::mutate(powerType = ifelse(.data$MTP == "None",
-                                     "raw mean individual",
-                                     .data$powerType))
-  
-  # converting Power Type to a factor for coloring
-  plot.data$powerType <- factor(plot.data$powerType)
-  
-  # converting data type for graphing purposes
+      plot.data %>%
+      dplyr::select_all() %>%
+      dplyr::select(-.data$design) %>%
+      dplyr::rename(powerType = .data$power) %>%
+      tidyr::pivot_longer( cols = all_of( MTPs ),
+                           names_to = "MTP", values_to = "power")
+
+  # convert to factors for plotting
   plot.data <- plot.data %>%
-    dplyr::mutate(target.power = as.numeric(.data$power),
-                  MTP = as.factor(.data$MTP))
-  
-  # Converting to factor the variable that we are varying
+      dplyr::mutate(target.power = as.numeric(.data$power),
+                    MTP = as.factor(.data$MTP),
+                    powerType = as.factor(.data$powerType))
   plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
   
-  # name of MTP
-  powerType <- levels(as.factor(plot.data$powerType))[[1]]
-  
+  # for pretty graph labels
   if(powerType == "individual power"){
     powerType <- "individual"
+  }
+
+  # remove NA values
+  plot.data <- plot.data %>%
+      dplyr::filter(!is.na(.data$power))
+  
+  # if two variables vary, send warning
+  if(ncol(plot.data) > 4)
+  {
+      message('Note: more than one parameter varying in grid object.')
   }
   
   grid.plot <- ggplot2::ggplot(
@@ -319,10 +328,10 @@ plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
                         y = "power",
                         shape = "MTP",
                         color = "MTP")) +
-    ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(width = 0.125)) +
     ggplot2::scale_y_continuous(limits = c(0,1)) +
     ggplot2::ggtitle(paste0(powerType , " power when ", var.vary, " varies")) +
-    ggplot2::labs(x = paste0(var.vary, " (constant across all outcomes)"),
+    ggplot2::labs(x = var.vary,
                   y = paste0(powerType, " power"),
                   color = "",
                   shape = "") +
@@ -332,39 +341,46 @@ plot.pumpgridresult.power <- function( x, power.definition, var.vary, ... ) {
                                                       hjust = 0.5),
                    axis.text = ggplot2::element_text(size = 10))
   
+  return(grid.plot)
+  
 }
 
 
-
-plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  ) {
-  powerColName <- names(x)[ncol(x)]
+#' Plot a grid pump mdes object
+#'
+#' @inheritParams plot.pumpgridresult.power
+#'
+#' @export
+plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
+{
+  M <- params(x)$M
   
-  # change individual.mean power to individual power
-  plot.data <- x %>%
-    dplyr::mutate(power.definition = 
-                    ifelse(power.definition == "indiv.mean", "individual power", power.definition))
-  
-  plot.data <- plot.data[, c("design", "power.definition", var.vary, 
-                             "Adjusted.MDES", powerColName, "MTP")]
-  
-  # Adjusting the data table for graphing
-  plot.data <-
-    plot.data %>%
-    dplyr::select_all() %>%
-    dplyr::arrange(desc(Adjusted.MDES))
-  
-  # converting data type for graphing purposes
-  plot.data <- plot.data %>%
-    dplyr::mutate(Adjusted.MDES = as.numeric(Adjusted.MDES),
-                  power.definition = as.factor(power.definition))
-  
-  # Converting to factor the variable that we are varying
-  plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
-  
-  powerType <- plot.data$power.definition[1]
-  
+  # extract renamed power definition
+  power.names <- get_power_names( M, long = TRUE )
+  if (M != 1)
+  {
+    powerType <- power.names[[power.definition]]
+  } else
+  {
+    powerType <- "individual outcome 1"
+  }
+  # rename for nicer graphing
   if(powerType == "individual power"){
-    powerType <- "individual"
+      powerType <- "individual"
+  }
+    
+  # extract column name from table
+  powerColName <- grep(power.definition, colnames(x), value = TRUE)
+
+  # converting data type for graphing purposes
+  plot.data <- x %>%
+    dplyr::mutate(Adjusted.MDES = as.numeric(Adjusted.MDES))
+  plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
+
+  # if two variables vary, send warning
+  if(ncol(plot.data) > 6)
+  {
+      message('Note: more than one parameter varying in grid object.')
   }
   
   grid.plot <- ggplot2::ggplot(
@@ -373,9 +389,8 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  ) {
                         y = "Adjusted.MDES",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(width = 0.125)) +
     ggplot2::ggtitle(paste0("MDES for ", powerType, " power when ", var.vary, " varies")) + 
-    #scale_colour_manual(values = allcolorsvalues) +
     ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
                   y = "MDES",
                   color = "",
@@ -385,48 +400,62 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  ) {
                                                       vjust = 1,
                                                       hjust = 0.5),
                    axis.text = ggplot2::element_text(size = 10))
+  
+  return( grid.plot )
 }
 
 
 
-
+#' Plot a grid pump sample object
+#'
+#' @inheritParams plot.pumpgridresult.power
+#'
+#' @export
 plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
   
-  vnames = setdiff( attr(x, "var_names" ), "MTP" )
-  
-  plot.data <- x %>%
-    dplyr::mutate(power.definition = ifelse(power.definition == "indiv.mean", 
-                                            "individual power", power.definition),
-                  Sample.size = round(Sample.size))
-  
-  plot.data = dplyr::select( plot.data,
-                             tidyselect::all_of( c( "design", vnames, "Sample.type",
-                             "Sample.size", "power.definition", "MTP" ) ) )
-  
+  M <- params(x)$M
+  sampleType <- attr( x, "sample.level" )
 
-  # Pulling out the variable that we are varying
-  varVaryItem <- var.vary
-  sampleType <- plot.data[["Sample.type"]][1]
-  
-  # Adjusting the data table for graphing
-  plot.data <-
-    plot.data %>%
-    dplyr::arrange(desc(Sample.size))
+  # extract renamed power definition
+  power.names <- get_power_names( M, long = TRUE )
+  if (M != 1)
+  {
+    powerType <- power.names[[power.definition]]
+  } else
+  {
+    powerType <- "individual outcome 1"
+  }
+  # rename for nicer graphing
+  if(powerType == "individual power"){
+      powerType <- "individual"
+  }
+
+  # extract column name from table
+  powerColName <- grep(power.definition, colnames(x), value = TRUE)
   
   # converting data type for graphing purposes
-  plot.data <- plot.data %>%
-    dplyr::mutate(Sample.size = as.numeric(Sample.size),
-                  power.definition = as.factor(power.definition))
-  
-  # Converting to factor the variable that we are varying
+  plot.data <- x %>%
+    dplyr::mutate(Sample.size = as.numeric(Sample.size))
   plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
-  
-  # # pulling out Power Type Levels to match with all colors
-  powerType <- levels(plot.data$power.definition)[1]
-  
-  if(powerType == "individual power"){
-    powerType <- "individual"
+
+  # if two variables vary, send warning
+  if(ncol(plot.data) > 7)
+  {
+    message('Note: more than one parameter varying in grid object.')
   }
+  
+  # for nice axes
+  if(max(plot.data$Sample.size) - min(plot.data$Sample.size) < 5)
+  {
+      ymin <- max(min(plot.data$Sample.size) - 3, 0)
+      ymax <- max(plot.data$Sample.size) + 3
+      
+  } else
+  {
+      ymin <- min(plot.data$Sample.size)
+      ymax <- max(plot.data$Sample.size)
+  }
+  integer.breaks <- function(ymin, ymax) { unique(floor(pretty(seq(ymin, (ymax + 1) * 1.1)))) }
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
@@ -434,10 +463,10 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
                         y = "Sample.size",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
-    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks()) + 
+    ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::scale_y_continuous(limits = c(ymin, ymax),
+                                breaks = integer.breaks(ymin, ymax)) + 
     ggplot2::ggtitle(paste0(sampleType, " for ", powerType, " power when ", var.vary, " varies")) + 
-    #scale_colour_manual(values = allcolorsvalues) +
     ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
                   y = "Sample size",
                   color = "",
@@ -453,8 +482,6 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 }
 
 
-
-
 #' Plot a pump grid result object
 #'
 #' @param x pumpgridresult object
@@ -464,6 +491,7 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 #' @export
 plot.pumpgridresult <- function( x, power.definition, var.vary, ... )
 {
+  # validation
   stopifnot( is.pumpgridresult( x ) )
   
   if ( !exists("power.definition" ) ) {
@@ -474,21 +502,16 @@ plot.pumpgridresult <- function( x, power.definition, var.vary, ... )
     stop( "variable for x-axis (var.vary) not supplied." )
   }
   
-  var_names = attr(x, "var_names" )
+  var_names <- attr(x, "var_names" )
+
   if ( is.null( var_names ) ) {
     stop( "No list of varying design elements found in pump grid result" )
   }
-  
-  stopifnot( var.vary %in% var_names )
-  
-  
-  # Drop MTP, it gets handled automatically.
-  var_names = setdiff( var_names, "MTP" )
-  
- # if(length(var_names) > 1) {
-#    stop('Grid plot currently only works on grid objects with a single parameter varying.')
- # }
-  
+  if( !(var.vary %in% var_names) )
+  {
+      stop('Please provide a var.vary amongst the variables that vary')
+  }
+
   if(pump_type(x) == 'power') {
   
     grid.plot <- plot.pumpgridresult.power(x, power.definition = power.definition,

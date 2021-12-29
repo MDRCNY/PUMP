@@ -26,7 +26,6 @@ Imports:
      randomizr,
      readr,
      rlang,
-     scales,
      stats,
      stringr,
      tibble,

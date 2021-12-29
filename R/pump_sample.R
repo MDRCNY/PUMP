@@ -553,7 +553,7 @@ pump_sample <- function(
   # if it has converged, give notice about possible flatness
   if(is.finite(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.005 )
   {
-    msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
+    msg <- "Power curve is relatively flat. Other (smaller values) may have similar power.\n"
     msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
     message(msg)
     flat <- TRUE
