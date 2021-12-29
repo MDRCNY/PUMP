@@ -34,7 +34,7 @@ optimize_power(
   omega.3 = 0,
   rho,
   B = NULL,
-  cl = NULL,
+  parallel.WY.clusters = 1,
   max.steps = 20,
   tnum = 1000,
   start.tnum = tnum/10,
@@ -122,7 +122,7 @@ variation).}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
 
 \item{max.steps}{how many steps allowed before terminating}
 

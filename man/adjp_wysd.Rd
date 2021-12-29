@@ -4,7 +4,16 @@
 \alias{adjp_wysd}
 \title{Westfall Young Step Down Function}
 \usage{
-adjp_wysd(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL, verbose = TRUE)
+adjp_wysd(
+  rawp.mat,
+  B,
+  Sigma,
+  t.df,
+  two.tailed,
+  cl = NULL,
+  verbose = TRUE,
+  updateProgress = NULL
+)
 }
 \arguments{
 \item{rawp.mat}{a matrix of raw p-values under H1. dimension: nrow = tnum, ncol = M}
@@ -19,7 +28,7 @@ is obtained through drawing test values under H0 with a default of 10,000)}
 
 \item{two.tailed}{one or two-tailed test}
 
-\item{cl}{cluster}
+\item{cl}{clusters for parallel computing}
 
 \item{verbose}{verbose messaging}
 }

@@ -30,8 +30,8 @@ pump_power(
   rho.matrix = NULL,
   tnum = 10000,
   B = 1000,
+  parallel.WY.clusters = 1,
   drop.zero.outcomes = TRUE,
-  cl = NULL,
   updateProgress = NULL,
   validate.inputs = TRUE,
   long.table = FALSE,
@@ -106,9 +106,9 @@ rho or rho.matrix, but not both.}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
+\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
