@@ -290,14 +290,14 @@ calc_df <- function(design, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, vali
 #' @return nbar, the number of individuals needed, or NA if not possible given design
 #' @export
 
-calc_nbar <- function(design, MT = 2.8, MDES, J, K = NULL, Tbar, R2.1,
-                      R2.2, ICC.2, omega.2,
+calc_nbar <- function(design, MT = 2.8, MDES, J = NULL, K = NULL, Tbar, R2.1,
+                      R2.2 = NULL, ICC.2 = NULL, omega.2 = NULL,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL ) {
 
     if(design %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
-        denom <- Tbar * (1 - Tbar) * J
+        denom <- Tbar * (1 - Tbar)
         nbar <- (MT/MDES)^2 * numr/denom
     } else if(design %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
