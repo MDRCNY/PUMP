@@ -130,8 +130,8 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
         end.time <- Sys.time()
         iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
         finish.time <- round((iter.time * tnum)/60)
-        msg <- paste('Estimated time to finish ', tnum,
-                     ' WY iterations with B =', B, ':',
+        msg <- paste('Estimated time to finish', tnum,
+                     'WY iterations with B =', B, ':',
                      finish.time, 'minutes')
         if(verbose)
         {
@@ -209,8 +209,8 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df, two.tailed, cl = NULL,
       end.time <- Sys.time()
       iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
       finish.time <- round((iter.time * tnum)/60)
-      msg <- paste('Estimated time to finish ', tnum,
-                   ' WY iterations with B =', B, ':',
+      msg <- paste('Estimated time to finish', tnum,
+                   'WY iterations with B =', B, ':',
                    finish.time, 'minutes')
       if(verbose)
       {
