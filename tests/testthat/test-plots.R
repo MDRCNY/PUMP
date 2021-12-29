@@ -20,7 +20,6 @@ test_that("Single Scenario plot works", {
   )
   
   ss.plot <- plot(pp)
-  #ss.plot
   expect_true(!is.null(ss.plot))
 
   
@@ -129,6 +128,25 @@ test_that("Grid plot works for SS", {
                              ICC.3 = seq( 0, 0.45, 0.15 ),
                              rho = 0.4, tnum = 100, tol = 0.45 ))
     grid.plot <- plot(grid, power.definition = 'complete', var.vary = 'ICC.3')
+    expect_true(!is.null(grid.plot))
+    
+    grid <- expect_warning(pump_sample_grid(  design = "d3.2_m3ff2rc",
+                                              MTP = c( "Holm", "BH" ),
+                                              target.power = 0.8,
+                                              power.definition = 'D1indiv',
+                                              typesample = 'J',
+                                              MDES = 0.2,
+                                              M = 3,
+                                              K = 21, # number RA blocks
+                                              nbar = 258,
+                                              Tbar = 0.50, # prop Tx
+                                              alpha = 0.05, # significance level
+                                              numCovar.1 = 5, numCovar.2 = 3,
+                                              R2.1 = 0.1, R2.2 = 0.7,
+                                              ICC.2 = 0.2,
+                                              ICC.3 = 0.2,
+                                              rho = seq(0.2, 0.8, 0.1), tnum = 100, tol = 0.45 ))
+    grid.plot <- plot(grid, power.definition = 'D1indiv', var.vary = 'rho')
     expect_true(!is.null(grid.plot))
     
 })

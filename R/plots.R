@@ -205,7 +205,7 @@ plot.pumpresult <- function( x, ... )
           y = "power",
           shape = "MTP",
           color = "MTP")) +
-      ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(0.25)) +
+      ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(0.25)) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across different definitions of power")) +
       ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
@@ -368,7 +368,7 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
                         y = "Adjusted.MDES",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(width = 0.125)) +
     ggplot2::ggtitle(paste0("MDES for ", powerType, " power when ", var.vary, " varies")) + 
     ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
                   y = "MDES",
@@ -411,7 +411,7 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 
   # extract column name from table
   powerColName <- grep(power.definition, colnames(x), value = TRUE)
-
+  
   # converting data type for graphing purposes
   plot.data <- x %>%
     dplyr::mutate(Sample.size = as.numeric(Sample.size))
@@ -423,14 +423,28 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
     message('Note: more than one parameter varying in grid object.')
   }
   
+  # for nice axes
+  if(max(plot.data$Sample.size) - min(plot.data$Sample.size) < 5)
+  {
+      ymin <- max(min(plot.data$Sample.size) - 3, 0)
+      ymax <- max(plot.data$Sample.size) + 3
+      
+  } else
+  {
+      ymin <- min(plot.data$Sample.size)
+      ymax <- max(plot.data$Sample.size)
+  }
+  integer.breaks <- function(ymin, ymax) { unique(floor(pretty(seq(ymin, (ymax + 1) * 1.1)))) }
+  
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
     ggplot2::aes_string(x = var.vary,
                         y = "Sample.size",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 1.5, position = ggplot2::position_dodge(width = 0.125)) +
-    ggplot2::scale_y_continuous(breaks = scales::pretty_breaks()) + 
+    ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::scale_y_continuous(limits = c(ymin, ymax),
+                                breaks = integer.breaks(ymin, ymax)) + 
     ggplot2::ggtitle(paste0(sampleType, " for ", powerType, " power when ", var.vary, " varies")) + 
     ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
                   y = "Sample size",

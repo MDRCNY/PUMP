@@ -35,7 +35,7 @@ pump_mdes(
   tnum = 1000,
   start.tnum = tnum/10,
   final.tnum = 4 * tnum,
-  cl = NULL,
+  parallel.WY.clusters = 1,
   updateProgress = NULL,
   give.optimizer.warnings = FALSE,
   verbose = FALSE
@@ -121,7 +121,7 @@ rho or rho.matrix, but not both.}
 
 \item{final.tnum}{number of samples for final draw}
 
-\item{cl}{cluster object to use for parallel processing}
+\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
