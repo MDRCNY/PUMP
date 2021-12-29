@@ -611,7 +611,7 @@ validate_inputs <- function( design, params.list,
     # Westfall-Young
     #-------------------------------------------------------#
     
-    if ( any(params.list$MTP == "WY-SD") || any(params.list$MTP == "WY-SS") &&
+    if ( ( any(params.list$MTP == "WY-SD") || any(params.list$MTP == "WY-SS") ) &&
          params.list$B < 1000 )
     {
         warning(paste("For the step-down Westfall-Young procedure,

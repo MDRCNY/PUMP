@@ -513,7 +513,7 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   # Drop outliers to target estimation
   if ( nrow( test.pts ) > 5 ) {
     test.pts$del = abs(test.pts$power - target.power )
-    test.pts = dplyr::filter( test.pts, del < quantile(del,0.75) + 1.5* IQR(del) )
+    test.pts = dplyr::filter( test.pts, .data$del < stats::quantile(.data$del,0.75) + 1.5* stats::IQR(.data$del) )
   }
   
   fit <- fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )

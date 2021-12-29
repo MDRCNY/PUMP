@@ -334,7 +334,7 @@ transpose_power_table <- function( power_table, M = NULL ) {
     
     pp <- power_table %>% 
       as.data.frame() %>%
-      tidyr::pivot_longer( cols = any_of( names(pnames) ),
+      tidyr::pivot_longer( cols = tidyselect::any_of( names(pnames) ),
                            names_to = "power",
                            values_to = "power_val" ) %>%
       tidyr::pivot_wider( names_from="MTP", values_from="power_val" ) %>%
@@ -343,7 +343,7 @@ transpose_power_table <- function( power_table, M = NULL ) {
     pnames = get_power_names(M)
     pp <- power_table %>%
       dplyr::mutate( power = pnames[ .data$power ] ) %>%
-      tidyr::pivot_longer( cols = any_of( c( "None", params(power_table)$MTP ) ),
+      tidyr::pivot_longer( cols = tidyselect::any_of( c( "None", params(power_table)$MTP ) ),
                            names_to = "MTP",
                            values_to = "power_val" ) %>%
       tidyr::pivot_wider( names_from="power", values_from="power_val" )

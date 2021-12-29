@@ -97,6 +97,7 @@ get_adjp_minp <- function(ind.B, rawp.order)
 #' @param t.df degrees of freedom of null p-values
 #' @param two.tailed one or two-tailed test
 #' @param verbose whether to print out messaging
+#' @param updateProgress function to update progress bar (only used for PUMP shiny app)
 #'
 #' @return a matrix of adjusted p-values
 #' @export
@@ -165,6 +166,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
 #' @param two.tailed one or two-tailed test
 #' @param cl clusters for parallel computing
 #' @param verbose verbose messaging
+#' @param updateProgress function to update progress bar (only used for PUMP shiny app)
 #'
 #' @return a matrix of adjusted p-values
 #' @export

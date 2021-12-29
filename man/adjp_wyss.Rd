@@ -28,6 +28,8 @@ is obtained through drawing test values under H0 with a default of 10,000)}
 \item{two.tailed}{one or two-tailed test}
 
 \item{verbose}{whether to print out messaging}
+
+\item{updateProgress}{function to update progress bar (only used for PUMP shiny app)}
 }
 \value{
 a matrix of adjusted p-values

@@ -4,7 +4,7 @@
 \alias{plot_power_search}
 \title{Examine search path of the power search.}
 \usage{
-plot_power_search(pwr, fit = NULL, target_line = NULL)
+plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
 \arguments{
 \item{pwr}{Result from a pump_sample or pump_mdes call.}
