@@ -91,7 +91,7 @@ test_that( "pumpgridresult dimensions work", {
     
     
     
-    ssLW <- pump_sample_grid(    design = "d3.2_m3rr2rc",
+    ssLW <- pump_sample_grid(  design = "d3.2_m3rr2rc",
                                MTP = c( "Holm", "BH" ),
                                nbar = 200, J = 40,
                                target.power = c( 0.60, 0.70 ), 

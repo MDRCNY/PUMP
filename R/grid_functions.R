@@ -35,6 +35,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
 
   cnts <- dplyr::summarise( grid, across( everything(),  ~ length( unique( .x ) ) ) )
+  
   var_names = names(cnts)[ as.numeric( cnts ) > 1 ]
   var_names = setdiff( var_names, "res" )
   
@@ -50,6 +51,12 @@ run_grid <- function( args, pum_function, verbose = FALSE,
       #      dplyr::any_of( c("MDES", "numZero" ) ) |
       #        tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
+  
+  params = params( grid$res[[1]] )
+  for ( v in var_names ) {
+    params[v] = "***"
+  }
+  
   grid$res <- purrr::map( grid$res, as.data.frame )
   grid$MTP <- NULL
   
@@ -62,7 +69,8 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
 
   attr( grid, "var_names" ) <- var_names 
-
+  attr( grid, "params.list" ) <- params
+  
   return( grid )
 }
 
@@ -160,7 +168,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
   args = c( args, list(...) )
   grid <- make.pumpgridresult(
     grid, "power",
-    params.list = args[names(args) != 'design'],
+    #params.list = args[names(args) != 'design'],
     design = design,
     long.table = long.table )
 
@@ -219,7 +227,7 @@ pump_mdes_grid <- function( design, MTP, M,
   
   grid <- make.pumpgridresult(
       grid, "mdes",
-      params.list = args[names(args) != 'design'],
+      #params.list = args[names(args) != 'design'],
       design = design )
   
 
@@ -280,7 +288,7 @@ pump_sample_grid <- function( design, MTP, M,
   
   grid <- make.pumpgridresult(
       grid, "sample",
-      params.list = args[names(args) != 'design'],
+     # params.list = args[names(args) != 'design'],
       design = design,
       sample.level = typesample )
   

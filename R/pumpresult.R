@@ -639,10 +639,10 @@ print_design <- function( x, insert_results = FALSE, insert_control = FALSE, ...
   }
   
   cname = function( numCov ) {
-    if ( as.numeric(numCov) == 1 ) {
+    if ( numCov == "1" ) {
       return( "1 covariate" )
     } else {
-      return( sprintf( "%d covariates", as.numeric(numCov) ) )
+      return( sprintf( "%s covariates", numCov ) )
     }
   }
   
