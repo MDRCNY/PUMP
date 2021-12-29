@@ -9,7 +9,6 @@
 #' @param start.low lower bound for optimization procedure
 #' @param start.high upper bound for optimization procedure
 #' @param give.warnings whether to return optimizer warnings
-#' @param cl cluster object to use for parallel processing
 #' @param grid.only TRUE means generate a grid from start.low to start.high, but
 #'   do not do iterative search. (Useful for mapping out the power curve rather
 #'   than identifying a point of particular power).
