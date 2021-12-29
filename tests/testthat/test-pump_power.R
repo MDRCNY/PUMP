@@ -613,7 +613,7 @@ test_that("parallel WY", {
                       ICC.2 = 0.05, ICC.3 = 0.4,
                       rho = 0.4, # how correlated outcomes are
                       tnum = 1000, B = 100,
-                      parallel.WY.clusters = 3
+                      parallel.WY.clusters = 2
     ))
     expect_true(nrow(pp) == 2)
 

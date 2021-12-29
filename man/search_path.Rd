@@ -6,6 +6,9 @@
 \usage{
 search_path(x)
 }
+\arguments{
+\item{x}{pumpresult object (sample or mdes)}
+}
 \value{
 Dataframe of search path, in sequential order.
 }

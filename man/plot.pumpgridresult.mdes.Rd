@@ -9,11 +9,11 @@
 \arguments{
 \item{x}{pumpgridresult object}
 
-\item{power.definition}{user must choose one definition of power to plot}
+\item{power.definition}{definition of power to plot}
 
-\item{var.vary}{a single parameter to show varying on the plot}
+\item{var.vary}{variable to vary on X axis}
 
-\item{...}{Additional parameters}
+\item{...}{additional parameters}
 }
 \description{
 Plot a grid pump mdes object

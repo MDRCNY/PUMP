@@ -171,8 +171,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param B scalar; the number of samples/permutations for Westfall-Young
 #' @param parallel.WY.clusters number of clusters to use for parallel processing of WY
 #' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
-#' @param updateProgress the callback function to update the progress bar (User
-#'   does not have to input anything)
+#' @param updateProgress function to update progress bar (only used for PUMP shiny app)
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
 #' @param verbose Print out diagnostics of time, etc.

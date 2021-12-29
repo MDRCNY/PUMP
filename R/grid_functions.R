@@ -34,10 +34,9 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 
   }
 
-  cnts <- dplyr::summarise( grid, across( everything(),  ~ length( unique( .x ) ) ) )
-  
-  var_names = names(cnts)[ as.numeric( cnts ) > 1 ]
-  var_names = setdiff( var_names, "res" )
+  cnts <- dplyr::summarise( grid, dplyr::across( dplyr::everything(),  ~ length( unique( .x ) ) ) )
+  var_names <- names(cnts)[ as.numeric( cnts ) > 1 ]
+  var_names <- setdiff( var_names, "res" )
   
   if ( verbose ) {
     message( sprintf( "Grid search across multiple %s\n",

@@ -110,8 +110,7 @@ rho or rho.matrix, but not both.}
 
 \item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
 
-\item{updateProgress}{the callback function to update the progress bar (User
-does not have to input anything)}
+\item{updateProgress}{function to update progress bar (only used for PUMP shiny app)}
 
 \item{validate.inputs}{whether or not to check whether parameters are valid
 given the choice of design}
