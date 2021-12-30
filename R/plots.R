@@ -3,9 +3,7 @@
 get_sample_tick_marks = function( pt, breaks = 5, include.points = TRUE ) {
   
   pt = round( pt )
-  
-  #mn = round( min( pt ) )
-  #mx = ceiling( max( pt ) )
+
   mn = min( pt )
   mx = max( pt )
   
@@ -63,7 +61,6 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
   }
   
   xrng = range( test.pts$pt )
-  #lims <- grDevices::extendrange( r = range( test.pts$power, test.pts$target.power[[1]], na.rm = TRUE ), 0.15 )
   limsX <- grDevices::extendrange( r = xrng, 0.15 )
   
   # sample size or MDES?  If dataframe passed, we don't know what we are
