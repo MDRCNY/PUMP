@@ -66,20 +66,20 @@ pump_info <- function( comment = TRUE) {
                                "WY-SD", "Westfall-Young, Step Down" )
 
     params <- tibble::tribble( ~ Parameter, ~ Description,
-                               "nbar",       "the harmonic mean of the number of level 1 units per level 2 unit (students per school)",
-                               "J",          "the number of level 2 units (schools)",
-                               "K",          "the number of level 3 units (district)",
-                               "Tbar",       "the proportion of units that are assigned to the treatment",
-                               "numCovar.1", "number of Level 1 (individual) covariates",
-                               "numCovar.2", "number of Level 2 (school) covariates",
-                               "numCovar.3", "number of Level 3 (district) covariates",
-                               "R2.1",       "percent of variation explained by Level 1 covariates",
-                               "R2.2",       "percent of variation explained by Level 2 covariates",
-                               "R2.3",       "percent of variation explained by Level 3 covariates",
+                               "nbar",       "harmonic mean of level 1 units per level 2 unit (students per school)",
+                               "J",          "number of level 2 units per level 3 unit (schools per district)",
+                               "K",          "number of level 3 units (districts)",
+                               "Tbar",       "proportion of units assigned to treatment",
+                               "numCovar.1", "number of level 1 (individual) covariates",
+                               "numCovar.2", "number of level 2 (school) covariates",
+                               "numCovar.3", "number of level 3 (district) covariates",
+                               "R2.1",       "percent of variation explained by level 1 covariates",
+                               "R2.2",       "percent of variation explained by level 2 covariates",
+                               "R2.3",       "percent of variation explained by level 3 covariates",
                                "ICC.2",      "level 2 intraclass correlation",
                                "ICC.3",      "level 3 intraclass correlation",
-                               "omega.2",    "ratio of variance of level 2 average impacts to variance of level 2 random intercepts",
-                               "omega.3",    "ratio of variance of level 3 average impacts to variance of level 3 random intercepts"
+                               "omega.2",    "ratio of variance of level 2 average impacts to level 2 random intercepts",
+                               "omega.3",    "ratio of variance of level 3 average impacts to level 3 random intercepts"
     )
 
     if ( !comment ) {
