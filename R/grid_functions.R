@@ -45,10 +45,6 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   
   if ( drop_unique_columns ) {
     grid <- dplyr::select( grid, dplyr::any_of( unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) )
-      #    grid <- dplyr::select(
-      #      grid,
-      #      dplyr::any_of( c("MDES", "numZero" ) ) |
-      #        tidyselect::vars_select_helpers$where( ~ !is.numeric( .x ) || length( unique( .x ) ) > 1 ) )
   }
   
   params = params( grid$res[[1]] )
@@ -85,7 +81,6 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 setup_default_parallel_plan <- function() {
   future::plan(future::multisession, workers = parallel::detectCores() - 1 )
 }
-
 
 
 #' Run pump_power on combination of factors

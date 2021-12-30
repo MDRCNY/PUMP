@@ -45,50 +45,6 @@ pump_mdes <- function(
   verbose = FALSE
 )
 {
-
-  # Call self for each element on MTP list.
-
-  # NOTE: This is not well defined because do we store search history or what
-  # when we have multiple calls to different MTPs?
-
-  # if ( length( MTP ) > 1 ) {
-  #   if ( verbose ) {
-  #     scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
-  #   }
-  #   des = purrr::map( MTP,
-  #                     pump_mdes, design = design,
-  #                     target.power = target.power, power.definition = power.definition, tol = tol,
-  #                     M = M, J = J, K = K, nbar = nbar,
-  #                     Tbar = Tbar, alpha = alpha,
-  #                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-  #                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-  #                     ICC.2 = ICC.2, ICC.3 = ICC.3,
-  #                     omega.2 = omega.2, omega.3 = omega.3,
-  #                     rho = rho, rho.matrix = rho.matrix,
-  #                     B = B,
-  #                     max.steps = max.steps, tnum = tnum, tnum = tnum, final.tnum = final.tnum,
-  #                     cl = cl, updateProgress = updateProgress, give.optimizer.warnings = give.optimizer.warnings,
-  #                     verbose = verbose )
-  #
-  #   plist = attr( des[[1]], "params.list" )
-  #   plist$MTP = MTP
-  #     ftable = des[[1]]
-  #     for ( i in 2:length(des) ) {
-  #       ftable = dplyr::bind_rows( ftable, des[[i]] )
-  #     }
-  #
-  #   return( make.pumpresult( ftable, "mdes",
-  #                            params.list = plist,
-  #                            design = design,
-  #                            multiple_MTP = TRUE ) )
-  #
-  #   #des = map( des, ~ .x[nrow(.x),] ) %>%
-  #   #  dplyr::bind_rows()
-  #   #return( des )
-  # }
-
-
-
   if ( verbose ) {
     scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations (%d perms for WY if used)\n",
           start.tnum, tnum, final.tnum, B )

@@ -176,7 +176,6 @@ pump_sample_raw <- function(
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2[1], omega.3 = omega.3[1]
       )
-      #cat( "nbar=", nbar, "\tdf=", df, "\tnbar1=", nbar1, "\n" )
 
       if (is.na( nbar1 ) || (nbar1 <= nbar) ) {
         conv <- TRUE

@@ -349,23 +349,6 @@ transpose_power_table <- function( power_table, M = NULL ) {
       tidyr::pivot_wider( names_from="power", values_from="power_val" )
   } 
   
-  
-  # cname = power_table$MTP
-  # power_table$MTP = NULL
-  # pp <- t( power_table )
-  # colnames(pp) <- cname
-  # #if ( ncol( pp ) > 1 ) {
-  # #  pp = pp[ , ncol(pp):1 ]
-  # #}
-  # pows <- rownames(pp)
-  # pp <- pp %>% # pp[ nrow(pp):1, ] %>%
-  #   as.data.frame() %>%
-  #   tibble::rownames_to_column( var="power" )
-  # 
-  # pp$power <- stringr::str_replace( pp$power, "D(.*)indiv", "individual outcome \\1" )
-  # pp$power <- stringr::str_replace( pp$power, "min(.*)", "\\1-minimum" )
-  # pp$power <- stringr::str_replace( pp$power, "indiv.mean", "mean individual" )
-  
   if( is.pumpresult( ptorig ) || is.pumpgridresult(ptorig) ) {
     att = attributes(ptorig)
     att["names"] = NULL

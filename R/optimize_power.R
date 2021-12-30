@@ -1,6 +1,3 @@
-
-
-
 #' Optimizes power to help in search for MDES or SS
 #'
 #' @inheritParams pump_power
@@ -372,9 +369,6 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   return(final.pts)
 }
 
-
-
-
 bounded_logistic_curve <- function( x, params ) {
   if ( !is.null( names( params ) ) ) {
     beta0 <- params[["beta0"]]
@@ -389,9 +383,6 @@ bounded_logistic_curve <- function( x, params ) {
   }
   pmin + (pmax - pmin)*stats::plogis( beta0 + beta1*x )
 }
-
-
-
 
 d_bounded_logistic_curve <- function( x, params ) {
   if ( !is.null( names( params ) ) ) {
@@ -413,9 +404,7 @@ d_bounded_logistic_curve <- function( x, params ) {
   return( deriv )
 }
 
-
-
-find_crossover = function( target_power, params ) {
+find_crossover <- function( target_power, params ) {
   beta0 <- params[["beta0"]]
   beta1 <- params[["beta1"]]
   pmin <- params[["pmin"]]
@@ -430,8 +419,6 @@ find_crossover = function( target_power, params ) {
   
   xover
 }
-
-
 
 
 #' Fit a bounded logistic curve
@@ -469,11 +456,6 @@ fit_bounded_logistic = function( x, y, wt ) {
   
   scale_x = max(x)
   x = x / scale_x
-  
-  # Initial slope is such that we are scaling X to be from 0 to 1 across range
-  # of X
-  #par_start[2] = pmin( 10 / max(x), 0.5 )
-  
   
   # fit the model
   rs <- stats::optim( par_start,
@@ -530,176 +512,11 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   } else {
     # extract point where it crosses target power.
     cc <- find_crossover( target.power, fit )
-    
-    cc = min( cc, start.high * gamma )
-    cc = max( cc, start.low / gamma )
+    cc <- min( cc, start.high * gamma )
+    cc <- max( cc, start.low / gamma )
   }
-  
-  
- # if ( is.nan(cc) || is.infinite(cc) ) {
-#    browser()
-#  }
   
   return( list( x = cc, 
                 dx = d_bounded_logistic_curve(cc, fit), 
                 params = fit ) )
 }
-
-
-
-
-
-
-# find_best_semi_old <- function(test.pts, target.power, gamma = 1.5)
-# {
-#   start.low <- min( test.pts$pt )
-#   start.high <- max( test.pts$pt )
-#
-#   # fit quadratic curve
-#   test.pts$sq_pt = sqrt( test.pts$pt )
-#   fit <- lm(
-#     power ~ 1 + sq_pt + I(sq_pt^2),
-#     data = test.pts,
-#     weights = w
-#   )
-#
-#   # extract point where it crosses target power.
-#   # Our curve is now a x^2 + b x + (c - logit(target.power))
-#   # Using x = [ -b \pm sqrt( b^2 - 4a(c- logit(y))  ] / [2a]
-#   # first check if root exists
-#   cc <- rev( coef( fit ) )
-#
-#
-#   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-#
-#   happy <- FALSE
-#
-#   # We have a place where our quad line crosses target.power
-#   if ( rt.check > 0 ) {
-#
-#     # calculate the two points to try (our two roots)
-#     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / 2 * cc[1]
-#     hits <- (start.low <= try.pt) & (try.pt <= start.high)
-#
-#     if ( sum( hits ) == 1 ) {
-#       try.pt <- try.pt[hits]
-#       happy <- TRUE
-#     } else if ( sum( hits ) == 2 ) {
-#       # both roots in our range.  Probably flat.  Pick center
-#       try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
-#       happy <- TRUE
-#     } else {
-#       happy <- FALSE
-#     }
-#   } else {
-#     warning( "No root in logistic model fit" )
-#   }
-#
-#   if ( !happy ) {
-#
-#     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
-#     cc <- rev( coef( lin.mod ) )
-#     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-#
-#     if ( try.pt < start.low / gamma ) {
-#       try.pt <- start.low / gamma
-#     } else if ( try.pt > start.high * gamma ) {
-#       try.pt <- start.high * gamma
-#     }
-#   }
-#
-#   return(unname(try.pt))
-# }
-
-
-
-
-# #' Extract roots from quadratic curve based on given evaluated points
-# #'
-# #' @param test.pts power evaluated at different points
-# #' @param start.low lower bound
-# #' @param start.high upper bound
-# #' @param target.power goal power
-# #' @param alternate alternate point to return if quadratic fit fails
-# #'
-# #' @return root of quadratic curve
-#
-# find_best_old <- function(test.pts, gamma = 1.5, target.power )
-# {
-#   # Get current range of search so far.
-#   start.low <- min( test.pts$pt )
-#   start.high <- max( test.pts$pt )
-#
-#   # fit quadratic curve
-#   test.pts$sq_pt <- sqrt( test.pts$pt )
-#   quad.mod <- lm(
-#     power ~ 1 + sq_pt + I(sq_pt^2),
-#     weights = w,
-#     data = test.pts
-#   )
-#
-#   # extract point where it crosses target power.
-#   # Our curve is now a x^2 + b x + (c - target.power)
-#   # Using x = [ -b \pm sqrt( b^2 - 4a(c-y) ) ] / [2a]
-#   # first check if root exists
-#   cc <- rev( coef( quad.mod ) )
-#   rt.check <- cc[2]^2 - 4 * cc[1] * (cc[3] - target.power)
-#
-#   happy = FALSE
-#   if ( rt.check > 0 ) {
-#     # We have a place where our quad line crosses target.power
-#
-#     # calculate the two points to try (our two roots)
-#     try.pt <- ( -cc[2] + c(-1,1) * sqrt(rt.check) ) / (2 * cc[1] )^2
-#     hits <- (start.low <= try.pt) & (try.pt <= start.high)
-#
-#     if ( sum( hits ) == 1 ) {
-#       try.pt <- try.pt[hits]
-#       happy <- TRUE
-#     } else if ( sum( hits ) == 2 ) {
-#       # both roots in our range.  Probably flat.  Pick center
-#       try.pt = (try.pt[[1]] + try.pt[[2]]) / 2
-#       happy <- TRUE
-#     } else {
-#       happy <- FALSE
-#       # Go to linear
-#
-#       # No roots in the original range.  Try extrapolation, if we can stay
-#       # within gamma of the original range
-#       try.pt <- sort( try.pt )
-#       if ( (try.pt[[2]] > start.low / gamma ) && ( try.pt[[1]] < start.high * gamma ) ) {
-#         if ( try.pt[[1]] < start.low / gamma ) {
-#           try.pt <- try.pt[[2]]
-#         } else if ( try.pt[[2]] > start.high * gamma ) {
-#           try.pt <- try.pt[[1]]
-#         } else {
-#           try.pt <- ifelse( sample(2,1) == 1, try.pt[[1]], try.pt[[2]] )
-#         }
-#         happy <- TRUE
-#       }
-#     }
-#   } else {
-#     warning( "No root in quadratic model fit" )
-#   }
-#
-#   # If no roots in the original range, and quad extrapolation failed, try linear
-#   # extrapolation, but stay within gamma of the original range.
-#   if ( !happy ) {
-#     lin.mod <- lm( power ~ 1 + sq_pt, data = test.pts)
-#     cc <- rev( coef( lin.mod ) )
-#     try.pt <- ( (target.power - cc[[2]]) / cc[[1]] )^2
-#
-#     if ( try.pt < start.low / gamma ) {
-#       try.pt <- start.low / gamma
-#     } else if ( try.pt > start.high * gamma ) {
-#       try.pt <- start.high * gamma
-#     }
-#   }
-#
-#   return(try.pt)
-# }
-
-
-
-
-
