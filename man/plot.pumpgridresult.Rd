@@ -4,12 +4,13 @@
 \alias{plot.pumpgridresult}
 \title{Plot a pump grid result object}
 \usage{
-\method{plot}{pumpgridresult}(x, power.definition, var.vary, ...)
+\method{plot}{pumpgridresult}(x, power.definition = NULL, var.vary, ...)
 }
 \arguments{
 \item{x}{pumpgridresult object}
 
-\item{power.definition}{definition of power to plot}
+\item{power.definition}{definition of power to plot.  If NULL, plot all
+definitions as a facet wrap.}
 
 \item{var.vary}{variable to vary on X axis}
 

@@ -119,7 +119,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #'
 #' @param pwr Result from a pump_sample or pump_mdes call.
 #' @param fit A fitted curve to the search.
-#' @param target_line If non-NULL, add a reference line for the true power (if
+#' @param target.line If non-NULL, add a reference line for the true power (if
 #'   known, e.g., from a pump_power call). 
 #'
 #' @return a ggplot plot (a gridExtra arrangement of 3 plots, technically).

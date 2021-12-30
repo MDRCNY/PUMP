@@ -9,7 +9,8 @@
 \arguments{
 \item{x}{pumpgridresult object}
 
-\item{power.definition}{definition of power to plot}
+\item{power.definition}{definition of power to plot.  If NULL, plot all
+definitions as a facet wrap.}
 
 \item{var.vary}{variable to vary on X axis}
 

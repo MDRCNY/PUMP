@@ -11,7 +11,7 @@ plot_power_search(pwr, fit = NULL, target.line = NULL)
 
 \item{fit}{A fitted curve to the search.}
 
-\item{target_line}{If non-NULL, add a reference line for the true power (if
+\item{target.line}{If non-NULL, add a reference line for the true power (if
 known, e.g., from a pump_power call).}
 }
 \value{
