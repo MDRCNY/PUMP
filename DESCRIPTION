@@ -29,10 +29,10 @@ Imports:
      stringr,
      tibble,
      tidyr,
-     tidyselect,
-     tidyverse
+     tidyselect
 Suggests: 
     testthat,
+    kableExtra,
     knitr,
     furrr,
     PowerUpR

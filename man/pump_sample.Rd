@@ -59,8 +59,9 @@ to automatically re-run for each procedure on the list.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
 
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
+\item{numZero}{scalar; Additional number of outcomes assumed 
+to be zero. Please
+  provide NumZero + length(MDES) = M}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -71,12 +72,14 @@ provide NumZero + length(MDES) = M}
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
-function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+function. Individual power is 'D1indiv', 'D2indiv', etc. 
+$d$-minimal power is 'min1' power, 'min2' power, etc.
 Complete power is 'complete'.}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
+one-tailed power calculation.}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
@@ -107,13 +110,15 @@ Level 3 covariates for each outcome. Defaults to 0.}
 of correlations between test statistics. Must specify either
 rho or rho.matrix, but not both.}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
@@ -121,22 +126,27 @@ variation).}
 
 \item{tnum}{Max number of samples for first iteration of search algorithm}
 
-\item{start.tnum}{number of samples to start search (this will increase with each step).}
+\item{start.tnum}{number of samples to start search 
+(this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw}
 
-\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
+\item{parallel.WY.clusters}{number of clusters to use for 
+parallel processing of WY}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}
 
-\item{max_sample_size_nbar}{scalar; default upper bound for nbar for search algorithm}
+\item{max_sample_size_nbar}{scalar; default upper bound for nbar 
+for search algorithm}
 
-\item{max_sample_size_JK}{scalar; default upper bound for J or K for search algorithm}
+\item{max_sample_size_JK}{scalar; default upper bound for J or K 
+for search algorithm}
 
-\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
-controls when the search is done: when estimated power (checked with
-`final.tnum` iterations) is within `tol`, the search stops.}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).
+This parameter controls when the search is done: 
+when estimated power (checked with `final.tnum` iterations) 
+is within `tol`, the search stops.}
 
 \item{give.optimizer.warnings}{whether to return verbose optimizer warnings}
 

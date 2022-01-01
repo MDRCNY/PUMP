@@ -253,9 +253,9 @@ test_that("unblocked designs", {
   )
 
 
-  ES = log( 2 ) / 0.66
+  ES <- log( 2 ) / 0.66
   ES
-  R2.2 = 0.6102
+  R2.2 <- 0.6102
   pump_power(design = "d1.1_m1c", MTP = "Holm", MDES = ES,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 

@@ -22,7 +22,8 @@ get_power_results(
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{drop.zero.outcomes}{whether to report power results for outcomes with MDES = 0}
+\item{drop.zero.outcomes}{whether to report power results for 
+outcomes with MDES = 0}
 
 \item{adj}{whether p-values are unadjusted or not}
 }
@@ -30,5 +31,6 @@ get_power_results(
 power results for individual, minimum, complete power
 }
 \description{
-This function takes in a matrix of adjusted p-values and outputs different types of power
+This function takes in a matrix of adjusted p-values 
+and outputs different types of power
 }

@@ -79,7 +79,7 @@ test_that("testing of d2.2_m2rc raw", {
   expect_true( !is.na( calcJ$`Sample.size` ) )
 
 
-  pp = pump_power( design = "d2.2_m2rc",
+  pp <- pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
                    J = calcJ$`Sample.size` - 1,
@@ -92,7 +92,7 @@ test_that("testing of d2.2_m2rc raw", {
   pp
   expect_true( pp[2,"min1"] <= 0.80 )
 
-  pp = pump_power( design = "d2.2_m2rc",
+  pp <- pump_power( design = "d2.2_m2rc",
                    MTP = "Holm",
                    M = 4,
                    J = calcJ$`Sample.size`,

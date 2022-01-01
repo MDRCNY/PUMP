@@ -41,7 +41,8 @@ is.pumpresult(x)
 \item{x}{a pumpresult object (except for is.pumpresult, where it is a generic
 object to check).}
 
-\item{...}{additional arguments to be passed to the as.data.frame.list methods.}
+\item{...}{additional arguments to be passed to the 
+as.data.frame.list methods.}
 
 \item{object}{Object to summarize.}
 
@@ -53,9 +54,11 @@ the data.frame of actual results.}
 \item{search}{FALSE means don't print the search path for a result for
 mdes or sample.}
 
-\item{row.names}{NULL or a character vector giving the row names for the data frame.}
+\item{row.names}{NULL or a character vector giving the 
+row names for the data frame.}
 
-\item{optional}{logical. If TRUE, setting row names and converting column names is optional.}
+\item{optional}{logical. If TRUE, setting row names and 
+converting column names is optional.}
 }
 \value{
 params: List of design parameters used.
@@ -75,8 +78,8 @@ is.pumpresult: TRUE if object is a pumpresult object.
 
 dim: Dimension of pumpresult (as matrix)
 
-as.data.frame: pumpresult object as a clean dataframe (no more attributes from
-  pumpresult).
+as.data.frame: pumpresult object as a clean 
+dataframe (no more attributes from pumpresult).
 }
 \description{
 The pumpresult object is an S3 class that holds the results from

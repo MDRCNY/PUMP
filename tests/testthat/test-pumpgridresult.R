@@ -16,7 +16,7 @@ test_that( "pumpgridresult dimensions work", {
                               ICC.2 = 0.05,
                               rho = 0, tnum = 100 )
     
-    atrs = attributes(ss)
+    atrs <- attributes(ss)
     names(atrs)
     expect_equal( attr(ss, "var_names" ), c( "MDES", "numCovar.1" ) )
     expect_true( is.pumpgridresult( ss ) )

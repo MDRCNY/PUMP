@@ -11,7 +11,8 @@
 #' @export
 gen_corr_matrix <- function(M, rho.scalar)
 {
-    rho.matrix = diag(M) + rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
+    rho.matrix <- diag(M) + 
+        rho.scalar * matrix(1, M, M) - rho.scalar * diag(M)
     return(rho.matrix)
 }
 
@@ -28,7 +29,8 @@ gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
     Sigma <- matrix(NA, D, D)
     for(k in 1:D) {
         for(l in 1:D) {
-            Sigma[k,l] = rho.matrix[k,l] * sqrt(var1.vec[k]) * sqrt(var2.vec[l])
+            Sigma[k,l] <- rho.matrix[k,l] * 
+                sqrt(var1.vec[k]) * sqrt(var2.vec[l])
         }
     }
     return(Sigma)
@@ -41,19 +43,19 @@ gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
 #' @param Sigma.wz covariance between level 2 and level 3
 #' 
 #' @return 2M x 2M matrix for generating correlated pairs of random effects
-gen_RE_cov_matrix = function( Sigma.w, Sigma.z, Sigma.wz ) {
+gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
     stopifnot( nrow(Sigma.w) == ncol(Sigma.w) )
     stopifnot( all( dim(Sigma.z) == dim( Sigma.wz ) ) )
     stopifnot( all( dim(Sigma.w) == dim( Sigma.wz ) ) )
     
-    M = nrow(Sigma.w)
+    M <- nrow(Sigma.w)
     
     # full covariance matrix
-    Sigma.wz.full                                                      <- matrix(NA, 2*M, 2*M)
-    Sigma.wz.full[1:M, 1:M]                                            <- Sigma.w
-    Sigma.wz.full[(M+1):(2*M), (M+1):(2*M)]                            <- Sigma.z
-    Sigma.wz.full[1:M, (M+1):(2*M)]                                    <- Sigma.wz
-    Sigma.wz.full[(M+1):(2*M), 1:M]                                    <- t(Sigma.wz)
+    Sigma.wz.full                            <- matrix(NA, 2*M, 2*M)
+    Sigma.wz.full[1:M, 1:M]                  <- Sigma.w
+    Sigma.wz.full[(M+1):(2*M), (M+1):(2*M)]  <- Sigma.z
+    Sigma.wz.full[1:M, (M+1):(2*M)]          <- Sigma.wz
+    Sigma.wz.full[(M+1):(2*M), 1:M]          <- t(Sigma.wz)
     
     Sigma.wz.full
 }
@@ -77,19 +79,19 @@ gen_full_data <- function(dgp.params.list) {
     # setup: convert model params.list to variables
     # ------------------------------#
     has.level.three <- dgp.params.list[['has.level.three']]
-    M        <- dgp.params.list[['M']];       J       <- dgp.params.list[['J']];
-    K        <- dgp.params.list[['K']];       nbar    <- dgp.params.list[['nbar']];
-    S.id     <- dgp.params.list[['S.id']];    D.id    <- dgp.params.list[['D.id']];
-    Xi0      <- dgp.params.list[['Xi0']];     Xi1     <- dgp.params.list[['Xi1']];
-    rho.V    <- dgp.params.list[['rho.V']];   xi      <- dgp.params.list[['xi']];
-    eta0.sq  <- dgp.params.list[['eta0.sq']]; eta1.sq <- dgp.params.list[['eta1.sq']];
-    rho.w0   <- dgp.params.list[['rho.w0']];  rho.w1  <- dgp.params.list[['rho.w1']];
-    kappa.w  <- dgp.params.list[['kappa.w']];
-    rho.X    <- dgp.params.list[['rho.X']];   delta   <- dgp.params.list[['delta']];
-    tau0.sq  <- dgp.params.list[['tau0.sq']]; tau1.sq <- dgp.params.list[['tau1.sq']];
-    rho.u0   <- dgp.params.list[['rho.u0']];  rho.u1  <- dgp.params.list[['rho.u1']];
-    kappa.u  <- dgp.params.list[['kappa.u']];
-    rho.C    <- dgp.params.list[['rho.C']];   gamma   <- dgp.params.list[['gamma']];
+    M        <- dgp.params.list[['M']];       J       <- dgp.params.list[['J']]
+    K        <- dgp.params.list[['K']];       nbar    <- dgp.params.list[['nbar']]
+    S.id     <- dgp.params.list[['S.id']];    D.id    <- dgp.params.list[['D.id']]
+    Xi0      <- dgp.params.list[['Xi0']];     Xi1     <- dgp.params.list[['Xi1']]
+    rho.V    <- dgp.params.list[['rho.V']];   xi      <- dgp.params.list[['xi']]
+    eta0.sq  <- dgp.params.list[['eta0.sq']]; eta1.sq <- dgp.params.list[['eta1.sq']]
+    rho.w0   <- dgp.params.list[['rho.w0']];  rho.w1  <- dgp.params.list[['rho.w1']]
+    kappa.w  <- dgp.params.list[['kappa.w']]
+    rho.X    <- dgp.params.list[['rho.X']];   delta   <- dgp.params.list[['delta']]
+    tau0.sq  <- dgp.params.list[['tau0.sq']]; tau1.sq <- dgp.params.list[['tau1.sq']]
+    rho.u0   <- dgp.params.list[['rho.u0']];  rho.u1  <- dgp.params.list[['rho.u1']]
+    kappa.u  <- dgp.params.list[['kappa.u']]
+    rho.C    <- dgp.params.list[['rho.C']];   gamma   <- dgp.params.list[['gamma']]
     rho.r    <- dgp.params.list[['rho.r']]
     
     # ------------------------------#
@@ -107,11 +109,14 @@ gen_full_data <- function(dgp.params.list) {
     # Districts: Level 3
     # ------------------------------#
     
-    gen.level.three.data = function(K, M, rho.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w)
+    gen.level.three.data <- function(K, M, rho.V, 
+                                     eta0.sq, eta1.sq, 
+                                     rho.w0, rho.w1, kappa.w)
     {
         # generate district covariates
         Sigma.V  <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.V)
-        V.k      <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, M), sigma = Sigma.V), K, M)
+        V.k      <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, M), 
+                                            sigma = Sigma.V), K, M)
         
         # covariance of random district effects
         Sigma.w0       <- gen_cov_matrix(M, eta0.sq, eta0.sq, rho.w0)
@@ -123,14 +128,17 @@ gen_full_data <- function(dgp.params.list) {
         Sigma.w.full   <- gen_RE_cov_matrix( Sigma.w0, Sigma.w1, Sigma.w )
         
         # generate full vector of district random effects and impacts
-        w01.k <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, 2*M), sigma = Sigma.w.full), nrow = K, ncol = 2*M)
+        w01.k <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, 2*M), 
+                                         sigma = Sigma.w.full), nrow = K, ncol = 2*M)
         w0.k  <- w01.k[,1:M, drop = FALSE]
         w1.k  <- w01.k[,(M+1):(2*M), drop = FALSE]
         return(list(V.k = V.k, w0.k = w0.k, w1.k = w1.k))
     }
     
     if ( has.level.three ) {
-        level.three.data <- gen.level.three.data(K, M, rho.V, eta0.sq, eta1.sq, rho.w0, rho.w1, kappa.w) 
+        level.three.data <- gen.level.three.data(K, M, rho.V, 
+                                                 eta0.sq, eta1.sq, 
+                                                 rho.w0, rho.w1, kappa.w) 
         V.k <- level.three.data[['V.k']]
         w0.k <- level.three.data[['w0.k']]
         w1.k <- level.three.data[['w1.k']]
@@ -144,7 +152,9 @@ gen_full_data <- function(dgp.params.list) {
     # Schools: Level 2
     # ------------------------------#
     
-    gen.level.two.data = function(J, K, M, rho.X, tau0.sq, tau1.sq, rho.u0, rho.u1, kappa.u)
+    gen.level.two.data <- function(J, K, M, rho.X, 
+                                   tau0.sq, tau1.sq, 
+                                   rho.u0, rho.u1, kappa.u)
     {
         # generate school covariates
         Sigma.X       <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.X)
@@ -173,7 +183,9 @@ gen_full_data <- function(dgp.params.list) {
         return(list(X.jk = X.jk, u0.jk = u0.jk, u1.jk = u1.jk))
     }
     
-    level.two.data <- gen.level.two.data(J, K, M, rho.X, tau0.sq, tau1.sq, rho.u0, rho.u1, kappa.u) 
+    level.two.data <- gen.level.two.data(J, K, M, rho.X, 
+                                         tau0.sq, tau1.sq, 
+                                         rho.u0, rho.u1, kappa.u) 
     X.jk  <- level.two.data[['X.jk']]
     u0.jk <- level.two.data[['u0.jk']]
     u1.jk <- level.two.data[['u1.jk']]
@@ -182,15 +194,17 @@ gen_full_data <- function(dgp.params.list) {
     # Individuals: Level 1
     # ------------------------------#
     
-    gen.level.one.data = function(N, M, rho.C, rho.r)
+    gen.level.one.data <- function(N, M, rho.C, rho.r)
     {
         # generate individual covariates
         Sigma.C <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.C)
-        C.ijk   <- matrix(mvtnorm::rmvnorm(N, mean = rep(0, M), sigma = Sigma.C), N, M)
+        C.ijk   <- matrix(mvtnorm::rmvnorm(N, mean = rep(0, M), 
+                                           sigma = Sigma.C), N, M)
         
         # generate individual residuals
         Sigma.r <- gen_cov_matrix(M, rep(1, M), rep(1, M), rho.r)
-        r.ijk   <- matrix(mvtnorm::rmvnorm(N, mean = rep(0,M), sigma = Sigma.r), N, M)
+        r.ijk   <- matrix(mvtnorm::rmvnorm(N, mean = rep(0,M), 
+                                           sigma = Sigma.r), N, M)
         
         return(list(C.ijk = C.ijk, r.ijk = r.ijk))
     }
@@ -257,10 +271,14 @@ gen_full_data <- function(dgp.params.list) {
     ID <- data.frame( S.id = S.id, D.id = D.id )
     
     if ( has.level.three ) {
-        return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = V.ijk, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
+        return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, 
+                    V.k = V.ijk, X.jk = X.ijk, 
+                    C.ijk = C.ijk, ID = ID ))
     } else {
         ID$D.id <- NULL
-        return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, V.k = NULL, X.jk = X.ijk, C.ijk = C.ijk, ID = ID ))
+        return(list(Y0 = Y0.ijk, Y1 = Y1.ijk, 
+                    V.k = NULL, X.jk = X.ijk, 
+                    C.ijk = C.ijk, ID = ID ))
     }
 }
 
@@ -299,20 +317,23 @@ convert_params <- function(model.params.list) {
     # if rho.default is provided, fill out all the rhos
     if(!is.null(rho.default))
     {
-        message('Using default rho for all rho matrices, overriding any user-input rho matrices.')
+        message('Using default rho for all rho matrices, 
+                overriding any user-input rho matrices.')
         default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
         model.params.list$rho.V  <- default.rho.matrix
-        model.params.list$rho.w0 <- model.params.list$rho.w1 <- default.rho.matrix
+        model.params.list$rho.w0 <- default.rho.matrix
+        model.params.list$rho.w1 <- default.rho.matrix
         
         model.params.list$rho.X  <- default.rho.matrix
-        model.params.list$rho.u0 <- model.params.list$rho.u1 <- default.rho.matrix
+        model.params.list$rho.u0 <- default.rho.matrix
+        model.params.list$rho.u1 <- default.rho.matrix
         
         model.params.list$rho.C  <- default.rho.matrix
         model.params.list$rho.r  <- default.rho.matrix
     }
     
-    convert.scalar = function(x, M)
+    convert.scalar <- function(x, M)
     {
         if( is.null(x) )
         {
@@ -353,7 +374,8 @@ convert_params <- function(model.params.list) {
     # check ICC is valid
     if( any( ICC.2 + ICC.3 >= 1 ) )
     {
-        stop(paste('ICC.2 + ICC.3 must be less than 1. ICC.2:', ICC.2, 'ICC3:', ICC.3))
+        stop(paste('ICC.2 + ICC.3 must be less than 1.
+                   ICC.2:', ICC.2, 'ICC3:', ICC.3))
     }
     
     # random intercepts variances
@@ -369,7 +391,8 @@ convert_params <- function(model.params.list) {
     eta1.sq <- omega.3 * (eta0.sq + xi^2)
     
     # grand mean impact
-    Xi1 <- model.params.list[['MDES']] * sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
+    Xi1 <- model.params.list[['MDES']] *
+        sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
     
     dgp.params.list <- list(
         has.level.three = has.level.three
@@ -409,7 +432,7 @@ convert_params <- function(model.params.list) {
         , rho.r = model.params.list[['rho.r']]           # MxM matrix of correlations for individual residuals
     ) )
     
-    nulls <- sapply( dgp.params.list, is.null )
+    nulls <- vapply( dgp.params.list, is.null, logical(1) )
     dgp.params.list <- dgp.params.list[ !nulls ]
     
     return(dgp.params.list)
@@ -423,31 +446,32 @@ convert_params <- function(model.params.list) {
 #' @param J number of schools per district
 #' @param nbar number of individuals per school
 #'
-#' @return list(S.id, D.id) of school and district assignments for each individual
+#' @return list(S.id, D.id) of school and district 
+#' assignments for each individual
 gen_simple_assignments <- function(J, K, nbar){
     
     N <- nbar * J * K
     
     # vector of assignments to schools
-    S.id = rep(NA, N)
-    start.index = 1
-    end.index = nbar
+    S.id <- rep(NA, N)
+    start.index <- 1
+    end.index <- nbar
     for(j in 1:(K*J))
     {
-        S.id[start.index:end.index] = j
-        start.index = end.index + 1
-        end.index = end.index + nbar
+        S.id[start.index:end.index] <- j
+        start.index <- end.index + 1
+        end.index <- end.index + nbar
     }
     
-    D.id = rep(NA, N)
-    start.index = 1
-    n.k = N/K
-    end.index = n.k
+    D.id <- rep(NA, N)
+    start.index <- 1
+    n.k <- N/K
+    end.index <- n.k
     for(k in 1:K)
     {
-        D.id[start.index:end.index] = k
-        start.index = end.index + 1
-        end.index = end.index + n.k
+        D.id[start.index:end.index] <- k
+        start.index <- end.index + 1
+        end.index <- end.index + n.k
     }
     stopifnot( all( !is.na( S.id ) ) )
     stopifnot( all( !is.na( D.id ) ) )
@@ -481,7 +505,9 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
         T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
     } else if(startsWith(d_m, 'd3.2'))
     {
-        T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
+        T.x <- randomizr::block_and_cluster_ra( 
+            blocks = D.id, clusters = S.id, prob = Tbar 
+        )
     } else
     {
         stop(print(paste('d_m', d_m, 'not implemented yet')))
@@ -500,8 +526,8 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 #'
 #' @export
 gen_Yobs <- function(full.data, T.x) {
-    Yobs = full.data$Y0
-    Yobs[T.x == 1,] = full.data$Y1[T.x == 1,]
+    Yobs <- full.data$Y0
+    Yobs[T.x == 1,] <- full.data$Y1[T.x == 1,]
     return(Yobs)
 }
 

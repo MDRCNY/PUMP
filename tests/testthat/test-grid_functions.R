@@ -87,8 +87,8 @@ test_that("pump_power_grid works", {
                            ICC.3 = seq( 0, 0.45, 0.15 ),
                            rho = 0.4,
                            tnum = 100 )
-  a = length( unique( grid$ICC.2 ) )
-  b = length( unique( grid$ICC.3 ) )
+  a <- length( unique( grid$ICC.2 ) )
+  b <- length( unique( grid$ICC.3 ) )
   expect_equal( nrow( grid ), a * b * 2 )
   expect_true( "MDES" %in% names(grid) )
 

@@ -48,8 +48,9 @@ pump_mdes(
 None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 to automatically re-run for each procedure on the list.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
+\item{numZero}{scalar; Additional number of outcomes assumed 
+to be zero. Please
+  provide NumZero + length(MDES) = M}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
@@ -65,17 +66,20 @@ treatment}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
+one-tailed power calculation.}
 
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
-function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+function. Individual power is 'D1indiv', 'D2indiv', etc. 
+$d$-minimal power is 'min1' power, 'min2' power, etc.
 Complete power is 'complete'.}
 
-\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
-controls when the search is done: when estimated power (checked with
-`final.tnum` iterations) is within `tol`, the search stops.}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).
+This parameter controls when the search is done: 
+when estimated power (checked with `final.tnum` iterations) 
+is within `tol`, the search stops.}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}
@@ -97,13 +101,15 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
@@ -117,11 +123,13 @@ rho or rho.matrix, but not both.}
 
 \item{tnum}{Max number of samples for first iteration of search algorithm}
 
-\item{start.tnum}{number of samples to start search (this will increase with each step).}
+\item{start.tnum}{number of samples to start search 
+(this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw}
 
-\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
+\item{parallel.WY.clusters}{number of clusters to use for 
+parallel processing of WY}
 
 \item{updateProgress}{the callback function to update the progress bar (User
 does not have to input anything)}

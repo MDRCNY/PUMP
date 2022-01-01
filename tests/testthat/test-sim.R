@@ -40,7 +40,7 @@ model.params.list <- list(
 model.params.default <- model.params.list
 
 # calculate expected variance of Y0
-exp.Y0.var.fun = function(dgp.params.list)
+exp.Y0.var.fun <- function(dgp.params.list)
 {
     return(
         ifelse(is.null(dgp.params.list[['xi']]), 0, dgp.params.list[['xi']][1]^2) +
@@ -254,7 +254,7 @@ T.x <- randomizr::block_ra( S.id, prob = Tbar )
 empirical.Tbar <- rep(NA, J)
 for(j in unique(S.id))
 {
-    empirical.Tbar[j] = mean(T.x[S.id == j])
+    empirical.Tbar[j] <- mean(T.x[S.id == j])
 }
 
 test_that('Each block has completely random assignment with correct probability',{
@@ -266,7 +266,7 @@ T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
 empirical.Tbar <- rep(NA, J)
 for(j in unique(S.id))
 {
-    empirical.Tbar[j] = sum(T.x[S.id == j])
+    empirical.Tbar[j] <- sum(T.x[S.id == j])
 }
 
 test_that('Each cluster is assigned to either treatment or control',{
@@ -284,7 +284,7 @@ T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
 empirical.Tbar <- rep(NA, K)
 for(k in unique(D.id))
 {
-    empirical.Tbar[k] = sum(T.x[D.id == k])
+    empirical.Tbar[k] <- sum(T.x[D.id == k])
 }
 
 test_that('Each cluster is assigned to either treatment or control',{
@@ -296,7 +296,7 @@ T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = T
 empirical.Tbar <- rep(NA, J*K)
 for(j in unique(S.id))
 {
-    empirical.Tbar[j] = sum(T.x[S.id == j])
+    empirical.Tbar[j] <- sum(T.x[S.id == j])
 }
 
 test_that('Each cluster is assigned to either treatment or control',{

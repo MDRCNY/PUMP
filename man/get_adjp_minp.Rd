@@ -7,8 +7,10 @@
 get_adjp_minp(ind.B, rawp.order)
 }
 \arguments{
-\item{ind.B}{matrix of indicator variables for if each raw test statistic exceeds
-the null test statistics. dimensions: nrow = tnum, ncol = M.}
+\item{ind.B}{matrix of indicator variables for 
+if each raw test statistic exceeds
+the null test statistics. 
+dimensions: nrow = tnum, ncol = M.}
 
 \item{rawp.order}{order of raw p-values in ascending order}
 }

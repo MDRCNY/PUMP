@@ -9,15 +9,18 @@
 #'
 #' @param target.power Target power to arrive at
 #' @param power.definition must be a valid power type outputted by power
-#'   function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+#'   function. Individual power is 'D1indiv', 'D2indiv', etc. 
+#'   $d$-minimal power is 'min1' power, 'min2' power, etc.
 #'   Complete power is 'complete'.
-#' @param tol tolerance for target power, defaults to 0.01 (1%).  This parameter
-#'   controls when the search is done: when estimated power (checked with
-#'   `final.tnum` iterations) is within `tol`, the search stops.
+#' @param tol tolerance for target power, defaults to 0.01 (1%).  
+#' This parameter controls when the search is done: 
+#' when estimated power (checked with `final.tnum` iterations) 
+#' is within `tol`, the search stops.
 #'
 #' @param max.steps how many steps allowed before terminating
 #' @param tnum Max number of samples for first iteration of search algorithm
-#' @param start.tnum number of samples to start search (this will increase with each step).
+#' @param start.tnum number of samples to start search 
+#' (this will increase with each step).
 #' @param final.tnum number of samples for final draw
 #' @param updateProgress the callback function to update the progress bar (User
 #'   does not have to input anything)
@@ -46,7 +49,9 @@ pump_mdes <- function(
 )
 {
   if ( verbose ) {
-    scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations (%d perms for WY if used)\n",
+    scat( "pump_mdes with %d max iterations per search, 
+          starting at %d iterations with final %d iterations 
+          (%d perms for WY if used)\n",
           start.tnum, tnum, final.tnum, B )
   }
 
@@ -75,12 +80,14 @@ pump_mdes <- function(
     power.definition = power.definition
   )
   ##
-  params.list <- validate_inputs(design, params.list, mdes.call = TRUE, verbose = verbose )
+  params.list <- validate_inputs(
+      design, params.list, mdes.call = TRUE, verbose = verbose 
+  )
   ##
   MTP <- params.list$MTP
-  MDES <- params.list$MDES; numZero = params.list$numZero
+  MDES <- params.list$MDES; numZero <- params.list$numZero
   M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
   numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
   numCovar.3 <- params.list$numCovar.3
@@ -231,7 +238,8 @@ pump_mdes <- function(
                              target.power, power.definition, tol,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, 
+                             M = M, numZero = numZero, Tbar = Tbar, 
+                             alpha = alpha, 
                              two.tailed = two.tailed,
                              numCovar.1 = numCovar.1,
                              numCovar.2 = numCovar.2,
@@ -241,7 +249,8 @@ pump_mdes <- function(
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                              B = B, parallel.WY.clusters = parallel.WY.clusters,
                              max.steps = max.steps, 
-                             tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum, 
+                             tnum = tnum, start.tnum = start.tnum, 
+                             final.tnum = final.tnum, 
                              give.warnings = give.optimizer.warnings)
 
 
@@ -252,10 +261,13 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
-  if(!is.na(mdes.results$`Adjusted.MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(mdes.results$`Adjusted.MDES`) && 
+     test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
-    msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
-    msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
+    msg <- "Note: this function returns one possible value of MDES, 
+    but other (smaller values) may also be valid.\n"
+    msg <- paste(msg, "Please refer to sample size vignette for 
+                 interpretation.\n")
     message(msg)
     flat <- TRUE
   } else

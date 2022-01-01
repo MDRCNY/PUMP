@@ -161,7 +161,7 @@ exp.ind.B.2 <- rbind(
   c(1, 0, 0),
   c(1, 1, 1)
 )
-exp.pval.2 = c(1, 0.5, 0.5)
+exp.pval.2 <- c(1, 0.5, 0.5)
 
 exp.adjp <- unname(rbind(exp.pval.1, exp.pval.2))
 test_that("p-values match", {
@@ -341,7 +341,7 @@ test_that("Indicator functions match", {
 #----------------------------------------------------#
 
 #--------------------------#
-pi.p.m = c(0.1, 0.2, 0.3)
+pi.p.m <- c(0.1, 0.2, 0.3)
 
 # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
 adjp.minp <- rep(NA, length(pi.p.m))
@@ -350,7 +350,7 @@ for (h in 2:length(pi.p.m)) {
   adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
 }
 
-exp.adjp.minp = c(0.1, 0.2, 0.3)
+exp.adjp.minp <- c(0.1, 0.2, 0.3)
 
 test_that("Montonicity is correct", {
   expect_equal(adjp.minp, exp.adjp.minp)
@@ -358,7 +358,7 @@ test_that("Montonicity is correct", {
 #--------------------------#
 
 #--------------------------#
-pi.p.m = c(0.1, 0.1, 0.2)
+pi.p.m <- c(0.1, 0.1, 0.2)
 
 # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
 adjp.minp <- rep(NA, length(pi.p.m))
@@ -367,25 +367,7 @@ for (h in 2:length(pi.p.m)) {
   adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
 }
 
-exp.adjp.minp = c(0.1, 0.1, 0.2)
-
-test_that("Montonicity is correct", {
-  expect_equal(adjp.minp, exp.adjp.minp)
-})
-#--------------------------#
-
-
-#--------------------------#
-pi.p.m = c(0.1, 0.2, 0.1)
-
-# enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
-adjp.minp <- rep(NA, length(pi.p.m))
-adjp.minp[1] <- pi.p.m[1]
-for (h in 2:length(pi.p.m)) {
-  adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
-}
-
-exp.adjp.minp = c(0.1, 0.2, 0.2)
+exp.adjp.minp <- c(0.1, 0.1, 0.2)
 
 test_that("Montonicity is correct", {
   expect_equal(adjp.minp, exp.adjp.minp)
@@ -394,7 +376,7 @@ test_that("Montonicity is correct", {
 
 
 #--------------------------#
-pi.p.m = c(0.1, 0.2, 0.1)
+pi.p.m <- c(0.1, 0.2, 0.1)
 
 # enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
 adjp.minp <- rep(NA, length(pi.p.m))
@@ -403,7 +385,25 @@ for (h in 2:length(pi.p.m)) {
   adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
 }
 
-exp.adjp.minp = c(0.1, 0.2, 0.2)
+exp.adjp.minp <- c(0.1, 0.2, 0.2)
+
+test_that("Montonicity is correct", {
+  expect_equal(adjp.minp, exp.adjp.minp)
+})
+#--------------------------#
+
+
+#--------------------------#
+pi.p.m <- c(0.1, 0.2, 0.1)
+
+# enforce monotonicity (keep everything in same order as sorted RAW pvalues from original data)
+adjp.minp <- rep(NA, length(pi.p.m))
+adjp.minp[1] <- pi.p.m[1]
+for (h in 2:length(pi.p.m)) {
+  adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
+}
+
+exp.adjp.minp <- c(0.1, 0.2, 0.2)
 
 test_that("Montonicity is correct", {
   expect_equal(adjp.minp, exp.adjp.minp)
@@ -415,7 +415,7 @@ test_that("Montonicity is correct", {
 # test order matrix
 #----------------------------------------------------#
 
-rawt.mat = rbind(
+rawt.mat <- rbind(
   c(0.8, 0.4, 3),
   c(0.3, 1, 0.1)
 )
@@ -459,7 +459,7 @@ test_that("P value output matches", {
 #----------------------------------------------------#
 
 #--------------------------#
-rawt.mat = rbind(
+rawt.mat <- rbind(
   c(0.8, -0.4, 3),
   c(0.3, 1, 0.1)
 )
@@ -480,7 +480,7 @@ test_that("Smallest p-value should match", {
 
 # calculate by hand
 #--------------------------#
-rawt.mat = rbind(
+rawt.mat <- rbind(
   c(0.8, -0.4, 3),
   c(0.3, 1, 0.1)
 )
@@ -496,7 +496,7 @@ B <- 2
 
 set.seed(4334)
 adjp <- adjp_wysd(rawp.mat, B, sigma, t.df, two.tailed = TRUE, cl = NULL)
-exp.adjp = rbind(
+exp.adjp <- rbind(
   c(0.5, 0.5, 0),
   c(1, 0.5, 1)
 )

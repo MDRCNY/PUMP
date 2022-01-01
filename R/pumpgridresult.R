@@ -1,7 +1,7 @@
 
 
 
-make.pumpgridresult = function( x,
+make.pumpgridresult <- function( x,
                                 type = c( "power", "mdes", "sample" ),
                                 design = design,
                                 params.list = NULL,
@@ -16,7 +16,7 @@ make.pumpgridresult = function( x,
     }
     attr(x, "design") <- design
     
-    ll = list(...)
+    ll <- list(...)
     for ( l in names(ll) ) {
         attr(x, l) <- ll[[ l ]]
     }
@@ -39,8 +39,8 @@ make.pumpgridresult = function( x,
 #' some printing methods for getting nicely formatted results.
 #'
 #'
-#' @param x a pumpgridresult object (except for is.pumpgridresult, where it is a generic
-#'   object to check).
+#' @param x a pumpgridresult object 
+#' (except for is.pumpgridresult, where it is a generic object to check).
 #' @rdname pumpgridresult
 NULL
 
@@ -54,14 +54,14 @@ NULL
 #' @export
 #'
 #' @rdname pumpgridresult
-is.pumpgridresult = function( x ) {
+is.pumpgridresult <- function( x ) {
     inherits(x, "pumpgridresult")
 }
 
 
 
-print_grid_header = function( x ) {
-    result_type = attr( x, "type" )
+print_grid_header <- function( x ) {
+    result_type <- attr( x, "type" )
     
     scat( "%s grid result: %s design with %d outcomes\n",
           result_type, design(x), params(x)$M )
@@ -70,7 +70,7 @@ print_grid_header = function( x ) {
           paste0( attr( x, "var_names" ), collapse = ", " ) )
     
     if ( result_type == "mdes" || result_type == "sample" ) {
-        pow_params = attr( x, "power.params.list" )
+        pow_params <- attr( x, "power.params.list" )
         scat( "  target %s power: %.2f\n", pow_params$power.definition,
               pow_params$target.power )
     }
@@ -84,7 +84,7 @@ print_grid_header = function( x ) {
 #' @param header FALSE means skip some header info on the result, just print
 #'   the data.frame of actual results.
 #' @rdname pumpgridresult
-print.pumpgridresult = function( x,
+print.pumpgridresult <- function( x,
                              header = TRUE,
                              ... ) {
     
@@ -106,7 +106,7 @@ print.pumpgridresult = function( x,
 #' @param object Object to summarize.
 #' @param ... Extra options passed to print.pumpgridresult
 #' @rdname pumpgridresult
-summary.pumpgridresult = function( object, ... ) {
+summary.pumpgridresult <- function( object, ... ) {
     print_grid_header( object )
     
     print_design( object, 

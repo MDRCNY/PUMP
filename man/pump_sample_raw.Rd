@@ -39,9 +39,9 @@ to automatically re-run for each procedure on the list.}
 
 \item{typesample}{type of sample size to calculate: J, K, or nbar}
 
-\item{MDES}{scalar or vector; the desired MDES values for each outcome. Please
-provide a scalar, a vector of length M, or vector of values for non-zero
-outcomes.}
+\item{MDES}{scalar or vector; the desired MDES values for each outcome. 
+Please provide a scalar, a vector of length M, or vector of 
+values for non-zero outcomes.}
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
@@ -56,7 +56,8 @@ treatment}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
+one-tailed power calculation.}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}
@@ -78,13 +79,15 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 
 \item{max.steps}{how many steps allowed before terminating}
 

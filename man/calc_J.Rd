@@ -2,8 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_J}
 \alias{calc_J}
-\title{This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs}
+\title{This function calculates needed J to achieve a given power}
 \usage{
 calc_J(
   design,
@@ -24,9 +23,9 @@ calc_J(
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
-\item{MT}{Number of approximate effect-size unit SEs (adjusted for degrees of
-freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
-2.8 for normal theory.}
+\item{MT}{Number of approximate effect-size unit SEs 
+(adjusted for degrees of freedom issues) that the MDES 
+needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{MDES}{scalar; the MDES values for each outcome}
 
@@ -50,18 +49,19 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 }
 \value{
 J, the number of schools needed
 }
 \description{
-This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented designs
+This function calculates needed J to achieve a given power
 }

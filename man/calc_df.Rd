@@ -37,6 +37,6 @@ including block dummies)}
 Degree of freedom for the design.
 }
 \description{
-Given sample sizes, return the used degrees of freedom (frequently
-conservative) for the design.
+Given sample sizes, return the used degrees of freedom 
+(frequently conservative) for the design.
 }

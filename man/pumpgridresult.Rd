@@ -14,8 +14,8 @@ is.pumpgridresult(x)
 \method{summary}{pumpgridresult}(object, ...)
 }
 \arguments{
-\item{x}{a pumpgridresult object (except for is.pumpgridresult, where it is a generic
-object to check).}
+\item{x}{a pumpgridresult object 
+(except for is.pumpgridresult, where it is a generic object to check).}
 
 \item{header}{FALSE means skip some header info on the result, just print
 the data.frame of actual results.}

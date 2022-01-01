@@ -23,13 +23,15 @@ calc_pval <- function(rawt, t.df, two.tailed)
 
 #' Calculates different definitions of power
 #'
-#' This function takes in a matrix of adjusted p-values and outputs different types of power
+#' This function takes in a matrix of adjusted p-values 
+#' and outputs different types of power
 #'
 #' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
 #' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector indicating which outcomes are nonzero
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
+#' @param drop.zero.outcomes whether to report power results for 
+#' outcomes with MDES = 0
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
@@ -70,7 +72,8 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
           # complete power
           if(all(ind.nonzero))
           {
-              complete.rejects <- apply(rejects.unadj, 1, function(x){ sum(x) == M })
+              complete.rejects <- apply(rejects.unadj, 1, 
+                                        function(x){ sum(x) == M })
               power.complete <- mean(complete.rejects)
           }
           # minimum power
@@ -87,12 +90,12 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
           power.ind <- power.ind[ind.nonzero]
           power.min <- power.min[ind.nonzero]
           # rename to be more sensible if there are zeros in the middle
-          names(power.min) <- paste0('min',1:length(power.min))
+          names(power.min) <- paste0('min',seq(1, length(power.min)))
       }
       
       power.ind.mean <- mean(power.ind)
-      names(power.ind.mean) = 'indiv.mean'
-      names(power.complete) = 'complete'
+      names(power.ind.mean) <- 'indiv.mean'
+      names(power.complete) <- 'complete'
       
       # remove redundant min column
       if(sum(num.nonzero) == M)
@@ -109,7 +112,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
           power.vec <- c(power.ind)
       }
       
-      power.vec <- sapply(power.vec, as.numeric)
+      power.vec <- vapply(power.vec, as.numeric, numeric(1))
       
       # combine all power for all definitions
       all.power.results <- data.frame(matrix(power.vec, nrow = 1))
@@ -131,10 +134,11 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param MTP Multiple adjustment procedure of interest. Supported options:
 #'   None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
 #'   to automatically re-run for each procedure on the list.
-#' @param MDES scalar or vector; the desired MDES values for each outcome. Please
-#'   provide a scalar, a vector of length M, or vector of values for non-zero
-#'   outcomes.
-#' @param numZero scalar; Additional number of outcomes assumed to be zero. Please
+#' @param MDES scalar or vector; the desired MDES values for each outcome. 
+#' Please provide a scalar, a vector of length M, or vector of 
+#' values for non-zero outcomes.
+#' @param numZero scalar; Additional number of outcomes assumed 
+#' to be zero. Please
 #'   provide NumZero + length(MDES) = M
 #' @param M scalar; the number of hypothesis tests (outcomes), including zero
 #'   outcomes
@@ -144,7 +148,8 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param Tbar scalar; the proportion of samples that are assigned to the
 #'   treatment
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or 
+#' one-tailed power calculation.
 #' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
 #'   including block dummies)
 #' @param numCovar.2 scalar; number of Level 2 (school) covariates
@@ -157,10 +162,12 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'   Level 3 covariates for each outcome. Defaults to 0.
 #' @param ICC.2 scalar, or vector of length M; school intraclass correlation
 #' @param ICC.3 scalar, or vector length M; district intraclass correlation
-#' @param omega.2 scalar, or vector of length M; ratio of variance of school-average impacts to
+#' @param omega.2 scalar, or vector of length M; ratio of 
+#' variance of school-average impacts to
 #'   variance of school-level random intercepts.  Default to 0 (no treatment
 #'   variation).
-#' @param omega.3 scalar, or vector of length M; ratio of variance of district-average impacts to
+#' @param omega.3 scalar, or vector of length M; ratio of 
+#' variance of district-average impacts to
 #'   variance of district-level random intercepts. Default to 0 (no treatment
 #'   variation).
 #' @param rho scalar; assumed correlation between all pairs of test statistics.
@@ -169,9 +176,12 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' rho or rho.matrix, but not both.
 #' @param tnum scalar; the number of test statistics (samples)
 #' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param parallel.WY.clusters number of clusters to use for parallel processing of WY
-#' @param drop.zero.outcomes whether to report power results for outcomes with MDES = 0
-#' @param updateProgress function to update progress bar (only used for PUMP shiny app)
+#' @param parallel.WY.clusters number of clusters to use for 
+#' parallel processing of WY
+#' @param drop.zero.outcomes whether to report power results for 
+#' outcomes with MDES = 0
+#' @param updateProgress function to update progress bar 
+#' (only used for PUMP shiny app)
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names.  See `transpose_power_table`.
 #' @param verbose Print out diagnostics of time, etc.
@@ -215,7 +225,7 @@ pump_power <- function(
                   power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
     
-    des = purrr::map( MTP,
+    des <- purrr::map( MTP,
                       pump_power, design = design, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero,
@@ -227,22 +237,23 @@ pump_power <- function(
                       ICC.2 = ICC.2, ICC.3 = ICC.3,
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
-                      tnum = tnum, B = B, parallel.WY.clusters = parallel.WY.clusters,
+                      tnum = tnum, B = B, 
+                      parallel.WY.clusters = parallel.WY.clusters,
                       updateProgress = updateProgress,
                       validate.inputs = validate.inputs )
 
-    plist = attr( des[[1]], "params.list" )
-    plist$MTP = MTP
+    plist <- attr( des[[1]], "params.list" )
+    plist$MTP <- MTP
     
     if ( long.table ) {
-      ftable = des[[1]]
+      ftable <- des[[1]]
       for ( i in 2:length(des) ) {
-        ftable = dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
+        ftable <- dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
       }
     } else {
-      ftable = des[[1]]
+      ftable <- des[[1]]
       for ( i in 2:length(des) ) {
-        ftable = dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
+        ftable <- dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
     }
     
@@ -265,13 +276,15 @@ pump_power <- function(
       rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum,
       power.definition = NULL
     )
-
-    params.list <- validate_inputs(design, params.list, power.call = TRUE, verbose = verbose )
-
+    ##
+    params.list <- validate_inputs(
+        design, params.list, power.call = TRUE, verbose = verbose 
+    )
+    ##
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
-    nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+    nbar <- params.list$nbar; Tbar <- params.list$Tbar
     alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
     numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
     numCovar.3 <- params.list$numCovar.3
@@ -310,8 +323,10 @@ pump_power <- function(
     Sigma <- rho.matrix
   }
   
-  # generate t values and p values under alternative hypothesis using multivariate t-distribution
-  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + t.shift.mat, nrow = tnum, ncol = M)
+  # generate t values and p values under alternative hypothesis
+  # using multivariate t-distribution
+  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + 
+                         t.shift.mat, nrow = tnum, ncol = M)
   rawp.mat <- calc_pval(rawt.mat, t.df, two.tailed)
 
   if (is.function(updateProgress) & !is.null(rawp.mat)) {

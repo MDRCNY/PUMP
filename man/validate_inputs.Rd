@@ -27,7 +27,7 @@ validate_inputs(
 
 \item{verbose}{whether to print out warnings}
 
-\item{multi.MTP.ok}{whether validation allows for multiple MTPs to be passed in}
+\item{multi.MTP.ok}{whether validation allows for multiple MTPs}
 }
 \value{
 params.list

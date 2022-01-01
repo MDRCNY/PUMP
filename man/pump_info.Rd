@@ -7,7 +7,8 @@
 pump_info(comment = TRUE)
 }
 \arguments{
-\item{comment}{= TRUE prints out description of each design or method.  FALSE does not.}
+\item{comment}{TRUE/FALSE, prints out description of
+each design or method}
 }
 \description{
 List all supported designs, with brief descriptions.

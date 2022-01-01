@@ -47,7 +47,8 @@ optimize_power(
 \arguments{
 \item{design}{a single RCT design (see list/naming convention)}
 
-\item{search.type}{type of optimization search being conducted. Options: K, J, nbar, mdes}
+\item{search.type}{type of optimization search being conducted.
+Options: K, J, nbar, mdes}
 
 \item{MTP}{Multiple adjustment procedure of interest. Supported options:
 None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
@@ -56,20 +57,22 @@ to automatically re-run for each procedure on the list.}
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
-function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+function. Individual power is 'D1indiv', 'D2indiv', etc. 
+$d$-minimal power is 'min1' power, 'min2' power, etc.
 Complete power is 'complete'.}
 
-\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
-controls when the search is done: when estimated power (checked with
-`final.tnum` iterations) is within `tol`, the search stops.}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).
+This parameter controls when the search is done: 
+when estimated power (checked with `final.tnum` iterations) 
+is within `tol`, the search stops.}
 
 \item{start.low}{lower bound for optimization procedure}
 
 \item{start.high}{upper bound for optimization procedure}
 
-\item{MDES}{scalar or vector; the desired MDES values for each outcome. Please
-provide a scalar, a vector of length M, or vector of values for non-zero
-outcomes.}
+\item{MDES}{scalar or vector; the desired MDES values for each outcome. 
+Please provide a scalar, a vector of length M, or vector of 
+values for non-zero outcomes.}
 
 \item{J}{scalar; the number of schools}
 
@@ -80,15 +83,17 @@ outcomes.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), including zero
 outcomes}
 
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
+\item{numZero}{scalar; Additional number of outcomes assumed 
+to be zero. Please
+  provide NumZero + length(MDES) = M}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to the
 treatment}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
+one-tailed power calculation.}
 
 \item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
 including block dummies)}
@@ -110,25 +115,29 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 
 \item{B}{scalar; the number of samples/permutations for Westfall-Young}
 
-\item{parallel.WY.clusters}{number of clusters to use for parallel processing of WY}
+\item{parallel.WY.clusters}{number of clusters to use for 
+parallel processing of WY}
 
 \item{max.steps}{how many steps allowed before terminating}
 
 \item{tnum}{scalar; the number of test statistics (samples)}
 
-\item{start.tnum}{number of samples to start search (this will increase with each step).}
+\item{start.tnum}{number of samples to start search 
+(this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw}
 

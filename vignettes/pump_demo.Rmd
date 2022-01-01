@@ -285,8 +285,8 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 ```{r othercorrections}
 p2 <- update( p_check,
               MTP = c( "Bonferroni", "Holm", "WY-SD" ),
-              tnum = 10000,
-              parallel.WY.clusters = 3 )
+              tnum = 5000,
+              parallel.WY.clusters = 2 )
 plot( p2 )
 ```
 

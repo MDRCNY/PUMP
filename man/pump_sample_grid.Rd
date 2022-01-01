@@ -48,12 +48,14 @@ outcomes}
 \item{target.power}{Target power to arrive at}
 
 \item{power.definition}{must be a valid power type outputted by power
-function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
+function. Individual power is 'D1indiv', 'D2indiv', etc. 
+$d$-minimal power is 'min1' power, 'min2' power, etc.
 Complete power is 'complete'.}
 
-\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
-controls when the search is done: when estimated power (checked with
-`final.tnum` iterations) is within `tol`, the search stops.}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).
+This parameter controls when the search is done: 
+when estimated power (checked with `final.tnum` iterations) 
+is within `tol`, the search stops.}
 
 \item{MDES}{scalar; the MDES value for all outcomes.}
 
@@ -90,13 +92,15 @@ Level 3 covariates for each outcome. Defaults to 0.}
 
 \item{ICC.3}{scalar, or vector length M; district intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of school-average impacts to
+  variance of school-level random intercepts.  Default to 0 (no treatment
+  variation).}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of district-average impacts to
+  variance of district-level random intercepts. Default to 0 (no treatment
+  variation).}
 
 \item{rho}{scalar; assumed correlation between all pairs of test statistics.}
 

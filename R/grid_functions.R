@@ -12,10 +12,12 @@ run_grid <- function( args, pum_function, verbose = FALSE,
                       use_furrr = FALSE ) {
   
   # check for duplicate values
-  lens = purrr::map_dbl( args, length )
+  lens <- purrr::map_dbl( args, length )
   for ( nm in names(lens)[lens>1] ) {
     if ( length( args[[nm]] ) != length( unique( args[[nm]] ) ) ) {
-      stop( sprintf( "Cannot pass repeats of same value of %s in a grid call.", nm ) )
+      stop( sprintf(
+          "Cannot pass repeats of same value of %s in a grid call.", nm
+      ) )
     }
   }
   
@@ -34,7 +36,8 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 
   }
 
-  cnts <- dplyr::summarise( grid, dplyr::across( dplyr::everything(),  ~ length( unique( .x ) ) ) )
+  cnts <- dplyr::summarise( grid,
+    dplyr::across( dplyr::everything(),  ~ length( unique( .x ) ) ) )
   var_names <- names(cnts)[ as.numeric( cnts ) > 1 ]
   var_names <- setdiff( var_names, "res" )
   
@@ -44,18 +47,21 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
   
   if ( drop_unique_columns ) {
-    grid <- dplyr::select( grid, dplyr::any_of( unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) )
+    grid <- dplyr::select( grid,
+      dplyr::any_of(
+        unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) 
+      )
   }
   
-  params = params( grid$res[[1]] )
+  params <- params( grid$res[[1]] )
   for ( v in var_names ) {
-    params[v] = "***"
+    params[v] <- "***"
   }
   
   grid$res <- purrr::map( grid$res, as.data.frame )
   grid$MTP <- NULL
   
-  corenames = colnames( grid$res[[1]] )
+  corenames <- colnames( grid$res[[1]] )
   
   grid <- tidyr::unnest( grid, .data$res )
   if ( "MTP" %in% names(grid) ) {
@@ -158,8 +164,8 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                     drop_unique_columns = drop_unique_columns,
                     MTP = MTP, ..., use_furrr = use_furrr )
 
-  args$MTP = MTP
-  args = c( args, list(...) )
+  args$MTP <- MTP
+  args <- c( args, list(...) )
   grid <- make.pumpgridresult(
     grid, "power",
     #params.list = args[names(args) != 'design'],
@@ -217,7 +223,7 @@ pump_mdes_grid <- function( design, MTP, M,
                     drop_unique_columns = drop_unique_columns,
                     tol = tol, ..., use_furrr = use_furrr )
   
-  args = c( args, list(...) )
+  args <- c( args, list(...) )
   
   grid <- make.pumpgridresult(
       grid, "mdes",
@@ -278,7 +284,7 @@ pump_sample_grid <- function( design, MTP, M,
                    drop_unique_columns = drop_unique_columns,
                    tol = tol, ..., use_furrr = use_furrr )
 
-  args = c( args, list(...) )
+  args <- c( args, list(...) )
   
   grid <- make.pumpgridresult(
       grid, "sample",
