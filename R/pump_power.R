@@ -6,7 +6,6 @@
 #' @param two.tailed whether to calculate 1 or 2-tailed p-values
 #'
 #' @return power results for individual, minimum, complete power
-#' @export
 calc_pval <- function(rawt, t.df, two.tailed)
 {
   if(two.tailed)
@@ -35,7 +34,6 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' @param adj whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
-#' @export
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
                               ind.nonzero, alpha,
                               drop.zero.outcomes = TRUE,

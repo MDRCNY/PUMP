@@ -8,7 +8,6 @@
 #' @param rho.scalar fixed rho value
 #'
 #' @return rho.matrix, M x M matrix with rho.scalar as diag
-#' @export
 gen_corr_matrix <- function(M, rho.scalar)
 {
     rho.matrix <- diag(M) + 
@@ -448,6 +447,7 @@ convert_params <- function(model.params.list) {
 #'
 #' @return list(S.id, D.id) of school and district 
 #' assignments for each individual
+#' @export
 gen_simple_assignments <- function(J, K, nbar){
     
     N <- nbar * J * K

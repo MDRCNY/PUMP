@@ -9,7 +9,6 @@
 #' @param rawp a vector of raw p values under H1
 #'
 #' @return returns a vector of 1s and 0s with length of M outcomes
-#' @export
 comp_rawp_ss <- function(nullp, rawp) {
     M <- length(nullp)
     minp <- rep(NA, M)
@@ -26,7 +25,6 @@ comp_rawp_ss <- function(nullp, rawp) {
 #' @param rawp.order order vector of raw p-values in ascending order
 #'
 #' @return returns a vector of 1s and 0s with lengths of M outcomes
-#' @export
 comp_rawp_sd <- function(nullp, rawp, rawp.order) {
     
     M <- length(nullp)
@@ -63,8 +61,6 @@ comp_rawp_sd <- function(nullp, rawp, rawp.order) {
 #' @param rawp.order order of raw p-values in ascending order
 #'
 #' @return returns adjusted p-value matrix
-#' @export
-#'
 get_adjp_minp <- function(ind.B, rawp.order)
 {
   # take means of dummies, these are already ordered but 
@@ -105,8 +101,6 @@ get_adjp_minp <- function(ind.B, rawp.order)
 #' (only used for PUMP shiny app)
 #'
 #' @return a matrix of adjusted p-values
-#' @export
-
 adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
                       verbose = TRUE, updateProgress = NULL) {
 
@@ -163,8 +157,6 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
 #' @param cl cluster object for parallel computing
 #'
 #' @return a matrix of adjusted p-values
-#' @export
-
 adjp_wysd <- function(rawp.mat, B, Sigma, t.df, 
                       two.tailed, cl = NULL,
                       verbose = TRUE, 

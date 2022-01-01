@@ -191,8 +191,6 @@ parse_design <- function( design ) {
 #'   variability to random effects variability
 #'
 #' @return Q_m, the standard error of the effect size estimate
-#' @export
-
 calc_SE <- function(design, J, K, nbar, Tbar, 
                     R2.1, R2.2, R2.3, ICC.2, ICC.3, 
                     omega.2, omega.3) {
@@ -261,9 +259,6 @@ calc_SE <- function(design, J, K, nbar, Tbar,
 #' @param validate whether or not to validate if output df is <= 0
 #'
 #' @return Degree of freedom for the design.
-#'
-#' @export
-
 calc_df <- function(design, J, K, nbar, 
                     numCovar.1, numCovar.2, numCovar.3, 
                     validate = TRUE) {
@@ -323,8 +318,6 @@ calc_df <- function(design, J, K, nbar,
 #'
 #' @return nbar, the number of individuals needed, 
 #' or NA if not possible given design
-#' @export
-
 calc_nbar <- function(design, MT = 2.8, MDES, 
                       J = NULL, K = NULL, Tbar, R2.1,
                       R2.2 = NULL, ICC.2 = NULL, omega.2 = NULL,
@@ -394,8 +387,6 @@ calc_nbar <- function(design, MT = 2.8, MDES,
 #' @param MDES scalar; the MDES values for each outcome
 #'
 #' @return J, the number of schools needed
-#' @export
-
 calc_J <- function(
     design, MT = 2.8, MDES, K = NULL, nbar, Tbar,
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
@@ -481,7 +472,6 @@ calc_J <- function(
 #'   variability
 #'
 #' @return K, the number of districts
-#' @export
 calc_K <- function(design, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,

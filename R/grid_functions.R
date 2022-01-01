@@ -83,7 +83,6 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 #' @importFrom future plan multisession
 #' @importFrom parallel detectCores
 #'
-#' @export
 setup_default_parallel_plan <- function() {
   future::plan(future::multisession, workers = parallel::detectCores() - 1 )
 }
