@@ -4,17 +4,30 @@
 \alias{plot_power_search}
 \title{Examine search path of the power search.}
 \usage{
-plot_power_search(pwr, fit = NULL, target_line = NULL)
+plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
 \arguments{
 \item{pwr}{Result from a pump_sample or pump_mdes call.}
 
 \item{fit}{A fitted curve to the search.}
+
+\item{target.line}{If non-NULL, add a reference line for the true power (if
+known, e.g., from a pump_power call).}
 }
 \value{
 a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 }
 \description{
-This will give a triple-plots about how the search narrowed down into the final
-estimate.  Can be useful to gauge where convergence went poorly.
+This will give a triple-plots about how the search narrowed down into the
+final estimate.  Can be useful to gauge where convergence went poorly.
+}
+\examples{
+J <- pump_sample(d_m = "d2.1_m2fc",
+   MTP = 'HO', power.definition = 'D1indiv',
+   typesample = 'J', target.power = 0.6,
+   nbar = 50, M = 3, MDES = 0.125,
+   Tbar = 0.5, alpha = 0.05,
+   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+plot_power_search(J)
+
 }

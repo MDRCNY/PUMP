@@ -253,9 +253,9 @@ test_that("unblocked d_ms", {
   )
 
 
-  ES = log( 2 ) / 0.66
+  ES <- log( 2 ) / 0.66
   ES
-  R2.2 = 0.6102
+  R2.2 <- 0.6102
   pump_power(d_m = "d1.1_m1c", MTP = "HO", MDES = ES,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )
 
@@ -613,7 +613,7 @@ test_that("parallel WY", {
                       ICC.2 = 0.05, ICC.3 = 0.4,
                       rho = 0.4, # how correlated outcomes are
                       tnum = 1000, B = 100,
-                      parallel.WY.cores = 3
+                      parallel.WY.cores = 2
     ))
     expect_true(nrow(pp) == 2)
 

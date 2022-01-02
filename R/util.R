@@ -32,7 +32,7 @@ parse_power_definition <- function( power.definition, M ) {
 
 
 
-get_power_names = function( M, long=FALSE ) {
+get_power_names <- function( M, long=FALSE ) {
     
     nms <- c( paste('D', 1:M, "indiv", sep="" ),
               'indiv.mean',
@@ -53,31 +53,24 @@ get_power_names = function( M, long=FALSE ) {
     
 }
 
-
-
-
-
-
-# Stolen from development purrr
-silently <- function(.f, otherwise = NULL) {
-    .f <- purrr::as_mapper(.f)
-    function(...) {
-        ret <-
-            purrr:::capture_output(
-                purrr:::capture_error(.f(...), otherwise, quiet=TRUE)
-            )
-        # reformat output to an un-nested list
-        list(
-            result = ret$result$result,
-            output = ret$output,
-            messages = ret$messages,
-            warnings = ret$warnings,
-            error = ret$result$error
-        )
-    }
-}
-
-
+# # Stolen from development purrr
+# silently <- function(.f, otherwise = NULL) {
+#     .f <- purrr::as_mapper(.f)
+#     function(...) {
+#         ret <-
+#             purrr:::capture_output(
+#                 purrr:::capture_error(.f(...), otherwise, quiet=TRUE)
+#             )
+#         # reformat output to an un-nested list
+#         list(
+#             result = ret$result$result,
+#             output = ret$output,
+#             messages = ret$messages,
+#             warnings = ret$warnings,
+#             error = ret$result$error
+#         )
+#     }
+# }
 
 # print out results cleanly
 scat <- function( str, ... ) {

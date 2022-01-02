@@ -1,10 +1,10 @@
 
 
 
-quiet_pump_sample = purrr::quietly(pump_sample)
+quiet_pump_sample <- purrr::quietly(pump_sample)
 
 # Test all three sample sizes with given set of parameters.
-test_sample_triad = function( target_power, nbar, J, K, seed, ... ) {
+test_sample_triad <- function( target_power, nbar, J, K, seed, ... ) {
     set.seed(seed)
     noK <- is.null( K )
 
@@ -35,7 +35,7 @@ test_sample_triad = function( target_power, nbar, J, K, seed, ... ) {
 }
 
 
-warning_pattern = function( vals ) {
+warning_pattern <- function( vals ) {
     if ( is.null( vals$Kwarn ) ) {
         c( length( vals$nbarwarn ) > 0,
            length( vals$Jwarn ) > 0 )

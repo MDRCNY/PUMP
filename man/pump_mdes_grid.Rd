@@ -28,84 +28,93 @@ pump_mdes_grid(
   omega.3 = NULL,
   rho,
   verbose = FALSE,
-  use_furrr = FALSE,
-  drop_unique_columns = TRUE,
+  drop.unique.columns = TRUE,
   ...
 )
 }
 \arguments{
-\item{d_m}{string; a single design and model code}
+\item{d_m}{string; a single context, which is a design and model code. 
+See pump_info()$Context for list of choices.}
 
-\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
-None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
-to automatically re-run for each procedure on the list.}
+\item{MTP}{string, or vector of strings; multiple testing procedure(s).
+See pump_info()$Adjustment for list of choices.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
-outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), 
+including zero outcomes.}
 
-\item{target.power}{Target power to arrive at}
+\item{target.power}{Target power for search algorithm}
 
-\item{power.definition}{must be a valid power type outputted by power
-function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
-Complete power is 'complete'.}
+\item{power.definition}{see pump_info()$Power for 
+possible power definitions}
 
-\item{tol}{tolerance for target power, defaults to 0.01 (1%).  This parameter
-controls when the search is done: when estimated power (checked with
-`final.tnum` iterations) is within `tol`, the search stops.}
+\item{tol}{tolerance for target power, defaults to 0.01 (1%).
+This parameter controls when the search is done: 
+when estimated power (checked with `final.tnum` iterations) 
+is within `tol`, the search stops.}
 
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
+\item{nbar}{scalar; the harmonic mean of the number of 
+level 1 units per level 2 unit (students per school).}
 
-\item{J}{scalar; the number of schools}
+\item{J}{scalar; the harmonic mean of number of level 2 
+units per level 3 unit (schools per district).}
 
-\item{K}{scalar; the number of districts}
+\item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
+\item{Tbar}{scalar; the proportion of samples 
+that are assigned to the treatment.}
 
-\item{alpha}{scalar; the family wise error rate (FWER)}
+\item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
-including block dummies)}
+\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
 
-\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
+\item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
-\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
+\item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
 \item{R2.1}{scalar, or vector of length M; percent of variation explained by
-Level 1 covariates for each outcome. Defaults to 0.}
+level 1 covariates for each outcome.}
 
 \item{R2.2}{scalar, or vector of length M; percent of variation explained by
-Level 2 covariates for each outcome. Defaults to 0.}
+level 2 covariates for each outcome.}
 
 \item{R2.3}{scalar, or vector of length M; percent of variation explained by
-Level 3 covariates for each outcome. Defaults to 0.}
+level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; school intraclass correlation}
+\item{ICC.2}{scalar, or vector of length M; 
+level 2 (school) intraclass correlation}
 
-\item{ICC.3}{scalar, or vector length M; district intraclass correlation}
+\item{ICC.3}{scalar, or vector length M; 
+level 3 (district) intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of level 2 average impacts to
+variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of level 3 average impacts to
+variance of level 3 random intercepts.}
 
-\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+\item{rho}{scalar; assumed correlation between 
+all pairs of test statistics.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 
-\item{use_furrr}{Use parallel processing furrr package to fit grid.}
-
-\item{drop_unique_columns}{Drop all parameter colunms that did not vary
-across the grid.}
+\item{drop.unique.columns}{logical; drop all parameter columns 
+that did not vary across the grid.}
 
 \item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
 or pump_mdes functions.}
 }
 \description{
 Run pump_mdes on combination of factors
+}
+\examples{
+g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",
+  target.power = c( 0.50, 0.80 ), power.definition = "D1indiv",
+  tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
+  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
+  rho = 0.4, tnum = 1000)
 }
 \seealso{
 Other grid functions: 

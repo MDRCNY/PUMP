@@ -6,10 +6,6 @@
 # ----- three level models ------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-
-source( "testing_code.R" )
-
-
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # --------    d3.1_m3rr2rr    --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
@@ -18,7 +14,7 @@ test_that("numZero reduces power as expected and can be inverted", {
 
   set.seed(101003)
 
-  pp = pump_power( d_m = "d2.2_m2rc",
+  pp <- pump_power( d_m = "d2.2_m2rc",
                    MTP = "HO",
                    M = 4,
                    J = 30,
@@ -30,8 +26,7 @@ test_that("numZero reduces power as expected and can be inverted", {
                    rho = 0.2, tnum=10000 )
   pp
   
-  
-  pp2 = pump_power( d_m = "d2.2_m2rc",
+  pp2 <- pump_power( d_m = "d2.2_m2rc",
                     MTP = "HO",
                     M = 14,
                     numZero = 10,
@@ -49,8 +44,8 @@ test_that("numZero reduces power as expected and can be inverted", {
   
   expect_true( all( as.data.frame(pp)[2,2:10] >= as.data.frame(pp2)[2,2:10] ) ) 
   
-  
-  pp2flipHand = pump_mdes( d_m = "d2.2_m2rc",
+
+  pp2flipHand <- pump_mdes( d_m = "d2.2_m2rc",
                            MTP = "HO",
                            target.power = pp2$min2[[2]], power.definition = "min2",
                            M = 14,
@@ -75,7 +70,8 @@ test_that("numZero reduces power as expected and can be inverted", {
   
   
   pp2
-  ppSS = pump_sample( d_m = "d2.2_m2rc",
+
+  ppSS <- pump_sample( d_m = "d2.2_m2rc",
                       MTP = "HO",
                       typesample = "J",
                       power.definition = "min2",

@@ -27,14 +27,14 @@ test_that( "pumpresult dimensions work", {
     expect_true( all( is.na( ss[1,9:12] ) ) )
     
     ss
-    ssL = transpose_power_table(ss)
+    ssL <- transpose_power_table(ss)
     ssL
     expect_true( is.pumpresult(ssL) )
     
     expect_equal( d_m( ssL ), "d2.1_m2fc" )
 
     
-    ssLL = transpose_power_table(ssL)   
+    ssLL <- transpose_power_table(ssL)   
     ssLL
     ss
     expect_equal( dim( ssLL ), dim( ss ) )
@@ -53,7 +53,7 @@ test_that( "pumpresult dimensions work", {
                            ICC.2 = 0.05,
                            rho = 0, tnum = 100, long.table = TRUE )
 
-    ssLtL = transpose_power_table(ssLt)
+    ssLtL <- transpose_power_table(ssLt)
     expect_true( is.pumpresult(ssLtL) )
     
     expect_equal( dim( ssLt ), dim( ssL ) )

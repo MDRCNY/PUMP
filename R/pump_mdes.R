@@ -1,33 +1,49 @@
-#' MDES (minimum detectable effect size) function
+#' Calculate the minimum detectable effect size (MDES) 
+#' using PUMP method.
 #'
-#' The minimum detectable effect size function calculates the most feasible
-#' minimum detectable effect size for a given MTP, power and power definition.
-#' The goal is to find the MDES value that satisfies the tolerance set in the
-#' parameter in the power value.
+#' The user chooses the context (d_m), MTP,
+#' power definition, and choices of all relevant design parameters.
+#' 
+#' The functions performs a search algorithm,
+#' and returns the MDES value within the specified tolerance.
 #'
 #' @inheritParams pump_power
 #'
-#' @param target.power Target power to arrive at
-#' @param power.definition must be a valid power type outputted by power
-#'   function. Individual power is 'D1indiv', 'D2indiv', etc. $d$-minimal power is 'min1' power, 'min2' power, etc.
-#'   Complete power is 'complete'.
-#' @param tol tolerance for target power, defaults to 0.01 (1%).  This parameter
-#'   controls when the search is done: when estimated power (checked with
-#'   `final.tnum` iterations) is within `tol`, the search stops.
-#'
+#' @param target.power Target power for search algorithm
+#' @param power.definition see pump_info()$Power for 
+#' possible power definitions
+#' @param tol tolerance for target power, defaults to 0.01 (1%).  
+#' This parameter controls when the search is done: 
+#' when estimated power (checked with `final.tnum` iterations) 
+#' is within `tol`, the search stops.
 #' @param max.steps how many steps allowed before terminating
-#' @param tnum Max number of samples for first iteration of search algorithm
-#' @param start.tnum number of samples to start search (this will increase with each step).
+#' @param tnum max number of samples for first iteration 
+#' of search algorithm
+#' @param start.tnum number of samples to start search 
+#' (this will increase with each step).
 #' @param final.tnum number of samples for final draw
-#' @param cl cluster object to use for parallel processing
-#' @param updateProgress the callback function to update the progress bar (User
-#'   does not have to input anything)
-#' @param give.optimizer.warnings whether to return verbose optimizer warnings
+#' @param give.optimizer.warnings whether to return 
+#' verbose optimizer warnings
 #'
-#' @importFrom stats qt
 #' @return mdes results
 #' @export
 #'
+#' @examples 
+#' mdes <-  pump_mdes(
+#'   d_m = "d3.1_m3rr2rr",
+#'   MTP = 'HO',
+#'   power.definition = 'D1indiv',
+#'   target.power = 0.6,
+#'   J = 30,
+#'   K = 15,
+#'   nbar = 50,
+#'   M = 3,
+#'   Tbar = 0.5, alpha = 0.05, 
+#'   two.tailed = FALSE,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1,
+#'   ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
 
 pump_mdes <- function(
   d_m, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
@@ -41,57 +57,15 @@ pump_mdes <- function(
   B = 1000,
   max.steps = 20, 
   tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
-  parallel.WY.cores = parallel.WY.cores,
+  parallel.WY.cores = 1,
   updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
 {
-
-  # Call self for each element on MTP list.
-
-  # NOTE: This is not well defined because do we store search history or what
-  # when we have multiple calls to different MTPs?
-
-  # if ( length( MTP ) > 1 ) {
-  #   if ( verbose ) {
-  #     scat( "Multiple MTPs leading to %d calls\n", length(MTP) )
-  #   }
-  #   des = purrr::map( MTP,
-  #                     pump_mdes, d_m = d_m,
-  #                     target.power = target.power, power.definition = power.definition, tol = tol,
-  #                     M = M, J = J, K = K, nbar = nbar,
-  #                     Tbar = Tbar, alpha = alpha,
-  #                     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-  #                     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-  #                     ICC.2 = ICC.2, ICC.3 = ICC.3,
-  #                     omega.2 = omega.2, omega.3 = omega.3,
-  #                     rho = rho, rho.matrix = rho.matrix,
-  #                     B = B,
-  #                     max.steps = max.steps, tnum = tnum, tnum = tnum, final.tnum = final.tnum,
-  #                     cl = cl, updateProgress = updateProgress, give.optimizer.warnings = give.optimizer.warnings,
-  #                     verbose = verbose )
-  #
-  #   plist = attr( des[[1]], "params.list" )
-  #   plist$MTP = MTP
-  #     ftable = des[[1]]
-  #     for ( i in 2:length(des) ) {
-  #       ftable = dplyr::bind_rows( ftable, des[[i]] )
-  #     }
-  #
-  #   return( make.pumpresult( ftable, "mdes",
-  #                            params.list = plist,
-  #                            d_m = d_m,
-  #                            multiple_MTP = TRUE ) )
-  #
-  #   #des = map( des, ~ .x[nrow(.x),] ) %>%
-  #   #  dplyr::bind_rows()
-  #   #return( des )
-  # }
-
-
-
   if ( verbose ) {
-    scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations (%d perms for WY if used)\n",
+    scat( "pump_mdes with %d max iterations per search, 
+          starting at %d iterations with final %d iterations 
+          (%d perms for WY if used)\n",
           start.tnum, tnum, final.tnum, B )
   }
 
@@ -120,12 +94,14 @@ pump_mdes <- function(
     power.definition = power.definition
   )
   ##
-  params.list <- validate_inputs(d_m, params.list, mdes.call = TRUE, verbose = verbose )
+  params.list <- validate_inputs(
+      d_m, params.list, mdes.call = TRUE, verbose = verbose 
+  )
   ##
   MTP <- params.list$MTP
-  MDES <- params.list$MDES; numZero = params.list$numZero
+  MDES <- params.list$MDES; numZero <- params.list$numZero
   M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
   numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
   numCovar.3 <- params.list$numCovar.3
@@ -188,19 +164,19 @@ pump_mdes <- function(
   # For raw and BF, compute critical values
   if(two.tailed)
   {
-    crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-    crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+    crit.alpha <- stats::qt(p = (1-alpha/2), df = t.df)
+    crit.alphaxM <- stats::qt(p = (1-alpha/(2*M)), df = t.df)
   } else
   {
-    crit.alpha <- qt(p = (1-alpha), df = t.df)
-    crit.alphaxM <- qt(p = (1-alpha/M), df = t.df)
+    crit.alpha <- stats::qt(p = (1-alpha), df = t.df)
+    crit.alphaxM <- stats::qt(p = (1-alpha/M), df = t.df)
   }
 
 
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(target.power > 0.5,
-                      qt(target.power, df = t.df),
-                      qt(1 - target.power, df = t.df))
+                      stats::qt(target.power, df = t.df),
+                      stats::qt(1 - target.power, df = t.df))
   if(target.power > 0.5)
   {
     mdes.raw.list <- Q.m * (crit.alpha + crit.beta)
@@ -241,8 +217,8 @@ pump_mdes <- function(
     # must detect all individual outcomes
     target.indiv.power <- target.power^(1/M)
     crit.beta <- ifelse(target.indiv.power > 0.5,
-                        qt(target.indiv.power, df = t.df),
-                        qt(1 - target.indiv.power, df = t.df))
+                        stats::qt(target.indiv.power, df = t.df),
+                        stats::qt(1 - target.indiv.power, df = t.df))
     mdes.high   <- ifelse(target.indiv.power > 0.5,
                           Q.m * (crit.alphaxM + crit.beta),
                           Q.m * (crit.alphaxM - crit.beta))
@@ -252,8 +228,8 @@ pump_mdes <- function(
     # must detect at least one individual outcome
     min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
     crit.beta <- ifelse(min.target.indiv.power > 0.5,
-                        qt(min.target.indiv.power, df = t.df),
-                        qt(1 - min.target.indiv.power, df = t.df))
+                        stats::qt(min.target.indiv.power, df = t.df),
+                        stats::qt(1 - min.target.indiv.power, df = t.df))
     mdes.low  <- ifelse(min.target.indiv.power > 0.5,
                         Q.m * (crit.alpha + crit.beta),
                         Q.m * (crit.alpha - crit.beta))
@@ -276,7 +252,8 @@ pump_mdes <- function(
                              target.power, power.definition, tol,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, 
+                             M = M, numZero = numZero, Tbar = Tbar, 
+                             alpha = alpha, 
                              two.tailed = two.tailed,
                              numCovar.1 = numCovar.1,
                              numCovar.2 = numCovar.2,
@@ -286,7 +263,8 @@ pump_mdes <- function(
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                              B = B, parallel.WY.cores = parallel.WY.cores,
                              max.steps = max.steps, 
-                             tnum = tnum, start.tnum = start.tnum, final.tnum = final.tnum, 
+                             tnum = tnum, start.tnum = start.tnum, 
+                             final.tnum = final.tnum, 
                              give.warnings = give.optimizer.warnings)
 
 
@@ -297,10 +275,13 @@ pump_mdes <- function(
   )
   colnames(mdes.results) <- mdes.cols
 
-  if(!is.na(mdes.results$`Adjusted.MDES`) && test.pts$dx[[nrow(test.pts)]] < 0.001 )
+  if(!is.na(mdes.results$`Adjusted.MDES`) && 
+     test.pts$dx[[nrow(test.pts)]] < 0.001 )
   {
-    msg <- "Note: this function returns one possible value of MDES, but other (smaller values) may also be valid.\n"
-    msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
+    msg <- "Note: this function returns one possible value of MDES, 
+    but other (smaller values) may also be valid.\n"
+    msg <- paste(msg, "Please refer to sample size vignette for 
+                 interpretation.\n")
     message(msg)
     flat <- TRUE
   } else

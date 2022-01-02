@@ -4,7 +4,14 @@
 \alias{estimate_power_curve}
 \title{Calculate a power curve for sample size or mdes}
 \usage{
-estimate_power_curve(p, low = NULL, high = NULL, grid.size = 5, tnum = 2000)
+estimate_power_curve(
+  p,
+  low = NULL,
+  high = NULL,
+  high.max = 1000,
+  grid.size = 5,
+  tnum = 2000
+)
 }
 \arguments{
 \item{p}{pumpresult object}
@@ -12,6 +19,8 @@ estimate_power_curve(p, low = NULL, high = NULL, grid.size = 5, tnum = 2000)
 \item{low}{Low end of grid}
 
 \item{high}{High end of grid}
+
+\item{high.max}{If no high provided, maximum possible high}
 
 \item{grid.size}{Number of points in grid}
 

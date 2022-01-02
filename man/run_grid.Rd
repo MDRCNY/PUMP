@@ -8,9 +8,9 @@ run_grid(
   args,
   pum_function,
   verbose = FALSE,
-  drop_unique_columns,
+  drop.unique.columns,
   ...,
-  use_furrr = FALSE
+  use.furrr = FALSE
 )
 }
 \arguments{
@@ -20,12 +20,14 @@ run_grid(
 
 \item{verbose}{print out detailed diagnostics}
 
-\item{drop_unique_columns}{TODO}
+\item{drop.unique.columns}{logical; drop all parameter columns 
+that did not vary across the grid.}
 
 \item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
 or pump_mdes functions.}
 
-\item{use_furrr}{not currently in use, whether to parallelize}
+\item{use.furrr}{not currently implemented; whether to use furr package
+for parallelization}
 }
 \description{
 Run grid across any of the core pump functions

@@ -6,10 +6,6 @@
 # ----- three level models ------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-
-source( here::here( "tests/testthat/testing_code.R" ) )
-
-
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # --------    d3.1_m3rr2rr    --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
@@ -41,9 +37,10 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
     set.seed(524235326)
     
-    vals <- test_sample_triad( target_power = pp_power, nbar = 50, J = 30, K = 15,
-                               seed = 4224422,
-                                d_m = "d3.1_m3rr2rr",
+    vals <- test_sample_triad( 
+      target_power = pp_power, nbar = 50, J = 30, K = 15,
+      seed = 4224422,
+      d_m = "d3.1_m3rr2rr",
       MTP = 'HO',
       power.definition = 'D1indiv',
       M = 3,

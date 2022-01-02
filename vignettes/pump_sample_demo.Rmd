@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
 )
-library( tidyverse )
 library( knitr )
 library( PUMP )
 
@@ -44,26 +43,25 @@ set.seed( 101010 )
 
 ```{r}
 p <- pump_power(
-    design = "d3.1_m3rr2rr",
-    MTP = 'Holm',
+    d_m = "d3.1_m3rr2rr",
+    MTP = "HO",
     nbar = 50,
     K = 15,
-    J = 30,
+    J = 20,
     M = 3,
     MDES = rep(0.125, 3),
     Tbar = 0.5, alpha = 0.05,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1,
-    rho = 0.5,
-    tnum = 100000
+    omega.2 = 0.2, omega.3 = 0.2,
+    rho = 0.5, tnum = 100000
 )
 ```
 
 ```{r echo = FALSE}
-kable(p)
-target_power = round( p$indiv.mean[[2]], digits=3 )
+knitr::kable(p)
+target_power <- round( p$indiv.mean[2], digits = 3 )
 ```
 
 Our individual power using the Holm procedure is estimated as `r target_power`.
@@ -75,12 +73,12 @@ set.seed( 40444040 )
 
 ```{r}
 K <- pump_sample(
-  design = "d3.1_m3rr2rr",
-  typesample = 'K',
-  MTP = 'Holm',
+  d_m = "d3.1_m3rr2rr",
+  typesample = "K",
+  MTP = "HO",
   target.power = target_power,
-  power.definition = 'D1indiv',
-  J = 30,
+  power.definition = "D1indiv",
+  J = 20,
   nbar = 50,
   M = 3,
   MDES = 0.125,
@@ -88,13 +86,13 @@ K <- pump_sample(
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1,
   ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5
+  omega.2 = 0.2, omega.3 = 0.2, rho = 0.5
 )
 ```
 
 ```{r, echo = FALSE}
 # print(K)
-kable(K)
+knitr::kable(K)
 ```
 
 We recover a similar value K = `r K[['Sample size']]`, but not the exact value of the original parameter.
@@ -114,12 +112,12 @@ We feed in the sample size object and specify that we now want to run a power ca
 Here, we override the default $tnum$ for `pump_power()` to increase precision.
 
 ```{r}
-p <- update(K, type = 'power', tnum = 100000)
+p <- update(K, type = "power", tnum = 100000)
 ```
 
 ```{r, echo = FALSE}
 # print(p)
-kable(p)
+knitr::kable(p)
 ```
 
 We also could find that other values of $K$, including smaller values, would result in a very similar power, so the user should explore different possible values near the output to get a better sense of the variation in power.
@@ -130,16 +128,16 @@ This idea will be explored in the next section.
 Now let's turn to determining the necessary number of schools $J$, given a fixed $K$.
 
 ```{r, echo = FALSE}
-set.seed( 333434443 )
+set.seed( 333434445 )
 ```
 
 ```{r}
 J1 <- pump_sample(
-    design = "d3.1_m3rr2rr",
-    typesample = 'J',
-    MTP = 'Holm',
+    d_m = "d3.1_m3rr2rr",
+    typesample = "J",
+    MTP = "HO",
     target.power = target_power,
-    power.definition = 'D1indiv',
+    power.definition = "D1indiv",
     K = 15,
     nbar = 50,
     M = 3,
@@ -148,7 +146,7 @@ J1 <- pump_sample(
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.1,
     ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1,
+    omega.2 = 0.2, omega.3 = 0.2,
     rho = 0.5
 )
 ```
@@ -160,16 +158,15 @@ sp$dx[nrow(sp)] * 4
 
 ```{r, echo = FALSE}
 # print(J1)
-kable(J1)
+knitr::kable(J1)
 ```
 
-Our calculated $J$ is a bit larger than our original input of `30`.
-Let's examine the source of this discrepancy.
-First, we can print out more detail, including information about the search path the algorithm took to arrive at the final answer.
+Our calculated $J$ is only slightly off from our original input `20`.
+Let's explore more information about this sample size calculation.
+First, we can print out information about the search path the algorithm took to arrive at the final answer.
 
-
-```{r, echo = FALSE}
-print(J1)
+```{r, echo = TRUE}
+search_path(J1)
 ```
 
 At step 0, the algorithm tries a range of possible sample size values, bounded by calculated minimum and maximum values for the scenario, and calculates power for each.
@@ -188,7 +185,7 @@ The first plot on the left shows how power varies over different sample sizes.
 The $x$ axis, $pt$, shows different values of the sample size, and the $y$ axis shows the corresponding values of power.
 Each point on the graph represents a step in the search algorithm.
 The number for each point corresponds to the step number.
-In this case, the algorithm only took 2 steps after the initial set of points tested at step 0.
+In this case, the algorithm took only 2 steps after the initial set of points tested at step 0.
 The size of the point corresponds to the weight of the step; steps with more precision (higher tnum) are weighted more highly, which generally occur in later steps of the algorithm.
 The purple line shows the target power we are trying to achieve.
 
@@ -200,90 +197,21 @@ We can also examine the power for a grid of points up to our selected $J$.
 This information is a second estimation step to verify our results, and can help us examine whether smaller values of $J$ might result in similar values of power.
 
 ```{r, echo = FALSE}
-set.seed( 333434445 )
+set.seed( 333434447 )
 ```
 
 ```{r}
 power_curve(J1)
 ```
 
-From this output, we can see that a combination of estimation randomness and flatness of the power curve contributes to the large value of $J$.
-For example, we actually have that a larger sample size has a lower estimated power!
-Power generally increases with sample size, so we conclude that the observed pattern is due to estimation error.
-We also notice that a variety of sample size values result in relatively similar estimates of power.
+From this output, we can see that the power curve is very flat.
+This outcome means that a variety of sample size values result in relatively similar estimates of power.
 
 Finally, we can also visualize this power curve.
 
 ```{r, fig.width=5, fig.align="center"}
 plot_power_curve(J1)
 ```
-
-To check our sample size estimate, we can try running the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
-The parameter `start.tnum` sets the number of iterations we start with, and `max.tnum` controls the number of test statistics drawn during later iterations as the algorithm refines its estimate.
-
-```{r, echo = FALSE}
-set.seed( 42244 )
-```
-
-```{r}
-J2 <- pump_sample(
-    design = "d3.1_m3rr2rr",
-    typesample = 'J',
-    MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    K = 15,
-    nbar = 50,
-    M = 3,
-    MDES = 0.125,
-    Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1,
-    rho = 0.5,
-    start.tnum = 2000,
-    max.tnum = 5000
-)
-```
-
-```{r, echo = FALSE}
-kable(J2)
-```
-
-With greater precision, we have achieved a sample size exactly equal to our original sample size of $30$.
-
-We can also get closer to the original sample size of $30$ by decreasing our default tolerance from $0.01$.
-By decreasing the tolerance, we impose a stricter criteria; the final sample size returned must be within 0.5\% of our target power.
-
-```{r}
-J3 <- pump_sample(
-    design = "d3.1_m3rr2rr",
-    typesample = 'J',
-    MTP = 'Holm',
-    target.power = p$D1indiv[2],
-    power.definition = 'D1indiv',
-    K = 15,
-    nbar = 50,
-    M = 3,
-    MDES = 0.125,
-    Tbar = 0.5, alpha = 0.05,
-    numCovar.1 = 1, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.1,
-    ICC.2 = 0.2, ICC.3 = 0.2,
-    omega.2 = 0.1, omega.3 = 0.1,
-    rho = 0.5,
-    tol = 0.005
-)
-```
-
-```{r, echo = FALSE}
-kable(J3)
-```
-
-
-We are slightly closer to our original sample size than our initial estimate, but instead we have a sample size of $29$.
-
 
 # Flat power curves
 
@@ -302,8 +230,8 @@ set.seed(2344)
 
 ```{r}
 pp1 <- pump_power(
-    design = "d3.3_m3rc2rc",
-    MTP = 'Holm',
+    d_m = "d3.3_m3rc2rc",
+    MTP = "HO",
     nbar = 50,
     K = 20,
     J = 40,
@@ -318,18 +246,18 @@ pp1 <- pump_power(
 ```
 
 ```{r, echo = FALSE}
-kable(pp1)
+knitr::kable(pp1)
 ```
 
 Now, we attempt to recover the `nbar` value given this power.
 
 ```{r, warning = TRUE}
 nbar1 <- pump_sample(
-        design = "d3.3_m3rc2rc",
-        power.definition = 'D1indiv',
+        d_m = "d3.3_m3rc2rc",
+        power.definition = "D1indiv",
         target.power = 0.2594,
-        typesample = 'nbar',
-        MTP = 'Holm',
+        typesample = "nbar",
+        MTP = "HO",
         K = 20,
         J = 40,
         M = 3,
@@ -343,7 +271,7 @@ nbar1 <- pump_sample(
 ```
 
 ```{r, echo = FALSE}
-kable(nbar1)
+knitr::kable(nbar1)
 ```
 
 The output returns an unexpectedly large sample size!
@@ -372,8 +300,8 @@ set.seed(2344)
 
 ```{r}
 pp2 <- pump_power(
-    design = "d3.3_m3rc2rc",
-    MTP = 'Holm',
+    d_m = "d3.3_m3rc2rc",
+    MTP = "HO",
     nbar = 10,
     K = 20,
     J = 40,
@@ -388,7 +316,7 @@ pp2 <- pump_power(
 ```
 
 ```{r, echo = FALSE}
-kable(pp2)
+knitr::kable(pp2)
 ```
 
 Even with a substantially smaller value of `nbar`, we have achieved a level of power that is relatively close to our initial target.
@@ -402,11 +330,11 @@ set.seed(2344)
 
 ```{r}
 nbar2 <- pump_sample(
-    design = "d3.3_m3rc2rc",
-    typesample = 'nbar',
-    MTP = 'Holm',
+    d_m = "d3.3_m3rc2rc",
+    typesample = "nbar",
+    MTP = "HO",
     target.power = pp1$D1indiv[2],
-    power.definition = 'D1indiv',
+    power.definition = "D1indiv",
     K = 20,
     J = 40,
     M = 3,
@@ -421,11 +349,17 @@ nbar2 <- pump_sample(
 ```
 
 ```{r, echo = FALSE}
-kable(nbar2)
+knitr::kable(nbar2)
 ```
 
 We get a sample size estimate that is much more reasonable than our original estimate, but it is still larger than we need to achieve the target power.
-TODO: talk about whether we should always visualize, or just in case of flatness.
+
+
+Sometimes, it also helps to run the sample size algorithm again with a finer-tuned power estimation by increasing the number of test statistics drawn during each iteration of the algorithm.
+The parameter `start.tnum` sets the number of iterations we start with, and `final.tnum` controls the number of test statistics drawn during later iterations as the algorithm refines its estimate.
+We can also sometimes get closer to the original sample size of by decreasing our default tolerance from `tol = 0.01`.
+By decreasing the tolerance, we impose a stricter criteria; the final sample size returned must be closer to our target power.
+
 
 # Non-Convergence
 
@@ -434,11 +368,11 @@ In particular, we want a target power of $40\%$, which we know is higher than th
 
 ```{r}
 nbar3 <- pump_sample(
-        design = "d3.3_m3rc2rc",
-        power.definition = 'D1indiv',
+        d_m = "d3.3_m3rc2rc",
+        power.definition = "D1indiv",
         target.power = 0.4,
-        typesample = 'nbar',
-        MTP = 'Holm',
+        typesample = "nbar",
+        MTP = "HO",
         K = 20,
         J = 40,
         M = 3,
@@ -452,7 +386,7 @@ nbar3 <- pump_sample(
 ```
 
 ```{r, echo = FALSE}
-kable(nbar3)
+knitr::kable(nbar3)
 ```
 
 We see that the algorithm returns `NA` as the required sample size.

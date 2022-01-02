@@ -3,20 +3,26 @@
 \name{pumpgridresult}
 \alias{pumpgridresult}
 \alias{is.pumpgridresult}
+\alias{print.pumpgridresult}
 \alias{summary.pumpgridresult}
-\title{pumpresult object for results of grid power calculations}
+\title{result object for results of grid power calculations}
 \usage{
 is.pumpgridresult(x)
+
+\method{print}{pumpgridresult}(x, header = TRUE, ...)
 
 \method{summary}{pumpgridresult}(object, ...)
 }
 \arguments{
-\item{x}{a pumpgridresult object (except for is.pumpresult, where it is a generic
-object to check).}
+\item{x}{a pumpgridresult object 
+(except for is.pumpgridresult, where it is a generic object to check).}
+
+\item{header}{FALSE means skip some header info on the result, just print
+the data.frame of actual results.}
+
+\item{...}{Extra options passed to print.pumpgridresult}
 
 \item{object}{Object to summarize.}
-
-\item{...}{Extra options passed to print.pumpresult}
 }
 \value{
 is.pumpgridresult: TRUE if object is a pumpgridresult object.

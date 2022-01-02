@@ -18,3 +18,14 @@ print_d_m(x, insert_results = FALSE, insert_control = FALSE, ...)
 \description{
 Print d_m of given pump result object
 }
+\examples{
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+print_d_m(pp)
+
+}

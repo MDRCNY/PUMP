@@ -16,11 +16,10 @@ adjp_wysd(
 )
 }
 \arguments{
-\item{rawp.mat}{a matrix of raw p-values under H1. dimension: nrow = tnum, ncol = M}
+\item{rawp.mat}{a matrix of raw p-values under H1. 
+dimension: nrow = tnum, ncol = M}
 
-\item{B}{the number of samples for which p-values under the alternative hypothesis
-are compared with the distribution (matrix) of p-values under the complete null (this distribution
-is obtained through drawing test values under H0 with a default of 10,000)}
+\item{B}{numer of WY permutations}
 
 \item{Sigma}{correlation matrix of null p-values}
 
@@ -28,16 +27,19 @@ is obtained through drawing test values under H0 with a default of 10,000)}
 
 \item{two.tailed}{one or two-tailed test}
 
-\item{cl}{clusters for parallel computing}
+\item{cl}{cluster object for parallel computing}
 
-\item{verbose}{verbose messaging}
+\item{verbose}{whether to print out messaging}
+
+\item{updateProgress}{function to update progress bar 
+(only used for PUMP shiny app)}
 }
 \value{
 a matrix of adjusted p-values
 }
 \description{
-This adjustment function utilizes the comp_rawp_ss helper function to compare
-each row of the matrix sample p-values under
+This adjustment function utilizes the comp_rawp_ss helper 
+function to compare each row of the matrix sample p-values under
 alternative hypothesis to all the rows in the matrix of the p-values
 under the complete null.
 }

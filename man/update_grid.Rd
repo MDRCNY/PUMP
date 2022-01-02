@@ -18,3 +18,14 @@ result of calling corresponding grid
 Given a few lists of parameters, take a pumpresult and call a grid to explore
 various versions of the initial scenario.
 }
+\examples{
+m <- pump_mdes(d_m = "d2.1_m2fc", MTP = "HO",
+  nbar = 200, J = 20, power.definition = "complete",
+  M = 3, target.power = 0.5, tol = 0.02,
+  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+  R2.1 = 0.1, ICC.2 = 0.05, rho = 0,
+  final.tnum = 1000 )
+
+gd <- update_grid( m, J = c( 10, 20, 30 ) )
+
+}

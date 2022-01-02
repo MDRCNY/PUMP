@@ -2,8 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_J}
 \alias{calc_J}
-\title{This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented d_ms}
+\title{This function calculates needed J to achieve a given power}
 \usage{
 calc_J(
   d_m,
@@ -22,46 +21,48 @@ calc_J(
 )
 }
 \arguments{
-\item{d_m}{a single RCT d_m (see list/naming convention)}
+\item{d_m}{a single RCT design (see list/naming convention)}
 
-\item{MT}{Number of approximate effect-size unit SEs (adjusted for degrees of
-freedom issues) that the MDES needs to be to achieve desired power.  E.g.,
-2.8 for normal theory.}
+\item{MT}{Number of approximate effect-size unit SEs 
+(adjusted for degrees of freedom issues) that the MDES 
+needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{MDES}{scalar; the MDES values for each outcome}
 
-\item{K}{scalar; the number of districts}
+\item{K}{scalar; the number of level 3 units (districts).}
 
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
+\item{nbar}{scalar; the harmonic mean of the number of 
+level 1 units per level 2 unit (students per school).}
 
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
+\item{Tbar}{scalar; the proportion of samples 
+that are assigned to the treatment.}
 
 \item{R2.1}{scalar, or vector of length M; percent of variation explained by
-Level 1 covariates for each outcome. Defaults to 0.}
+level 1 covariates for each outcome.}
 
 \item{R2.2}{scalar, or vector of length M; percent of variation explained by
-Level 2 covariates for each outcome. Defaults to 0.}
+level 2 covariates for each outcome.}
 
 \item{R2.3}{scalar, or vector of length M; percent of variation explained by
-Level 3 covariates for each outcome. Defaults to 0.}
+level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; school intraclass correlation}
+\item{ICC.2}{scalar, or vector of length M; 
+level 2 (school) intraclass correlation}
 
-\item{ICC.3}{scalar, or vector length M; district intraclass correlation}
+\item{ICC.3}{scalar, or vector length M; 
+level 3 (district) intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of level 2 average impacts to
+variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of level 3 average impacts to
+variance of level 3 random intercepts.}
 }
 \value{
 J, the number of schools needed
 }
 \description{
-This function calculates needed J to achieve a given power (as represented by
-a difference in t-statistic) for all implemented d_ms
+This function calculates needed J to achieve a given power
 }

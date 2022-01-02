@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_power.R
 \name{pump_power}
 \alias{pump_power}
-\title{Calculate power using PUMP method}
+\title{Calculate power using PUMP method.}
 \usage{
 pump_power(
   d_m,
@@ -30,7 +30,7 @@ pump_power(
   rho.matrix = NULL,
   tnum = 10000,
   B = 1000,
-  parallel.WY.clusters = 1,
+  parallel.WY.cores = 1,
   drop.zero.outcomes = TRUE,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -39,85 +39,96 @@ pump_power(
 )
 }
 \arguments{
-\item{d_m}{string; a single design and model code}
+\item{d_m}{string; a single context, which is a design and model code. 
+See pump_info()$Context for list of choices.}
 
-\item{MTP}{string, or vector of stirngs; multiple adjustment procedure of interest. Supported options:
-None, BF, BH, HO, WY-SS, WY-SD (passed as strings).  Provide list
-to automatically re-run for each procedure on the list.}
+\item{MTP}{string, or vector of strings; multiple testing procedure(s).
+See pump_info()$Adjustment for list of choices.}
 
-\item{MDES}{scalar or vector; the desired MDES values for each outcome. Please
-provide a scalar, a vector of length M, or vector of values for non-zero
-outcomes.}
+\item{MDES}{scalar or vector; the desired MDES values for each outcome. 
+Please provide a scalar, a vector of length M, or vector of 
+values for non-zero outcomes.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed to be zero. Please
-provide NumZero + length(MDES) = M}
+\item{numZero}{scalar; Additional number of outcomes assumed 
+to be zero. Please provide NumZero + length(MDES) = M.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), including zero
-outcomes}
+\item{M}{scalar; the number of hypothesis tests (outcomes), 
+including zero outcomes.}
 
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
+\item{nbar}{scalar; the harmonic mean of the number of 
+level 1 units per level 2 unit (students per school).}
 
-\item{J}{scalar; the number of schools}
+\item{J}{scalar; the harmonic mean of number of level 2 
+units per level 3 unit (schools per district).}
 
-\item{K}{scalar; the number of districts}
+\item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
+\item{Tbar}{scalar; the proportion of samples 
+that are assigned to the treatment.}
 
-\item{alpha}{scalar; the family wise error rate (FWER)}
+\item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
+one-tailed power calculation.}
 
-\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
-including block dummies)}
+\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
 
-\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
+\item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
-\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
+\item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
 \item{R2.1}{scalar, or vector of length M; percent of variation explained by
-Level 1 covariates for each outcome. Defaults to 0.}
+level 1 covariates for each outcome.}
 
 \item{R2.2}{scalar, or vector of length M; percent of variation explained by
-Level 2 covariates for each outcome. Defaults to 0.}
+level 2 covariates for each outcome.}
 
 \item{R2.3}{scalar, or vector of length M; percent of variation explained by
-Level 3 covariates for each outcome. Defaults to 0.}
+level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; school intraclass correlation}
+\item{ICC.2}{scalar, or vector of length M; 
+level 2 (school) intraclass correlation}
 
-\item{ICC.3}{scalar, or vector length M; district intraclass correlation}
+\item{ICC.3}{scalar, or vector length M; 
+level 3 (district) intraclass correlation}
 
-\item{omega.2}{scalar, or vector of length M; ratio of variance of school-average impacts to
-variance of school-level random intercepts.  Default to 0 (no treatment
-variation).}
+\item{omega.2}{scalar, or vector of length M; ratio of 
+variance of level 2 average impacts to
+variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of variance of district-average impacts to
-variance of district-level random intercepts. Default to 0 (no treatment
-variation).}
+\item{omega.3}{scalar, or vector of length M; ratio of 
+variance of level 3 average impacts to
+variance of level 3 random intercepts.}
 
-\item{rho}{scalar; assumed correlation between all pairs of test statistics.}
+\item{rho}{scalar; assumed correlation between 
+all pairs of test statistics.}
 
-\item{rho.matrix}{matrix; alternate specification allowing a full matrix
-of correlations between test statistics. Must specify either
+\item{rho.matrix}{matrix; alternate specification 
+allowing a full matrix of correlations between 
+test statistics. Must specify either
 rho or rho.matrix, but not both.}
 
-\item{tnum}{scalar; the number of test statistics (samples)}
+\item{tnum}{scalar; the number of test statistics
+to draw. Increasing tnum increases precision and
+computation time.}
 
-\item{B}{scalar; the number of samples/permutations for Westfall-Young}
+\item{B}{scalar; the number of permutations for 
+Westfall-Young procedures.}
 
-\item{parallel.WY.clusters}{scalar; number of clusters to use for parallel processing of WY}
+\item{parallel.WY.cores}{number of cores to use for 
+parallel processing of WY-SD.}
 
-\item{drop.zero.outcomes}{TRUE/FALSE; whether to report power results for outcomes with MDES = 0}
+\item{drop.zero.outcomes}{whether to report 
+power results for outcomes with MDES = 0.}
 
-\item{updateProgress}{function; the callback function to update the progress bar (User
-does not have to input anything)}
+\item{updateProgress}{function to update progress bar 
+(only used for PUMP shiny app)}
 
-\item{validate.inputs}{TRUE/FALSE; whether or not to check whether parameters are valid
-given the choice of d_m}
+\item{validate.inputs}{TRUE/FALSE; whether or not to 
+check whether parameters are valid given the choice of d_m}
 
-\item{long.table}{TRUE/FALSE; TRUE for table with power as rows, correction as columns,
-and with more verbose names.  See `transpose_power_table`.}
+\item{long.table}{TRUE for table with power as rows, correction as columns,
+and with more verbose names. See `transpose_power_table`.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
@@ -125,5 +136,26 @@ and with more verbose names.  See `transpose_power_table`.}
 power results for MTP and unadjusted across all definitions of power
 }
 \description{
-This functions calculates power for all definitions of power for any MTP.
+The user chooses the context (d_m), MTP,
+MDES, and choices of all relevant design parameters.
+}
+\details{
+The functions returns power for all definitions of power for any MTP.
+}
+\examples{
+pp <- pump_power(
+   d_m = "d3.2_m3ff2rc",
+   MTP = 'HO',
+   nbar = 50,
+   J = 30,
+   K = 10,
+   M = 5,
+   MDES = 0.125,
+   Tbar = 0.5, alpha = 0.05,
+   numCovar.1 = 1, numCovar.2 = 1,
+   R2.1 = 0.1, R2.2 = 0.1,
+   ICC.2 = 0.2, ICC.3 = 0.2,
+   omega.2 = 0, omega.3 = 0.1, 
+   rho = 0.5)
+
 }

@@ -87,13 +87,13 @@ test_that("pump_power_grid works", {
                            ICC.3 = seq( 0, 0.45, 0.15 ),
                            rho = 0.4,
                            tnum = 100 )
-  a = length( unique( grid$ICC.2 ) )
-  b = length( unique( grid$ICC.3 ) )
+  a <- length( unique( grid$ICC.2 ) )
+  b <- length( unique( grid$ICC.3 ) )
   expect_equal( nrow( grid ), a * b * 2 )
   expect_true( "MDES" %in% names(grid) )
 
 
-  grid2 <- pump_power_grid( d_m="d3.2_m3ff2rc", drop_unique_columns = FALSE,
+  grid2 <- pump_power_grid( d_m="d3.2_m3ff2rc", drop.unique.columns = FALSE,
                             MTP = "BF",
                             MDES = 0.1,
                             M = 3,
@@ -111,7 +111,7 @@ test_that("pump_power_grid works", {
   grid2
   expect_true( "rho" %in% names( grid2 ) )
 
-  grid3 <- pump_power_grid( d_m=c( "d3.2_m3ff2rc", "d3.2_m3rr2rc" ), drop_unique_columns = FALSE,
+  grid3 <- pump_power_grid( d_m=c( "d3.2_m3ff2rc", "d3.2_m3rr2rc" ), drop.unique.columns = FALSE,
                             MTP = "BF",
                             MDES = 0.1,
                             M = 3,

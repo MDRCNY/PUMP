@@ -3,8 +3,10 @@
 
 calc_MT <- function( df, alpha, two.tailed, target.power ) {
   # t statistics
-  T1 <- ifelse(two.tailed == TRUE, abs(qt(alpha/2, df)), abs(qt(alpha, df)))
-  T2 <- abs(qt(target.power, df))
+  T1 <- ifelse(two.tailed == TRUE, 
+               abs(stats::qt(alpha/2, df)), 
+               abs(stats::qt(alpha, df)))
+  T2 <- abs(stats::qt(target.power, df))
 
   # number of SEs we need for MDES
   MT <- ifelse(target.power >= 0.5, T1 + T2, T1 - T2)
@@ -39,8 +41,6 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 #'   achieve target power for sample size.
 #'
 #' @return Requisit sample size (as integer) and associated degreess of freedom.
-#'
-#' @export
 pump_sample_raw <- function(
   d_m, MTP, typesample,
   MDES,
@@ -48,7 +48,8 @@ pump_sample_raw <- function(
   target.power,
   Tbar, alpha = 0.05, two.tailed,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
-  R2.1, R2.2 = NULL, R2.3 = NULL, ICC.2 = NULL, ICC.3 = NULL,
+  R2.1, R2.2 = NULL, R2.3 = NULL, 
+  ICC.2 = NULL, ICC.3 = NULL,
   omega.2 = NULL, omega.3 = NULL, max.steps = 100,
   warn.small = FALSE
 )
@@ -75,14 +76,18 @@ pump_sample_raw <- function(
     stop('pump_sample_raw only takes scalar inputs')
   }
 
-  initial_df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3)
+  initial_df <- calc_df(d_m, J, K, nbar, 
+                        numCovar.1, numCovar.2, numCovar.3)
+
   stopifnot( initial_df > 0 )
 
   i <- 0
   conv <- FALSE
 
   # Get initial size (will be low)
-  MT <- calc_MT(df = initial_df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
+  MT <- calc_MT(df = initial_df, alpha = alpha, 
+                two.tailed = two.tailed, 
+                target.power = target.power)
   if (typesample == "J") {
     J <- calc_J( d_m, MT = MT, MDES = MDES[1],
                  K = K, nbar = nbar, Tbar = Tbar,
@@ -101,14 +106,17 @@ pump_sample_raw <- function(
     K <- round(K)
   } else if (typesample == "nbar") {
     nbar <- calc_nbar(
-      d_m, MT = MT, MDES = MDES[1], J = J, K = K, Tbar = Tbar,
+      d_m, MT = MT, MDES = MDES[1], 
+      J = J, K = K, Tbar = Tbar,
       R2.1 = R2.1[1], R2.2 = R2.2[1], R2.3 = R2.3[1],
       ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
       omega.2 = omega.2[1], omega.3 = omega.3[1]
     )
   }
 
-  df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+  df <- calc_df(d_m, J, K, nbar, 
+                numCovar.1, numCovar.2, numCovar.3, 
+                validate = FALSE)
 
   if( df < 1 ) {
     while( df < 1 ) {
@@ -122,7 +130,11 @@ pump_sample_raw <- function(
         K <- K + 1
         min_samp_size <- K
       }
-      df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
+
+      df <- calc_df(d_m, J, K, nbar, 
+                    numCovar.1, numCovar.2, numCovar.3, 
+                    validate = FALSE)
+
     }
     if ( warn.small ) {
       warning(
@@ -135,8 +147,14 @@ pump_sample_raw <- function(
 
   # Up sample size until we hit our sweet spot.
   while (i <= max.steps & conv == FALSE) {
-    df <- calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = FALSE)
-    MT <- calc_MT(df = df, alpha = alpha, two.tailed = two.tailed, target.power = target.power)
+      
+    df <- calc_df(d_m, J, K, nbar, 
+                  numCovar.1, numCovar.2, numCovar.3, 
+                  validate = FALSE)
+    MT <- calc_MT(df = df, alpha = alpha, 
+                  two.tailed = two.tailed, 
+                  target.power = target.power)
+
 
     if (typesample == "J") {
       J1 <- calc_J( d_m, MT = MT, MDES = MDES[1],
@@ -145,8 +163,6 @@ pump_sample_raw <- function(
                     ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
                     omega.2 = omega.2[1], omega.3 = omega.3[1] )
       J1 <- round( J1 )
-
-      #cat( "J=", J, "\tdf=", df, "\tJ1=", J1, "\n" )
 
       if ( is.na(J1) || (J1 <= J) ) {
         conv <- TRUE
@@ -176,7 +192,6 @@ pump_sample_raw <- function(
         ICC.2 = ICC.2[1], ICC.3 = ICC.3[1],
         omega.2 = omega.2[1], omega.3 = omega.3[1]
       )
-      #cat( "nbar=", nbar, "\tdf=", df, "\tnbar1=", nbar1, "\n" )
 
       if (is.na( nbar1 ) || (nbar1 <= nbar) ) {
         conv <- TRUE
@@ -209,20 +224,43 @@ pump_sample_raw <- function(
 
 
 
-#' Calculate sample size
+#' Calculate the sample size
+#' using PUMP method.
 #'
-#' Given other design parameters, do a search to find the needed sample size to
-#' achieve given target level of power to detect specified effect size.
+#' The user chooses the context (d_m), MTP,
+#' type of sample size, 
+#' MDES,
+#' power definition, and choices of all relevant design parameters.
+#' 
+#' The functions performs a search algorithm,
+#' and returns the sample size value within the specified tolerance.
 #'
 #' @inheritParams pump_mdes
+#' @inheritParams pump_power
 #'
-#' @param typesample type of sample size to calculate: "nbar", "J", or "K".
-#' @param MDES scalar; the MDES value for all outcomes.
-#' @param max_sample_size_nbar scalar; default upper bound for nbar for search algorithm
-#' @param max_sample_size_JK scalar; default upper bound for J or K for search algorithm
+#' @param typesample string; type of sample size to 
+#' calculate: "nbar", "J", or "K".
+#' @param max_sample_size_nbar scalar; default upper bound for nbar 
+#' for search algorithm
+#' @param max_sample_size_JK scalar; default upper bound for J or K 
+#' for search algorithm
 #'
 #' @return sample size results
 #' @export
+#' 
+#' @examples
+#' J <- pump_sample(
+#'   d_m = 'd2.1_m2fc',
+#'   MTP = 'HO',
+#'   power.definition = 'D1indiv',
+#'   typesample = 'J',
+#'   target.power = 0.8,
+#'   nbar = 50,
+#'   M = 3,
+#'   MDES = 0.125,
+#'   Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
 
 pump_sample <- function(
   d_m, MTP = NULL, typesample,
@@ -246,7 +284,9 @@ pump_sample <- function(
 {
 
   if ( verbose ) {
-    scat( "pump_mdes with %d max iterations per search, starting at %d iterations with final %d iterations.\n\tMax steps %d\n\t%d perms for WY if used\n",
+    scat( "pump_mdes with %d max iterations per search, 
+          starting at %d iterations with final %d iterations.
+          \n\tMax steps %d\n\t%d perms for WY if used\n",
           tnum, start.tnum, final.tnum, max.steps, B )
   }
 
@@ -282,12 +322,14 @@ pump_sample <- function(
     power.definition = power.definition
   )
   ##
-  params.list <- validate_inputs(d_m, params.list, ss.call = TRUE, verbose = verbose )
+  params.list <- validate_inputs(
+      d_m, params.list, ss.call = TRUE, verbose = verbose 
+  )
   ##
   MTP <- params.list$MTP
   MDES <- params.list$MDES; numZero <- params.list$numZero
   M <- params.list$M; J <- params.list$J; K <- params.list$K
-  nbar <- params.list$nbar; Tbar <- params.list$Tbar;
+  nbar <- params.list$nbar; Tbar <- params.list$Tbar
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
   numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
   numCovar.3 <- params.list$numCovar.3
@@ -300,7 +342,7 @@ pump_sample <- function(
   params.list <- params.list[names(params.list) != 'power.definition']
 
   if ( is.null( numZero ) ) {
-    numZero = 0
+    numZero <- 0
     stopifnot( M > numZero )
   }
   
@@ -314,7 +356,7 @@ pump_sample <- function(
   # Delete parameter we are actually going to search over.
   if ( typesample == "nbar" ) {
     nbar <- NULL
-    params.list["nbar"] = NULL
+    params.list["nbar"] <- NULL
   } else if ( typesample == "J" ) {
     J <- NULL
     params.list["J"] <- NULL
@@ -368,8 +410,8 @@ pump_sample <- function(
   # for minimum or complete power, expand bounds
   # note: complete power is a special case of minimum power
   if ( !pdef$min ) {
-    # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. We are
-    # estimating (potential) bounds
+    # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER. 
+    # We are estimating (potential) bounds
     ss.low.list <- NULL
     for(m in 1:(M-numZero) )
     {
@@ -380,7 +422,8 @@ pump_sample <- function(
         nbar = nbar, Tbar = Tbar,
         alpha = alpha,
         two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3,
         R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
         ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
         omega.2 = omega.2[m], omega.3 = omega.3[m],
@@ -399,7 +442,8 @@ pump_sample <- function(
         nbar = nbar, Tbar = Tbar,
         alpha = alpha / M, # adjust alpha for BF
         two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3,
         R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
         ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
         omega.2 = omega.2[m], omega.3 = omega.3[m],
@@ -421,7 +465,8 @@ pump_sample <- function(
         nbar = nbar, Tbar = Tbar,
         alpha = alpha,
         two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3,
         R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
         ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
         omega.2 = omega.2[m], omega.3 = omega.3[m],
@@ -441,7 +486,8 @@ pump_sample <- function(
         nbar = nbar, Tbar = Tbar,
         alpha = alpha / M, # adjust alpha for BF
         two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3,
         R2.1 = R2.1[m], R2.2 = R2.2[m], R2.3 = R2.3[m],
         ICC.2 = ICC.2[m], ICC.3 = ICC.3[m],
         omega.2 = omega.2[m], omega.3 = omega.3[m],
@@ -450,7 +496,7 @@ pump_sample <- function(
     }
   }
   
-  ss.low.vals <- sapply(ss.low.list, function(x) x$ss)
+  ss.low.vals <- vapply(ss.low.list, function(x) x$ss, numeric(1))
   which.ss.low <- which.min(ss.low.vals)
   # check if everything is NA
   if(length(which.ss.low) > 0)
@@ -461,7 +507,7 @@ pump_sample <- function(
     ss.low <- 1
   }
 
-  ss.high.vals <- sapply(ss.high.list, function(x) x$ss)
+  ss.high.vals <- vapply(ss.high.list, function(x) x$ss, numeric(1))
   which.ss.high <- which.max(ss.high.vals)
   # check if everything is NA
   if(length(which.ss.high) > 0)
@@ -518,7 +564,9 @@ pump_sample <- function(
   
   if(default.max)
   {
-    warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time.", call. = FALSE )
+    warning( "Using default max sample size for one 
+             end of initial bounds of search, so 
+             estimation may take more time.", call. = FALSE )
   }
 
   # search in the grid from min to max.
@@ -528,9 +576,12 @@ pump_sample <- function(
     start.low = ss.low, start.high = ss.high,
     MDES = MDES,
     J = J, K = K, nbar = nbar,
-    M = M, numZero = numZero, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
-    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
-    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, ICC.2 = ICC.2, ICC.3 = ICC.3,
+    M = M, numZero = numZero, Tbar = Tbar, 
+    alpha = alpha, two.tailed = two.tailed,
+    numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+    numCovar.3 = numCovar.3,
+    R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3, 
+    ICC.2 = ICC.2, ICC.3 = ICC.3,
     rho = rho, omega.2 = omega.2, omega.3 = omega.3,
     B = B, parallel.WY.cores = parallel.WY.cores,
     max.steps = max.steps, 
@@ -539,22 +590,26 @@ pump_sample <- function(
   )
 
   # Assemble results
+  # round up to get nice sufficient sample size.
   ss.results <- data.frame(
     MTP,
     typesample,
     ifelse(is.na(test.pts$pt[nrow(test.pts)]),
            NA,   # failed to find solution
-           ceiling(test.pts$pt[nrow(test.pts)])),  # round up to get nice sufficient sample size.
+           ceiling(test.pts$pt[nrow(test.pts)])),  
     test.pts$power[nrow(test.pts)]
   )
   colnames(ss.results) <- output.colnames
 
 
   # if it has converged, give notice about possible flatness
-  if(is.finite(ss.results$`Sample.size`) && test.pts$dx[[nrow(test.pts)]] < 0.005 )
+  if(is.finite(ss.results$`Sample.size`) && 
+     test.pts$dx[[nrow(test.pts)]] < 0.005 )
   {
-    msg <- "Note: this function returns one possible value of sample size, but other (smaller values) may also be valid.\n"
-    msg <- paste(msg, "Please refer to sample size vignette for interpretation.\n")
+    msg <- "Power curve is relatively flat. 
+    Other (smaller values) may have similar power.\n"
+    msg <- paste(msg, "Please refer to sample size 
+                 vignette for interpretation.\n")
     message(msg)
     flat <- TRUE
   } else
@@ -562,7 +617,8 @@ pump_sample <- function(
     flat <- FALSE
   }
 
-  return( make.pumpresult( ss.results, type = "sample", params.list = params.list,
+  return( make.pumpresult( ss.results, type = "sample", 
+                           params.list = params.list,
                            d_m = d_m,
                            sample.level = typesample,
                            power.params.list = pow_params,

@@ -20,7 +20,6 @@ test_that("Single Scenario plot works", {
   )
   
   ss.plot <- plot(pp)
-  #ss.plot
   expect_true(!is.null(ss.plot))
 
   
@@ -55,15 +54,15 @@ test_that("Grid plot works for power", {
                            long.table = TRUE)
   
   grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
-  # grid.plot + facet_wrap(~ ICC.2 )
   expect_true(!is.null(grid.plot))
-
-
+  # works for other definitions of power
+  grid.plot <- plot(grid, power.definition = 'D1indiv', var.vary = 'ICC.3')
+  expect_true(!is.null(grid.plot))
   
   grid <- pump_power_grid( d_m = "d3.2_m3ff2rc",
-                           MTP = "BF",
+                           MTP = c("None"),
                            MDES = 0.1,
-                           M = 3,
+                           M = 1,
                            J = 3, # number of schools/block
                            K = 21, # number RA blocks
                            nbar = 258,
@@ -71,23 +70,21 @@ test_that("Grid plot works for power", {
                            alpha = 0.05, # significance level
                            numCovar.1 = 5, numCovar.2 = 3,
                            R2.1 = 0.1, R2.2 = 0.7,
-                           ICC.2 = 0.3,
+                           ICC.2 = c( 0, 0.3 ),
                            ICC.3 = seq( 0, 0.45, 0.15 ),
                            rho = 0.4,
                            tnum = 100,
-                           long.table = FALSE)
-  grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
-  # grid.plot
+                           long.table = TRUE)
+  
+  grid.plot <- plot(grid, power.definition = 'D1indiv', var.vary = 'ICC.3')
   expect_true(!is.null(grid.plot))
-  
-  
 })
 
 
 test_that("Grid plot works for MDES", {
     
     grid <- pump_mdes_grid(  d_m = "d3.2_m3ff2rc",
-                             MTP = "BF",
+                             MTP = c("BF", "BH"),
                              target.power = 0.8,
                              power.definition = 'min1',
                              M = 3,
@@ -98,12 +95,11 @@ test_that("Grid plot works for MDES", {
                              alpha = 0.05, # significance level
                              numCovar.1 = 5, numCovar.2 = 3,
                              R2.1 = 0.1, R2.2 = 0.7,
-                             ICC.2 = 0.3,
+                             ICC.2 = c( 0, 0.3 ),
                              ICC.3 = seq( 0, 0.45, 0.15 ),
                              rho = 0.4, tnum = 100, tol = 0.45 )
     
     grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
-  # grid.plot    
     expect_true(!is.null(grid.plot))
 
 })
@@ -113,7 +109,7 @@ test_that("Grid plot works for MDES", {
 
 test_that("Grid plot works for SS", {
     
-    grid <- pump_sample_grid(  d_m = "d3.2_m3ff2rc",
+    grid <-expect_warning(pump_sample_grid(  d_m = "d3.2_m3ff2rc",
                              MTP = c( "HO", "BH" ),
                              target.power = 0.8,
                              power.definition = 'complete',
@@ -126,21 +122,34 @@ test_that("Grid plot works for SS", {
                              alpha = 0.05, # significance level
                              numCovar.1 = 5, numCovar.2 = 3,
                              R2.1 = 0.1, R2.2 = 0.7,
-                             ICC.2 = 0.3,
+                             ICC.2 = c( 0, 0.3 ),
                              ICC.3 = seq( 0, 0.45, 0.15 ),
-                             rho = 0.4, tnum = 100, tol = 0.45 )
-    # grid
+                             rho = 0.4, tnum = 100, tol = 0.45 ))
     grid.plot <- plot(grid, power.definition = 'complete', var.vary = 'ICC.3')
-    # grid.plot
+    expect_true(!is.null(grid.plot))
     
+    grid <- expect_warning(pump_sample_grid(  
+        d_m = "d3.2_m3ff2rc",
+        MTP = c( "HO", "BH" ),
+        target.power = 0.8,
+        power.definition = 'D1indiv',
+        typesample = 'J',
+        MDES = 0.2,
+        M = 3,
+        K = 21, # number RA blocks
+        nbar = 258,
+        Tbar = 0.50, # prop Tx
+        alpha = 0.05, # significance level
+        numCovar.1 = 5, numCovar.2 = 3,
+        R2.1 = 0.1, R2.2 = 0.7,
+        ICC.2 = 0.2,
+        ICC.3 = 0.2,
+        rho = seq(0.2, 0.8, 0.1), 
+        tnum = 100, tol = 0.45 ))
+    grid.plot <- plot(grid, power.definition = 'D1indiv', var.vary = 'rho')
     expect_true(!is.null(grid.plot))
     
 })
-
-
-
-
-
 
 
 test_that("Two variable plot works for SS", {
@@ -170,9 +179,6 @@ test_that("Two variable plot works for SS", {
 })
 
 
-
-
-
 test_that( "power curve works", {
   
   set.seed( 101010 )
@@ -191,9 +197,7 @@ test_that( "power curve works", {
                         rho = 0,
                         final.tnum = 100 )
   
-  up
-  
-  pc = power_curve( up, low = 5, high = 1000, tnum = 200, grid.size=20, all=TRUE )
+  pc <- power_curve( up, low = 5, high = 1000, tnum = 200, grid.size=20, all=TRUE )
   expect_true( is.data.frame(pc) )
   expect_true( nrow(pc) > 20 )
   
@@ -201,11 +205,37 @@ test_that( "power curve works", {
   # pt
   expect_true( !is.null( pt ) )
   
-  
-  pc = power_curve( up, low = 250, high = 1000, tnum = 100, grid.size=20, all=FALSE )
+  pc <- power_curve( up, low = 250, high = 1000, tnum = 100, grid.size=20, all=FALSE )
   expect_true( is.data.frame(pc) )
   expect_true( nrow(pc) == 20 )
   expect_true( all( pc$w == 100 ) )
-
-  #plot_power_curve(pc)
 })
+
+
+test_that( "search functions work with non-convergence", {
+    
+    nbar3 <- expect_warning(pump_sample(
+        d_m = "d3.3_m3rc2rc",
+        power.definition = "D1indiv",
+        target.power = 0.4,
+        typesample = "nbar",
+        MTP = "HO",
+        K = 20,
+        J = 40,
+        M = 3,
+        MDES = rep(0.25, 3),
+        Tbar = 0.5, alpha = 0.05,
+        numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
+        R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
+        ICC.2 = 0.1, ICC.3 = 0.1,
+        omega.2 = 0, omega.3 = 0, rho = 0.5
+    ))
+    
+    expect_true(!is.null(search_path(nbar3)))
+    expect_true(!is.null(expect_warning(p <- plot_power_search(nbar3))))
+    expect_true(!is.null(p <- power_curve(nbar3)))  
+    expect_true(!is.null(p <- plot_power_curve(nbar3)))  
+})
+
+
+

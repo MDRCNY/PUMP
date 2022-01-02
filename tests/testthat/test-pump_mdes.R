@@ -114,7 +114,7 @@ test_that("pump_mdes runs for D1indiv, HO", {
   expect_true( pmdes$`Adjusted.MDES` > 0 )
   expect_true( abs( pmdes$`D1indiv power` - 0.80) <  0.01 )
 
-  pp = pump_power( d_m = "d2.1_m2fc",
+  pp <- pump_power( d_m = "d2.1_m2fc",
                    MTP = "HO",
                    MDES = rep( pmdes$`Adjusted.MDES`, 3 ),
                    nbar = 200, J = 50,
@@ -130,7 +130,7 @@ test_that("pump_mdes runs for D1indiv, HO", {
 test_that("pump_mdes runs for d1.1_m1c", {
 
   set.seed( 10130103 )
-  R2.1 = 0.61
+  R2.1 <- 0.61
   pmdes <- pump_mdes(d_m = "d1.1_m1c", MTP = "HO",
                      target.power = 0.80, power.definition = "min1", tol = 0.02,
                      R2.1 = R2.1, numCovar.1 = 1, J = 1,
@@ -138,7 +138,7 @@ test_that("pump_mdes runs for d1.1_m1c", {
                      M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5)
   pmdes
 
-  ES = pmdes$`Adjusted.MDES`
+  ES <- pmdes$`Adjusted.MDES`
   ppow <- pump_power(d_m = "d1.1_m1c", MTP = "HO", MDES = ES,
              R2.1 = R2.1, numCovar.1 = 1,
              M = 3, nbar = 12, Tbar = 1/3, alpha = 0.10, rho = 0.5 )

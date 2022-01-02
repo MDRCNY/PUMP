@@ -7,19 +7,18 @@
 parse_d_m(d_m)
 }
 \arguments{
-\item{d_m}{String. Experimental d_m to parse.}
+\item{d_m}{string; context to parse.}
 }
 \value{
 List of features including number of levels, level of randomization,
   etc.
 }
 \description{
-See the pump_info method to get a list of supported d_ms.
+See the pump_info() method to get a list of supported d_ms.
 }
 \examples{
-supported = pump_info()$d_m
-supported$Code[[4]]
-parse_d_m( supported$Code[[4]] )
+supported <- pump_info(comment = FALSE)$Context
+parse_d_m( supported$d_m[4] )
 
 }
 \concept{pump_info}

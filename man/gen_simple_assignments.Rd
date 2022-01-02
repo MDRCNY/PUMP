@@ -15,7 +15,8 @@ gen_simple_assignments(J, K, nbar)
 \item{nbar}{number of individuals per school}
 }
 \value{
-list(S.id, D.id) of school and district assignments for each individual
+list(S.id, D.id) of school and district 
+assignments for each individual
 }
 \description{
 generate simple default schools and districts IDs for individual students for

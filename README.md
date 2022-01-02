@@ -1,8 +1,8 @@
 # PUMP package
 
-Please see the vignette for examples of how to use this package.
+Please see the vignettes for examples of how to use this package.
 
-Last updated: September 24, 2021.
+Last updated: December 31, 2021.
 
 Authors:
 * Zarni Htet

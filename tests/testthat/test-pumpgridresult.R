@@ -16,7 +16,7 @@ test_that( "pumpgridresult dimensions work", {
                               ICC.2 = 0.05,
                               rho = 0, tnum = 100 )
     
-    atrs = attributes(ss)
+    atrs <- attributes(ss)
     names(atrs)
     expect_equal( attr(ss, "var_names" ), c( "MDES", "numCovar.1" ) )
     expect_true( is.pumpgridresult( ss ) )
@@ -68,7 +68,7 @@ test_that( "pumpgridresult dimensions work", {
                                ICC.2 = 0.05,
                                rho = 0, tnum = 500, start.tnum = 100, 
                                tol = 0.5,
-                               drop_unique_columns = FALSE)
+                               drop.unique.columns = FALSE)
     
     ssLW
     
@@ -85,13 +85,12 @@ test_that( "pumpgridresult dimensions work", {
                                ICC.2 = 0.05,
                                rho = 0, start.tnum = 100,
                                tnum = 100, tol = 0.45,
-                               drop_unique_columns = TRUE)
+                               drop.unique.columns = TRUE)
     
     ssLW
     
     
-    
-    ssLW <- pump_sample_grid(    d_m = "d3.2_m3rr2rc",
+    ssLW <- pump_sample_grid(  d_m = "d3.2_m3rr2rc",
                                MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,
                                target.power = c( 0.60, 0.70 ), 
@@ -104,7 +103,7 @@ test_that( "pumpgridresult dimensions work", {
                                R2.1 = c( 0.1, 0.4 ),
                                ICC.2 = 0.05,
                                rho = 0, tnum = 100, tol = 0.45,
-                               drop_unique_columns = TRUE)
+                               drop.unique.columns = TRUE)
     
     ssLW
     

@@ -6,8 +6,6 @@
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-source( here::here( "tests/testthat/testing_code.R" ) )
-
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # -----------------------------------------------#
 # test pump sample raw
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # -----------------------------------------------#
@@ -80,8 +78,7 @@ test_that("testing of d2.2_m2rc raw", {
   calcJ
   expect_true( !is.na( calcJ$`Sample.size` ) )
 
-
-  pp = pump_power( d_m = "d2.2_m2rc",
+  pp <- pump_power( d_m = "d2.2_m2rc",
                    MTP = "HO",
                    M = 4,
                    J = calcJ$`Sample.size` - 1,
@@ -94,7 +91,7 @@ test_that("testing of d2.2_m2rc raw", {
   pp
   expect_true( pp[2,"min1"] <= 0.80 )
 
-  pp = pump_power( d_m = "d2.2_m2rc",
+  pp <- pump_power( d_m = "d2.2_m2rc",
                    MTP = "HO",
                    M = 4,
                    J = calcJ$`Sample.size`,
@@ -125,6 +122,26 @@ test_that("testing of d3.2_m3rr2rc raw", {
   expect_true( !is.na( traw$df ) )
 
 })
+
+# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+# -------- d1.1_m1c --------
+# - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+
+pp <- pump_sample( d_m = "d1.1_m1c",
+                   MTP = c("BF"),
+                   MDES = 0.125,
+                   power.definition = 'D1indiv',
+                   target.power = 0.8,
+                   typesample = 'nbar',
+                   M = 5,
+                   Tbar = 0.50, # prop Tx
+                   alpha = 0.05, # significance level
+                   numCovar.1 = 5,
+                   R2.1 = 0.1, 
+                   rho = 0.4, # how correlated outcomes are
+                   tnum = 1000
+)
+
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # -------- d2.1_m2fc --------
