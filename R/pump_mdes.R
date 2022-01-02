@@ -1,38 +1,52 @@
-#' MDES (minimum detectable effect size) function
+#' Calculate the minimum detectable effect size (MDES) 
+#' using PUMP method.
 #'
-#' The minimum detectable effect size function calculates the most feasible
-#' minimum detectable effect size for a given MTP, power and power definition.
-#' The goal is to find the MDES value that satisfies the tolerance set in the
-#' parameter in the power value.
+#' The user chooses the context (d_m), MTP,
+#' power definition, and choices of all relevant design parameters.
+#' 
+#' The functions performs a search algorithm,
+#' and returns the MDES value within the specified tolerance.
 #'
 #' @inheritParams pump_power
 #'
-#' @param target.power Target power to arrive at
-#' @param power.definition must be a valid power type outputted by power
-#'   function. Individual power is 'D1indiv', 'D2indiv', etc. 
-#'   $d$-minimal power is 'min1' power, 'min2' power, etc.
-#'   Complete power is 'complete'.
+#' @param target.power Target power for search algorithm
+#' @param power.definition see pump_info()$Power for 
+#' possible power definitions
 #' @param tol tolerance for target power, defaults to 0.01 (1%).  
 #' This parameter controls when the search is done: 
 #' when estimated power (checked with `final.tnum` iterations) 
 #' is within `tol`, the search stops.
-#'
 #' @param max.steps how many steps allowed before terminating
-#' @param tnum Max number of samples for first iteration of search algorithm
+#' @param tnum max number of samples for first iteration 
+#' of search algorithm
 #' @param start.tnum number of samples to start search 
 #' (this will increase with each step).
 #' @param final.tnum number of samples for final draw
-#' @param updateProgress the callback function to update the progress bar (User
-#'   does not have to input anything)
-#' @param give.optimizer.warnings whether to return verbose optimizer warnings
+#' @param give.optimizer.warnings whether to return 
+#' verbose optimizer warnings
 #'
-#' @importFrom stats qt
 #' @return mdes results
 #' @export
 #'
+#' @examples 
+#' mdes <-  pump_mdes(
+#'   d_m = "d3.1_m3rr2rr",
+#'   MTP = 'HO',
+#'   power.definition = 'D1indiv',
+#'   target.power = 0.6,
+#'   J = 30,
+#'   K = 15,
+#'   nbar = 50,
+#'   M = 3,
+#'   Tbar = 0.5, alpha = 0.05, 
+#'   two.tailed = FALSE,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1,
+#'   ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
 
 pump_mdes <- function(
-  design, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
+  d_m, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
   Tbar, alpha = 0.05, two.tailed = TRUE,
   target.power, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -43,7 +57,7 @@ pump_mdes <- function(
   B = 1000,
   max.steps = 20, 
   tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
-  parallel.WY.clusters = 1,
+  parallel.WY.cores = 1,
   updateProgress = NULL, give.optimizer.warnings = FALSE,
   verbose = FALSE
 )
@@ -81,7 +95,7 @@ pump_mdes <- function(
   )
   ##
   params.list <- validate_inputs(
-      design, params.list, mdes.call = TRUE, verbose = verbose 
+      d_m, params.list, mdes.call = TRUE, verbose = verbose 
   )
   ##
   MTP <- params.list$MTP
@@ -113,7 +127,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list) )
   }
@@ -126,7 +140,7 @@ pump_mdes <- function(
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results,
                              type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list) )
   }
@@ -138,31 +152,31 @@ pump_mdes <- function(
 
   # Compute Q.m and df
   Q.m <- calc_SE(
-    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    d_m = d_m, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3
   )
   t.df <- calc_df(
-    design = design, J = J, K = K, nbar = nbar,
+    d_m = d_m, J = J, K = K, nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
   )
 
   # For raw and BF, compute critical values
   if(two.tailed)
   {
-    crit.alpha <- qt(p = (1-alpha/2), df = t.df)
-    crit.alphaxM <- qt(p = (1-alpha/(2*M)), df = t.df)
+    crit.alpha <- stats::qt(p = (1-alpha/2), df = t.df)
+    crit.alphaxM <- stats::qt(p = (1-alpha/(2*M)), df = t.df)
   } else
   {
-    crit.alpha <- qt(p = (1-alpha), df = t.df)
-    crit.alphaxM <- qt(p = (1-alpha/M), df = t.df)
+    crit.alpha <- stats::qt(p = (1-alpha), df = t.df)
+    crit.alphaxM <- stats::qt(p = (1-alpha/M), df = t.df)
   }
 
 
   # Compute raw and BF MDES for individual power
   crit.beta <- ifelse(target.power > 0.5,
-                      qt(target.power, df = t.df),
-                      qt(1 - target.power, df = t.df))
+                      stats::qt(target.power, df = t.df),
+                      stats::qt(1 - target.power, df = t.df))
   if(target.power > 0.5)
   {
     mdes.raw.list <- Q.m * (crit.alpha + crit.beta)
@@ -177,11 +191,11 @@ pump_mdes <- function(
   mdes.high <- max(mdes.bf.list)
 
   # MDES is already calculated for individual power for raw and Bonferroni
-  if ( pdef$indiv & MTP == "Bonferroni") {
+  if ( pdef$indiv & MTP == "BF") {
     mdes.results <- data.frame(MTP, mdes.high, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list ) )
   }
@@ -190,7 +204,7 @@ pump_mdes <- function(
     mdes.results <- data.frame(MTP, mdes.low, target.power)
     colnames(mdes.results) <- mdes.cols
     return( make.pumpresult( mdes.results, type = "mdes",
-                             design = design,
+                             d_m = d_m,
                              power.params.list = pow_params,
                              params.list = params.list ) )
   }
@@ -203,8 +217,8 @@ pump_mdes <- function(
     # must detect all individual outcomes
     target.indiv.power <- target.power^(1/M)
     crit.beta <- ifelse(target.indiv.power > 0.5,
-                        qt(target.indiv.power, df = t.df),
-                        qt(1 - target.indiv.power, df = t.df))
+                        stats::qt(target.indiv.power, df = t.df),
+                        stats::qt(1 - target.indiv.power, df = t.df))
     mdes.high   <- ifelse(target.indiv.power > 0.5,
                           Q.m * (crit.alphaxM + crit.beta),
                           Q.m * (crit.alphaxM - crit.beta))
@@ -214,8 +228,8 @@ pump_mdes <- function(
     # must detect at least one individual outcome
     min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
     crit.beta <- ifelse(min.target.indiv.power > 0.5,
-                        qt(min.target.indiv.power, df = t.df),
-                        qt(1 - min.target.indiv.power, df = t.df))
+                        stats::qt(min.target.indiv.power, df = t.df),
+                        stats::qt(1 - min.target.indiv.power, df = t.df))
     mdes.low  <- ifelse(min.target.indiv.power > 0.5,
                         Q.m * (crit.alpha + crit.beta),
                         Q.m * (crit.alpha - crit.beta))
@@ -234,7 +248,7 @@ pump_mdes <- function(
     mdes.low <- 0
   }
 
-  test.pts <- optimize_power(design, search.type = 'mdes', MTP,
+  test.pts <- optimize_power(d_m, search.type = 'mdes', MTP,
                              target.power, power.definition, tol,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
@@ -247,7 +261,7 @@ pump_mdes <- function(
                              R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
                              ICC.2 = ICC.2, ICC.3 = ICC.3,
                              rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                             B = B, parallel.WY.clusters = parallel.WY.clusters,
+                             B = B, parallel.WY.cores = parallel.WY.cores,
                              max.steps = max.steps, 
                              tnum = tnum, start.tnum = start.tnum, 
                              final.tnum = final.tnum, 
@@ -278,7 +292,7 @@ pump_mdes <- function(
   return( make.pumpresult( mdes.results, type = "mdes",
                            tries = test.pts,
                            flat = flat,
-                           design = design,
+                           d_m = d_m,
                            params.list = params.list,
                            power.params.list = pow_params ) )
 }

@@ -5,7 +5,7 @@
 \title{Validates user inputs}
 \usage{
 validate_inputs(
-  design,
+  d_m,
   params.list,
   power.call = FALSE,
   mdes.call = FALSE,
@@ -15,7 +15,7 @@ validate_inputs(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention)}
 
 \item{params.list}{a list of parameters input by a user}
 

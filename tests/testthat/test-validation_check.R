@@ -5,7 +5,7 @@
 test_that("validation works at least vaguely", {
 
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         M = 4,
         J = 44,
         nbar = 1000,
@@ -16,11 +16,11 @@ test_that("validation works at least vaguely", {
         rho = 0.2,  tnum=1000
     )
     
-    chk <- validate_inputs(design = "d2.2_m2rc", params.list = params.list)
+    chk <- validate_inputs(d_m = "d2.2_m2rc", params.list = params.list)
     expect_true(!is.null(chk))
     
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         M = 4,
         J = -3,
         nbar = 1000,
@@ -31,11 +31,11 @@ test_that("validation works at least vaguely", {
         rho = 0.2,  tnum=1000
     )
     
-    expect_error(chk <- validate_inputs(design = "d2.2_m2rc", params.list = params.list))
+    expect_error(chk <- validate_inputs(d_m = "d2.2_m2rc", params.list = params.list))
 
 
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         M = 4,
         J = 3,
         nbar = 1000,
@@ -48,11 +48,11 @@ test_that("validation works at least vaguely", {
         rho = 0.2,  tnum=1000
     )
     
-    expect_warning(expect_message(chk <- validate_inputs(design = "d2.2_m2rc", params.list = params.list)))
+    expect_warning(expect_message(chk <- validate_inputs(d_m = "d2.2_m2rc", params.list = params.list)))
     
     
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         M = 4,
         J = -4,
         K = 4,
@@ -65,11 +65,11 @@ test_that("validation works at least vaguely", {
         rho = 0.2,  tnum=1000, verbose = TRUE
     )
     
-    expect_error(chk <- validate_inputs(design = "d2.2_m2rc", params.list = params.list))
+    expect_error(chk <- validate_inputs(d_m = "d2.2_m2rc", params.list = params.list))
 
 
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         call = "sample",
         J = 10,
         nbar = 200,
@@ -81,11 +81,11 @@ test_that("validation works at least vaguely", {
         rho = 0.95 
     )
     
-    expect_warning(chk <- validate_inputs(design = "d2.1_m2fc", params.list = params.list))
+    expect_warning(chk <- validate_inputs(d_m = "d2.1_m2fc", params.list = params.list))
 
 
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         call = "mdes",
         J = 10,
         nbar = 200,
@@ -97,11 +97,11 @@ test_that("validation works at least vaguely", {
         rho = 0.95 
     )
     
-    expect_warning(chk <- validate_inputs(design = "d2.1_m2fc", params.list = params.list))
+    expect_warning(chk <- validate_inputs(d_m = "d2.1_m2fc", params.list = params.list))
 
 
     params.list <- list(
-        MTP = "Holm",
+        MTP = "HO",
         call = "mdes",
         J = 10,
         nbar = 200,
@@ -112,11 +112,11 @@ test_that("validation works at least vaguely", {
         rho = 0.95
     )
     
-    expect_error(chk <- validate_inputs(design = "d2.1_m2fc", params.list = params.list))
+    expect_error(chk <- validate_inputs(d_m = "d2.1_m2fc", params.list = params.list))
     
 
     params.list <- list(
-        MTP = c( "Holm", "Bonferroni" ),
+        MTP = c( "HO", "BF" ),
         call = "mdes",
         J = 10,
         nbar = 200,
@@ -127,6 +127,6 @@ test_that("validation works at least vaguely", {
         rho = 0.95
     )
     
-    expect_error(chk <- validate_inputs(design = "d2.1_m2fc", params.list = params.list))
+    expect_error(chk <- validate_inputs(d_m = "d2.1_m2fc", params.list = params.list))
 
 } )

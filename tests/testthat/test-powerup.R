@@ -24,7 +24,7 @@ test_that("testing of d2.1_m2fc", {
   )
 
   pump.power <- pump_power(
-    design = "d2.1_m2fc",
+    d_m = "d2.1_m2fc",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -50,7 +50,7 @@ test_that("testing of d2.1_m2fc", {
   )
   
   pump.power <- pump_power(
-      design = "d2.1_m2fc",
+      d_m = "d2.1_m2fc",
       MTP = 'None',
       nbar = 50,
       J = 30,
@@ -92,7 +92,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
   ))
 
   pump.power <- pump_power(
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -124,7 +124,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
   pump.mdes <- pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -156,7 +156,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'J',
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,
@@ -193,7 +193,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
   ))
 
   pump.power <- pump_power(
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -225,7 +225,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
   pump.mdes <- pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -257,7 +257,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'J',
-    design = "d2.1_m2fr",
+    d_m = "d2.1_m2fr",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,
@@ -298,7 +298,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
   )
 
   pump.power <- pump_power(
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -330,7 +330,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
   pump.mdes <- pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -363,7 +363,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'K',
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,
@@ -399,7 +399,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
   )
 
   pump.power <- pump_power(
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -431,7 +431,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
   pump.mdes <- pump_mdes(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     nbar = 50,
     J = 30,
@@ -464,7 +464,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     target.power = 0.8,
     power.definition = 'D1indiv',
     typesample = 'K',
-    design = "d3.2_m3ff2rc",
+    d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,

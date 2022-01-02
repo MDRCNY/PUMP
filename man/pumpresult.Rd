@@ -3,7 +3,7 @@
 \name{pumpresult}
 \alias{pumpresult}
 \alias{params}
-\alias{design}
+\alias{d_m}
 \alias{search_path}
 \alias{pump_type}
 \alias{is.pumpresult}
@@ -17,7 +17,7 @@
 \usage{
 params(x, ...)
 
-design(x, ...)
+d_m(x, ...)
 
 search_path(x, ...)
 
@@ -63,7 +63,7 @@ converting column names is optional.}
 \value{
 params: List of design parameters used.
 
-design: design used (as string)
+d_m: d_m used (as string)
 
 search_path: Dataframe describing search path, if it was saved in the
   pumpresult object.
@@ -91,6 +91,82 @@ some printing methods for getting nicely formatted results.
 Pump result objects are also data.frames, so they can be easily manipulated
 and combined.  The return values from the `grid` functions will just return
 data frames in general.
+}
+\examples{
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+params(pp)
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+d_m(pp)
+J <- pump_sample(d_m = "d2.1_m2fc",
+  MTP = 'HO', power.definition = 'D1indiv',
+  typesample = 'J', target.power = 0.7,
+  nbar = 50, M = 3, MDES = 0.125,
+  Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
+  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+  
+search_path(J)   
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+  
+pump_type(pp)
+
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+is.pumpresult(pp)
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+dim(pp)
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+summary(pp)
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+print(pp)
+pp <- pump_power(d_m = "d3.2_m3ff2rc",
+  MTP = 'HO', nbar = 50, J = 30, K = 10,
+  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, numCovar.2 = 1,
+  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  
+as.data.frame(pp)
+
 }
 \seealso{
 update

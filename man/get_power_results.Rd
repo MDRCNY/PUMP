@@ -14,18 +14,21 @@ get_power_results(
 )
 }
 \arguments{
-\item{adj.pval.mat}{matrix of adjusted p-values, columns are outcomes}
+\item{adj.pval.mat}{matrix of adjusted p-values, columns are outcomes
+dimention tnum X M}
 
-\item{unadj.pval.mat}{matrix of unadjusted p-values, columns are outcomes}
+\item{unadj.pval.mat}{matrix of unadjusted p-values, columns are outcomes
+dimention tnum X M}
 
-\item{ind.nonzero}{vector indicating which outcomes are nonzero}
+\item{ind.nonzero}{vector indicating which outcomes are nonzero
+length M}
 
 \item{alpha}{scalar; the family wise error rate (FWER)}
 
-\item{drop.zero.outcomes}{whether to report power results for 
+\item{drop.zero.outcomes}{logical; whether to report power results for 
 outcomes with MDES = 0}
 
-\item{adj}{whether p-values are unadjusted or not}
+\item{adj}{logical; whether p-values are unadjusted or not}
 }
 \value{
 power results for individual, minimum, complete power

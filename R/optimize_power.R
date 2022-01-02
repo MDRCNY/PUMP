@@ -14,7 +14,7 @@
 #'   be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).
 #'
 #' @return power
-optimize_power <- function(design, search.type, MTP, target.power, 
+optimize_power <- function(d_m, search.type, MTP, target.power, 
                            power.definition, tol,
                            start.low, start.high,
                            MDES = NULL, J = NULL, K = 1, nbar = NULL,
@@ -24,7 +24,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
                            numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
                            R2.1 = 0, R2.2 = 0, R2.3 = 0, ICC.2 = 0, ICC.3 = 0,
                            omega.2 = 0, omega.3 = 0, rho,
-                           B = NULL, parallel.WY.clusters = 1,
+                           B = NULL, parallel.WY.cores = 1,
                            max.steps = 20,
                            tnum = 1000,
                            start.tnum = tnum / 10,
@@ -52,7 +52,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
     }
 
     pt.power.results <- pump_power(
-      design, MTP = MTP,
+      d_m, MTP = MTP,
       MDES = MDES,
       nbar = ifelse(search.type == 'nbar', test_point, nbar),
       J = ifelse(search.type == 'J', test_point, J),
@@ -66,7 +66,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3,
       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-      B = B, parallel.WY.clusters = parallel.WY.clusters,
+      B = B, parallel.WY.cores = parallel.WY.cores,
       validate.inputs = FALSE
     )
 
@@ -192,7 +192,7 @@ optimize_power <- function(design, search.type, MTP, target.power,
           myK <- current.try
         }
         t.df <- calc_df(
-          design = design,
+          d_m = d_m,
           nbar = ifelse(search.type == 'nbar', current.try, nbar),
           J = ifelse(search.type == 'J', current.try, J),
           K = myK,
@@ -334,11 +334,13 @@ optimize_power <- function(design, search.type, MTP, target.power,
 #' @param p pumpresult object
 #' @param low Low end of grid
 #' @param high High end of grid
+#' @param high.max If no high provided, maximum possible high
 #' @param grid.size Number of points in grid
 #' @param tnum the number of test statistics (samples)
 #'
 #' @return List of powers for grid of points.
 estimate_power_curve <- function( p, low = NULL, high = NULL,
+                                  high.max = 1000,
                                   grid.size = 5, tnum = 2000 ) {
   stopifnot( is.pumpresult( p ) )
   stopifnot( pump_type(p) != "power" )
@@ -365,9 +367,15 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   {
     low <- 1
   }
-  if(length(high) == 0)
+  if(length(high) == 0 || is.na(high))
   {
-    high <- p$`Sample.size`
+    if(!is.na(p$`Sample.size`))
+    {
+        high <- p$`Sample.size` 
+    } else
+    {
+        high <- high.max
+    }
   }
 
   search_type <- ifelse( pump_type(p) == "mdes",
@@ -379,7 +387,7 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   pp$final.tnum <- tnum
   
   final.pts <- do.call( optimize_power,
-                        c( design = design(p),
+                        c( d_m = d_m(p),
                            pp, 
                            search.type = search_type,
                            start.low = low,

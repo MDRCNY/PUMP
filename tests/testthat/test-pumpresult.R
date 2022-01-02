@@ -4,8 +4,8 @@
 test_that( "pumpresult dimensions work", {
 
     set.seed( 101010 )
-    ss <- pump_power(    design = "d2.1_m2fc",
-                          MTP = c( "Holm", "BH" ),
+    ss <- pump_power(    d_m = "d2.1_m2fc",
+                          MTP = c( "HO", "BH" ),
                           nbar = 200, J = 40,
                           M = 5,
                           MDES = 0.05,
@@ -20,7 +20,7 @@ test_that( "pumpresult dimensions work", {
     
     expect_equal( dim(ss), c(3,12) )
     
-    expect_equal( ss[[1]], c( "None", "Holm", "BH" ) )
+    expect_equal( ss[[1]], c( "None", "HO", "BH" ) )
     
     expect_true( length(ss[2,] ) == 12 )
     expect_true( is.character(ss[[3,1]] ) )
@@ -31,7 +31,7 @@ test_that( "pumpresult dimensions work", {
     ssL
     expect_true( is.pumpresult(ssL) )
     
-    expect_equal( design( ssL ), "d2.1_m2fc" )
+    expect_equal( d_m( ssL ), "d2.1_m2fc" )
 
     
     ssLL <- transpose_power_table(ssL)   
@@ -42,8 +42,8 @@ test_that( "pumpresult dimensions work", {
     expect_true( is.pumpresult(ssLL) )
     
     
-    ssLt <- pump_power(    design = "d2.1_m2fc",
-                           MTP = c( "Holm", "BH" ),
+    ssLt <- pump_power(    d_m = "d2.1_m2fc",
+                           MTP = c( "HO", "BH" ),
                            nbar = 200, J = 40,
                            M = 5,
                            MDES = 0.05,
@@ -70,7 +70,7 @@ test_that( "pumpresult dimensions work", {
 test_that( "pumpresult for sample and mdes work", {
     
     set.seed( 10101033 )
-    ss <- pump_sample(   design = "d2.1_m2fc",
+    ss <- pump_sample(   d_m = "d2.1_m2fc",
                          MTP = "BH",
                          nbar = 200,
                          typesample = "J",

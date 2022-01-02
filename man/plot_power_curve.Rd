@@ -39,3 +39,10 @@ This will give a plot of power vs. mdes or sample size. It can be useful to
 see how quickly power changes as a function of these design parameters. Can
 also be useful to gauge where convergence went poorly.
 }
+\examples{
+mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
+  power.definition = 'D1indiv', target.power = 0.7,
+  J = 60, nbar = 50, M = 3, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+plot_power_curve(mdes)
+}

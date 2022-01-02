@@ -8,6 +8,7 @@
 #' @param rho.scalar fixed rho value
 #'
 #' @return rho.matrix, M x M matrix with rho.scalar as diag
+#' @export
 gen_corr_matrix <- function(M, rho.scalar)
 {
     rho.matrix <- diag(M) + 
@@ -62,9 +63,10 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 
 
 
-#' generate 'science' table of full potential outcomes
+#' Generate simulated multi-level data:
+#' both unobserved and observed potential outcomes
 #'
-#' @param dgp.params.list list of DGP parameters
+#' @param dgp.params.list list of data generating parameters
 #'
 #' @return list of: potential outcomes given control y0, treatment y1,
 #'         covariates V.k, X.jk, C.ijk

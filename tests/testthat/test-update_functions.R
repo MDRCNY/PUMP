@@ -4,8 +4,8 @@
 test_that( "update generally works", {
 
     set.seed( 101010 )
-    ss <- pump_sample(    design = "d2.1_m2fc",
-                          MTP = "Holm",
+    ss <- pump_sample(    d_m = "d2.1_m2fc",
+                          MTP = "HO",
                           typesample = "J",
                           nbar = 200,
                           power.definition = "min1",
@@ -43,11 +43,10 @@ test_that( "update generally works", {
                     MDES = 0.10 )
     expect_true( bsamp$`Sample.size` > params(tomdes)$nbar )
 
-
-    tp2 <- update( topow, design = "d3.2_m3ff2rc", K = 10,
+    tp2 <- update( topow, d_m = "d3.2_m3ff2rc", K = 10,
                   MDES = 0.02, ICC.3 = 0.4, R2.2 = 0.1, numCovar.2 = 1)
     tp2
-    expect_true( design(tp2) == "d3.2_m3ff2rc" )
+    expect_true( d_m(tp2) == "d3.2_m3ff2rc" )
 })
 
 
@@ -55,8 +54,8 @@ test_that( "update generally works", {
 test_that( "update_grid generally works", {
 
     set.seed( 101010 )
-    ss <- pump_mdes(    design = "d2.1_m2fc",
-                        MTP = "Holm",
+    ss <- pump_mdes(    d_m = "d2.1_m2fc",
+                        MTP = "HO",
                         nbar = 200, J = 20,
                         power.definition = "complete",
                         M = 3, target.power = 0.5,

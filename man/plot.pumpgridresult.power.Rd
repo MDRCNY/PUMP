@@ -16,6 +16,9 @@ definitions as a facet wrap.}
 
 \item{...}{additional parameters}
 }
+\value{
+a ggplot object
+}
 \description{
 Plot a grid pump power object
 }

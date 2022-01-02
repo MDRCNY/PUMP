@@ -2,12 +2,13 @@
 % Please edit documentation in R/simulation.R
 \name{gen_full_data}
 \alias{gen_full_data}
-\title{generate 'science' table of full potential outcomes}
+\title{Generate simulated multi-level data:
+both unobserved and observed potential outcomes}
 \usage{
 gen_full_data(dgp.params.list)
 }
 \arguments{
-\item{dgp.params.list}{list of DGP parameters}
+\item{dgp.params.list}{list of data generating parameters}
 }
 \value{
 list of: potential outcomes given control y0, treatment y1,
@@ -16,5 +17,6 @@ list of: potential outcomes given control y0, treatment y1,
         Each block has 1 column for each outcome (called "domain")
 }
 \description{
-generate 'science' table of full potential outcomes
+Generate simulated multi-level data:
+both unobserved and observed potential outcomes
 }

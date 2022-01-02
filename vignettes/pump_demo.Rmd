@@ -1,5 +1,5 @@
 ---
-title: "Demonstration of the `PUMP` package"
+title: "Demonstration of the PUMP package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Demonstration of the PUMP package}
@@ -25,7 +25,9 @@ knitr::opts_chunk$set(
   fig.align = "center"
 )
 options(knitr.kable.NA = '')
-library( tidyverse )
+library( dplyr )
+library( ggplot2 )
+library( kableExtra )
 library( knitr )
 theme_set( theme_minimal() )
 ```
@@ -150,8 +152,8 @@ Here, for example, we find the MDES if we want an 80% chance of detecting an imp
 
 ```{r MDEScalc}
 m <- pump_mdes(
-  design = "d3.2_m3fc2rc",      # choice of design and analysis strategy
-  MTP = "Holm",                 # multiple testing procedure
+  d_m = "d3.2_m3fc2rc",      # choice of design and analysis strategy
+  MTP = "HO",                 # multiple testing procedure
   target.power = 0.80,          # desired power
   power.definition = "D1indiv", # power type
   M = 5,                        # number of outcomes
@@ -222,8 +224,8 @@ set.seed( 0440044 )
 
 ```{r samplesizecalc}
 smp <- pump_sample(
-  design = "d3.2_m3fc2rc",
-  MTP = "Holm",
+  d_m = "d3.2_m3fc2rc",
+  MTP = "HO",
   typesample = "K",
   target.power = 0.80, power.definition = "min1", tol = 0.01,
   MDES = 0.10, M = 5, nbar = 258, J = 3,
@@ -284,13 +286,13 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 
 ```{r othercorrections}
 p2 <- update( p_check,
-              MTP = c( "Bonferroni", "Holm", "WY-SD" ),
+              MTP = c( "BF", "HO", "WY-SD" ),
               tnum = 5000,
-              parallel.WY.clusters = 2 )
+              parallel.WY.cores = 2 )
 plot( p2 )
 ```
 
-To speed up computation, we set `parallel.WY.clusters = 3` to parallelize the computation.
+To speed up computation, we set `parallel.WY.cores = 2` to parallelize the computation.
 We also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -358,7 +360,7 @@ grid <- update_grid( p_check,
         	tnum = 5000 )
 
 grid$ICC.3 <- as.factor( grid$ICC.3 )
-grid <- dplyr::filter( grid, MTP == "Holm" )
+grid <- dplyr::filter( grid, MTP == "HO" )
 
 ggplot2::ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
 	geom_line() + geom_point() +
@@ -403,7 +405,7 @@ set.seed( 4040440 )
 
 ```{r, fig.height=3, fig.width=7}
 gridRho <- update_grid( p_check,
-        	  MTP = c( "Bonferroni", "WY-SD" ),
+        	  MTP = c( "BF", "WY-SD" ),
         	  rho = seq( 0, 0.9, by = 0.15 ),
         	  tnum = 500,
         	  B = 10000 )

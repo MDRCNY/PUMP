@@ -26,14 +26,18 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' and outputs different types of power
 #'
 #' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
+#' dimention tnum X M
 #' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
+#' dimention tnum X M
 #' @param ind.nonzero vector indicating which outcomes are nonzero
+#' length M
 #' @param alpha scalar; the family wise error rate (FWER)
-#' @param drop.zero.outcomes whether to report power results for 
+#' @param drop.zero.outcomes logical; whether to report power results for 
 #' outcomes with MDES = 0
-#' @param adj whether p-values are unadjusted or not
+#' @param adj logical; whether p-values are unadjusted or not
 #'
 #' @return power results for individual, minimum, complete power
+#' @export 
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
                               ind.nonzero, alpha,
                               drop.zero.outcomes = TRUE,
@@ -122,75 +126,97 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 
 
 
-#' Calculate power using PUMP method
+#' Calculate power using PUMP method.
 #'
-#' This functions calculates power for all definitions of power (individual,
-#' d-minimal, complete) for all the different MTPs (none, Bonferroni, Holms,
-#' Bejamini-Hocheberg, Westfall-Young Single Step, Westfall-Young Step Down).
+#' The user chooses the context (d_m), MTP,
+#' MDES, and choices of all relevant design parameters.
+#' 
+#' The functions returns power for all definitions of power for any MTP.
 #'
-#' @param design a single RCT design (see list/naming convention)
-#' @param MTP Multiple adjustment procedure of interest. Supported options:
-#'   None, Bonferroni, BH, Holm, WY-SS, WY-SD (passed as strings).  Provide list
-#'   to automatically re-run for each procedure on the list.
+#' @param d_m string; a single context, which is a design and model code. 
+#' See pump_info()$Context for list of choices.
+#' @param MTP string, or vector of strings; multiple testing procedure(s).
+#' See pump_info()$Adjustment for list of choices.
 #' @param MDES scalar or vector; the desired MDES values for each outcome. 
 #' Please provide a scalar, a vector of length M, or vector of 
 #' values for non-zero outcomes.
 #' @param numZero scalar; Additional number of outcomes assumed 
-#' to be zero. Please
-#'   provide NumZero + length(MDES) = M
-#' @param M scalar; the number of hypothesis tests (outcomes), including zero
-#'   outcomes
-#' @param J scalar; the number of schools
-#' @param K scalar; the number of districts
-#' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that are assigned to the
-#'   treatment
-#' @param alpha scalar; the family wise error rate (FWER)
+#' to be zero. Please provide NumZero + length(MDES) = M.
+#' @param M scalar; the number of hypothesis tests (outcomes), 
+#' including zero outcomes.
+#' @param J scalar; the harmonic mean of number of level 2 
+#' units per level 3 unit (schools per district).
+#' @param K scalar; the number of level 3 units (districts).
+#' @param nbar scalar; the harmonic mean of the number of 
+#' level 1 units per level 2 unit (students per school).
+#' @param Tbar scalar; the proportion of samples 
+#' that are assigned to the treatment.
+#' @param alpha scalar; the family wise error rate (FWER).
 #' @param two.tailed scalar; TRUE/FALSE for two-tailed or 
 #' one-tailed power calculation.
-#' @param numCovar.1 scalar; number of Level 1 (individual) covariates (not
-#'   including block dummies)
-#' @param numCovar.2 scalar; number of Level 2 (school) covariates
-#' @param numCovar.3 scalar; number of Level 3 (district) covariates
+#' @param numCovar.1 scalar; number of level 1 (individual) covariates.
+#' @param numCovar.2 scalar; number of level 2 (school) covariates.
+#' @param numCovar.3 scalar; number of level 3 (district) covariates.
 #' @param R2.1 scalar, or vector of length M; percent of variation explained by
-#'   Level 1 covariates for each outcome. Defaults to 0.
+#'   level 1 covariates for each outcome.
 #' @param R2.2 scalar, or vector of length M; percent of variation explained by
-#'   Level 2 covariates for each outcome. Defaults to 0.
+#'   level 2 covariates for each outcome.
 #' @param R2.3 scalar, or vector of length M; percent of variation explained by
-#'   Level 3 covariates for each outcome. Defaults to 0.
-#' @param ICC.2 scalar, or vector of length M; school intraclass correlation
-#' @param ICC.3 scalar, or vector length M; district intraclass correlation
+#'   level 3 covariates for each outcome.
+#' @param ICC.2 scalar, or vector of length M; 
+#' level 2 (school) intraclass correlation
+#' @param ICC.3 scalar, or vector length M; 
+#' level 3 (district) intraclass correlation
 #' @param omega.2 scalar, or vector of length M; ratio of 
-#' variance of school-average impacts to
-#'   variance of school-level random intercepts.  Default to 0 (no treatment
-#'   variation).
+#' variance of level 2 average impacts to
+#' variance of level 2 random intercepts.
 #' @param omega.3 scalar, or vector of length M; ratio of 
-#' variance of district-average impacts to
-#'   variance of district-level random intercepts. Default to 0 (no treatment
-#'   variation).
-#' @param rho scalar; assumed correlation between all pairs of test statistics.
-#' @param rho.matrix matrix; alternate specification allowing a full matrix
-#' of correlations between test statistics. Must specify either
+#' variance of level 3 average impacts to
+#' variance of level 3 random intercepts.
+#' @param rho scalar; assumed correlation between 
+#' all pairs of test statistics.
+#' @param rho.matrix matrix; alternate specification 
+#' allowing a full matrix of correlations between 
+#' test statistics. Must specify either
 #' rho or rho.matrix, but not both.
-#' @param tnum scalar; the number of test statistics (samples)
-#' @param B scalar; the number of samples/permutations for Westfall-Young
-#' @param parallel.WY.clusters number of clusters to use for 
-#' parallel processing of WY
-#' @param drop.zero.outcomes whether to report power results for 
-#' outcomes with MDES = 0
+#' @param tnum scalar; the number of test statistics
+#' to draw. Increasing tnum increases precision and
+#' computation time.
+#' @param B scalar; the number of permutations for 
+#' Westfall-Young procedures.
+#' @param parallel.WY.cores number of cores to use for 
+#' parallel processing of WY-SD.
+#' @param drop.zero.outcomes whether to report 
+#' power results for outcomes with MDES = 0.
 #' @param updateProgress function to update progress bar 
 #' (only used for PUMP shiny app)
 #' @param long.table TRUE for table with power as rows, correction as columns,
-#'   and with more verbose names.  See `transpose_power_table`.
-#' @param verbose Print out diagnostics of time, etc.
-#' @param validate.inputs whether or not to check whether parameters are valid
-#' given the choice of design
+#'   and with more verbose names. See `transpose_power_table`.
+#' @param verbose TRUE/FALSE; Print out diagnostics of time, etc.
+#' @param validate.inputs TRUE/FALSE; whether or not to 
+#' check whether parameters are valid given the choice of d_m
+#' 
 #' @return power results for MTP and unadjusted across all definitions of power
 #' @export
 #'
+#' @examples
+#' pp <- pump_power(
+#'    d_m = "d3.2_m3ff2rc",
+#'    MTP = 'HO',
+#'    nbar = 50,
+#'    J = 30,
+#'    K = 10,
+#'    M = 5,
+#'    MDES = 0.125,
+#'    Tbar = 0.5, alpha = 0.05,
+#'    numCovar.1 = 1, numCovar.2 = 1,
+#'    R2.1 = 0.1, R2.2 = 0.1,
+#'    ICC.2 = 0.2, ICC.3 = 0.2,
+#'    omega.2 = 0, omega.3 = 0.1, 
+#'    rho = 0.5)
 #'
 pump_power <- function(
-  design, MTP = NULL, MDES, numZero = NULL,
+  d_m, MTP = NULL, MDES, numZero = NULL,
   M,
   nbar, J = 1, K = 1, Tbar,
   alpha = 0.05, two.tailed = TRUE,
@@ -200,7 +226,7 @@ pump_power <- function(
   omega.2 = 0, omega.3 = 0,
   rho = NULL, rho.matrix = NULL,
   tnum = 10000, B = 1000,
-  parallel.WY.clusters = 1,
+  parallel.WY.cores = 1,
   drop.zero.outcomes = TRUE,
   updateProgress = NULL,
   validate.inputs = TRUE,
@@ -224,7 +250,7 @@ pump_power <- function(
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
     
     des <- purrr::map( MTP,
-                      pump_power, design = design, MDES = MDES,
+                      pump_power, d_m = d_m, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero,
                       Tbar = Tbar,
@@ -236,7 +262,7 @@ pump_power <- function(
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
                       tnum = tnum, B = B, 
-                      parallel.WY.clusters = parallel.WY.clusters,
+                      parallel.WY.cores = parallel.WY.cores,
                       updateProgress = updateProgress,
                       validate.inputs = validate.inputs )
 
@@ -257,7 +283,7 @@ pump_power <- function(
     
     return( make.pumpresult( ftable, "power",
                              params.list = plist,
-                             design = design,
+                             d_m = d_m,
                              long.table = long.table ) )
   }
 
@@ -276,7 +302,7 @@ pump_power <- function(
     )
     ##
     params.list <- validate_inputs(
-        design, params.list, power.call = TRUE, verbose = verbose 
+        d_m, params.list, power.call = TRUE, verbose = verbose 
     )
     ##
     MTP <- params.list$MTP
@@ -297,14 +323,14 @@ pump_power <- function(
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc_SE(
-    design = design, J = J, K = K, nbar = nbar, Tbar = Tbar,
+    d_m = d_m, J = J, K = K, nbar = nbar, Tbar = Tbar,
     R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
     ICC.2 = ICC.2, ICC.3 = ICC.3,
     omega.2 = omega.2, omega.3 = omega.3
   )
   t.shift <- MDES/Q.m
   t.df <- calc_df(
-    design = design, J = J, K = K,
+    d_m = d_m, J = J, K = K,
     nbar = nbar,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
     validate = validate.inputs
@@ -331,11 +357,11 @@ pump_power <- function(
     updateProgress(message = "P-values have been generated!")
   }
 
-  if (MTP == "Bonferroni"){
+  if (MTP == "BF"){
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
-  } else if (MTP == "Holm") {
+  } else if (MTP == "HO") {
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "holm"))
 
@@ -352,9 +378,9 @@ pump_power <- function(
 
   } else if (MTP == "WY-SD"){
 
-    if( parallel.WY.clusters > 1 )
+    if( parallel.WY.cores > 1 )
     {
-      cl <- parallel::makeCluster(parallel.WY.clusters)
+      cl <- parallel::makeCluster(parallel.WY.cores)
     } else
     {
       cl <- NULL
@@ -365,7 +391,7 @@ pump_power <- function(
                           two.tailed = two.tailed, cl = cl,
                           updateProgress = updateProgress)
     
-    if( parallel.WY.clusters > 1 )
+    if( parallel.WY.cores > 1 )
     {
         parallel::stopCluster(cl)
     }
@@ -403,13 +429,13 @@ pump_power <- function(
   if ( !long.table ) {
     return( make.pumpresult( power.results, "power",
                            params.list = params.list,
-                           design = design,
+                           d_m = d_m,
                            long.table = long.table ) )
   } else {
     return( make.pumpresult( transpose_power_table( power.results, M = M ), 
                              "power",
                              params.list = params.list,
-                             design = design,
+                             d_m = d_m,
                              long.table = long.table ) )
   }
 }

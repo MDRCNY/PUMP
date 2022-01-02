@@ -15,7 +15,7 @@ test_that("testing of d2.2_m2rc raw", {
   set.seed( 101010 )
 
   traw <- pump_sample_raw(
-    design = "d2.2_m2rc",
+    d_m = "d2.2_m2rc",
     typesample = "J",
     nbar = 1000,
     MDES = 0.40, target.power = 0.80,
@@ -23,7 +23,7 @@ test_that("testing of d2.2_m2rc raw", {
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
 
-  traw <- pump_sample_raw( design = "d2.2_m2rc",
+  traw <- pump_sample_raw( d_m = "d2.2_m2rc",
                            typesample = "J",
                            nbar = 10,
                            MDES = 0.40, target.power = 0.80,
@@ -32,7 +32,7 @@ test_that("testing of d2.2_m2rc raw", {
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
-  traw <- pump_sample_raw( design = "d2.2_m2rc",
+  traw <- pump_sample_raw( d_m = "d2.2_m2rc",
                            typesample = "J",
                            nbar = 10,
                            MDES = 0.01, target.power = 0.80,
@@ -41,7 +41,7 @@ test_that("testing of d2.2_m2rc raw", {
                            R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05 )
   traw
 
-  traw <- pump_sample_raw( design = "d2.2_m2rc",
+  traw <- pump_sample_raw( d_m = "d2.2_m2rc",
                            typesample = "J",
                            nbar = 1000,
                            MDES = 0.001, target.power = 0.99,
@@ -51,7 +51,7 @@ test_that("testing of d2.2_m2rc raw", {
   traw
 
 
-  traw <- pump_sample_raw( design = "d2.2_m2rc",
+  traw <- pump_sample_raw( d_m = "d2.2_m2rc",
                            typesample = "J",
                            nbar = 1000,
                            MDES = 0.1, target.power = 0.99,
@@ -62,10 +62,10 @@ test_that("testing of d2.2_m2rc raw", {
 
   set.seed( 1041010 )
   
-  calcJ <- pump_sample( design = "d2.2_m2rc",
+  calcJ <- pump_sample( d_m = "d2.2_m2rc",
                         typesample = "J",
                         power.definition = "min1",
-                        MTP = "Holm",
+                        MTP = "HO",
                         M = 4,
                         nbar = 1000,
                         MDES = 0.40, target.power = 0.80, tol = 0.01,
@@ -78,9 +78,8 @@ test_that("testing of d2.2_m2rc raw", {
   calcJ
   expect_true( !is.na( calcJ$`Sample.size` ) )
 
-
-  pp <- pump_power( design = "d2.2_m2rc",
-                   MTP = "Holm",
+  pp <- pump_power( d_m = "d2.2_m2rc",
+                   MTP = "HO",
                    M = 4,
                    J = calcJ$`Sample.size` - 1,
                    nbar = 1000,
@@ -92,8 +91,8 @@ test_that("testing of d2.2_m2rc raw", {
   pp
   expect_true( pp[2,"min1"] <= 0.80 )
 
-  pp <- pump_power( design = "d2.2_m2rc",
-                   MTP = "Holm",
+  pp <- pump_power( d_m = "d2.2_m2rc",
+                   MTP = "HO",
                    M = 4,
                    J = calcJ$`Sample.size`,
                    nbar = 1000,
@@ -108,7 +107,7 @@ test_that("testing of d2.2_m2rc raw", {
 
 test_that("testing of d3.2_m3rr2rc raw", {
 
-  traw <- pump_sample_raw( design = "d3.2_m3rr2rc",
+  traw <- pump_sample_raw( d_m = "d3.2_m3rr2rc",
                            typesample = "K",
                            nbar = 1000,
                            J = 10,
@@ -128,8 +127,8 @@ test_that("testing of d3.2_m3rr2rc raw", {
 # -------- d1.1_m1c --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-pp <- pump_sample( design = "d1.1_m1c",
-                   MTP = c("Bonferroni"),
+pp <- pump_sample( d_m = "d1.1_m1c",
+                   MTP = c("BF"),
                    MDES = 0.125,
                    power.definition = 'D1indiv',
                    target.power = 0.8,
@@ -154,8 +153,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.1_m2fc",
-      MTP = 'Holm',
+      d_m = "d2.1_m2fc",
+      MTP = 'HO',
       nbar = 50,
       J = 60,
       M = 3,
@@ -171,8 +170,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
   pp_power <- 0.97633
 
   J1 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     typesample = 'J',
     target.power = pp_power,
@@ -188,8 +187,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
   # converges
   set.seed(8598)
   nbar1 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     typesample = 'nbar',
     target.power = pp_power,
@@ -205,8 +204,8 @@ test_that("testing of d2.1_m2fc one-tailed", {
 
   set.seed( 44304044 )
   mdes1 <- pump_mdes(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     target.power = pp_power,
     J = 60,
@@ -227,8 +226,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.1_m2fc",
-      MTP = 'Holm',
+      d_m = "d2.1_m2fc",
+      MTP = 'HO',
       nbar = 50,
       J = 60,
       M = 3,
@@ -244,8 +243,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
   pp_power <- 0.95162
 
   J1 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     typesample = 'J',
     target.power = pp_power,
@@ -261,8 +260,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
   # converges
   set.seed(8598)
   nbar1 <- pump_sample(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     typesample = 'nbar',
     target.power = pp_power,
@@ -277,8 +276,8 @@ test_that("testing of d2.1_m2fc two-tailed", {
   expect_equal(50, nbar1$`Sample.size`, tol = 0.1)
 
   mdes1 <- pump_mdes(
-    design = "d2.1_m2fc",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fc",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     target.power = pp_power,
     J = 60,
@@ -306,8 +305,8 @@ test_that("testing of d2.1_m2ff one-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.1_m2ff",
-      MTP = 'Holm',
+      d_m = "d2.1_m2ff",
+      MTP = 'HO',
       nbar = 50,
       J = 60,
       M = 3,
@@ -324,8 +323,8 @@ test_that("testing of d2.1_m2ff one-tailed", {
   pp_power <- 0.97644
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 60, NULL, 24322323,
-    design = "d2.1_m2ff",
-    MTP = 'Holm',
+    d_m = "d2.1_m2ff",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     M = 3,
     MDES = 0.125,
@@ -348,8 +347,8 @@ test_that("testing of d2.1_m2fr one-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.1_m2fr",
-      MTP = 'Holm',
+      d_m = "d2.1_m2fr",
+      MTP = 'HO',
       nbar = 50,
       J = 60,
       M = 3,
@@ -364,8 +363,8 @@ test_that("testing of d2.1_m2fr one-tailed", {
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 60, K = NULL,
                             seed = 22422422,
-                            design = "d2.1_m2ff",
-                            MTP = 'Holm',
+                            d_m = "d2.1_m2ff",
+                            MTP = 'HO',
                             power.definition = 'D1indiv',
                             M = 3,
                             MDES = 0.125,
@@ -388,8 +387,8 @@ test_that("testing of d2.1_m2fr two-tailed", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.1_m2fr",
-      MTP = 'Holm',
+      d_m = "d2.1_m2fr",
+      MTP = 'HO',
       nbar = 50,
       J = 60,
       M = 3,
@@ -405,8 +404,8 @@ test_that("testing of d2.1_m2fr two-tailed", {
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 60, K = NULL,
                             seed = 22422422,
-                            design = "d2.1_m2ff",
-                            MTP = 'Holm',
+                            d_m = "d2.1_m2ff",
+                            MTP = 'HO',
                             power.definition = 'D1indiv',
                             M = 3,
                             MDES = 0.125,
@@ -421,8 +420,8 @@ test_that("testing of d2.1_m2fr two-tailed", {
   expect_equal( warning_pattern(vals), c(FALSE, FALSE) )
 
   mdes1 <-  pump_mdes(
-    design = "d2.1_m2fr",
-    MTP = 'Holm',
+    d_m = "d2.1_m2fr",
+    MTP = 'HO',
     power.definition = 'D1indiv',
     target.power = pp_power,
     nbar = 50,
@@ -450,8 +449,8 @@ test_that("testing of d2.2_m2rc", {
     set.seed(8598)
 
     pp1 <- pump_power(
-      design = "d2.2_m2rc",
-      MTP = 'Holm',
+      d_m = "d2.2_m2rc",
+      MTP = 'HO',
       nbar = 50,
       J = 20,
       M = 8,
@@ -471,9 +470,9 @@ test_that("testing of d2.2_m2rc", {
   pp_power <- 0.66245
 
   vals <- test_sample_triad(pp_power, nbar = 50, J = 20, NULL, 2244323,
-                            design = "d2.2_m2rc",
+                            d_m = "d2.2_m2rc",
                             power.definition = "min3",
-                            MTP = 'Holm',
+                            MTP = 'HO',
                             M = 8,
                             numZero = 5,
                             MDES = rep(0.30, 3),
@@ -488,8 +487,8 @@ test_that("testing of d2.2_m2rc", {
   
   # cannot achieve target power with given parameters
   expect_warning(ss1 <- pump_sample(
-      design = "d2.2_m2rc",
-      MTP = 'Bonferroni',
+      d_m = "d2.2_m2rc",
+      MTP = 'BF',
       typesample = 'nbar',
       target.power = 0.8,
       power.definition = 'D1indiv',
@@ -506,8 +505,8 @@ test_that("testing of d2.2_m2rc", {
   
   expect_warning(
     ss2 <- pump_sample(
-      design = "d2.2_m2rc",
-      MTP = 'Holm',
+      d_m = "d2.2_m2rc",
+      MTP = 'HO',
       typesample = 'nbar',
       target.power = 0.8,
       power.definition = 'D1indiv',
@@ -524,10 +523,10 @@ test_that("testing of d2.2_m2rc", {
   expect_true(is.na(ss2$Sample.size))
   
   # can achieve target
-  # checks power curve works for Bonferroni
+  # checks power curve works for BF
   ss3 <- pump_sample(
-      design = "d2.2_m2rc",
-      MTP = 'Bonferroni',
+      d_m = "d2.2_m2rc",
+      MTP = 'BF',
       typesample = 'J',
       target.power = 0.8,
       power.definition = 'D1indiv',

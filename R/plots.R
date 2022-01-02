@@ -4,8 +4,8 @@ get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
   
   pt <- round( pt )
 
-  mn <- min( pt )
-  mx <- max( pt )
+  mn <- min( pt, na.rm = TRUE  )
+  mx <- max( pt, na.rm = TRUE )
   
   sq <- round( seq( mn, mx, length.out = breaks ) )
   
@@ -34,6 +34,13 @@ get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
 #' @inheritParams power_curve
 #'
 #' @export
+#' 
+#' @examples
+#' mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
+#'   power.definition = 'D1indiv', target.power = 0.7,
+#'   J = 60, nbar = 50, M = 3, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#' plot_power_curve(mdes)
 plot_power_curve <- function( pwr, plot.points = TRUE,
                               all = FALSE,
                               low = NULL, high = NULL,
@@ -42,11 +49,8 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
   
   
   if ( is.pumpresult( pwr ) ) {
-    if( is.na( pwr$Sample.size ) )
-    {
-      stop('plot_power_curve() does not work if algorithm has not converged.')
-    }
-    test.pts <- power_curve(pwr, low=low, high=high, grid.size = grid.size,
+    test.pts <- power_curve(pwr, low = low, high = high, 
+                            grid.size = grid.size,
                             tnum = params(pwr)$tnum, all = all )
     x_label <- pump_type(pwr)
   } else {
@@ -61,7 +65,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
     fit <- fit_bounded_logistic( tp$pt, tp$power, tp$w )
   }
   
-  xrng <- range( test.pts$pt )
+  xrng <- range( test.pts$pt, na.rm = TRUE )
   limsX <- grDevices::extendrange( r = xrng, 0.15 )
   
   # sample size or MDES?  If dataframe passed, we don't know what we are
@@ -84,8 +88,8 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
     ggplot2::coord_cartesian( ylim = c(0,1), xlim = limsX ) +
     ggplot2::labs( x = x_label, y = "power" )
   
-  xpt <- get_sample_tick_marks(test.pts$pt, breaks = 7,
-                              include.points = plot.points )
+  xpt <- get_sample_tick_marks(test.pts$pt, breaks = 5,
+                               include.points = plot.points )
   
   delrange <- diff( xrng )
   if ( delrange > 50 ) {
@@ -127,8 +131,17 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #'   known, e.g., from a pump_power call). 
 #'
 #' @return a ggplot plot (a gridExtra arrangement of 3 plots, technically).
-#'
 #' @export
+#'
+#' @examples
+#'J <- pump_sample(d_m = "d2.1_m2fc",
+#'    MTP = 'HO', power.definition = 'D1indiv',
+#'    typesample = 'J', target.power = 0.6,
+#'    nbar = 50, M = 3, MDES = 0.125,
+#'    Tbar = 0.5, alpha = 0.05,
+#'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#' plot_power_search(J)
+#'
 plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   if ( is.pumpresult(pwr) ) {
     test.pts <- search_path(pwr)
@@ -184,9 +197,7 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
         ggplot2::geom_hline( yintercept = target.line, col = "purple" )
   }
   
-  
-  gridExtra::grid.arrange(plot1, plot2, plot3, ncol=3) #+
-  #title( "Search path for optimize_power" )
+  gridExtra::grid.arrange(plot1, plot2, plot3, ncol=3)
   
 }
 
@@ -195,7 +206,18 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 #' @param x pumpresult object
 #' @param ... Additional parameters
 #'
+#' @return a ggplot plot.
 #' @export
+#'
+#' @examples 
+#' pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
+#'  nbar = 50, J = 20, M = 8, numZero = 5,
+#'  MDES = 0.30, Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+#'  numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7, 
+#'  ICC.2 = 0.05, rho = 0.2, tnum = 5000)
+#'  
+#' plot(pp1)
+
 plot.pumpresult <- function( x, ... )
 {
   stopifnot( is.pumpresult( x ) )
@@ -268,6 +290,8 @@ plot.pumpresult <- function( x, ... )
 #'
 #' @inheritParams plot.pumpgridresult
 #' 
+#' @return a ggplot object
+#' 
 #' @importFrom stringr str_detect
 plot.pumpgridresult.power <- function(
     x, power.definition = NULL, var.vary, ... 
@@ -322,7 +346,7 @@ plot.pumpgridresult.power <- function(
   plot.data <-
     plot.data %>%
     dplyr::select_all() %>%
-    dplyr::select(-.data$design) %>%
+    dplyr::select(-.data$d_m) %>%
     dplyr::rename(powerType = .data$power) %>%
     tidyr::pivot_longer( cols = tidyselect::all_of( MTPs ),
                          names_to = "MTP", values_to = "power")
@@ -519,7 +543,17 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 #' @param var.vary variable to vary on X axis
 #' @param ... additional parameters
 #'
+#' @return a ggplot object
 #' @export
+#' 
+#' @examples
+#'g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
+#'  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
+#'  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, 
+#'  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
+#'  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
+#'plot(g, var.vary = 'J', power.definition = 'min1')
+
 plot.pumpgridresult <- function( x, power.definition = NULL, var.vary, ... )
 {
   # validation

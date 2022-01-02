@@ -16,6 +16,17 @@ definitions as a facet wrap.}
 
 \item{...}{additional parameters}
 }
+\value{
+a ggplot object
+}
 \description{
 Plot a pump grid result object
+}
+\examples{
+g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
+ MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
+ Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, 
+ numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
+ ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
+plot(g, var.vary = 'J', power.definition = 'min1')
 }

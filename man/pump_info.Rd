@@ -2,14 +2,25 @@
 % Please edit documentation in R/designs_and_models.R
 \name{pump_info}
 \alias{pump_info}
-\title{List all the supported designs of the `pum` package.}
+\title{List user options:
+designs and models (d_m), including what
+parameters are relevant for each context;
+multiple testing procedures;
+types of power;
+design and model parameters.}
 \usage{
 pump_info(comment = TRUE)
 }
 \arguments{
-\item{comment}{TRUE/FALSE, prints out description of
-each design or method}
+\item{comment}{TRUE/FALSE, prints out 
+long description of
+each design and method}
 }
 \description{
-List all supported designs, with brief descriptions.
+List user options:
+designs and models (d_m), including what
+parameters are relevant for each context;
+multiple testing procedures;
+types of power;
+design and model parameters.
 }

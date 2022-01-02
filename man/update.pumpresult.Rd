@@ -25,3 +25,13 @@ the "something" is either "power", "sample", or "mdes", if the call should be
 shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
 respectively).
 }
+\examples{
+ss <- pump_sample( d_m = "d2.1_m2fc", MTP = "HO",
+  typesample = "J", nbar = 200, power.definition = "min1",
+  M = 5, MDES = 0.05, target.power = 0.5, tol = 0.05,
+  Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, R2.1 = 0.1,
+  ICC.2 = 0.15, rho = 0, final.tnum = 1000 )
+
+up <- update(ss, nbar = 40, tnum = 2000 )
+
+}

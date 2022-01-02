@@ -2,39 +2,32 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_df}
 \alias{calc_df}
-\title{Calculate the degrees of freedom for a particular design}
+\title{Calculate the degrees of freedom for a particular d_m}
 \usage{
-calc_df(
-  design,
-  J,
-  K,
-  nbar,
-  numCovar.1,
-  numCovar.2,
-  numCovar.3,
-  validate = TRUE
-)
+calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE)
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{string; a single context, which is a design and model code. 
+See pump_info()$Context for list of choices.}
 
-\item{J}{scalar; the number of schools}
+\item{J}{scalar; the harmonic mean of number of level 2 
+units per level 3 unit (schools per district).}
 
-\item{K}{scalar; the number of districts}
+\item{K}{scalar; the number of level 3 units (districts).}
 
-\item{nbar}{scalar; the harmonic mean of the number of units per school}
+\item{nbar}{scalar; the harmonic mean of the number of 
+level 1 units per level 2 unit (students per school).}
 
-\item{numCovar.1}{scalar; number of Level 1 (individual) covariates (not
-including block dummies)}
+\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
 
-\item{numCovar.2}{scalar; number of Level 2 (school) covariates}
+\item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
-\item{numCovar.3}{scalar; number of Level 3 (district) covariates}
+\item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
 \item{validate}{whether or not to validate if output df is <= 0}
 }
 \value{
-Degree of freedom for the design.
+Degree of freedom for the d_m.
 }
 \description{
 Given sample sizes, return the used degrees of freedom 

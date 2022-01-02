@@ -11,6 +11,18 @@
 
 \item{...}{Additional parameters}
 }
+\value{
+a ggplot plot.
+}
 \description{
 Plot a single scenario pump object
+}
+\examples{
+pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
+ nbar = 50, J = 20, M = 8, numZero = 5,
+ MDES = 0.30, Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+ numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7, 
+ ICC.2 = 0.05, rho = 0.2, tnum = 5000)
+ 
+plot(pp1)
 }

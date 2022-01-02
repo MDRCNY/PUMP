@@ -3,8 +3,8 @@
 
 test_that("pump_power_grid works", {
 
-  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
-                            MTP = "Holm",
+  pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
+                            MTP = "HO",
                             MDES = c( 0.05, 0.2 ),
                             M = 5,
                             J = c( 3, 5, 9), # number of schools/block
@@ -24,8 +24,8 @@ test_that("pump_power_grid works", {
 
 
 
-  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
-                            MTP = "Holm",
+  pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
+                            MTP = "HO",
                             MDES = c( 0.05, 0.2 ),
                             M = 5,
                             J = 4, # number of schools/block
@@ -50,8 +50,8 @@ test_that("pump_power_grid works", {
 
 
 
-  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
-                            MTP = "Holm",
+  pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
+                            MTP = "HO",
                             MDES = c( 0.05, 0.2 ),
                             numZero = c(1,2,3),
                             M = 5,
@@ -72,8 +72,8 @@ test_that("pump_power_grid works", {
 
 
 
-  grid <- pump_power_grid( design="d3.2_m3ff2rc",
-                           MTP = "Bonferroni",
+  grid <- pump_power_grid( d_m="d3.2_m3ff2rc",
+                           MTP = "BF",
                            MDES = 0.1,
                            M = 3,
                            J = 3, # number of schools/block
@@ -93,8 +93,8 @@ test_that("pump_power_grid works", {
   expect_true( "MDES" %in% names(grid) )
 
 
-  grid2 <- pump_power_grid( design="d3.2_m3ff2rc", drop_unique_columns = FALSE,
-                            MTP = "Bonferroni",
+  grid2 <- pump_power_grid( d_m="d3.2_m3ff2rc", drop.unique.columns = FALSE,
+                            MTP = "BF",
                             MDES = 0.1,
                             M = 3,
                             J = c( 3, 4 ), # number of schools/block
@@ -111,8 +111,8 @@ test_that("pump_power_grid works", {
   grid2
   expect_true( "rho" %in% names( grid2 ) )
 
-  grid3 <- pump_power_grid( design=c( "d3.2_m3ff2rc", "d3.2_m3rr2rc" ), drop_unique_columns = FALSE,
-                            MTP = "Bonferroni",
+  grid3 <- pump_power_grid( d_m=c( "d3.2_m3ff2rc", "d3.2_m3rr2rc" ), drop.unique.columns = FALSE,
+                            MTP = "BF",
                             MDES = 0.1,
                             M = 3,
                             J = 3, # number of schools/block
@@ -127,7 +127,7 @@ test_that("pump_power_grid works", {
                             rho = c( 0, 0.4 ),
                             tnum = 100 )
   grid3
-  expect_true( length( unique( grid3$design ) ) == 2 )
+  expect_true( length( unique( grid3$d_m ) ) == 2 )
 
 
 
@@ -136,8 +136,8 @@ test_that("pump_power_grid works", {
 
 test_that("pump_mdes_grid works", {
 
-  pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
-                           MTP = "Holm",
+  pp <- pump_mdes_grid(    d_m = "d3.2_m3ff2rc",
+                           MTP = "HO",
                            target.power = c( 0.50, 0.80 ),
                            power.definition = "D1indiv",
                            tol = 0.05,
@@ -161,9 +161,9 @@ test_that("pump_mdes_grid works", {
 
 test_that("pump_sample_grid works", {
 
-  pp <- pump_sample_grid(    design = "d3.2_m3ff2rc",
+  pp <- pump_sample_grid(    d_m = "d3.2_m3ff2rc",
                              typesample = "J",
-                             MTP = "Holm",
+                             MTP = "HO",
                              MDES = 0.10,
                              target.power = c( 0.50, 0.80 ),
                              power.definition = "min1",
@@ -188,8 +188,8 @@ test_that("pump_sample_grid works", {
 
 test_that( "grid allows multiple MTP and power definitions", {
 
-  pp <- pump_mdes_grid(    design = "d3.2_m3ff2rc",
-                           MTP = c( "Bonferroni", "Holm" ),
+  pp <- pump_mdes_grid(    d_m = "d3.2_m3ff2rc",
+                           MTP = c( "BF", "HO" ),
                            target.power = 0.5,
                            power.definition = c( "min1", "D1indiv" ),
                            tol = 0.05,
@@ -210,8 +210,8 @@ test_that( "grid allows multiple MTP and power definitions", {
 
 
 
-  pp <- pump_sample_grid(    design = "d3.2_m3ff2rc",
-                             MTP = c( "Bonferroni", "Holm" ),
+  pp <- pump_sample_grid(    d_m = "d3.2_m3ff2rc",
+                             MTP = c( "BF", "HO" ),
                              target.power = 0.9,
                              typesample = "J",
                              MDES = 0.05,
@@ -236,8 +236,8 @@ test_that( "grid allows multiple MTP and power definitions", {
 
 
 test_that( "grid works for long tables", {
-  pp <- pump_power_grid(    design = "d3.2_m3ff2rc",
-                            MTP = c( "Holm", "Bonferroni" ),
+  pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
+                            MTP = c( "HO", "BF" ),
                             MDES = 0.10,
                             J = c( 4, 8 ),
                             M = 5,
@@ -259,8 +259,8 @@ test_that( "grid works for long tables", {
 
 test_that( "grid breaks with invalid inputs", {
   expect_error(pp <- pump_sample_grid(
-    design = "d2.2_m2rc",
-    MTP = c("Holm"),
+    d_m = "d2.2_m2rc",
+    MTP = c("HO"),
     typesample = c("J"),
     MDES = 0.125,
     J = 10,
@@ -274,8 +274,8 @@ test_that( "grid breaks with invalid inputs", {
     rho = 0.2))
 
   expect_error(pp <- pump_mdes_grid(
-    design = "d2.2_m2rc",
-    MTP = c("Holm"),
+    d_m = "d2.2_m2rc",
+    MTP = c("HO"),
     MDES = c(0.125),
     J = 10,
     M = 5,
@@ -288,8 +288,8 @@ test_that( "grid breaks with invalid inputs", {
     rho = 0.2))
   
   expect_error(pp <- pump_mdes_grid(
-    design = "d2.2_m2rc",
-    MTP = c("Holm"),
+    d_m = "d2.2_m2rc",
+    MTP = c("HO"),
     J = c(10, 30),
     M = 5,
     nbar = c( 50, 100, 50 ),
@@ -301,8 +301,8 @@ test_that( "grid breaks with invalid inputs", {
     rho = 0.2, tol = 0.5))
   
   expect_error(pp <- pump_power_grid(
-      design = "d2.2_m2rc",
-      MTP = c("Holm"),
+      d_m = "d2.2_m2rc",
+      MTP = c("HO"),
       MDES = 0.125,
       J = 10,
       M = 5,

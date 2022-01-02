@@ -16,8 +16,8 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
         set.seed( 524235326 )
         pp1 <- pump_power(
-            design = "d3.1_m3rr2rr",
-            MTP = 'Holm',
+            d_m = "d3.1_m3rr2rr",
+            MTP = 'HO',
             nbar = 50,
             K = 15,
             J = 30,
@@ -37,10 +37,11 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
     set.seed(524235326)
     
-    vals <- test_sample_triad( target_power = pp_power, nbar = 50, J = 30, K = 15,
-                               seed = 4224422,
-                                design = "d3.1_m3rr2rr",
-      MTP = 'Holm',
+    vals <- test_sample_triad( 
+      target_power = pp_power, nbar = 50, J = 30, K = 15,
+      seed = 4224422,
+      d_m = "d3.1_m3rr2rr",
+      MTP = 'HO',
       power.definition = 'D1indiv',
       M = 3,
       MDES = rep(0.125, 3),
@@ -61,8 +62,8 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
     
     set.seed( 44040422 )
     mdes1 <-  pump_mdes(
-      design = "d3.1_m3rr2rr",
-      MTP = 'Holm',
+      d_m = "d3.1_m3rr2rr",
+      MTP = 'HO',
       power.definition = 'D1indiv',
       target.power = pp_power,
       J = 30,
@@ -81,9 +82,9 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
     set.seed( 524235325 )
 
     nbar2 <- pump_sample(
-        design = "d3.1_m3rr2rr",
+        d_m = "d3.1_m3rr2rr",
         typesample = 'nbar',
-        MTP = 'Holm',
+        MTP = 'HO',
         target.power = 0.66682,
         power.definition = 'D1indiv',
         K = 15,
@@ -112,8 +113,8 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
 
       set.seed( 245444 )
       pp1 <- pump_power(
-          design = "d3.2_m3ff2rc",
-          MTP = 'Holm',
+          d_m = "d3.2_m3ff2rc",
+          MTP = 'HO',
           nbar = 50,
           J = 30,
           K = 10,
@@ -132,8 +133,8 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     set.seed( 245444 )
     vals <- test_sample_triad( pp_power, nbar = 50, J = 30, K = 10,
                                seed = 4224422,
-                               design = "d3.2_m3ff2rc",
-                               MTP = 'Holm',
+                               d_m = "d3.2_m3ff2rc",
+                               MTP = 'HO',
                                power.definition = 'min2',
                                M = 5,
                                MDES = 0.125,
@@ -155,8 +156,8 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     set.seed( 245444 )
     pp_power
     nbar1 <- expect_warning( pump_sample(
-      design = "d3.2_m3ff2rc",
-      MTP = 'Holm',
+      d_m = "d3.2_m3ff2rc",
+      MTP = 'HO',
       power.definition = 'min2',
       typesample = 'nbar',
       target.power = pp_power,
@@ -188,8 +189,8 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
         set.seed( 245444 )
 
         pp1 <- pump_power(
-            design = "d3.2_m3rr2rc",
-            MTP = 'Holm',
+            d_m = "d3.2_m3rr2rc",
+            MTP = 'HO',
             nbar = 50,
             K = 10,
             J = 30,
@@ -208,8 +209,8 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
     vals <- test_sample_triad(target_power = pp_power,
                               nbar = 50, J = 30, K = 10,
                               seed = 30033303,
-                              design = "d3.2_m3rr2rc",
-                              MTP = 'Holm',
+                              d_m = "d3.2_m3rr2rc",
+                              MTP = 'HO',
                               power.definition = 'D1indiv',
                               M = 3,
                               MDES = 0.125,
@@ -242,8 +243,8 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
         set.seed(2344)
 
         pp1 <- pump_power(
-            design = "d3.3_m3rc2rc",
-            MTP = 'Holm',
+            d_m = "d3.3_m3rc2rc",
+            MTP = 'HO',
             nbar = 50,
             K = 20,
             J = 40,
@@ -264,8 +265,8 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
     vals <- test_sample_triad( target_power = pp_power,
                                nbar = 50, K = 20, J = 40,
                                seed = 4053443,
-                               design = "d3.3_m3rc2rc",
-                               MTP = 'Holm',
+                               d_m = "d3.3_m3rc2rc",
+                               MTP = 'HO',
                                power.definition = 'D1indiv',
                                M = 3,
                                MDES = 0.25,
@@ -287,9 +288,9 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
     # converges but is relatively flat
     set.seed( 245444 )
     J1 <- expect_warning(pump_sample(
-        design = "d3.3_m3rc2rc",
+        d_m = "d3.3_m3rc2rc",
         typesample = 'J',
-        MTP = 'Holm',
+        MTP = 'HO',
         target.power = pp_power,
         power.definition = 'D1indiv',
         K = 20,
@@ -308,9 +309,9 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
     # very flat!
     set.seed( 245444 )
     J2 <- expect_warning(pump_sample(
-        design = "d3.3_m3rc2rc",
+        d_m = "d3.3_m3rc2rc",
         typesample = 'J',
-        MTP = 'Holm',
+        MTP = 'HO',
         target.power = pp_power,
         power.definition = 'D1indiv',
         K = 20,
@@ -337,9 +338,9 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
 test_that( "testing of lower limit", {
     # This should hit lower limit (too powerful, want J < 3).
     set.seed( 24553453 )
-    expect_warning( pp <- pump_sample(    design = "d3.2_m3ff2rc",
+    expect_warning( pp <- pump_sample(    d_m = "d3.2_m3ff2rc",
                                           typesample = "J",
-                                          MTP = "Holm",
+                                          MTP = "HO",
                                           MDES = 0.12,
                                           target.power = 0.50,
                                           power.definition = "min1",

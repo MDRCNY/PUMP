@@ -5,7 +5,7 @@
 \title{This function calculates needed nbar to achieve a given power}
 \usage{
 calc_nbar(
-  design,
+  d_m,
   MT = 2.8,
   MDES,
   J = NULL,
@@ -21,7 +21,7 @@ calc_nbar(
 )
 }
 \arguments{
-\item{design}{a single RCT design (see list/naming convention)}
+\item{d_m}{a single RCT design (see list/naming convention)}
 
 \item{MT}{Number of approximate effect-size unit SEs 
 (adjusted for degrees of freedom issues) that the MDES 
@@ -31,33 +31,33 @@ needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{J}{scalar; the number of schools}
 
-\item{K}{scalar; the number of districts}
+\item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples that are assigned to the
-treatment}
+\item{Tbar}{scalar; the proportion of samples 
+that are assigned to the treatment.}
 
 \item{R2.1}{scalar, or vector of length M; percent of variation explained by
-Level 1 covariates for each outcome. Defaults to 0.}
+level 1 covariates for each outcome.}
 
 \item{R2.2}{scalar, or vector of length M; percent of variation explained by
-Level 2 covariates for each outcome. Defaults to 0.}
+level 2 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; school intraclass correlation}
+\item{ICC.2}{scalar, or vector of length M; 
+level 2 (school) intraclass correlation}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
-variance of school-average impacts to
-  variance of school-level random intercepts.  Default to 0 (no treatment
-  variation).}
+variance of level 2 average impacts to
+variance of level 2 random intercepts.}
 
 \item{R2.3}{scalar, or vector of length M; percent of variation explained by
-Level 3 covariates for each outcome. Defaults to 0.}
+level 3 covariates for each outcome.}
 
-\item{ICC.3}{scalar, or vector length M; district intraclass correlation}
+\item{ICC.3}{scalar, or vector length M; 
+level 3 (district) intraclass correlation}
 
 \item{omega.3}{scalar, or vector of length M; ratio of 
-variance of district-average impacts to
-  variance of district-level random intercepts. Default to 0 (no treatment
-  variation).}
+variance of level 3 average impacts to
+variance of level 3 random intercepts.}
 }
 \value{
 nbar, the number of individuals needed, 

@@ -3,7 +3,7 @@
 
 make.pumpgridresult <- function( x,
                                 type = c( "power", "mdes", "sample" ),
-                                design = design,
+                                d_m = d_m,
                                 params.list = NULL,
                                 ... ) {
     type <- match.arg(type)
@@ -14,8 +14,8 @@ make.pumpgridresult <- function( x,
     } else {
         stopifnot( !is.null( attr(x,"params.list" ) ) )
     }
-    attr(x, "design") <- design
-    
+    attr(x, "d_m") <- d_m
+
     ll <- list(...)
     for ( l in names(ll) ) {
         attr(x, l) <- ll[[ l ]]
@@ -63,8 +63,8 @@ is.pumpgridresult <- function( x ) {
 print_grid_header <- function( x ) {
     result_type <- attr( x, "type" )
     
-    scat( "%s grid result: %s design with %d outcomes\n",
-          result_type, design(x), params(x)$M )
+    scat( "%s grid result: %s d_m with %d outcomes\n",
+          result_type, d_m(x), params(x)$M )
     
     scat( "Varying across %s\n",
           paste0( attr( x, "var_names" ), collapse = ", " ) )
@@ -109,7 +109,7 @@ print.pumpgridresult <- function( x,
 summary.pumpgridresult <- function( object, ... ) {
     print_grid_header( object )
     
-    print_design( object, 
+    print_d_m( object, 
                   insert_results = TRUE, insert_control = TRUE, ... )
     
     invisible( object )

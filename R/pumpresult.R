@@ -1,7 +1,7 @@
 
 make.pumpresult <- function( x,
                             type = c( "power", "mdes", "sample" ),
-                            design = design,
+                            d_m = d_m,
                             params.list = NULL,
                             tries = NULL,
                             flat = FALSE,
@@ -10,7 +10,7 @@ make.pumpresult <- function( x,
   class(x) <- c( "pumpresult", class(x) )
   attr(x, "type" ) <- type
   attr(x, "params.list") <- params.list
-  attr(x, "design") <- design
+  attr(x, "d_m") <- d_m
   ll <- list(...)
   for ( l in names(ll) ) {
     attr(x, l) <- ll[[ l ]]
@@ -37,9 +37,20 @@ make.pumpresult <- function( x,
 #' @return result of calling corresponding grid
 #'
 #' @export
+#' 
+#' @examples
+#' m <- pump_mdes(d_m = "d2.1_m2fc", MTP = "HO",
+#'   nbar = 200, J = 20, power.definition = "complete",
+#'   M = 3, target.power = 0.5, tol = 0.02,
+#'   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0,
+#'   final.tnum = 1000 )
+#'
+#' gd <- update_grid( m, J = c( 10, 20, 30 ) )
+#'
 update_grid <- function( x, ... ) {
   params <- attr(x,"param")
-  params["design"] <- design(x)
+  params["d_m"] <- d_m(x)
   for ( p in names(params) ) {
     params[[p]] <- unique( params[[p]] )
   }
@@ -90,11 +101,21 @@ update_grid <- function( x, ... ) {
 #'   specified parameters replaced.
 #'
 #' @export
+#' 
+#' @examples
+#' ss <- pump_sample( d_m = "d2.1_m2fc", MTP = "HO",
+#'   typesample = "J", nbar = 200, power.definition = "min1",
+#'   M = 5, MDES = 0.05, target.power = 0.5, tol = 0.05,
+#'   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, R2.1 = 0.1,
+#'   ICC.2 = 0.15, rho = 0, final.tnum = 1000 )
+#'
+#' up <- update(ss, nbar = 40, tnum = 2000 )
+#'
 update.pumpresult <- function( object, type = NULL, ... ) {
   params <- params(object)
   orig_result_type <- attr(object, "type" )
   params["type"] <- orig_result_type
-  params["design"] <- design(object)
+  params["d_m"] <- d_m(object)
   
   # Get new parameters
   dts <- list(...)
@@ -193,6 +214,16 @@ NULL
 #'
 #' @rdname pumpresult
 #' @export
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+#'   
+#' params(pp)
 params <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
   
@@ -209,14 +240,23 @@ params <- function( x, ... ) {
 
 #' Get design for pump result
 #'
-#' @return design: design used (as string)
+#' @return d_m: d_m used (as string)
 #'
 #' @rdname pumpresult
 #' @export
-design <- function( x, ... ) {
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+#'   
+#' d_m(pp)
+d_m <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
   
-  pp <- attr( x, "design" )
+  pp <- attr( x, "d_m" )
   return( pp )
 }
 
@@ -228,6 +268,16 @@ design <- function( x, ... ) {
 #' @rdname pumpresult
 #'
 #' @export
+#' 
+#' @examples
+#' J <- pump_sample(d_m = "d2.1_m2fc",
+#'   MTP = 'HO', power.definition = 'D1indiv',
+#'   typesample = 'J', target.power = 0.7,
+#'   nbar = 50, M = 3, MDES = 0.125,
+#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   
+#' search_path(J)   
 search_path <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) )
   rs <- attr( x, "tries" )
@@ -254,6 +304,16 @@ search_path <- function( x, ... ) {
 #' @importFrom rlang .data
 #'
 #' @export
+#' 
+#' @examples
+#' J <- pump_sample(d_m = "d2.1_m2fc",
+#'   MTP = 'HO', power.definition = 'D1indiv',
+#'   typesample = 'J', target.power = 0.7,
+#'   nbar = 50, M = 3, MDES = 0.125,
+#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   
+#' power_curve(J)   
 power_curve <- function( x, all = FALSE,
                          low = NULL, high = NULL, grid.size = 5, tnum = 2000 ) {
   stopifnot( is.pumpresult( x ) )
@@ -261,7 +321,7 @@ power_curve <- function( x, all = FALSE,
   if ( is.null( fin_pts ) ) {
     fin_pts <- estimate_power_curve( x, 
                                     low = low, high = high, 
-                                    grid.size=grid.size,
+                                    grid.size = grid.size,
                                     tnum = tnum )
   }
   srch <- search_path( x )
@@ -281,6 +341,17 @@ power_curve <- function( x, all = FALSE,
 #'
 #' @rdname pumpresult
 #' @export
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' pump_type(pp)
+#' 
 pump_type <- function( x ) {
   stopifnot( is.pumpresult(x) || is.pumpgridresult(x) )
   return( attr(x, "type" ) )
@@ -315,6 +386,16 @@ is_long_table <- function( power_table ) {
 #'   Usually ignore this.
 #'
 #' @export
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+#'   
+#' transpose_power_table(pp)
 transpose_power_table <- function( power_table, M = NULL ) {
   
   ptorig <- power_table
@@ -365,15 +446,20 @@ transpose_power_table <- function( power_table, M = NULL ) {
 }
 
 
-
-
-
-
 #' @return is.pumpresult: TRUE if object is a pumpresult object.
 #'
 #' @export
 #'
 #' @rdname pumpresult
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' is.pumpresult(pp)
 is.pumpresult <- function( x ) {
   inherits(x, "pumpresult")
 }
@@ -404,6 +490,16 @@ is.pumpresult <- function( x ) {
 #'
 #' @rdname pumpresult
 #' @export
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' dim(pp)
 dim.pumpresult <- function( x, ... ) {
   return( dim( as.data.frame(x) ) )
 }
@@ -415,8 +511,18 @@ dim.pumpresult <- function( x, ... ) {
 #' @param object Object to summarize.
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' summary(pp)
 summary.pumpresult <- function( object, ... ) {
-  print_design( object, insert_results = TRUE, insert_control = TRUE, ... )
+  print_d_m( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
@@ -436,6 +542,16 @@ calc_binomial_SE <- function( prop, tnum ) {
 #' @param search FALSE means don't print the search path for a result for
 #'   mdes or sample.
 #' @rdname pumpresult
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' print(pp)
 print.pumpresult <- function( x, n = 10,
                              header = TRUE,
                              search = FALSE,
@@ -443,8 +559,8 @@ print.pumpresult <- function( x, n = 10,
   result_type <- attr( x, "type" )
   
   if ( header ) {
-    scat( "%s result: %s design with %d outcomes\n",
-          result_type, design(x), params(x)$M )
+    scat( "%s result: %s d_m with %d outcomes\n",
+          result_type, d_m(x), params(x)$M )
     
     if ( result_type == "mdes" || result_type == "sample" ) {
       pow_params <- attr( x, "power.params.list" )
@@ -507,6 +623,15 @@ print.pumpresult <- function( x, n = 10,
 #' @inheritParams print.pumpresult
 #' @return Number of steps in search.
 #' @export
+#' @examples
+#' J <- pump_sample(d_m = "d2.1_m2fc",
+#'   MTP = 'HO', power.definition = 'D1indiv',
+#'   typesample = 'J', target.power = 0.7,
+#'   nbar = 50, M = 3, MDES = 0.125,
+#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   
+#' print_search(J)   
 print_search <- function( x, n = 10 ) {
   tr <- search_path( x )
   
@@ -530,7 +655,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' Print design of given pump result object
+#' Print d_m of given pump result object
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
@@ -538,10 +663,20 @@ print_search <- function( x, n = 10 ) {
 #' @param ... Extra arguments to pass to print.pumpresult.
 #'
 #' @export
-print_design <- function( 
-    x, insert_results = FALSE, insert_control = FALSE, ... 
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' print_d_m(pp)
+#' 
+print_d_m <- function( 
+    x, insert_results = FALSE, insert_control = FALSE, ...  
 ) {
-  
   is_grid <- is.pumpgridresult(x)
   
   reduce_vec <- function( vec ) {
@@ -566,8 +701,8 @@ print_design <- function(
   MDESv <- params$MDES
   params <- lapply( params, reduce_vec )
   
-  design <- design(x)
-  des <- parse_design(design)
+  d_m <- d_m(x)
+  des <- parse_d_m(d_m)
   if ( des$levels < 3 ) {
     params$K <- "none"
   }
@@ -599,8 +734,8 @@ print_design <- function(
     } 
   } else {
     
-    scat( "%s result: %s design with %s outcomes",
-          result_type, design(x), params$M )
+    scat( "%s result: %s d_m with %s outcomes",
+          result_type, d_m(x), params$M )
     if ( !is.null( params$numZero ) ) {
       scat( " (%s zeros)\n", params$numZero )
     } else {
@@ -694,6 +829,17 @@ print_design <- function(
 #' @rdname pumpresult
 #'
 #' @export
+#' 
+#' @examples 
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
+#'   
+#' as.data.frame(pp)
+#' 
 as.data.frame.pumpresult <- function( 
     x, row.names = NULL, optional = FALSE, ... 
 ) {

@@ -3,13 +3,15 @@
 #' @param args list of scenario arguments
 #' @param pum_function pump_mdes, pump_sample, pump_power
 #' @param verbose print out detailed diagnostics
-#' @param drop_unique_columns TODO
-#' @param use_furrr not currently in use, whether to parallelize
+#' @param drop.unique.columns logical; drop all parameter columns 
+#' that did not vary across the grid.
+#' @param use.furrr not currently implemented; whether to use furr package
+#' for parallelization
 #' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
 #'   or pump_mdes functions.
 run_grid <- function( args, pum_function, verbose = FALSE,
-                      drop_unique_columns, ...,
-                      use_furrr = FALSE ) {
+                      drop.unique.columns, ...,
+                      use.furrr = FALSE ) {
   
   # check for duplicate values
   lens <- purrr::map_dbl( args, length )
@@ -26,7 +28,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
     scat( "Processing %d calls\n", nrow(grid) )
   }
 
-  if ( use_furrr ) {
+  if ( use.furrr ) {
     # TODO: To be fixed later
     grid$res <- furrr::future_pmap( grid, pum_function, ...,
                                    .progress = verbose )
@@ -46,10 +48,10 @@ run_grid <- function( args, pum_function, verbose = FALSE,
                       paste0( var_names, collapse = ", " ) ) )
   }
   
-  if ( drop_unique_columns ) {
+  if ( drop.unique.columns ) {
     grid <- dplyr::select( grid,
       dplyr::any_of(
-        unique( c("design", "MDES", "numZero", var_names, "res" ) ) ) 
+        unique( c("d_m", "MDES", "numZero", var_names, "res" ) ) ) 
       )
   }
   
@@ -100,29 +102,30 @@ setup_default_parallel_plan <- function() {
 #' Each parameter in the parameter list can be a list, not scalar.  It will
 #' cross all combinations of the list.
 #'
-#' These calls can use furrr's future_pmap package to allow for parallel
-#' computation.  You can use the `setup_default_parallel_plan()` method or your
-#' own.  If you do nothing, it will default to single session.
-#'
 #' @inheritParams pump_power
 #'
-#' @param MDES This is *not* a list of MDES for each outcome, but rather a list
+#' @param MDES vector of numeric; This is *not* a list of MDES for 
+#'   each outcome, but rather a list
 #'   of MDES to explore. Each value will be assumed held constant across all M
 #'   outcomes.
-#' @param verbose TRUE means print out some text as calls processed.  FALSE do
-#'   not.
-#' @param drop_unique_columns Drop all parameter colunms that did not vary
-#'   across the grid.
-#' @param use_furrr Use parallel processing furrr package to fit grid.
+#' @param verbose logical; TRUE means print out some text 
+#' as calls processed.  FALSE do not.
+#' @param drop.unique.columns logical; drop all parameter columns 
+#' that did not vary across the grid.
 #' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
 #'   or pump_mdes functions.
 #'
 #' @importFrom magrittr %>%
-# @importFrom furrr future_pmap
-#' @importFrom tidyselect vars_select_helpers
 #' @family grid functions
 #' @export
-pump_power_grid <- function( design, MTP, MDES, M, nbar,
+#' 
+#' @examples
+#' g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
+#'  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
+#'  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, 
+#'  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
+#'  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
+pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
                              J = 1, K = 1, numZero = NULL,
                              Tbar, alpha = 0.05,
                              numCovar.1 = NULL,
@@ -134,8 +137,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
                              rho,
                              long.table = FALSE,
                              verbose = FALSE,
-                             use_furrr = FALSE,
-                             drop_unique_columns = TRUE,
+                             drop.unique.columns = TRUE,
                              ... ) {
 
   if ( sum( duplicated( MDES ) ) > 0 ) {
@@ -143,7 +145,7 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
          "Did you try to give a vector of varying MDES?" ))
   }
 
-  args <- list( design = design, M = M, MDES = MDES,
+  args <- list( d_m = d_m, M = M, MDES = MDES,
                 J = J, K = K,
                 nbar = nbar, numZero = numZero,
                 Tbar = Tbar, alpha = alpha,
@@ -160,15 +162,14 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
   grid <- run_grid( args, pum_function = pump_power,
                     long.table = long.table,
                     verbose = verbose,
-                    drop_unique_columns = drop_unique_columns,
-                    MTP = MTP, ..., use_furrr = use_furrr )
+                    drop.unique.columns = drop.unique.columns,
+                    MTP = MTP, ..., use.furrr = FALSE )
 
   args$MTP <- MTP
   args <- c( args, list(...) )
   grid <- make.pumpgridresult(
     grid, "power",
-    #params.list = args[names(args) != 'design'],
-    design = design,
+    d_m = d_m,
     long.table = long.table )
 
   return( grid )
@@ -184,7 +185,15 @@ pump_power_grid <- function( design, MTP, MDES, M, nbar,
 #' @family grid functions
 #'
 #' @export
-pump_mdes_grid <- function( design, MTP, M,
+#' 
+#' @examples
+#' g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",
+#'   target.power = c( 0.50, 0.80 ), power.definition = "D1indiv",
+#'   tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
+#'   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
+#'   rho = 0.4, tnum = 1000)
+pump_mdes_grid <- function( d_m, MTP, M,
                             target.power, power.definition, tol = 0.01,
                             nbar, J = 1, K = 1,
                             Tbar, alpha,
@@ -196,12 +205,11 @@ pump_mdes_grid <- function( design, MTP, M,
                             omega.2 = NULL, omega.3 = NULL,
                             rho,
                             verbose = FALSE,
-                            use_furrr = FALSE,
-                            drop_unique_columns = TRUE,
+                            drop.unique.columns = TRUE,
                             ... ) {
 
 
-  args <- list( design = design, M = M,
+  args <- list( d_m = d_m, M = M,
                 J = J, K = K, nbar = nbar,
                 target.power = target.power,
                 power.definition = power.definition,
@@ -219,16 +227,14 @@ pump_mdes_grid <- function( design, MTP, M,
 
   grid <- run_grid( args, pum_function = pump_mdes,
                     verbose = verbose,
-                    drop_unique_columns = drop_unique_columns,
-                    tol = tol, ..., use_furrr = use_furrr )
+                    drop.unique.columns = drop.unique.columns,
+                    tol = tol, ..., use.furrr = FALSE )
   
   args <- c( args, list(...) )
   
   grid <- make.pumpgridresult(
       grid, "mdes",
-      #params.list = args[names(args) != 'design'],
-      design = design )
-  
+      d_m = d_m )
 
   return( grid )
 }
@@ -242,7 +248,17 @@ pump_mdes_grid <- function( design, MTP, M,
 #' @family grid functions
 #'
 #' @export
-pump_sample_grid <- function( design, MTP, M,
+#'
+#' @examples
+#' g <- pump_sample_grid(d_m = "d3.2_m3ff2rc", typesample = "J",
+#'   MTP = "HO", MDES = 0.10, target.power = c( 0.50, 0.80 ),
+#'   power.definition = "min1", tol = 0.03,
+#'   M = 5, K = 7, nbar = 58, Tbar = 0.50,
+#'   alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.25, ICC.3 = 0.25,
+#'   rho = 0.4, tnum = 400)
+#'  
+pump_sample_grid <- function( d_m, MTP, M,
                               target.power, power.definition, tol = 0.01,
                               MDES = NULL,
                               typesample,
@@ -256,12 +272,10 @@ pump_sample_grid <- function( design, MTP, M,
                               omega.2 = NULL, omega.3 = NULL,
                               rho,
                               verbose = FALSE,
-                              use_furrr = FALSE,
-                              drop_unique_columns = TRUE,
-                              ... ) {
-
-
-  args <- list( design = design, M = M, J = J, K = K,
+                              drop.unique.columns = TRUE,
+                              ... ) 
+{
+  args <- list( d_m = d_m, M = M, J = J, K = K,
                 power.definition = power.definition,
                 MTP = MTP,
                 MDES = MDES, nbar = nbar,
@@ -280,15 +294,14 @@ pump_sample_grid <- function( design, MTP, M,
   grid <- run_grid( args, pum_function = pump_sample,
                    typesample = typesample,
                    verbose = verbose,
-                   drop_unique_columns = drop_unique_columns,
-                   tol = tol, ..., use_furrr = use_furrr )
+                   drop.unique.columns = drop.unique.columns,
+                   tol = tol, ..., use.furrr = FALSE )
 
   args <- c( args, list(...) )
   
   grid <- make.pumpgridresult(
       grid, "sample",
-     # params.list = args[names(args) != 'design'],
-      design = design,
+      d_m = d_m,
       sample.level = typesample )
   
   return( grid )
