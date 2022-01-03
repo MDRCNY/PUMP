@@ -19,6 +19,7 @@ vignettes/pump_demo_cache/*
 vignettes/pump_demo_files/*
 vignettes/pump_sample_demo_cache/*
 vignettes/pump_sample_demo_files/*
+vignettes/*.html
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
@@ -30,6 +31,5 @@ vignettes/pump_sample_demo_files/*
 *.knit.md
 .Rproj.user
 .DS_Store
-inst/doc
 luke_scratch/
 tests/testthat/Rplots.pdf

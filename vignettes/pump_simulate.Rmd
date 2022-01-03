@@ -1,8 +1,8 @@
 ---
-title: "Demo simulating data"
+title: "Demo of simulating multi-level data"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulations}
+  %\VignetteIndexEntry{Demo of simulating multi-level data}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

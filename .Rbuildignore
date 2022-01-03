@@ -2,3 +2,7 @@
 ^\.Rproj\.user$
 luke_scratch
 ^CITATION\.cff$
+.*\.DS_Store$
+.*\.Rproj.user$
+^.git$
+^,gitignore$
