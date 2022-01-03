@@ -131,7 +131,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 is.pumpresult(pp)
 pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -139,7 +139,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 dim(pp)
 pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -147,7 +147,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 summary(pp)
 pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -155,7 +155,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 print(pp)
 pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -163,7 +163,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 as.data.frame(pp)
 
