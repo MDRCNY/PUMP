@@ -10,7 +10,7 @@ default.tol <- 0.01
 
 test_that("testing of d2.1_m2fc", {
 
-  sink("/dev/null")
+  sink("sink.txt")
 
   powerup.power <- PowerUpR::power.bira2c1(
     es = 0.125,
@@ -478,6 +478,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
   expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = 0.5)
 
   sink()
+  file.remove("sink.txt")
 
 })
 

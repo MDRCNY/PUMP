@@ -33,5 +33,6 @@ vignettes/*.html
 .DS_Store
 luke_scratch/
 tests/testthat/Rplots.pdf
+test/testthat/sink.txt
 /doc/
 /Meta/

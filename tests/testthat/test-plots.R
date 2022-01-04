@@ -235,6 +235,16 @@ test_that( "search functions work with non-convergence", {
     expect_true(!is.null(expect_warning(p <- plot_power_search(nbar3))))
     expect_true(!is.null(p <- power_curve(nbar3)))  
     expect_true(!is.null(p <- plot_power_curve(nbar3)))  
+    
+    mdes <- expect_warning(pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
+                      power.definition = 'D1indiv', 
+                      target.power = 0.4,
+                      J = 5, nbar = 20, M = 3, 
+                      Tbar = 0.5, alpha = 0.05,
+                      numCovar.1 = 1, R2.1 = 0.1, 
+                      ICC.2 = 0.05, rho = 0.2,
+                      max.steps = 3))
+    plot_power_curve(mdes)
 })
 
 

@@ -172,6 +172,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   while( !done && step < max.steps )
   {
     step <- step + 1
+
     current.tnum <- pmin(tnum, round(current.tnum * 1.1))
 
     # what is smallest tested point?
@@ -369,13 +370,26 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   }
   if(length(high) == 0 || is.na(high))
   {
-    if(!is.na(p$`Sample.size`))
+    if(pump_type(p) == 'mdes')
     {
-        high <- p$`Sample.size` 
-    } else
+        if(!is.na(p$Adjusted.MDES))
+        {
+            high <- p$Adjusted.MDES
+        } else
+        {
+            high <- 2
+        }
+    } else if(pump_type(p) == 'sample')
     {
-        high <- high.max
+        if(!is.na(p$Sample.size))
+        {
+            high <- p$Sample.size
+        } else
+        {
+            high <- high.max
+        }
     }
+
   }
 
   search_type <- ifelse( pump_type(p) == "mdes",

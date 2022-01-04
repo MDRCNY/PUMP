@@ -416,7 +416,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
   warning_pattern(vals)
 
   expect_equal(60, vals$J, tol = 0.1)
-  expect_equal(50, vals$nbar, tol = 0.1)
+  expect_equal(50, vals$nbar, tol = 0.2)
   expect_equal( warning_pattern(vals), c(FALSE, FALSE) )
 
   mdes1 <-  pump_mdes(
