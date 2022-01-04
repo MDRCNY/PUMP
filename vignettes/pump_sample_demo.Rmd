@@ -13,7 +13,6 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  cache = TRUE,
   warning = FALSE,
   message = FALSE
 )

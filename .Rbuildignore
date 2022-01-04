@@ -6,3 +6,5 @@ luke_scratch
 .*\.Rproj.user$
 ^.git$
 ^,gitignore$
+^doc$
+^Meta$
