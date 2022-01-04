@@ -338,7 +338,7 @@ print( p_d )
 Notice how the individual powers are heavily impacted.
 The $d$-minimal powers naturally take the varying outcomes into account as we are calculating a joint distribution of test statistics that will have the correct marginal distributions based on these different design parameter values.
 
-After several `update()`s, we may lose track of where we are; to find out, we can always check details with `print_design()` or `summary()`:
+After several `update()`s, we may lose track of where we are; to find out, we can always check details with `print_context()` or `summary()`:
 
 ```{r}
 summary( p_d )

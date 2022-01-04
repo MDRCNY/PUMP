@@ -470,7 +470,7 @@ dim.pumpresult <- function( x, ... ) {
 #' @rdname pumpresult
 #' 
 summary.pumpresult <- function( object, ... ) {
-  print_d_m( object, insert_results = TRUE, insert_control = TRUE, ... )
+  print_context( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
