@@ -65,7 +65,8 @@ test_that("testing of d2.1_m2fc", {
   expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
 
   sink()
-
+  file.remove("sink.txt")
+  
 })
 
 
@@ -75,7 +76,7 @@ test_that("testing of d2.1_m2fc", {
 
 test_that("testing of d2.1_m2fr one-tailed", {
 
-  sink("/dev/null")
+  sink("sink.txt")
 
   powerup.power <- expect_warning(PowerUpR::power.bira2r1(
     es = 0.125,
@@ -170,13 +171,14 @@ test_that("testing of d2.1_m2fr one-tailed", {
   expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
 
   sink()
+  file.remove("sink.txt")
 
 })
 
 
 test_that("testing of d2.1_m2fr two-tailed", {
 
-  sink("/dev/null")
+  sink("sink.txt")
 
   powerup.power <- expect_warning(PowerUpR::power.bira2r1(
     es = 0.125,
@@ -271,6 +273,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
   expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
 
   sink()
+  file.remove("sink.txt")
 
 })
 
@@ -281,7 +284,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
 
 test_that("testing of d3.2_m3ff2rc one-tailed", {
 
-  sink("/dev/null")
+  sink("sink.txt")
 
   powerup.power <- PowerUpR::power.bcra3f2(
     es = 0.125,
@@ -377,12 +380,13 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
   expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = default.tol)
 
   sink()
+  file.remove("sink.txt")
 
 })
 
 test_that("testing of d3.2_m3ff2rc two-tailed", {
 
-  sink("/dev/null")
+  sink("sink.txt")
 
   powerup.power <- PowerUpR::power.bcra3f2(
     es = 0.125,
