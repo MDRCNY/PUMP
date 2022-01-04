@@ -100,15 +100,17 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
   
+print(pp)
 params(pp)
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
-  
+print_context(pp)
 d_m(pp)
+pump_type(pp)
+is.pumpresult(pp)
+as.data.frame(pp)
+dim(pp)
+summary(pp)
+transpose_power_table(pp)
+
 J <- pump_sample(d_m = "d2.1_m2fc",
   MTP = 'HO', power.definition = 'D1indiv',
   typesample = 'J', target.power = 0.7,
@@ -116,57 +118,9 @@ J <- pump_sample(d_m = "d2.1_m2fc",
   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
   
-search_path(J)   
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-pump_type(pp)
-
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-is.pumpresult(pp)
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-dim(pp)
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-summary(pp)
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-print(pp)
-pp <- pump_power(d_m = "d3.2_m3ff2rc",
-  MTP = 'HO', nbar = 50, J = 30, K = 10,
-  M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, numCovar.2 = 1,
-  R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-  
-as.data.frame(pp)
-
+print_search(J)   
+search_path(J)
+power_curve(J)   
 }
 \seealso{
 update

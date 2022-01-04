@@ -19,3 +19,4 @@ gen_RE_cov_matrix(Sigma.w, Sigma.z, Sigma.wz)
 \description{
 generate a parameterized covariance matrix from the provided 3 blocks
 }
+\keyword{internal}

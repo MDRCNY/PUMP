@@ -30,13 +30,3 @@ power_curve(
 This is used to see rate of power change as a function of sample size or
 MDES.
 }
-\examples{
-J <- pump_sample(d_m = "d2.1_m2fc",
-  MTP = 'HO', power.definition = 'D1indiv',
-  typesample = 'J', target.power = 0.7,
-  nbar = 50, M = 3, MDES = 0.125,
-  Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-  
-power_curve(J)   
-}

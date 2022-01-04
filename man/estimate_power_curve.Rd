@@ -33,3 +33,4 @@ List of powers for grid of points.
 For a grid of points based on a passed sample or mdes pumpresult, estimate
 power.
 }
+\keyword{internal}

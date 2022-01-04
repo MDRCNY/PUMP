@@ -9,3 +9,4 @@ setup_default_parallel_plan()
 \description{
 Set up furrr to use all but one core
 }
+\keyword{internal}

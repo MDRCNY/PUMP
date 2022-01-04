@@ -66,3 +66,4 @@ or NA if not possible given design
 \description{
 This function calculates needed nbar to achieve a given power
 }
+\keyword{internal}

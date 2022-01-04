@@ -18,13 +18,3 @@ Number of steps in search.
 \description{
 For pump_mdes and pump_sample, print the search history.
 }
-\examples{
-J <- pump_sample(d_m = "d2.1_m2fc",
-  MTP = 'HO', power.definition = 'D1indiv',
-  typesample = 'J', target.power = 0.7,
-  nbar = 50, M = 3, MDES = 0.125,
-  Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-  
-print_search(J)   
-}

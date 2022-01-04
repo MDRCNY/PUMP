@@ -24,3 +24,4 @@ Curve is of form f(y) = pmin + (pmax-pmin) * logistic( beta0 + beta1*x )
 \details{
 (logistic as defined by plogis)
 }
+\keyword{internal}

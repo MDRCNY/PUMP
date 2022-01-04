@@ -36,3 +36,4 @@ params.list
 This functions takes in a list of user inputs. Depending on the inputs,
 it produces errors or warnings, and at times modifies inputs if necessary.
 }
+\keyword{internal}

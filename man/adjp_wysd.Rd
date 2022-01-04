@@ -43,3 +43,4 @@ function to compare each row of the matrix sample p-values under
 alternative hypothesis to all the rows in the matrix of the p-values
 under the complete null.
 }
+\keyword{internal}

@@ -57,3 +57,4 @@ Q_m, the standard error of the effect size estimate
 Function to calculate the theoretical true (unadjusted) standard error of the
 ATE estimate for a given d_m and model, in effect size units.
 }
+\keyword{internal}

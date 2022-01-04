@@ -61,3 +61,4 @@ K, the number of districts
 \description{
 Calculates K, the number of districts
 }
+\keyword{internal}

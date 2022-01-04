@@ -21,3 +21,4 @@ Sigma matrix of covariance
 \description{
 generate covariance matrix between two variables
 }
+\keyword{internal}

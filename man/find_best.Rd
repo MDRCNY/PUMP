@@ -23,3 +23,4 @@ List of estimate of when curve reaches target.power, derivative of
 \description{
 Extract roots from power curve fit to given evaluated points
 }
+\keyword{internal}

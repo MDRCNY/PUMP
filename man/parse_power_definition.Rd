@@ -17,3 +17,4 @@ information about power type
 \description{
 Parse the power definition
 }
+\keyword{internal}

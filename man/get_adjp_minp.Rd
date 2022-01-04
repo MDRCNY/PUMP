@@ -20,3 +20,4 @@ returns adjusted p-value matrix
 \description{
 enforces monotonicity in p-values.
 }
+\keyword{internal}

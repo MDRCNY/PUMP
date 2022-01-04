@@ -19,3 +19,4 @@ returns a vector of 1s and 0s with lengths of M outcomes
 \description{
 Helper function for Westfall Young Step Down
 }
+\keyword{internal}

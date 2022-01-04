@@ -66,3 +66,4 @@ J, the number of schools needed
 \description{
 This function calculates needed J to achieve a given power
 }
+\keyword{internal}

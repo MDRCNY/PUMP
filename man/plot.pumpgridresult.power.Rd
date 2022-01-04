@@ -22,3 +22,4 @@ a ggplot object
 \description{
 Plot a grid pump power object
 }
+\keyword{internal}

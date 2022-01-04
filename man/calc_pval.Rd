@@ -19,3 +19,4 @@ power results for individual, minimum, complete power
 \description{
 Calculates p-values from t-values
 }
+\keyword{internal}

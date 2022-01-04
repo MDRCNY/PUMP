@@ -114,3 +114,4 @@ It is possible that the returned sample size will be the minimum sample size
 required to have at least 1 degree of freedom (even if this provides higher
 than target level power).
 }
+\keyword{internal}
