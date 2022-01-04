@@ -41,6 +41,7 @@ calc_MT <- function( df, alpha, two.tailed, target.power ) {
 #'   achieve target power for sample size.
 #'
 #' @return Requisit sample size (as integer) and associated degreess of freedom.
+#' @keywords internal
 pump_sample_raw <- function(
   d_m, MTP, typesample,
   MDES,

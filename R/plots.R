@@ -293,6 +293,7 @@ plot.pumpresult <- function( x, ... )
 #' @return a ggplot object
 #' 
 #' @importFrom stringr str_detect
+#' @keywords internal
 plot.pumpgridresult.power <- function(
     x, power.definition = NULL, var.vary, ... 
 ) {
@@ -400,6 +401,7 @@ plot.pumpgridresult.power <- function(
 #' Plot a grid pump mdes object
 #'
 #' @inheritParams plot.pumpgridresult
+#' @keywords internal
 plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
 {
   M <- params(x)$M
@@ -460,6 +462,7 @@ plot.pumpgridresult.mdes <- function( x, power.definition, var.vary, ...  )
 #' Plot a grid pump sample object
 #'
 #' @inheritParams plot.pumpgridresult
+#' @keywords internal
 plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
   
   M <- params(x)$M

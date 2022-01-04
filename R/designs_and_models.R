@@ -218,6 +218,7 @@ parse_d_m <- function( d_m ) {
 #'   variability to random effects variability
 #'
 #' @return Q_m, the standard error of the effect size estimate
+#' @keywords internal
 calc_SE <- function(d_m, J, K, nbar, Tbar, 
                     R2.1, R2.2, R2.3, ICC.2, ICC.3, 
                     omega.2, omega.3) {
@@ -345,6 +346,7 @@ calc_df <- function(d_m, J, K, nbar,
 #'
 #' @return nbar, the number of individuals needed, 
 #' or NA if not possible given design
+#' @keywords internal
 calc_nbar <- function(d_m, MT = 2.8, MDES, 
                       J = NULL, K = NULL, Tbar, R2.1,
                       R2.2 = NULL, ICC.2 = NULL, omega.2 = NULL,
@@ -414,6 +416,7 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
 #' @param MDES scalar; the MDES values for each outcome
 #'
 #' @return J, the number of schools needed
+#' @keywords internal
 calc_J <- function(
     d_m, MT = 2.8, MDES, K = NULL, nbar, Tbar,
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
@@ -499,6 +502,7 @@ calc_J <- function(
 #'   variability
 #'
 #' @return K, the number of districts
+#' @keywords internal
 calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
@@ -642,7 +646,7 @@ validate_MTP <- function(
 #' @param multi.MTP.ok whether validation allows for multiple MTPs
 #'
 #' @return params.list
-#'
+#' @keywords internal
 validate_inputs <- function( d_m, params.list,
                              power.call = FALSE,
                              mdes.call = FALSE,

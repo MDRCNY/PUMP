@@ -203,6 +203,35 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #' @param x a pumpresult object (except for is.pumpresult, where it is a generic
 #'   object to check).
 #' @rdname pumpresult
+#' @examples
+#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
+#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
+#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
+#'   numCovar.1 = 1, numCovar.2 = 1,
+#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+#'   
+#' print(pp)
+#' params(pp)
+#' print_context(pp)
+#' d_m(pp)
+#' pump_type(pp)
+#' is.pumpresult(pp)
+#' as.data.frame(pp)
+#' dim(pp)
+#' summary(pp)
+#' transpose_power_table(pp)
+#' 
+#' J <- pump_sample(d_m = "d2.1_m2fc",
+#'   MTP = 'HO', power.definition = 'D1indiv',
+#'   typesample = 'J', target.power = 0.7,
+#'   nbar = 50, M = 3, MDES = 0.125,
+#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   
+#' print_search(J)   
+#' search_path(J)
+#' power_curve(J)   
 NULL
 
 
@@ -214,16 +243,6 @@ NULL
 #'
 #' @rdname pumpresult
 #' @export
-#' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
-#'   
-#' params(pp)
 params <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
   
@@ -244,15 +263,7 @@ params <- function( x, ... ) {
 #'
 #' @rdname pumpresult
 #' @export
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
-#'   
-#' d_m(pp)
+#' 
 d_m <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
   
@@ -269,15 +280,6 @@ d_m <- function( x, ... ) {
 #'
 #' @export
 #' 
-#' @examples
-#' J <- pump_sample(d_m = "d2.1_m2fc",
-#'   MTP = 'HO', power.definition = 'D1indiv',
-#'   typesample = 'J', target.power = 0.7,
-#'   nbar = 50, M = 3, MDES = 0.125,
-#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-#'   
-#' search_path(J)   
 search_path <- function( x, ... ) {
   stopifnot( is.pumpresult( x ) )
   rs <- attr( x, "tries" )
@@ -305,15 +307,6 @@ search_path <- function( x, ... ) {
 #'
 #' @export
 #' 
-#' @examples
-#' J <- pump_sample(d_m = "d2.1_m2fc",
-#'   MTP = 'HO', power.definition = 'D1indiv',
-#'   typesample = 'J', target.power = 0.7,
-#'   nbar = 50, M = 3, MDES = 0.125,
-#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-#'   
-#' power_curve(J)   
 power_curve <- function( x, all = FALSE,
                          low = NULL, high = NULL, grid.size = 5, tnum = 2000 ) {
   stopifnot( is.pumpresult( x ) )
@@ -341,16 +334,6 @@ power_curve <- function( x, all = FALSE,
 #'
 #' @rdname pumpresult
 #' @export
-#' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' pump_type(pp)
 #' 
 pump_type <- function( x ) {
   stopifnot( is.pumpresult(x) || is.pumpgridresult(x) )
@@ -387,15 +370,6 @@ is_long_table <- function( power_table ) {
 #'
 #' @export
 #' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
-#'   
-#' transpose_power_table(pp)
 transpose_power_table <- function( power_table, M = NULL ) {
   
   ptorig <- power_table
@@ -451,15 +425,7 @@ transpose_power_table <- function( power_table, M = NULL ) {
 #' @export
 #'
 #' @rdname pumpresult
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' is.pumpresult(pp)
+#' 
 is.pumpresult <- function( x ) {
   inherits(x, "pumpresult")
 }
@@ -491,15 +457,6 @@ is.pumpresult <- function( x ) {
 #' @rdname pumpresult
 #' @export
 #' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' dim(pp)
 dim.pumpresult <- function( x, ... ) {
   return( dim( as.data.frame(x) ) )
 }
@@ -512,15 +469,6 @@ dim.pumpresult <- function( x, ... ) {
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
 #' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' summary(pp)
 summary.pumpresult <- function( object, ... ) {
   print_d_m( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
@@ -543,15 +491,6 @@ calc_binomial_SE <- function( prop, tnum ) {
 #'   mdes or sample.
 #' @rdname pumpresult
 #' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' print(pp)
 print.pumpresult <- function( x, n = 10,
                              header = TRUE,
                              search = FALSE,
@@ -623,15 +562,7 @@ print.pumpresult <- function( x, n = 10,
 #' @inheritParams print.pumpresult
 #' @return Number of steps in search.
 #' @export
-#' @examples
-#' J <- pump_sample(d_m = "d2.1_m2fc",
-#'   MTP = 'HO', power.definition = 'D1indiv',
-#'   typesample = 'J', target.power = 0.7,
-#'   nbar = 50, M = 3, MDES = 0.125,
-#'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-#'   
-#' print_search(J)   
+#' 
 print_search <- function( x, n = 10 ) {
   tr <- search_path( x )
   
@@ -655,7 +586,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' Print d_m of given pump result object
+#' Print context of given pump result object
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
@@ -664,17 +595,7 @@ print_search <- function( x, n = 10 ) {
 #'
 #' @export
 #' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' print_d_m(pp)
-#' 
-print_d_m <- function( 
+print_context <- function( 
     x, insert_results = FALSE, insert_control = FALSE, ...  
 ) {
   is_grid <- is.pumpgridresult(x)
@@ -829,16 +750,6 @@ print_d_m <- function(
 #' @rdname pumpresult
 #'
 #' @export
-#' 
-#' @examples 
-#' pp <- pump_power(d_m = "d3.2_m3ff2rc",
-#'   MTP = 'HO', nbar = 50, J = 30, K = 10,
-#'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, numCovar.2 = 1,
-#'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
-#'   
-#' as.data.frame(pp)
 #' 
 as.data.frame.pumpresult <- function( 
     x, row.names = NULL, optional = FALSE, ... 

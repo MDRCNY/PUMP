@@ -6,6 +6,7 @@
 #' @param two.tailed whether to calculate 1 or 2-tailed p-values
 #'
 #' @return power results for individual, minimum, complete power
+#' @keywords internal
 calc_pval <- function(rawt, t.df, two.tailed)
 {
   if(two.tailed)

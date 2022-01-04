@@ -14,6 +14,7 @@
 #'   be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).
 #'
 #' @return power
+#' @keywords internal
 optimize_power <- function(d_m, search.type, MTP, target.power, 
                            power.definition, tol,
                            start.low, start.high,
@@ -340,6 +341,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
 #' @param tnum the number of test statistics (samples)
 #'
 #' @return List of powers for grid of points.
+#' @keywords internal
 estimate_power_curve <- function( p, low = NULL, high = NULL,
                                   high.max = 1000,
                                   grid.size = 5, tnum = 2000 ) {
@@ -477,6 +479,7 @@ find_crossover <- function( target_power, params ) {
 #'
 #' @return Vector of four estimated parameters for the logistic curve: beta0,
 #'   beta1, pmin, pmax
+#' @keywords internal
 fit_bounded_logistic <- function( x, y, wt ) {
   
   stopifnot( length(x) == length(y) )
@@ -527,7 +530,7 @@ fit_bounded_logistic <- function( x, y, wt ) {
 #'
 #' @return List of estimate of when curve reaches target.power, derivative of
 #'   curve at that point, and parameters of the fit curve.
-
+#' @keywords internal
 find_best <- function(test.pts, target.power, gamma = 1.5)
 {
   stopifnot( gamma >= 1 )

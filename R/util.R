@@ -3,6 +3,7 @@
 #' @param power.definition i.e. D1indiv, min1, complete
 #' @param M number of outcomes
 #' @return information about power type
+#' @keywords internal
 parse_power_definition <- function( power.definition, M ) {
     powertype <- list( min = FALSE,
                        complete = FALSE,

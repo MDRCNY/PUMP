@@ -25,6 +25,7 @@ gen_corr_matrix <- function(M, rho.scalar)
 #' @param rho.matrix matrix of correlations
 #'
 #' @return Sigma matrix of covariance
+#' @keywords internal
 gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
     Sigma <- matrix(NA, D, D)
     for(k in 1:D) {
@@ -43,6 +44,7 @@ gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
 #' @param Sigma.wz covariance between level 2 and level 3
 #' 
 #' @return 2M x 2M matrix for generating correlated pairs of random effects
+#' @keywords internal
 gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
     stopifnot( nrow(Sigma.w) == ncol(Sigma.w) )
     stopifnot( all( dim(Sigma.z) == dim( Sigma.wz ) ) )

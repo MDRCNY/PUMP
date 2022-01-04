@@ -9,6 +9,8 @@
 #' for parallelization
 #' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
 #'   or pump_mdes functions.
+#'   
+#' @keywords internal
 run_grid <- function( args, pum_function, verbose = FALSE,
                       drop.unique.columns, ...,
                       use.furrr = FALSE ) {
@@ -84,7 +86,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
 #'
 #' @importFrom future plan multisession
 #' @importFrom parallel detectCores
-#'
+#' @keywords internal
 setup_default_parallel_plan <- function() {
   future::plan(future::multisession, workers = parallel::detectCores() - 1 )
 }
