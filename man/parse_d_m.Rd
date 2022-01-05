@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{parse_d_m}
 \alias{parse_d_m}
-\title{Return characteristics of a given d_m code}
+\title{Return characteristics of a given context (d_m code)}
 \usage{
 parse_d_m(d_m)
 }
@@ -14,7 +14,8 @@ List of features including number of levels, level of randomization,
   etc.
 }
 \description{
-See the pump_info() method to get a list of supported d_ms.
+Returns number of levels and model at each level.
+See pump_info()$Context to get a list of supported d_ms.
 }
 \examples{
 supported <- pump_info(comment = FALSE)$Context

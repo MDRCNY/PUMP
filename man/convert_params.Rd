@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{convert_params}
 \alias{convert_params}
-\title{Converts user-inputted parameters into relevant DGP parameters.}
+\title{Converts model-based parameters into DGP parameters (simulations)}
 \usage{
 convert_params(model.params.list)
 }
@@ -13,5 +13,8 @@ convert_params(model.params.list)
 dgp.params.list
 }
 \description{
-Converts user-inputted parameters into relevant DGP parameters.
+Converts user-provided parameters such as ICC
+and omega into data-generating parameters that can 
+produce simulated data,
+such as variance values and covariate coefficients.
 }

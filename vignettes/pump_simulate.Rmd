@@ -20,10 +20,18 @@ library( PUMP )
 set.seed( 524235326 )
 ```
 
+# Purpose of this vignette
+
+The main purpose of PUMP is to estimate power, MDES, and sample size requirements.
+As a separate task, PUMP provides extra functions that allow a user to generate data that simulates multi-level RCTs.
+These functions may not be relevant for most users, but we provide them for
+users who may find it useful.
+This vignette documents how to use the simulation functions.
+
 # Choosing parameter values
 
 The user first sets parameter values that will inform the data generating process.
-For full explanations of parameters, see the documentation TODO.
+For full explanations of parameters, see the Technical Appendix.
 
 Note that some of these parameters directly influence things like power calculations, while others are "nuisance" parameters that are nevertheless needed to generate a full dataset.
 

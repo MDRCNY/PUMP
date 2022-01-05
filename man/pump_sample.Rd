@@ -2,8 +2,7 @@
 % Please edit documentation in R/pump_sample.R
 \name{pump_sample}
 \alias{pump_sample}
-\title{Calculate the sample size
-using PUMP method.}
+\title{Estimate the required sample size using PUMP method.}
 \usage{
 pump_sample(
   d_m,
@@ -67,10 +66,17 @@ including zero outcomes.}
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district).}
+units per level 3 unit (schools per district). Note that
+this is not the total number of level 2 units, but instead
+the number of level 2 units nested within each level 3 
+unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
@@ -167,8 +173,7 @@ The user chooses the context (d_m), MTP,
 type of sample size, 
 MDES,
 power definition, and choices of all relevant design parameters.
-}
-\details{
+
 The functions performs a search algorithm,
 and returns the sample size value within the specified tolerance.
 }

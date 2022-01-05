@@ -2,8 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_simple_assignments}
 \alias{gen_simple_assignments}
-\title{generate simple default schools and districts IDs for individual students for
-simulations. This assumes equal sized schools in equal sized districts}
+\title{Generates school and district ID assignments (simulations)}
 \usage{
 gen_simple_assignments(J, K, nbar)
 }
@@ -19,6 +18,8 @@ list(S.id, D.id) of school and district
 assignments for each individual
 }
 \description{
-generate simple default schools and districts IDs for individual students for
-simulations. This assumes equal sized schools in equal sized districts
+Generates simple default schools and 
+districts IDs for individual students for the purpose of
+simulations. This assumes equal sized schools in 
+equal sized districts.
 }

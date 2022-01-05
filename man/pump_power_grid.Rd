@@ -2,7 +2,7 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_power_grid}
 \alias{pump_power_grid}
-\title{Run pump_power on combination of factors}
+\title{Run pump_power on varying values of parameter(s)}
 \usage{
 pump_power_grid(
   d_m,
@@ -48,10 +48,17 @@ outcomes.}
 including zero outcomes.}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district).}
+units per level 3 unit (schools per district). Note that
+this is not the total number of level 2 units, but instead
+the number of level 2 units nested within each level 3 
+unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
@@ -108,10 +115,10 @@ that did not vary across the grid.}
 or pump_mdes functions.}
 }
 \description{
-This extenstion of `pump_power()` will take lists of parameter values and run
+This extension of `pump_power()` will 
+take lists of parameter values and run
 `pump_power()` on all combinations of these values.
-}
-\details{
+
 It can only assume the same MDES value for all outcomes due to this.  (I.e.,
 a vector of MDES values will be interpreted as a sequence of calls to
 pump_power, one for each MDES value given).

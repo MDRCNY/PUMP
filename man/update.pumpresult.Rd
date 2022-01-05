@@ -9,8 +9,8 @@
 \arguments{
 \item{object}{Pump result object.}
 
-\item{type}{Can be "power", "mdes" or "sample", sets the type of the updated
-call (can be different from original).}
+\item{type}{Can be "power", "mdes" or "sample", sets the 
+type of the updated call (can be different from original).}
 
 \item{...}{Parameters as specified in `pump_power`, `pump_mdes`, and
 `pump_sample` that should be overwritten.}
@@ -20,9 +20,14 @@ Results of a new call using parameters of old object with newly
   specified parameters replaced.
 }
 \description{
-One of the optional parameters can be a `type = something` argument, where
-the "something" is either "power", "sample", or "mdes", if the call should be
-shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
+Works on objects returned by
+pump_power(), pump_mdes(), or pump_sample().
+One of the optional parameters can 
+be a `type = something` argument, where
+the "something" is either "power", "sample", or "mdes", 
+if the call should be
+shifted to a different pump call 
+(pump_power, pump_sample, or pump_mdes,
 respectively).
 }
 \examples{

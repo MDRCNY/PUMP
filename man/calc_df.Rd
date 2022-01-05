@@ -11,12 +11,19 @@ calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE)
 See pump_info()$Context for list of choices.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district).}
+units per level 3 unit (schools per district). Note that
+this is not the total number of level 2 units, but instead
+the number of level 2 units nested within each level 3 
+unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
 
@@ -31,5 +38,5 @@ Degree of freedom for the d_m.
 }
 \description{
 Given sample sizes, return the used degrees of freedom 
-(frequently conservative) for the design.
+(frequently conservative) for the design and model.
 }

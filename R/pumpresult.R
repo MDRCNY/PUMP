@@ -27,10 +27,12 @@ make.pumpresult <- function( x,
 
 
 
-#' Update a single pump call to a grid call
+#' @title Update a single pump call to a grid call
 #'
-#' Given a few lists of parameters, take a pumpresult and call a grid to explore
-#' various versions of the initial scenario.
+#' @description Take a pumpresult and provide lists 
+#' of parameters to explore various versions 
+#' of the initial scenario.
+#' 
 #'
 #' @param x Pump result object.
 #' @param ... List of parameters to expand into a grid.
@@ -39,14 +41,12 @@ make.pumpresult <- function( x,
 #' @export
 #' 
 #' @examples
-#' m <- pump_mdes(d_m = "d2.1_m2fc", MTP = "HO",
-#'   nbar = 200, J = 20, power.definition = "complete",
-#'   M = 3, target.power = 0.5, tol = 0.02,
+#' pp <- pump_power(d_m = "d2.1_m2fc", MTP = "HO",
+#'   nbar = 200, J = 20, MDES = 0.2, M = 3,
 #'   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0,
-#'   final.tnum = 1000 )
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0)
 #'
-#' gd <- update_grid( m, J = c( 10, 20, 30 ) )
+#' gd <- update_grid( pp, J = c( 10, 20, 30 ) )
 #'
 update_grid <- function( x, ... ) {
   params <- attr(x,"param")
@@ -84,18 +84,23 @@ update_grid <- function( x, ... ) {
 
 
 
-#' Update a pump call, tweaking some parameters
+#' @title Update a pump call, tweaking some parameters
 #'
-#' One of the optional parameters can be a `type = something` argument, where
-#' the "something" is either "power", "sample", or "mdes", if the call should be
-#' shifted to a different pump call (pump_power, pump_sample, or pump_mdes,
+#' @description Works on objects returned by
+#' pump_power(), pump_mdes(), or pump_sample().
+#' One of the optional parameters can 
+#' be a `type = something` argument, where
+#' the "something" is either "power", "sample", or "mdes", 
+#' if the call should be
+#' shifted to a different pump call 
+#' (pump_power, pump_sample, or pump_mdes,
 #' respectively).
 #'
 #' @param object Pump result object.
 #' @param ... Parameters as specified in `pump_power`, `pump_mdes`, and
 #'   `pump_sample` that should be overwritten.
-#' @param type Can be "power", "mdes" or "sample", sets the type of the updated
-#'   call (can be different from original).
+#' @param type Can be "power", "mdes" or "sample", sets the 
+#' type of the updated call (can be different from original).
 #'
 #' @return Results of a new call using parameters of old object with newly
 #'   specified parameters replaced.
@@ -237,7 +242,7 @@ NULL
 
 
 
-#' Get parameters for pump result
+#' @title Get design and model parameters from pumpresult object
 #'
 #' @return params: List of design parameters used.
 #'
@@ -257,7 +262,7 @@ params <- function( x, ... ) {
 
 
 
-#' Get design for pump result
+#' @title Get context (design and model) from pumpresult object
 #'
 #' @return d_m: d_m used (as string)
 #'
@@ -272,10 +277,10 @@ d_m <- function( x, ... ) {
 }
 
 
-#' Obtain search path of pump_mdes or pump_sample call
+#' @title Obtain full search path of pump_mdes or pump_sample call
 #'
-#' @return search_path: Dataframe describing search path, if it was saved in the
-#'   pumpresult object.
+#' @return search_path: Dataframe describing search path, 
+#' if it was saved in the pumpresult object.
 #' @rdname pumpresult
 #'
 #' @export
@@ -290,10 +295,10 @@ search_path <- function( x, ... ) {
 }
 
 
-#' Obtain power curve over a range of parameters
+#' @title Obtain power curve over a range of parameters
 #'
-#' This is used to see rate of power change as a function of sample size or
-#' MDES.
+#' @description This is used to see rate of 
+#' power change as a function of sample size or MDES.
 #'
 #' @param x A pumpresult object.
 #'
@@ -330,6 +335,8 @@ power_curve <- function( x, all = FALSE,
 
 
 
+#' @title Return type of pump object
+#' @description returns whether call was power, mdes, or sample
 #' @return pump_type: power, mdes, or sample, as a string.
 #'
 #' @rdname pumpresult
@@ -357,10 +364,10 @@ is_long_table <- function( power_table ) {
 
 
 
-#' Convert power table from wide to long
+#' @title Convert power table from wide to long
 #'
-#' Transform table returned from pump_power to a long format table or to a wide
-#' format table.
+#' @description Transform table returned from pump_power 
+#' to a long format table or to a wide format table.
 #'
 #' @param power_table pumpresult object for a power result (not mdes or sample).
 #'   (It can also take a raw dataframe of the wide table to convert to long, as
@@ -452,6 +459,7 @@ is.pumpresult <- function( x ) {
 
 
 
+#' @title Dimension of pumpresult object
 #' @return dim: Dimension of pumpresult (as matrix)
 #'
 #' @rdname pumpresult
@@ -462,7 +470,7 @@ dim.pumpresult <- function( x, ... ) {
 }
 
 
-#' Pretty print pump result with parameters
+#' @title Pretty print pump result with parameters
 #'
 #' @export
 #' @param object Object to summarize.
@@ -480,7 +488,7 @@ calc_binomial_SE <- function( prop, tnum ) {
 }
 
 
-#' Pretty print pump result
+#' @title Pretty print pump result
 #'
 #' @export
 #' @param ... No extra options passed.
@@ -555,9 +563,10 @@ print.pumpresult <- function( x, n = 10,
   invisible( x )
 }
 
-#' Print the search history of a pump result object
+#' @title Print the search history of a pump result object
 #'
-#' For pump_mdes and pump_sample, print the search history.
+#' @description For pump_mdes and pump_sample, print the 
+#' (abbreviated) search history.
 #'
 #' @inheritParams print.pumpresult
 #' @return Number of steps in search.
@@ -586,7 +595,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' Print context of given pump result object
+#' @title Print context (design and model) of given pump result object
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
@@ -736,7 +745,7 @@ print_context <- function(
 
 
 
-#' Cast pumpresult result to data.frame
+#' @title Cast pumpresult result to data.frame
 #'
 #' @param row.names NULL or a character vector giving the 
 #' row names for the data frame.

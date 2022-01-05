@@ -225,10 +225,9 @@ pump_sample_raw <- function(
 
 
 
-#' Calculate the sample size
-#' using PUMP method.
+#' @title Estimate the required sample size using PUMP method.
 #'
-#' The user chooses the context (d_m), MTP,
+#' @description The user chooses the context (d_m), MTP,
 #' type of sample size, 
 #' MDES,
 #' power definition, and choices of all relevant design parameters.

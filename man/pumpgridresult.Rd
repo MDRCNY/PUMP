@@ -5,7 +5,7 @@
 \alias{is.pumpgridresult}
 \alias{print.pumpgridresult}
 \alias{summary.pumpgridresult}
-\title{result object for results of grid power calculations}
+\title{Result object for results of grid power calculations}
 \usage{
 is.pumpgridresult(x)
 

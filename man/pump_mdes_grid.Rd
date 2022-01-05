@@ -2,7 +2,7 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_mdes_grid}
 \alias{pump_mdes_grid}
-\title{Run pump_mdes on combination of factors}
+\title{Run pump_mdes on varying values of parameter(s)}
 \usage{
 pump_mdes_grid(
   d_m,
@@ -53,10 +53,17 @@ when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district).}
+units per level 3 unit (schools per district). Note that
+this is not the total number of level 2 units, but instead
+the number of level 2 units nested within each level 3 
+unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
@@ -106,7 +113,7 @@ that did not vary across the grid.}
 or pump_mdes functions.}
 }
 \description{
-Run pump_mdes on combination of factors
+See pump_power_grid() for more details.
 }
 \examples{
 g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",

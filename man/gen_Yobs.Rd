@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_Yobs}
 \alias{gen_Yobs}
-\title{convert full potential outcomes to Yobs}
+\title{Generate observed outcomes (simulations)}
 \usage{
 gen_Yobs(full.data, T.x)
 }
@@ -15,5 +15,7 @@ gen_Yobs(full.data, T.x)
 Yobs
 }
 \description{
-convert full potential outcomes to Yobs
+Takes in a full dataset of both observed
+and latent potential outcomes and the treatment assignment vector,
+and returns only the observed outcomes.
 }

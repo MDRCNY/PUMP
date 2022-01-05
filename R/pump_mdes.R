@@ -1,7 +1,7 @@
-#' Calculate the minimum detectable effect size (MDES) 
+#' @title Estimate the minimum detectable effect size (MDES) 
 #' using PUMP method.
 #'
-#' The user chooses the context (d_m), MTP,
+#' @description The user chooses the context (d_m), MTP,
 #' power definition, and choices of all relevant design parameters.
 #' 
 #' The functions performs a search algorithm,

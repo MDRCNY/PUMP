@@ -20,7 +20,10 @@ definitions as a facet wrap.}
 a ggplot object
 }
 \description{
-Plot a pump grid result object
+Plots grid results across values of
+a single parameter, specified by the user using
+var.vary, for a single definition of power,
+specified by power.definition.
 }
 \examples{
 g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),

@@ -32,7 +32,7 @@ test_that( "pumpgridresult dimensions work", {
     
     capture_output( pp <- print( ss ) )
     
-    capture_output( pd <- print_d_m(ss) )
+    capture_output( pd <- print_context(ss) )
     
     set.seed( 1010310 )
     ssL <- pump_power_grid(    d_m = "d2.1_m2fc",

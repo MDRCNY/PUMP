@@ -15,7 +15,11 @@
 a ggplot plot.
 }
 \description{
-Plot a single scenario pump object
+Works on an object returned by pump_power(),
+and visualizes different definitions of power across
+MTPs. This function does not apply to pump_mdes()
+or pump_sample() objects, as these functions only
+return a single value.
 }
 \examples{
 pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',

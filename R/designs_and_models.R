@@ -1,4 +1,6 @@
-#' List user options:
+#' @title Info about user choices
+#' 
+#' @description List user options:
 #' designs and models (d_m), including what
 #' parameters are relevant for each context;
 #' multiple testing procedures;
@@ -137,9 +139,10 @@ pump_info <- function( comment = TRUE) {
 
 
 
-#' Return characteristics of a given d_m code
+#' @title Return characteristics of a given context (d_m code)
 #'
-#' See the pump_info() method to get a list of supported d_ms.
+#' @description Returns number of levels and model at each level.
+#' See pump_info()$Context to get a list of supported d_ms.
 #'
 #' @param d_m string; context to parse.
 #'
@@ -277,10 +280,10 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 }
 
 
-#' Calculate the degrees of freedom for a particular d_m
+#' @title Calculate the degrees of freedom for a particular d_m
 #'
-#' Given sample sizes, return the used degrees of freedom 
-#' (frequently conservative) for the design.
+#' @description Given sample sizes, return the used degrees of freedom 
+#' (frequently conservative) for the design and model.
 #'
 #' @inheritParams pump_power
 #' @param validate whether or not to validate if output df is <= 0

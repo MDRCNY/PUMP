@@ -32,7 +32,11 @@ needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 \item{K}{scalar; the number of level 3 units (districts).}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{Tbar}{scalar; the proportion of samples 
 that are assigned to the treatment.}

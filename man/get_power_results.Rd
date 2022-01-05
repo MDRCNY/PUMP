@@ -34,6 +34,9 @@ outcomes with MDES = 0}
 power results for individual, minimum, complete power
 }
 \description{
-This function takes in a matrix of adjusted p-values 
-and outputs different types of power
+This function takes in a matrix of adjusted p-values
+and unadjusted p-values and outputs different types of power.
+
+This function is mostly for internal use, but may be of interest to
+users who wish to calculate power on their own.
 }

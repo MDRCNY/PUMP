@@ -21,10 +21,13 @@ calc_pval <- function(rawt, t.df, two.tailed)
 
 
 
-#' Calculates different definitions of power
+#' @title Calculates different definitions of power
 #'
-#' This function takes in a matrix of adjusted p-values 
-#' and outputs different types of power
+#' @description This function takes in a matrix of adjusted p-values
+#' and unadjusted p-values and outputs different types of power.
+#' 
+#' This function is mostly for internal use, but may be of interest to
+#' users who wish to calculate power on their own.
 #'
 #' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
 #' dimention tnum X M
@@ -127,9 +130,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 
 
 
-#' Calculate power using PUMP method.
+#' @title Estimate power using PUMP method.
 #'
-#' The user chooses the context (d_m), MTP,
+#' @description The user chooses the context (d_m), MTP,
 #' MDES, and choices of all relevant design parameters.
 #' 
 #' The functions returns power for all definitions of power for any MTP.
@@ -146,10 +149,17 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param M scalar; the number of hypothesis tests (outcomes), 
 #' including zero outcomes.
 #' @param J scalar; the harmonic mean of number of level 2 
-#' units per level 3 unit (schools per district).
+#' units per level 3 unit (schools per district). Note that
+#' this is not the total number of level 2 units, but instead
+#' the number of level 2 units nested within each level 3 
+#' unit, so the total number of level 2 units is J x K.
 #' @param K scalar; the number of level 3 units (districts).
 #' @param nbar scalar; the harmonic mean of the number of 
-#' level 1 units per level 2 unit (students per school).
+#' level 1 units per level 2 unit (students per school). 
+#' Note that this is not the total number of level 1 units, 
+#' but instead the number of level 1 units nested within 
+#' each level 2 unit, so the total number of level 1 units
+#' is nbar x J x K.
 #' @param Tbar scalar; the proportion of samples 
 #' that are assigned to the treatment.
 #' @param alpha scalar; the family wise error rate (FWER).

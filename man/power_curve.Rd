@@ -27,6 +27,6 @@ power_curve(
 \item{tnum}{Number of iterations to calculate power at each grid point.}
 }
 \description{
-This is used to see rate of power change as a function of sample size or
-MDES.
+This is used to see rate of 
+power change as a function of sample size or MDES.
 }

@@ -36,7 +36,7 @@ test_that("testing of d2.1_m2fc", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
   
   powerup.power <- PowerUpR::power.bira2c1(
       es = 0.125,
@@ -62,7 +62,7 @@ test_that("testing of d2.1_m2fc", {
       tnum = 100000
   )
   
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
@@ -106,7 +106,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
 
   powerup.mdes <- expect_warning(PowerUpR::mdes.bira2r1(
     power = 0.8,
@@ -136,7 +136,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
+  expect_equal(pump.mdes$Adjusted.MDES, powerup.mdes$mdes[1], tol = default.tol)
 
 
   powerup.ss <- expect_warning(PowerUpR::mrss.bira2r1(
@@ -168,7 +168,7 @@ test_that("testing of d2.1_m2fr one-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
+  expect_equal(pump.ss$Sample.size, powerup.ss$J, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
@@ -208,7 +208,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
 
   powerup.mdes <- expect_warning(PowerUpR::mdes.bira2r1(
     power = 0.8,
@@ -238,7 +238,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
+  expect_equal(pump.mdes$Adjusted.MDES, powerup.mdes$mdes[1], tol = default.tol)
 
 
   powerup.ss <- expect_warning(PowerUpR::mrss.bira2r1(
@@ -270,7 +270,7 @@ test_that("testing of d2.1_m2fr two-tailed", {
     omega.2 = 0.1
   )
 
-  expect_equal(powerup.ss$J, pump.ss$Sample.size, tol = default.tol)
+  expect_equal(pump.ss$Sample.size, powerup.ss$J, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
@@ -314,7 +314,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
 
   powerup.mdes <- PowerUpR::mdes.bcra3f2(
     power = 0.8,
@@ -344,7 +344,7 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
+  expect_equal(pump.mdes$Adjusted.MDES, powerup.mdes$mdes[1], tol = default.tol)
 
 
   powerup.ss <- PowerUpR::mrss.bcra3f2(
@@ -375,9 +375,12 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
+    tol = 0.005
   )
 
-  expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = default.tol)
+  print(pump.ss$Sample.size)
+  print(powerup.ss$K)
+  expect_equal(pump.ss$Sample.size, powerup.ss$K, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
@@ -416,7 +419,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     tnum = 100000
   )
 
-  expect_equal(powerup.power$power, pump.power$D1indiv[1], tol = default.tol)
+  expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
 
   powerup.mdes <- PowerUpR::mdes.bcra3f2(
     power = 0.8,
@@ -446,7 +449,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
   )
 
-  expect_equal(powerup.mdes$mdes[1], pump.mdes$Adjusted.MDES, tol = default.tol)
+  expect_equal(pump.mdes$Adjusted.MDES, powerup.mdes$mdes[1], tol = default.tol)
 
 
   powerup.ss <- PowerUpR::mrss.bcra3f2(
@@ -477,9 +480,12 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     numCovar.1 = 1, numCovar.2 = 1,
     R2.1 = 0.3, R2.2 = 0.3, ICC.2 = 0.05, rho = 0,
+    tol = 0.005
   )
-
-  expect_equal(powerup.ss$K, pump.ss$Sample.size, tol = 0.5)
+  
+  print(pump.ss$Sample.size)
+  print(powerup.ss$K)
+  expect_equal(pump.ss$Sample.size, powerup.ss$K, tol = 0.5)
 
   sink()
   file.remove("sink.txt")

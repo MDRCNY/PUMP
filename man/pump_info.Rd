@@ -2,12 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{pump_info}
 \alias{pump_info}
-\title{List user options:
-designs and models (d_m), including what
-parameters are relevant for each context;
-multiple testing procedures;
-types of power;
-design and model parameters.}
+\title{Info about user choices}
 \usage{
 pump_info(comment = TRUE)
 }

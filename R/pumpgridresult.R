@@ -27,7 +27,7 @@ make.pumpgridresult <- function( x,
 
 
 
-#' @title result object for results of grid power calculations
+#' @title Result object for results of grid power calculations
 #' 
 #' @name pumpgridresult
 #'
@@ -77,7 +77,7 @@ print_grid_header <- function( x ) {
 }
 
 
-#' Pretty print pump grid result
+#' @title Pretty print pump grid result
 #'
 #' @export
 #' @param ... No extra options passed.
@@ -100,7 +100,7 @@ print.pumpgridresult <- function( x,
 
 
 
-#' Pretty print pump grid result with parameters
+#' @title Pretty print pump grid result with parameters
 #'
 #' @export
 #' @param object Object to summarize.
@@ -109,7 +109,7 @@ print.pumpgridresult <- function( x,
 summary.pumpgridresult <- function( object, ... ) {
     print_grid_header( object )
     
-    print_d_m( object, 
+    print_context( object, 
                   insert_results = TRUE, insert_control = TRUE, ... )
     
     invisible( object )

@@ -2,7 +2,7 @@
 # generate simulation data
 # ------------------------------#
 
-#' generate correlation matrix when correlation rho is fixed
+#' @title Generate correlation matrix given rho and M (simulations)
 #'
 #' @param M dimension of matrix
 #' @param rho.scalar fixed rho value
@@ -65,8 +65,17 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 
 
 
-#' Generate simulated multi-level data:
-#' both unobserved and observed potential outcomes
+#' @title Generate simulated multi-level data
+#' 
+#' @description Generates simulated data for multi-level
+#' RCTs for pump-suppored designs and models for
+#' both unobserved and observed potential outcomes.
+#' 
+#' Takes in a list of necessary data-generating parameters.
+#' 
+#' This function is beyond the main scope of calculating power.
+#' For more info on use, see the simulation vignette.
+#' 
 #'
 #' @param dgp.params.list list of data generating parameters
 #'
@@ -287,7 +296,12 @@ gen_full_data <- function(dgp.params.list) {
 
 
 
-#' Converts user-inputted parameters into relevant DGP parameters.
+#' @title Converts model-based parameters into DGP parameters (simulations)
+#' 
+#' @description Converts user-provided parameters such as ICC
+#' and omega into data-generating parameters that can 
+#' produce simulated data,
+#' such as variance values and covariate coefficients.
 #' 
 #' @param model.params.list list of DGP parameters
 #'
@@ -442,8 +456,12 @@ convert_params <- function(model.params.list) {
     
 }
 
-#' generate simple default schools and districts IDs for individual students for
-#' simulations. This assumes equal sized schools in equal sized districts
+#' @title Generates school and district ID assignments (simulations)
+#' 
+#' @description Generates simple default schools and 
+#' districts IDs for individual students for the purpose of
+#' simulations. This assumes equal sized schools in 
+#' equal sized districts.
 #'
 #' @param K number of districts
 #' @param J number of schools per district
@@ -483,7 +501,10 @@ gen_simple_assignments <- function(J, K, nbar){
     return(list(S.id = S.id, D.id = D.id))
 }
 
-#' generate treatment assignment vector
+#' @title Generate treatment assignment vector (simulations)
+#' 
+#' @description Given a RCT design and supporting information,
+#' generates treatment assignments for each student.
 #'
 #' @param d_m design and model
 #' @param S.id vector of school assignments
@@ -521,7 +542,11 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 
 
 
-#' convert full potential outcomes to Yobs
+#' @title Generate observed outcomes (simulations)
+#' 
+#' @description Takes in a full dataset of both observed
+#' and latent potential outcomes and the treatment assignment vector,
+#' and returns only the observed outcomes.
 #' 
 #' @param full.data full dataset of potential outcomes
 #' @param T.x N-vector of binary assignment to treat/control

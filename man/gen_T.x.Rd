@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_T.x}
 \alias{gen_T.x}
-\title{generate treatment assignment vector}
+\title{Generate treatment assignment vector (simulations)}
 \usage{
 gen_T.x(d_m, S.id, D.id, nbar, Tbar)
 }
@@ -21,5 +21,6 @@ gen_T.x(d_m, S.id, D.id, nbar, Tbar)
 vector of treatment assignments for each unit
 }
 \description{
-generate treatment assignment vector
+Given a RCT design and supporting information,
+generates treatment assignments for each student.
 }

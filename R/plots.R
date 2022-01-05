@@ -19,10 +19,14 @@ get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
 }
 
 
-#' Examine search path of the power search.
+#' @title Examine a power curve
 #'
-#' This will give a plot of power vs. mdes or sample size. It can be useful to
-#' see how quickly power changes as a function of these design parameters. Can
+#' @description This will give a plot of power vs. 
+#' MDES or sample size. It can be useful to
+#' see how quickly power changes as a function of 
+#' these design parameters. Can be useful to diagnose
+#' relatively flat power curves, where power changes
+#' little as a function of MDES or sample size, and can
 #' also be useful to gauge where convergence went poorly.
 #'
 #' @param pwr Result from the pump_sample or pump_mdes (or data frame from,
@@ -120,10 +124,12 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 
 
 
-#' Examine search path of the power search.
+#' @title Examine search path of a power search
 #'
-#' This will give a triple-plots about how the search narrowed down into the
-#' final estimate.  Can be useful to gauge where convergence went poorly.
+#' @description This will give triple-plots about 
+#' how the search narrowed down into the
+#' final estimate.  Can be useful to gauge where 
+#' convergence went poorly.
 #'
 #' @param pwr Result from a pump_sample or pump_mdes call.
 #' @param fit A fitted curve to the search.
@@ -201,7 +207,13 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   
 }
 
-#' Plot a single scenario pump object
+#' @title Plot a single scenario pump object
+#' 
+#' @description Works on an object returned by pump_power(),
+#' and visualizes different definitions of power across
+#' MTPs. This function does not apply to pump_mdes()
+#' or pump_sample() objects, as these functions only
+#' return a single value.
 #'
 #' @param x pumpresult object
 #' @param ... Additional parameters
@@ -538,7 +550,12 @@ plot.pumpgridresult.sample <- function( x, power.definition, var.vary, ...  ) {
 }
 
 
-#' Plot a pump grid result object
+#' @title Plot a pump grid result object
+#' 
+#' @description Plots grid results across values of
+#' a single parameter, specified by the user using
+#' var.vary, for a single definition of power,
+#' specified by power.definition.
 #'
 #' @param x pumpgridresult object
 #' @param power.definition definition of power to plot.  If NULL, plot all

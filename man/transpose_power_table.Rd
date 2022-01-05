@@ -15,6 +15,6 @@ an internal helper method.)}
 Usually ignore this.}
 }
 \description{
-Transform table returned from pump_power to a long format table or to a wide
-format table.
+Transform table returned from pump_power 
+to a long format table or to a wide format table.
 }

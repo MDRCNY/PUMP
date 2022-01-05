@@ -92,9 +92,10 @@ setup_default_parallel_plan <- function() {
 }
 
 
-#' Run pump_power on combination of factors
+#' @title Run pump_power on varying values of parameter(s)
 #'
-#' This extenstion of `pump_power()` will take lists of parameter values and run
+#' @description This extension of `pump_power()` will 
+#' take lists of parameter values and run
 #' `pump_power()` on all combinations of these values.
 #'
 #' It can only assume the same MDES value for all outcomes due to this.  (I.e.,
@@ -179,7 +180,9 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 
 
 
-#' Run pump_mdes on combination of factors
+#' @title Run pump_mdes on varying values of parameter(s)
+#' 
+#' @description See pump_power_grid() for more details.
 #'
 #' @inheritParams pump_mdes
 #' @inheritParams pump_power_grid
@@ -242,7 +245,9 @@ pump_mdes_grid <- function( d_m, MTP, M,
 }
 
 
-#' Run pump_sample on combination of factors
+#' @title Run pump_sample on varying values of parameter(s)
+#' 
+#' @description See pump_power_grid() for further details.
 #'
 #' @inheritParams pump_sample
 #' @inheritParams pump_power_grid

@@ -16,5 +16,6 @@ object to check).}
 Number of steps in search.
 }
 \description{
-For pump_mdes and pump_sample, print the search history.
+For pump_mdes and pump_sample, print the 
+(abbreviated) search history.
 }

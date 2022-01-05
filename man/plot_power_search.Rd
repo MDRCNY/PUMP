@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_search}
 \alias{plot_power_search}
-\title{Examine search path of the power search.}
+\title{Examine search path of a power search}
 \usage{
 plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
@@ -18,8 +18,10 @@ known, e.g., from a pump_power call).}
 a ggplot plot (a gridExtra arrangement of 3 plots, technically).
 }
 \description{
-This will give a triple-plots about how the search narrowed down into the
-final estimate.  Can be useful to gauge where convergence went poorly.
+This will give triple-plots about 
+how the search narrowed down into the
+final estimate.  Can be useful to gauge where 
+convergence went poorly.
 }
 \examples{
 J <- pump_sample(d_m = "d2.1_m2fc",

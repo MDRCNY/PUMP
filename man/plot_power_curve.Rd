@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_curve}
 \alias{plot_power_curve}
-\title{Examine search path of the power search.}
+\title{Examine a power curve}
 \usage{
 plot_power_curve(
   pwr,
@@ -35,8 +35,12 @@ e.g., power_curve()).}
 (if NULL will fit one to passed points).}
 }
 \description{
-This will give a plot of power vs. mdes or sample size. It can be useful to
-see how quickly power changes as a function of these design parameters. Can
+This will give a plot of power vs. 
+MDES or sample size. It can be useful to
+see how quickly power changes as a function of 
+these design parameters. Can be useful to diagnose
+relatively flat power curves, where power changes
+little as a function of MDES or sample size, and can
 also be useful to gauge where convergence went poorly.
 }
 \examples{

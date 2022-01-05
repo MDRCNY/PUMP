@@ -65,8 +65,8 @@ params: List of design parameters used.
 
 d_m: d_m used (as string)
 
-search_path: Dataframe describing search path, if it was saved in the
-  pumpresult object.
+search_path: Dataframe describing search path, 
+if it was saved in the pumpresult object.
 
 pump_type: power, mdes, or sample, as a string.
 
@@ -91,6 +91,8 @@ some printing methods for getting nicely formatted results.
 Pump result objects are also data.frames, so they can be easily manipulated
 and combined.  The return values from the `grid` functions will just return
 data frames in general.
+
+returns whether call was power, mdes, or sample
 }
 \examples{
 pp <- pump_power(d_m = "d3.2_m3ff2rc",

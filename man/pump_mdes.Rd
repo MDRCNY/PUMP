@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_mdes.R
 \name{pump_mdes}
 \alias{pump_mdes}
-\title{Calculate the minimum detectable effect size (MDES) 
+\title{Estimate the minimum detectable effect size (MDES) 
 using PUMP method.}
 \usage{
 pump_mdes(
@@ -56,10 +56,17 @@ to be zero. Please provide NumZero + length(MDES) = M.}
 including zero outcomes.}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school).}
+level 1 units per level 2 unit (students per school). 
+Note that this is not the total number of level 1 units, 
+but instead the number of level 1 units nested within 
+each level 2 unit, so the total number of level 1 units
+is nbar x J x K.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district).}
+units per level 3 unit (schools per district). Note that
+this is not the total number of level 2 units, but instead
+the number of level 2 units nested within each level 3 
+unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
@@ -148,8 +155,7 @@ mdes results
 \description{
 The user chooses the context (d_m), MTP,
 power definition, and choices of all relevant design parameters.
-}
-\details{
+
 The functions performs a search algorithm,
 and returns the MDES value within the specified tolerance.
 }
