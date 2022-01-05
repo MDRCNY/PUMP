@@ -1,4 +1,4 @@
-#' @title Info about user choices
+#' @title Provides details about supported package features
 #' 
 #' @description List user options:
 #' designs and models (d_m), including what
@@ -280,7 +280,7 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 }
 
 
-#' @title Calculate the degrees of freedom for a particular d_m
+#' @title Calculate the degrees of freedom for a particular context (d_m code)
 #'
 #' @description Given sample sizes, return the used degrees of freedom 
 #' (frequently conservative) for the design and model.

@@ -552,7 +552,7 @@ print.pumpresult <- function( x, n = 10,
   } else {
     tr <- attr( x, "tries" )
     if ( !is.null( tr ) ) {
-      scat( "\t(%d steps in search)\n", nrow(tr) )
+      scat( "\t(%d steps in search)\n", nrow(tr) - 5 )
     }
   }
   

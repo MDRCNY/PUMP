@@ -365,12 +365,12 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
   pump.ss <- pump_sample(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    typesample = 'K',
+    typesample = 'J',
     d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,
-    J = 30,
+    K = 10,
     M = 1,
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1, numCovar.2 = 1,
@@ -379,8 +379,8 @@ test_that("testing of d3.2_m3ff2rc one-tailed", {
   )
 
   print(pump.ss$Sample.size)
-  print(powerup.ss$K)
-  expect_equal(pump.ss$Sample.size, powerup.ss$K, tol = default.tol)
+  print(powerup.ss$J)
+  expect_equal(pump.ss$Sample.size, powerup.ss$J, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
@@ -470,12 +470,12 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
   pump.ss <- pump_sample(
     target.power = 0.8,
     power.definition = 'D1indiv',
-    typesample = 'K',
+    typesample = 'J',
     d_m = "d3.2_m3ff2rc",
     MTP = 'None',
     MDES = 0.125,
     nbar = 50,
-    J = 30,
+    K = 10,
     M = 1,
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     numCovar.1 = 1, numCovar.2 = 1,
@@ -483,9 +483,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
     tol = 0.005
   )
   
-  print(pump.ss$Sample.size)
-  print(powerup.ss$K)
-  expect_equal(pump.ss$Sample.size, powerup.ss$K, tol = 0.5)
+  expect_equal(pump.ss$Sample.size, powerup.ss$J, tol = default.tol)
 
   sink()
   file.remove("sink.txt")
