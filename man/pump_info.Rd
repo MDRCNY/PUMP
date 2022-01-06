@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{pump_info}
 \alias{pump_info}
-\title{Info about user choices}
+\title{Provides details about supported package features}
 \usage{
 pump_info(comment = TRUE)
 }

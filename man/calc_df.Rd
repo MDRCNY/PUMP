@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_df}
 \alias{calc_df}
-\title{Calculate the degrees of freedom for a particular d_m}
+\title{Calculate the degrees of freedom for a particular context (d_m code)}
 \usage{
 calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE)
 }

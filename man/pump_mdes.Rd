@@ -174,5 +174,6 @@ mdes <-  pump_mdes(
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1,
   ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0.1, omega.3 = 0.1, 
+  rho = 0.5, tnum = 2000)
 }
