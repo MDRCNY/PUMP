@@ -4,7 +4,7 @@
 \alias{plot.pumpgridresult}
 \title{Plot a pump grid result object}
 \usage{
-\method{plot}{pumpgridresult}(x, power.definition = NULL, var.vary, ...)
+\method{plot}{pumpgridresult}(x, power.definition = NULL, var.vary = NULL, ...)
 }
 \arguments{
 \item{x}{pumpgridresult object}
@@ -12,7 +12,8 @@
 \item{power.definition}{definition of power to plot.  If NULL, plot all
 definitions as a facet wrap.}
 
-\item{var.vary}{variable to vary on X axis}
+\item{var.vary}{variable to vary on X axis.  If NULL, and only one thing
+varies, then it will default to single varying parameter.}
 
 \item{...}{additional parameters}
 }
@@ -20,16 +21,20 @@ definitions as a facet wrap.}
 a ggplot object
 }
 \description{
-Plots grid results across values of
-a single parameter, specified by the user using
-var.vary, for a single definition of power,
-specified by power.definition.
+Plots grid results across values of a single parameter, specified by the user
+using var.vary, for a single definition of power, specified by
+power.definition.
+
+If multiple things vary in the grid, the outcome (power, mdes, or sample size)
+will be averaged (marginalized) across the other varying factors. This treats
+the grid as a multifactor simulation, with this showing the "main effect" of
+the specified parameter.
 }
 \examples{
 g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
- Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, 
+ Tbar = 0.50, alpha = 0.15, numCovar.1 = 1,
  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
- ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
-plot(g, var.vary = 'J', power.definition = 'min1')
+ ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 500)
+plot(g, power.definition = 'min1')
 }

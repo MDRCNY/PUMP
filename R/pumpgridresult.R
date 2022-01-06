@@ -63,7 +63,7 @@ is.pumpgridresult <- function( x ) {
 print_grid_header <- function( x ) {
     result_type <- attr( x, "type" )
     
-    scat( "%s grid result: %s d_m with %d outcomes\n",
+    scat( "%s grid result: %s d_m with %s outcomes\n",
           result_type, d_m(x), params(x)$M )
     
     scat( "Varying across %s\n",

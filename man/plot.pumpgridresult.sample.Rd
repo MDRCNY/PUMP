@@ -4,7 +4,7 @@
 \alias{plot.pumpgridresult.sample}
 \title{Plot a grid pump sample object}
 \usage{
-\method{plot}{pumpgridresult.sample}(x, power.definition, var.vary, ...)
+\method{plot}{pumpgridresult.sample}(x, power.definition = NULL, var.vary, ...)
 }
 \arguments{
 \item{x}{pumpgridresult object}
@@ -12,7 +12,8 @@
 \item{power.definition}{definition of power to plot.  If NULL, plot all
 definitions as a facet wrap.}
 
-\item{var.vary}{variable to vary on X axis}
+\item{var.vary}{variable to vary on X axis.  If NULL, and only one thing
+varies, then it will default to single varying parameter.}
 
 \item{...}{additional parameters}
 }
