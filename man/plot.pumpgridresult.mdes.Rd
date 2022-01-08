@@ -4,7 +4,14 @@
 \alias{plot.pumpgridresult.mdes}
 \title{Plot a grid pump mdes object}
 \usage{
-\method{plot}{pumpgridresult.mdes}(x, power.definition = NULL, var.vary, ...)
+\method{plot}{pumpgridresult.mdes}(
+  x,
+  power.definition = NULL,
+  var.vary,
+  lines = lines,
+  include.title = include.title,
+  ...
+)
 }
 \arguments{
 \item{x}{pumpgridresult object}
@@ -14,6 +21,9 @@ definitions as a facet wrap.}
 
 \item{var.vary}{variable to vary on X axis.  If NULL, and only one thing
 varies, then it will default to single varying parameter.}
+
+\item{lines}{TRUE means connect dots with lines on the plots.  False means no
+lines.}
 
 \item{...}{additional parameters}
 }

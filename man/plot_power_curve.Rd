@@ -7,7 +7,7 @@
 plot_power_curve(
   pwr,
   plot.points = TRUE,
-  all = FALSE,
+  all = TRUE,
   low = NULL,
   high = NULL,
   grid.size = 5,

@@ -7,13 +7,17 @@
 #' types of power;
 #' design and model parameters.
 #' 
-#'
+#' @param topic: What kind of info.  One of 
 #' @param comment TRUE/FALSE, prints out 
 #' long description of
 #' each design and method
 #'
 #' @export
-pump_info <- function( comment = TRUE) {
+pump_info <- function( topic = c( "all", "context", "adjustment", "power", "parameters" ), 
+                       comment = TRUE ) {
+  
+  topic = match.arg( topic )
+  
     context <- tibble::tribble(
         ~d_m, ~PowerUp, ~Params, ~ Comment,
         # 1 level design
@@ -129,11 +133,19 @@ pump_info <- function( comment = TRUE) {
         context$Comment <- NULL
         adjust$Comment <- NULL
     }
+    
 
-    list( Context = context, 
+    res <- list( Context = context, 
           Adjustment = adjust,
           Power = power,
           Parameters = params)
+    if ( topic != "all" ) {
+      names(res) <- tolower(names(res))
+      return( res[[topic]] )  
+    } else {
+      return( res)
+    }
+    
 }
 
 

@@ -140,10 +140,10 @@ test_that("Grid plot works for MDES", {
     
     expect_true( length( attr( grid, "var_names") ) == 2 )
     
-    gg = PUMP:::handle_power_definition(grid, "min1", "MDES", "ICC.3" )
+    gg = PUMP:::handle_power_definition(grid, "min1", "MDES", "ICC.3", FALSE )
     expect_true( gg$powerType == "1-minimum" )
     expect_true( !gg$multiPower)
-    expect_true( !is.null( gg$title ) )
+    expect_true( is.null( gg$title ) )
     
     grid.plot <- plot(grid, power.definition = 'min1', var.vary = 'ICC.3')
     expect_true(!is.null(grid.plot))
@@ -249,7 +249,7 @@ test_that("Two variable plot works for SS", {
 })
 
 
-test_that( "power curve works", {
+test_that( "power_curve works", {
   
   set.seed( 101010 )
   up <- pump_sample(    d_m = "d2.1_m2fc",
@@ -302,14 +302,16 @@ test_that( "power curve plotting works", {
     ))
     
     expect_true(!is.null(search_path(nbar3)))
-    expect_true(!is.null(expect_warning(p <- plot_power_search(nbar3))))
+    expect_warning(p <- plot_power_search(nbar3))
+    expect_true(!is.null(p))
+    
     expect_true(!is.null(p <- power_curve(nbar3)))  
     expect_true(!is.null(p <- plot_power_curve(nbar3)))  
     
     mdes <- expect_warning(pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
                       power.definition = 'D1indiv', 
                       target.power = 0.4,
-                      J = 5, nbar = 20, M = 3, 
+                      J = 10, nbar = 20, M = 3, 
                       Tbar = 0.5, alpha = 0.05,
                       numCovar.1 = 1, R2.1 = 0.1, 
                       ICC.2 = 0.05, rho = 0.2,
