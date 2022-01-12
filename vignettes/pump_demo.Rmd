@@ -14,7 +14,6 @@ geometry: margin=1.5in
 
 ```{r initialize, include = FALSE}
 library( PUMP )
-set.seed( 1010203 )
 
 knitr::opts_chunk$set(
   cache = TRUE,
@@ -32,6 +31,7 @@ library( ggplot2 )
 library( kableExtra )
 library( knitr )
 theme_set( theme_minimal() )
+set.seed( 0440044 )
 ```
 
 # Abstract
