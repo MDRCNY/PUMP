@@ -83,7 +83,8 @@ dataframe (no more attributes from pumpresult).
 }
 \description{
 The pumpresult object is an S3 class that holds the results from
-`pump_power()`, `pump_sample()`, and `pump_mdes()`.
+`pump_power()`, 
+`pump_sample()`, and `pump_mdes()`.
 
 It has several methods that pull different information from this object, and
 some printing methods for getting nicely formatted results.
@@ -100,7 +101,7 @@ pp <- pump_power(d_m = "d3.2_m3ff2rc",
   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+  omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
   
 print(pp)
 params(pp)
@@ -118,7 +119,7 @@ J <- pump_sample(d_m = "d2.1_m2fc",
   typesample = 'J', target.power = 0.7,
   nbar = 50, M = 3, MDES = 0.125,
   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2, tnum = 1000)
   
 print_search(J)   
 search_path(J)

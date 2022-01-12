@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_power.R
 \name{pump_power}
 \alias{pump_power}
-\title{Estimate power using PUMP method.}
+\title{Estimate power across definitions (core function)}
 \usage{
 pump_power(
   d_m,
@@ -40,10 +40,10 @@ pump_power(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MDES}{scalar or vector; the desired MDES values for each outcome. 
 Please provide a scalar, a vector of length M, or vector of 
@@ -147,6 +147,12 @@ The user chooses the context (d_m), MTP,
 MDES, and choices of all relevant design parameters.
 
 The functions returns power for all definitions of power for any MTP.
+For a list of choices for specific parameters, see pump_info().
+For more detailed information about this function and the user choices,
+see the manuscript <arXiv:2112.15273>,
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }
 \examples{
 pp <- pump_power(

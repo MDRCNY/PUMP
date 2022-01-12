@@ -77,7 +77,7 @@ print_grid_header <- function( x ) {
 }
 
 
-#' @title Pretty print pump grid result
+#' @title Pretty print pump grid result (result function)
 #'
 #' @export
 #' @param ... No extra options passed.
@@ -100,7 +100,7 @@ print.pumpgridresult <- function( x,
 
 
 
-#' @title Pretty print pump grid result with parameters
+#' @title Pretty print pump grid result with parameters (result function)
 #'
 #' @export
 #' @param object Object to summarize.

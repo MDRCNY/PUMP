@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{print_search}
 \alias{print_search}
-\title{Print the search history of a pump result object}
+\title{Print the search history of a pump result object (result function)}
 \usage{
 print_search(x, n = 10)
 }

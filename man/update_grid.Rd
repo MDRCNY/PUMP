@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{update_grid}
 \alias{update_grid}
-\title{Update a single pump call to a grid call}
+\title{Update a single pump call to a grid call (grid function)}
 \usage{
 update_grid(x, ...)
 }
@@ -23,7 +23,7 @@ of the initial scenario.
 pp <- pump_power(d_m = "d2.1_m2fc", MTP = "HO",
   nbar = 200, J = 20, MDES = 0.2, M = 3,
   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
-  R2.1 = 0.1, ICC.2 = 0.05, rho = 0)
+  R2.1 = 0.1, ICC.2 = 0.05, rho = 0, tnum = 500)
 
 gd <- update_grid( pp, J = c( 10, 20, 30 ) )
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_simple_assignments}
 \alias{gen_simple_assignments}
-\title{Generates school and district ID assignments (simulations)}
+\title{Generates school and district ID assignments (simulation function)}
 \usage{
 gen_simple_assignments(J, K, nbar)
 }

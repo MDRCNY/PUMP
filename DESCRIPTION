@@ -1,15 +1,15 @@
 Package: PUMP
 Type: Package
 Title: Power Under Multiplicity Project
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
   person("Kristin", "Porter",, "kristin.porter@mdrc.org", c("aut")),
   person("Luke", "Miratrix",, "luke_miratrix@gse.harvard.edu", c("aut", "cre")),
   person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
   person("Zarni", "Htet",, "zarni.htet@mdrc.org", c("aut"))
   )
-Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
-Description: Provides functions for estimating power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030).
+Maintainer: The package maintainer <kristenbhunter@gmail.com>
+Description: Estimates power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030). For a full package description, including a detailed technical appendix, see <arXiv:2112.15273>.
 URL: https://github.com/MDRCNY/PUMP
 Depends:
      R (>= 3.5.0)

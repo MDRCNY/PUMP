@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_search}
 \alias{plot_power_search}
-\title{Examine search path of a power search}
+\title{Examine search path of a power search (results function)}
 \usage{
 plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
@@ -30,7 +30,7 @@ J <- pump_sample(d_m = "d2.1_m2fc",
    nbar = 50, M = 3, MDES = 0.125,
    Tbar = 0.5, alpha = 0.05,
    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-   rho = 0.2, tnum = 2000)
+   rho = 0.2)
 plot_power_search(J)
 
 }

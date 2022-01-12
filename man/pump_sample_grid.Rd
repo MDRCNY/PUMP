@@ -2,7 +2,7 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_sample_grid}
 \alias{pump_sample_grid}
-\title{Run pump_sample on varying values of parameter(s)}
+\title{Run pump_sample on varying values of parameters (grid function)}
 \usage{
 pump_sample_grid(
   d_m,
@@ -36,17 +36,17 @@ pump_sample_grid(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
 including zero outcomes.}
 
 \item{target.power}{Target power for search algorithm}
 
-\item{power.definition}{see pump_info()$Power for 
+\item{power.definition}{see pump_info() for 
 possible power definitions}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).

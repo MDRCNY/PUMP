@@ -19,7 +19,7 @@ get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
 }
 
 
-#' @title Examine a power curve
+#' @title Examine a power curve (results function)
 #'
 #' @description This will give a plot of power vs. 
 #' MDES or sample size. It can be useful to
@@ -124,7 +124,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 
 
 
-#' @title Examine search path of a power search
+#' @title Examine search path of a power search (results function)
 #'
 #' @description This will give triple-plots about 
 #' how the search narrowed down into the
@@ -146,7 +146,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #'    nbar = 50, M = 3, MDES = 0.125,
 #'    Tbar = 0.5, alpha = 0.05,
 #'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-#'    rho = 0.2, tnum = 2000)
+#'    rho = 0.2)
 #' plot_power_search(J)
 #'
 plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
@@ -208,7 +208,7 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   
 }
 
-#' @title Plot a single scenario pump object
+#' @title Plot a single scenario pump object (results function)
 #' 
 #' @description Works on an object returned by pump_power(),
 #' and visualizes different definitions of power across
@@ -272,7 +272,10 @@ plot.pumpresult <- function( x, ... )
                           y = "power",
                           shape = "MTP",
                           color = "MTP")) +
-      ggplot2::geom_point(size = 2, position = ggplot2::position_dodge(0.25)) +
+      ggplot2::geom_point(
+          size = 2, 
+          position = ggplot2::position_dodge(0.25)
+      ) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across
                                different definitions of power")) +
@@ -319,28 +322,29 @@ plot.pumpgridresult.power <- function(
   }
   plot.data <- x
   
-  
   # extract renamed power definition
   powerType <- NULL
   yLabel <- "power"
   
-  
   # For M=1, we only have one kind of power.
   if ( M == 1 ) {
-    stopifnot( is.null( power.definition ) || power.definition == "D1indiv" || power.definition == "indiv.mean" )
-    power.definition = NULL
-    yLabel = "individual power"
-    powerType = "individual"
+    stopifnot( is.null( power.definition ) || 
+               power.definition == "D1indiv" || 
+               power.definition == "indiv.mean" )
+    power.definition <- NULL
+    yLabel <- "individual power"
+    powerType <- "individual"
   } else if ( !is.null( power.definition ) ) {
     
     power.names <- get_power_names( M, long = TRUE )
     if ( !( power.definition %in% names(power.names) ) ) {
       sstop( "Power %s not one of %s",
-             power.definition, paste0( names(power.names), collapse=", " ) )
+             power.definition, paste0( names(power.names), 
+             collapse = ", " ) )
     }
     powerType <- power.names[[power.definition]]
 
-    pstat = parse_power_definition(power.definition)
+    pstat <- parse_power_definition(power.definition)
     if( pstat$indiv ) {
       powerType <- "mean individual"
     }
@@ -366,11 +370,11 @@ plot.pumpgridresult.power <- function(
                          names_to = "MTP", values_to = "power")
   
   # Aggregate data, if multiple things varying
-  var_names = attr( x, "var_names" )
+  var_names <- attr( x, "var_names" )
   if ( length( var_names ) > 1 ) {
       plot.data <- plot.data %>%
         dplyr::group_by( dplyr::across( c( "powerType", "MTP", var.vary ) ) ) %>%
-        dplyr::summarise( power = mean( power ) )
+        dplyr::summarise( power = mean( .data$power ) )
       
       smessage('Note: Averaged power across other varying factors in grid: %s',
              paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
@@ -422,11 +426,11 @@ plot.pumpgridresult.power <- function(
 
 ##### MDES and Sample grid plot methods #####
 
-fetch_power_type = function( x, power.definition ) {
+fetch_power_type <- function( x, power.definition ) {
   M <- params(x)$M
   if ( !is.numeric(M) ) {
     stopifnot( !is.null( x$M ) )
-    M = max( x$M )
+    M <- max( x$M )
   } 
   
   # extract renamed power definition
@@ -454,15 +458,20 @@ fetch_power_type = function( x, power.definition ) {
 
 
 
-handle_power_definition = function( x, power.definition, outcome, var.vary ) {
+handle_power_definition <- function( 
+    x, power.definition, outcome, var.vary 
+) {
   plot.data <- as.data.frame(x)
   
-  multiPower = FALSE
+  multiPower <- FALSE
   if (  "power.definition" %in% colnames(plot.data) )  {
     if ( is.null( power.definition ) ) {
       multiPower <- TRUE
     } else {
-      plot.data = dplyr::filter( plot.data, .data$power.definition == power.definition )
+      plot.data <- dplyr::filter( 
+          plot.data, 
+          .data$power.definition == power.definition 
+      )
       stopifnot( nrow(x) > 0 )
     }
   } else {
@@ -473,14 +482,14 @@ handle_power_definition = function( x, power.definition, outcome, var.vary ) {
     }
   }
   
-  powerType = ""
+  powerType <- ""
   if ( ! multiPower ) {
     powerType <- fetch_power_type( x, power.definition )
   } 
   
-  powerPer = ""
+  powerPer <- ""
   if ( is.numeric( params(x)$target.power ) ) {
-    powerPer = paste0( round( 100 * params(x)$target.power ), "% " )
+    powerPer <- paste0( round( 100 * params(x)$target.power ), "% " )
   } else {
     # target power is varying.  Do nothing and hope.
   }
@@ -490,14 +499,15 @@ handle_power_definition = function( x, power.definition, outcome, var.vary ) {
   
   title <- ""
   if ( powerType == "" ) {
-    title = paste0( outcome, " for ", powerPer, powerType,
+    title <- paste0( outcome, " for ", powerPer, powerType,
                     " power when ", var.vary, " varies")
   } else {
-    title = paste0( outcome, " for ", powerPer,
+    title <- paste0( outcome, " for ", powerPer,
                     "power when ", var.vary, " varies")
   }
   
-  list( plot.data = plot.data, powerType = powerType, multiPower = multiPower,
+  list( plot.data = plot.data, powerType = powerType, 
+        multiPower = multiPower,
         title = title )
 }
 
@@ -508,23 +518,32 @@ handle_power_definition = function( x, power.definition, outcome, var.vary ) {
 #'
 #' @inheritParams plot.pumpgridresult
 #' @keywords internal
-plot.pumpgridresult.mdes <- function( x, power.definition = NULL, var.vary, ...  )
+plot.pumpgridresult.mdes <- function( 
+    x, power.definition = NULL, var.vary, ...  
+)
 {
   M <- params(x)$M
   
-  res <- handle_power_definition( x, power.definition, outcome = "MDES", var.vary = var.vary )
+  res <- handle_power_definition( 
+      x, power.definition, outcome = "MDES", var.vary = var.vary 
+  )
   
-  plot.data = res$plot.data
+  plot.data <- res$plot.data
   
   # Aggregate data, if multiple things varying
-  var_names = setdiff( attr( x, "var_names" ), c( "MTP", "power.definition" ) )
+  var_names <- setdiff( 
+      attr( x, "var_names" ), 
+      c( "MTP", "power.definition" ) 
+  )
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
       dplyr::group_by( dplyr::across( c( "MTP", var.vary ) ) ) %>%
-      dplyr::summarise( Adjusted.MDES = mean( Adjusted.MDES ) )
+      dplyr::summarise( Adjusted.MDES = mean( .data$Adjusted.MDES ) )
     
-    smessage('Note: Averaged Adjusted.MDES across other varying factors in grid: %s',
-             paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
+    smessage('Note: Averaged Adjusted.MDES across 
+             other varying factors in grid: %s',
+             paste0( setdiff( var_names, var.vary ), 
+                     collapse = ", " ) )
   }
   
   
@@ -540,8 +559,10 @@ plot.pumpgridresult.mdes <- function( x, power.definition = NULL, var.vary, ... 
                         y = "Adjusted.MDES",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 2,
-                        position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::geom_point(
+        size = 2,
+        position = ggplot2::position_dodge(width = 0.125)
+    ) +
     ggplot2::ggtitle( res$title ) + 
     ggplot2::labs(x = paste0(var.vary, " (same across all outcomes)"),
                   y = "MDES",
@@ -566,26 +587,34 @@ plot.pumpgridresult.mdes <- function( x, power.definition = NULL, var.vary, ... 
 #'
 #' @inheritParams plot.pumpgridresult
 #' @keywords internal
-plot.pumpgridresult.sample <- function( x, power.definition = NULL, var.vary, ...  ) {
+plot.pumpgridresult.sample <- function( 
+    x, power.definition = NULL, var.vary, ...  
+) {
   
-  params = params(x)
+  params <- params(x)
 
   sampleType <- attr( x, "sample.level" )
   
-  res <- handle_power_definition( x, power.definition, outcome = sampleType,
-                                  var.vary = var.vary )
+  res <- handle_power_definition( 
+      x, power.definition, outcome = sampleType,
+      var.vary = var.vary 
+  )
   
-  plot.data = res$plot.data
+  plot.data <- res$plot.data
   
   # Aggregate data, if multiple things varying
-  var_names = setdiff( attr( x, "var_names" ), c( "MTP", "power.definition" ) )
+  var_names <- setdiff( 
+      attr( x, "var_names" ), c( "MTP", "power.definition" ) 
+  )
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
       dplyr::group_by( dplyr::across( c( "MTP", var.vary ) ) ) %>%
-      dplyr::summarise( Sample.size = mean( Sample.size ) )
+      dplyr::summarise( Sample.size = mean( .data$Sample.size ) )
     
-    smessage('Note: Averaged Sample.size across other varying factors in grid: %s',
-             paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
+    smessage('Note: Averaged Sample.size across 
+             other varying factors in grid: %s',
+             paste0( setdiff( var_names, var.vary ), 
+                     collapse = ", " ) )
   }
   
   # for nice axes
@@ -610,8 +639,10 @@ plot.pumpgridresult.sample <- function( x, power.definition = NULL, var.vary, ..
                         y = "Sample.size",
                         color = "MTP",
                         shape = "MTP")) +
-    ggplot2::geom_point(size = 2,
-                        position = ggplot2::position_dodge(width = 0.125)) +
+    ggplot2::geom_point(
+        size = 2,
+        position = ggplot2::position_dodge(width = 0.125)
+    ) +
     ggplot2::scale_y_continuous(limits = c(ymin, ymax),
                                 breaks = integer.breaks(ymin, ymax)) + 
     ggplot2::ggtitle( res$title ) +
@@ -634,7 +665,7 @@ plot.pumpgridresult.sample <- function( x, power.definition = NULL, var.vary, ..
 }
 
 
-#'@title Plot a pump grid result object
+#'@title Plot a pump grid result object (results function)
 #'
 #'@description
 #'
@@ -670,7 +701,9 @@ plot.pumpgridresult <- function( x, power.definition = NULL, var.vary = NULL, ..
   # validation
   stopifnot( is.pumpgridresult( x ) )
   
-  var_names <- setdiff( attr(x, "var_names" ), c( "MTP", "power.definition" ) )
+  var_names <- setdiff( 
+      attr(x, "var_names" ), c( "MTP", "power.definition" ) 
+  )
   
   if ( is.null( var_names ) ) {
     stop( "No list of varying design elements found in pump grid result" )
@@ -678,14 +711,16 @@ plot.pumpgridresult <- function( x, power.definition = NULL, var.vary = NULL, ..
   
   if( !is.null( var.vary ) ) {
     if ( !(var.vary %in% var_names) ) {
-      sstop('Please provide a var.vary amongst the variables that vary. %s is not listed.', var.vary )
+      sstop('Please provide a var.vary amongst 
+            the variables that vary. %s is not listed.', var.vary )
     }
   } else {
     if ( length( var_names ) > 1 ) {
-      sstop( "Need to specify what variable (of %s) to examine via var.vary parameter in plot()",
-             paste0( var_names, collapse="," ) )
+      sstop( "Need to specify what variable (of %s) to 
+             examine via var.vary parameter in plot()",
+             paste0( var_names, collapse = "," ) )
     }
-    var.vary = var_names
+    var.vary <- var_names
   }
   
   

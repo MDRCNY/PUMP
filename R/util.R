@@ -36,8 +36,8 @@ parse_power_definition <- function( power.definition, M ) {
 get_power_names <- function( M, long=FALSE ) {
     
     if ( M == 1 ) {
-        nms = c( "D1indiv" )
-        lnms = c( "individual outcome 1" )
+        nms <- c( "D1indiv" )
+        lnms <- c( "individual outcome 1" )
     } else {
         nms <- c( paste('D', 1:M, "indiv", sep="" ),
                   'indiv.mean',

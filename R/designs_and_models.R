@@ -1,4 +1,21 @@
-#' @title Provides details about supported package features
+
+#' PUMP: A package for estimating power under multiplicity
+#'
+#' The PUMP package provides three core functions:
+#' \itemize{
+#' \item pump_power() for estimating power
+#' \item pump_mdes() for estimating minimum detectable effect size
+#' \item pump_sample() for estimating sample size.
+#' }
+#' 
+#' For a full package description, see \url{https://arxiv.org/abs/2112.15273}.
+#'
+#' @docType package
+#' @name PUMP
+NULL
+
+
+#' @title Provides details about supported package features (core function)
 #' 
 #' @description List user options:
 #' designs and models (d_m), including what
@@ -7,6 +24,11 @@
 #' types of power;
 #' design and model parameters.
 #' 
+#' @seealso For more detailed information about user choices,
+#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' which includes a detailed Technical Appendix
+#' including information about the designs and models
+#' and parameters.
 #'
 #' @param comment TRUE/FALSE, prints out 
 #' long description of
@@ -280,7 +302,7 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 }
 
 
-#' @title Calculate the degrees of freedom for a particular context (d_m code)
+#' @title Calculate the degrees of freedom for a particular context (supporting function)
 #'
 #' @description Given sample sizes, return the used degrees of freedom 
 #' (frequently conservative) for the design and model.
@@ -868,6 +890,13 @@ validate_inputs <- function( d_m, params.list,
        any(params.list$ICC.2 + params.list$ICC.3 > 1))
     {
       stop('ICC.2 + ICC.3 must be <= 1')
+    }
+    
+    # ICC
+    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
+       any(params.list$ICC.2 + params.list$ICC.3 == 1))
+    {
+        warning('ICC.2 + ICC.3 = 1, leaving no variation at level 1')
     }
 
     # invalid rho

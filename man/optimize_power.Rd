@@ -46,17 +46,17 @@ optimize_power(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{search.type}{type of optimization search being conducted.
 Options: K, J, nbar, mdes}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{target.power}{Target power for search algorithm}
 
-\item{power.definition}{see pump_info()$Power for 
+\item{power.definition}{see pump_info() for 
 possible power definitions}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).

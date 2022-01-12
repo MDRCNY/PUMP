@@ -92,7 +92,7 @@ setup_default_parallel_plan <- function() {
 }
 
 
-#' @title Run pump_power on varying values of parameter(s)
+#' @title Run pump_power on varying values of parameters (grid function)
 #'
 #' @description This extension of `pump_power()` will 
 #' take lists of parameter values and run
@@ -180,7 +180,7 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 
 
 
-#' @title Run pump_mdes on varying values of parameter(s)
+#' @title Run pump_mdes on varying values of parameters (grid function)
 #' 
 #' @description See pump_power_grid() for more details.
 #'
@@ -197,7 +197,7 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 #'   tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
 #'   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
-#'   rho = 0.4, tnum = 1000)
+#'   rho = 0.4, tnum = 500)
 pump_mdes_grid <- function( d_m, MTP, M,
                             target.power, power.definition, tol = 0.01,
                             nbar, J = 1, K = 1,
@@ -245,7 +245,7 @@ pump_mdes_grid <- function( d_m, MTP, M,
 }
 
 
-#' @title Run pump_sample on varying values of parameter(s)
+#' @title Run pump_sample on varying values of parameters (grid function)
 #' 
 #' @description See pump_power_grid() for further details.
 #'

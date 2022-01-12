@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot.pumpgridresult}
 \alias{plot.pumpgridresult}
-\title{Plot a pump grid result object}
+\title{Plot a pump grid result object (results function)}
 \usage{
 \method{plot}{pumpgridresult}(x, power.definition = NULL, var.vary = NULL, ...)
 }

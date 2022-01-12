@@ -27,7 +27,7 @@ make.pumpresult <- function( x,
 
 
 
-#' @title Update a single pump call to a grid call
+#' @title Update a single pump call to a grid call (grid function)
 #'
 #' @description Take a pumpresult and provide lists 
 #' of parameters to explore various versions 
@@ -44,7 +44,7 @@ make.pumpresult <- function( x,
 #' pp <- pump_power(d_m = "d2.1_m2fc", MTP = "HO",
 #'   nbar = 200, J = 20, MDES = 0.2, M = 3,
 #'   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0)
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0, tnum = 500)
 #'
 #' gd <- update_grid( pp, J = c( 10, 20, 30 ) )
 #'
@@ -84,7 +84,7 @@ update_grid <- function( x, ... ) {
 
 
 
-#' @title Update a pump call, tweaking some parameters
+#' @title Update a pump call, tweaking some parameters (core function)
 #'
 #' @description Works on objects returned by
 #' pump_power(), pump_mdes(), or pump_sample().
@@ -193,7 +193,8 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #'
 #' @description
 #' The pumpresult object is an S3 class that holds the results from
-#' `pump_power()`, `pump_sample()`, and `pump_mdes()`.
+#' `pump_power()`, 
+#' `pump_sample()`, and `pump_mdes()`.
 #'
 #' It has several methods that pull different information from this object, and
 #' some printing methods for getting nicely formatted results.
@@ -214,7 +215,7 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #'   M = 5, MDES = 0.125, Tbar = 0.5, alpha = 0.05,
 #'   numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.1, ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5)
+#'   omega.2 = 0, omega.3 = 0.1, rho = 0.5, tnum = 1000)
 #'   
 #' print(pp)
 #' params(pp)
@@ -232,7 +233,7 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #'   typesample = 'J', target.power = 0.7,
 #'   nbar = 50, M = 3, MDES = 0.125,
 #'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2, tnum = 1000)
 #'   
 #' print_search(J)   
 #' search_path(J)
@@ -242,7 +243,7 @@ NULL
 
 
 
-#' @title Get design and model parameters from pumpresult object
+#' @title Get design and model parameters from pumpresult object (result function)
 #'
 #' @return params: List of design parameters used.
 #'
@@ -262,7 +263,7 @@ params <- function( x, ... ) {
 
 
 
-#' @title Get context (design and model) from pumpresult object
+#' @title Get context (design and model) from pumpresult object (result function)
 #'
 #' @return d_m: d_m used (as string)
 #'
@@ -295,7 +296,7 @@ search_path <- function( x, ... ) {
 }
 
 
-#' @title Obtain power curve over a range of parameters
+#' @title Obtain power curve over a range of parameters (result function)
 #'
 #' @description This is used to see rate of 
 #' power change as a function of sample size or MDES.
@@ -335,7 +336,7 @@ power_curve <- function( x, all = FALSE,
 
 
 
-#' @title Return type of pump object
+#' @title Return type of pump object (result function)
 #' @description returns whether call was power, mdes, or sample
 #' @return pump_type: power, mdes, or sample, as a string.
 #'
@@ -364,7 +365,7 @@ is_long_table <- function( power_table ) {
 
 
 
-#' @title Convert power table from wide to long
+#' @title Convert power table from wide to long (result function)
 #'
 #' @description Transform table returned from pump_power 
 #' to a long format table or to a wide format table.
@@ -563,7 +564,7 @@ print.pumpresult <- function( x, n = 10,
   invisible( x )
 }
 
-#' @title Print the search history of a pump result object
+#' @title Print the search history of a pump result object (result function)
 #'
 #' @description For pump_mdes and pump_sample, print the 
 #' (abbreviated) search history.
@@ -595,7 +596,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' @title Print context (design and model) of given pump result object
+#' @title Print context (design and model) of given pump result object (result function)
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.

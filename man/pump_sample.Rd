@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_sample.R
 \name{pump_sample}
 \alias{pump_sample}
-\title{Estimate the required sample size using PUMP method.}
+\title{Estimate the required sample size (core function)}
 \usage{
 pump_sample(
   d_m,
@@ -47,10 +47,10 @@ pump_sample(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{typesample}{string; type of sample size to 
 calculate: "nbar", "J", or "K".}
@@ -82,7 +82,7 @@ unit, so the total number of level 2 units is J x K.}
 
 \item{target.power}{Target power for search algorithm}
 
-\item{power.definition}{see pump_info()$Power for 
+\item{power.definition}{see pump_info() for 
 possible power definitions}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
@@ -176,6 +176,12 @@ power definition, and choices of all relevant design parameters.
 
 The functions performs a search algorithm,
 and returns the sample size value within the specified tolerance.
+For a list of choices for specific parameters, see pump_info().
+For more detailed information about this function and the user choices,
+see the manuscript <arXiv:2112.15273>,
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }
 \examples{
 J <- pump_sample(
@@ -189,5 +195,6 @@ J <- pump_sample(
   MDES = 0.125,
   Tbar = 0.5, alpha = 0.05,
   numCovar.1 = 1,
-  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+  R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2,
+  tnum = 1000)
 }

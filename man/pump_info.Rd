@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{pump_info}
 \alias{pump_info}
-\title{Provides details about supported package features}
+\title{Provides details about supported package features (core function)}
 \usage{
 pump_info(comment = TRUE)
 }
@@ -18,4 +18,10 @@ parameters are relevant for each context;
 multiple testing procedures;
 types of power;
 design and model parameters.
+
+For information about these choices,
+see the manuscript <arXiv:2112.15273>,
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }

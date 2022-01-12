@@ -21,7 +21,7 @@ calc_pval <- function(rawt, t.df, two.tailed)
 
 
 
-#' @title Calculates different definitions of power
+#' @title Calculates different definitions of power (support function)
 #'
 #' @description This function takes in a matrix of adjusted p-values
 #' and unadjusted p-values and outputs different types of power.
@@ -130,17 +130,25 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 
 
 
-#' @title Estimate power using PUMP method.
+#' @title Estimate power across definitions (core function)
 #'
 #' @description The user chooses the context (d_m), MTP,
 #' MDES, and choices of all relevant design parameters.
 #' 
 #' The functions returns power for all definitions of power for any MTP.
+#' For a list of choices for specific parameters, see pump_info().
+#' 
+#' @seealso For more detailed information about this function 
+#' and the user choices,
+#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' which includes a detailed Technical Appendix
+#' including information about the designs and models
+#' and parameters.
 #'
 #' @param d_m string; a single context, which is a design and model code. 
-#' See pump_info()$Context for list of choices.
+#' See pump_info() for list of choices.
 #' @param MTP string, or vector of strings; multiple testing procedure(s).
-#' See pump_info()$Adjustment for list of choices.
+#' See pump_info() for list of choices.
 #' @param MDES scalar or vector; the desired MDES values for each outcome. 
 #' Please provide a scalar, a vector of length M, or vector of 
 #' values for non-zero outcomes.

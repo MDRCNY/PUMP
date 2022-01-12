@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_Yobs}
 \alias{gen_Yobs}
-\title{Generate observed outcomes (simulations)}
+\title{Generate observed outcomes (simulation function)}
 \usage{
 gen_Yobs(full.data, T.x)
 }

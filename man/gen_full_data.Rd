@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_full_data}
 \alias{gen_full_data}
-\title{Generate simulated multi-level data}
+\title{Generate simulated multi-level data (simulation function)}
 \usage{
 gen_full_data(dgp.params.list)
 }
