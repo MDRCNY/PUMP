@@ -148,11 +148,6 @@ MDES, and choices of all relevant design parameters.
 
 The functions returns power for all definitions of power for any MTP.
 For a list of choices for specific parameters, see pump_info().
-For more detailed information about this function and the user choices,
-see the manuscript <arXiv:2112.15273>,
-which includes a detailed Technical Appendix
-including information about the designs and models
-and parameters.
 }
 \examples{
 pp <- pump_power(
@@ -170,4 +165,12 @@ pp <- pump_power(
    omega.2 = 0, omega.3 = 0.1, 
    rho = 0.5)
 
+}
+\seealso{
+For more detailed information about this function 
+and the user choices,
+see the manuscript \url{https://arxiv.org/abs/2112.15273},
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }

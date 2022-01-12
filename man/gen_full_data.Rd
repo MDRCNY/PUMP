@@ -22,6 +22,7 @@ both unobserved and observed potential outcomes.
 
 Takes in a list of necessary data-generating parameters.
 
-This function is beyond the main scope of calculating power.
+This function is beyond the main scope of calculating power,
+and is instead used for simulating data.
 For more info on use, see the simulation vignette.
 }

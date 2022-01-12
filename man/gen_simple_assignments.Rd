@@ -22,4 +22,8 @@ Generates simple default schools and
 districts IDs for individual students for the purpose of
 simulations. This assumes equal sized schools in 
 equal sized districts.
+
+This function is beyond the main scope of calculating power,
+and is instead used for simulating data.
+For more info on use, see the simulation vignette.
 }

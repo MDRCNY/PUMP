@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot.pumpgridresult}
 \alias{plot.pumpgridresult}
-\title{Plot a pump grid result object (results function)}
+\title{Plot a pump grid result object}
 \usage{
 \method{plot}{pumpgridresult}(
   x,
@@ -16,18 +16,19 @@
 \arguments{
 \item{x}{pumpgridresult object}
 
-\item{power.definition}{definition of power to plot.  If NULL, plot all
+\item{power.definition}{string; definition of power to plot.  If NULL, plot all
 definitions as a facet wrap.}
 
-\item{var.vary}{variable to vary on X axis.  If NULL, and only one thing
+\item{var.vary}{string; variable to vary on X axis.  If NULL, and only one thing
 varies, then it will default to single varying parameter.}
 
-\item{lines}{TRUE means connect dots with lines on the plots.  False means no
-lines.}
+\item{lines}{logical; TRUE means connect dots with lines on the plots.
+FALSE means no lines.}
+
+\item{include.title}{logical; whether to include/exclude title 
+(if planning a facet wrap, for example)}
 
 \item{...}{additional parameters}
-
-\item{Use}{short titles (if planning a facet wrap, for example)}
 }
 \value{
 a ggplot object

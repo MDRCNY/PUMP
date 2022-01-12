@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot.pumpresult}
 \alias{plot.pumpresult}
-\title{Plot a single scenario pump object (results function)}
+\title{Plot a single scenario pump object}
 \usage{
 \method{plot}{pumpresult}(x, ...)
 }

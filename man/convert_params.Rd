@@ -17,4 +17,8 @@ Converts user-provided parameters such as ICC
 and omega into data-generating parameters that can 
 produce simulated data,
 such as variance values and covariate coefficients.
+
+This function is beyond the main scope of calculating power,
+and is instead used for simulating data.
+For more info on use, see the simulation vignette.
 }

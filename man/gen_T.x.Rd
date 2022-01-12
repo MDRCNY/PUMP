@@ -23,4 +23,8 @@ vector of treatment assignments for each unit
 \description{
 Given a RCT design and supporting information,
 generates treatment assignments for each student.
+
+This function is beyond the main scope of calculating power,
+and is instead used for simulating data.
+For more info on use, see the simulation vignette.
 }
