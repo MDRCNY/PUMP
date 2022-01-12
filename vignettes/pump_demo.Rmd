@@ -14,6 +14,7 @@ geometry: margin=1.5in
 
 ```{r initialize, include = FALSE}
 library( PUMP )
+set.seed( 1010203 )
 
 knitr::opts_chunk$set(
   cache = TRUE,
@@ -407,7 +408,7 @@ The `pump_sample` method will search over any one of these.
 Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10):
 
 ```{r setseedsamp, include = FALSE}
-set.seed( 0440044 )
+
 ```
 
 ```{r samplesizecalc}
@@ -430,7 +431,7 @@ A check is easy to do; simply run the found design through `pump_power()`, which
 When we do this, we can also increase the number of iterations to get more precise estimates of power, as well:
 
 ```{r samplesizeverify}
-p_check <- update( smp, type = "power", tnum = 500,
+p_check <- update( smp, type = "power", tnum = 50000,
                    long.table = TRUE )
 ```
 
@@ -473,11 +474,11 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 ```{r othercorrections}
 p2 <- update( p_check,
               MTP = c( "BF", "HO", "WY-SD" ),
-              tnum = 500, B = 100, parallel.WY.cores = 2 )
+              tnum = 5000, parallel.WY.cores = 2 )
 plot( p2 )
 ```
 
-To speed up computation, we could set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
+To speed up computation, we set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
 We also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -536,30 +537,14 @@ Using update allows for targeted comparison of major choices, but if we are inte
 
 We above saw that the ICC does impact power considerably.
 We next extend this evaluation by exploring a range of options for both level two and three ICCs, so we can assess whether our power is sufficient across a set of plausible values.
-First, we explore just `ICC.2`.
 The `update_grid()` call makes this straightforward: we pass our baseline scenario along with lists of parameters to additionally explore:
-
-```{r}
-grid <- update_grid( p_check,
-        	ICC.2 = seq( 0, 0.3, 0.05 ),
-        	tnum = 500 )
-```
 
 We can then easily visualize the variation in min1 power by calling `plot()` on the object.
 
 ```{r}
-plot( grid, var.vary = "ICC.2", power.definition = "min1" )
-```
-
-The built-in plot function visualizes one parameter varying at a time.
-To visualize the variation in two parameters, we can construct our own plot.
-
-```{r}
 grid <- update_grid( p_check,
         	ICC.2 = seq( 0, 0.3, 0.05 ),
-        	ICC.3 = seq( 0, 0.60, 0.20 ),
-        	tnum = 500 )
-
+        	ICC.3 = seq( 0, 0.60, 0.20 ) )
 
 plot( grid, power.definition = "min1" )
 ```
@@ -596,16 +581,12 @@ For example, with Westfall-Young, we saw that the correlation can improve our in
 We might not know what will happen to $2-$minimal power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this question relatively easily by letting `rho` vary as so:
 
-```{r include=FALSE}
-set.seed( 4040440 )
-```
-
 ```{r}
 gridRho <- update_grid( p_check,
         	  MTP = c( "BF", "WY-SD" ),
         	  rho = seq( 0, 0.9, by = 0.15 ),
         	  tnum = 500,
-        	  B = 100 )
+        	  B = 10000 )
 ```
 
 We then plot our results.
@@ -625,10 +606,6 @@ Complete power climbs as correlation increases, and $2-$minimal power is general
 We finally explore varying the number of outcomes with no effects.
 This exploration is an important way to hedge a design against the possibility that some number of the identified outcomes are measured poorly, or are simply not impacted by treatment.
 We use a grid search, varying the number of outcomes that have no treatment impact via the `numZero` design parameter:
-
-```{r include=FALSE}
-set.seed( 402440411 )
-```
 
 ```{r, fig.height = 2.5 }
 gridZero <- update_grid( p_check,
