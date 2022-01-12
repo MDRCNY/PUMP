@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_corr_matrix}
 \alias{gen_corr_matrix}
-\title{Generate correlation matrix given rho and M (simulation function)}
+\title{Generate correlation matrix (simulation function)}
 \usage{
 gen_corr_matrix(M, rho.scalar)
 }
@@ -15,5 +15,5 @@ gen_corr_matrix(M, rho.scalar)
 rho.matrix, M x M matrix with rho.scalar as diag
 }
 \description{
-Generate correlation matrix given rho and M (simulation function)
+Generate correlation matrix (simulation function)
 }

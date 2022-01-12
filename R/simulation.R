@@ -2,7 +2,7 @@
 # generate simulation data
 # ------------------------------#
 
-#' @title Generate correlation matrix given rho and M (simulation function)
+#' @title Generate correlation matrix (simulation function)
 #'
 #' @param M dimension of matrix
 #' @param rho.scalar fixed rho value
@@ -112,7 +112,7 @@ gen_full_data <- function(dgp.params.list) {
     # ------------------------------#
     # generates vector of school and district assignments, assuming equal sizes of everything
     if ( is.null( S.id ) ) {
-        assignments <- gen_simple_assignments( J, K, nbar )
+        assignments <- gen_assignments( J, K, nbar )
         S.id        <- assignments[['S.id']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
         D.id        <- assignments[['D.id']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
     }
@@ -297,7 +297,7 @@ gen_full_data <- function(dgp.params.list) {
 
 
 
-#' @title Converts model-based parameters into DGP parameters (simulation function)
+#' @title Converts model params into DGP params (simulation function)
 #' 
 #' @description Converts user-provided parameters such as ICC
 #' and omega into data-generating parameters that can 
@@ -461,7 +461,7 @@ convert_params <- function(model.params.list) {
     
 }
 
-#' @title Generates school and district ID assignments (simulation function)
+#' @title Generates school and district assignments (simulation function)
 #' 
 #' @description Generates simple default schools and 
 #' districts IDs for individual students for the purpose of
@@ -479,7 +479,7 @@ convert_params <- function(model.params.list) {
 #' @return list(S.id, D.id) of school and district 
 #' assignments for each individual
 #' @export
-gen_simple_assignments <- function(J, K, nbar){
+gen_assignments <- function(J, K, nbar){
     
     N <- nbar * J * K
     

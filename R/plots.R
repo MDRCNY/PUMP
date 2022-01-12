@@ -19,7 +19,7 @@ get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
 }
 
 
-#' @title Examine a power curve
+#' @title Examine a power curve (result function)
 #'
 #' @description This will give a plot of power vs. 
 #' MDES or sample size. It can be useful to
@@ -131,7 +131,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 
 
 
-#' @title Examine search path of a power search
+#' @title Examine search path of a power search (result function)
 #'
 #' @description This will give triple-plots about 
 #' how the search narrowed down into the
@@ -216,7 +216,7 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 }
 
 
-#' @title Plot a single scenario pump object
+#' @title Plot a single scenario pump object (result function)
 #' 
 #' @description Works on an object returned by pump_power(),
 #' and visualizes different definitions of power across
@@ -714,7 +714,7 @@ plot.pumpgridresult.sample <- function(
 }
 
 
-#'@title Plot a pump grid result object
+#'@title Plot a pump grid result object (result function)
 #'
 #'@description
 #'

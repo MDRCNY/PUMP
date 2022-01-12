@@ -596,7 +596,7 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' @title Print context (design and model) of given pump result object (result function)
+#' @title Print context (design and model) of object (result function)
 #'
 #' @param x A pumpresult object.
 #' @param insert_results Include actual results in the printout.
