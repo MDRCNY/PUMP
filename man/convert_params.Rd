@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{convert_params}
 \alias{convert_params}
-\title{Converts model-based parameters into DGP parameters (simulation function)}
+\title{Converts model params into DGP params (simulation function)}
 \usage{
 convert_params(model.params.list)
 }

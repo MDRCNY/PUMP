@@ -317,7 +317,7 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 }
 
 
-#' @title Calculate the degrees of freedom for a particular context (supporting function)
+#' @title Calculate degrees of freedom (support function)
 #'
 #' @description Given sample sizes, return the used degrees of freedom 
 #' (frequently conservative) for the design and model.

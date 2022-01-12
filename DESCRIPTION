@@ -8,7 +8,7 @@ Authors@R: c(
   person("Kristen", "Hunter",, "kristenbhunter@gmail.com", c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
   person("Zarni", "Htet",, "zarni.htet@mdrc.org", c("aut"))
   )
-Maintainer: The package maintainer <kristenbhunter@gmail.com>
+Maintainer: The package maintainer <luke_miratrix@gse.harvard.edu>
 Description: Estimates power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030). For a full package description, including a detailed technical appendix, see <arXiv:2112.15273>.
 URL: https://github.com/MDRCNY/PUMP
 Depends:
@@ -17,7 +17,6 @@ Imports:
      dplyr,
      ggplot2,
      ggpubr,
-     gridExtra,
      future,
      magrittr,
      mvtnorm,

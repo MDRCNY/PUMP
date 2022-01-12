@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_search}
 \alias{plot_power_search}
-\title{Examine search path of a power search}
+\title{Examine search path of a power search (result function)}
 \usage{
 plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
