@@ -4,12 +4,17 @@
 \alias{pump_info}
 \title{Provides details about supported package features (core function)}
 \usage{
-pump_info(comment = TRUE)
+pump_info(
+  topic = c("all", "context", "adjustment", "power", "parameters"),
+  comment = TRUE
+)
 }
 \arguments{
 \item{comment}{TRUE/FALSE, prints out 
 long description of
 each design and method}
+
+\item{topic:}{What kind of info.  One of}
 }
 \description{
 List user options:

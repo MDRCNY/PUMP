@@ -4,7 +4,14 @@
 \alias{plot.pumpgridresult}
 \title{Plot a pump grid result object (results function)}
 \usage{
-\method{plot}{pumpgridresult}(x, power.definition = NULL, var.vary = NULL, ...)
+\method{plot}{pumpgridresult}(
+  x,
+  power.definition = NULL,
+  var.vary = NULL,
+  lines = TRUE,
+  include.title = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{pumpgridresult object}
@@ -15,7 +22,12 @@ definitions as a facet wrap.}
 \item{var.vary}{variable to vary on X axis.  If NULL, and only one thing
 varies, then it will default to single varying parameter.}
 
+\item{lines}{TRUE means connect dots with lines on the plots.  False means no
+lines.}
+
 \item{...}{additional parameters}
+
+\item{Use}{short titles (if planning a facet wrap, for example)}
 }
 \value{
 a ggplot object

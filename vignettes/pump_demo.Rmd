@@ -14,6 +14,7 @@ geometry: margin=1.5in
 
 ```{r initialize, include = FALSE}
 library( PUMP )
+
 knitr::opts_chunk$set(
   cache = TRUE,
   collapse = TRUE,
@@ -120,6 +121,7 @@ These additional functions include:
 The authors of the `PUMP` package have also created a web application built with R Shiny.
 This web application calls the `PUMP` package and allows users to conduct calculations with a user-friendly interface, but it is less flexible than the package, with a focus on simpler scenarios (e.g., 10 or fewer outcomes).
 The app can be found at \url{https://mdrc.shinyapps.io/pump/}.  
+
 
 # Case study: Diplomas Now
 
@@ -360,6 +362,7 @@ knitr::kable( m, digits = 3 ) %>%
   kableExtra::kable_styling( position = "center" )
 ```
 
+
 The answers `pump_mdes()` gives are approximate as we are calculating them via monte carlo simulation.
 To control accuracy, we can specify a tolerance (`tol`) of how close the estimated power needs to be to the desired target along with the number of iterations in the search sequence (via `start.tnum`, `tnum`, and `final.tnum`).
 The search will stop when the estimated power is within `tol` of `target.power`, as estimated by `final.tnum` iterations.
@@ -401,7 +404,7 @@ We might instead want to ask how much larger our design would need to be in orde
 In particular, we might want to determine the needed number of students per school, the number of schools, or the number of blocks to detect an effect of a given size.
 The `pump_sample` method will search over any one of these.
 
-Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10).
+Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10):
 
 ```{r setseedsamp, include = FALSE}
 set.seed( 0440044 )
@@ -415,11 +418,8 @@ smp <- pump_sample(
   target.power = 0.80, power.definition = "min1", tol = 0.01,
   MDES = 0.10, M = 5, nbar = 258, J = 3,
   Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 3,
-  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4,
-  tnum = 500)
-```
+  R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4 )
 
-```{r echo = FALSE}
 print( smp )
 ```
 
@@ -453,7 +453,7 @@ The `complete` row shows the power to reject all hypotheses; it is only defined 
 We can look at a power curve of our `pump_sample()` call to assess how sensitive power is to our level two sample size:^[The points on the plots show the evaluated simulation trials, with larger points corresponding to more iterations and greater precision.]
 
 ```{r plotsamplepowercurve, fig.height = 3.5, fig.width=5, echo=TRUE}
-plot_power_curve( smp )
+plot( smp )
 ```
 
 *Remark.*
@@ -560,15 +560,11 @@ grid <- update_grid( p_check,
         	ICC.3 = seq( 0, 0.60, 0.20 ),
         	tnum = 500 )
 
-grid$ICC.3 <- as.factor( grid$ICC.3 )
-grid <- dplyr::filter( grid, MTP == "HO" )
 
-ggplot2::ggplot( grid, aes( ICC.2, min1, group = ICC.3, col = ICC.3 ) ) +
-	geom_line() + geom_point() +
-	labs( y = "Min-1 Power" ) +
-  coord_cartesian( ylim = c(0,1) )
+plot( grid, power.definition = "min1" )
 ```
 
+Our plots show the impact of one varying factor averaged over the other factors, like you would get with a plot for a main effect in a fully interacted experiment.
 Note that in addition to `update_grid()`, there are also base functions `pump_power_grid()`, `pump_mdes_grid()`, and `pump_sample_grid()`.
 
 We see that higher ICC.2 radically reduces power to detect anything and ICC.3 does little.
@@ -613,19 +609,9 @@ gridRho <- update_grid( p_check,
 ```
 
 We then plot our results.
-```{r}
-gridL <- dplyr::filter( gridRho, MTP != "None" ) %>%
-  tidyr::pivot_longer( cols = c(indiv.mean, min1, min2, complete),
-            	         names_to = "definition", values_to = "power" ) %>%
-  dplyr::mutate( definition = factor( definition,
-          levels = c("indiv.mean", "min1", "min2", "complete" ) ) )
 
-ggplot2::ggplot( gridL, aes( rho, power, col = MTP ) ) +
-  facet_grid( . ~ definition ) +
-  geom_line() + geom_point() +
-  geom_hline( yintercept = c( 0, 0.80 ) ) + 
-  theme_minimal() +
-  coord_cartesian( ylim = c( 0, 1 ) )
+```{r}
+plot( gridRho )
 ```
 
 First, we see the benefit of the Westfall-Young single-step procedure is minimal, as compared to Bonferroni.
@@ -648,21 +634,7 @@ set.seed( 402440411 )
 gridZero <- update_grid( p_check,
         	             numZero = 0:4,
                          M = 5 )
-```
-
-We then can make a plot as we did above:
-```{r, echo=FALSE, fig.height = 2.25, warnings=FALSE }
-gridL <- dplyr::filter( gridZero, MTP != "None" ) %>%
-  tidyr::pivot_longer( cols = c(indiv.mean, min1, min2, min3, min4 ),
-            	         names_to = "definition", values_to = "power" ) %>%
-  dplyr::mutate( definition = as.factor( definition ) )
-
-ggplot2::ggplot( gridL, aes( numZero, power ) ) +
-  facet_grid( . ~ definition ) +
-  geom_line() + geom_point() +
-  geom_hline( yintercept = 0.80, col = "darkgrey" ) +
-  coord_cartesian( ylim = c(0,1) ) +
-  theme_minimal()
+plot( gridZero, nrow = 1 )
 ```
 
 There are other ways of exploring the impact of weak or null effects on some outcomes.

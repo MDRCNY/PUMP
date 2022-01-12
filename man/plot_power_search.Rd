@@ -15,7 +15,7 @@ plot_power_search(pwr, fit = NULL, target.line = NULL)
 known, e.g., from a pump_power call).}
 }
 \value{
-a ggplot plot (a gridExtra arrangement of 3 plots, technically).
+a ggplot plot (a ggpubr arrangement of 3 plots, technically).
 }
 \description{
 This will give triple-plots about 
