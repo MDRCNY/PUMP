@@ -10,11 +10,12 @@ pump_info(
 )
 }
 \arguments{
+\item{topic}{What kind of info. One of:
+all, context, adjustment, power, parameters}
+
 \item{comment}{TRUE/FALSE, prints out 
 long description of
 each design and method}
-
-\item{topic:}{What kind of info.  One of}
 }
 \description{
 List user options:
@@ -23,9 +24,10 @@ parameters are relevant for each context;
 multiple testing procedures;
 types of power;
 design and model parameters.
-
-For information about these choices,
-see the manuscript <arXiv:2112.15273>,
+}
+\seealso{
+For more detailed information about user choices,
+see the manuscript \url{https://arxiv.org/abs/2112.15273},
 which includes a detailed Technical Appendix
 including information about the designs and models
 and parameters.

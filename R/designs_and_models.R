@@ -30,16 +30,17 @@ NULL
 #' including information about the designs and models
 #' and parameters.
 #'
-#' @param topic: What kind of info.  One of:
-#' "all", "context", "adjustment", "power", "parameters"
+#' @param topic What kind of info. One of:
+#' all, context, adjustment, power, parameters
 #' @param comment TRUE/FALSE, prints out 
 #' long description of
 #' each design and method
 #'
 #' @export
-pump_info <- function( topic = c( "all", "context", "adjustment", "power", "parameters" ), 
-                       comment = TRUE ) {
-  
+pump_info <- function( 
+    topic = c( "all", "context", "adjustment", "power", "parameters" ), 
+    comment = TRUE 
+) {
   topic <- match.arg( topic )
   
     context <- tibble::tribble(

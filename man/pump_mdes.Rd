@@ -158,11 +158,6 @@ power definition, and choices of all relevant design parameters.
 The functions performs a search algorithm,
 and returns the MDES value within the specified tolerance.
 For a list of choices for specific parameters, see pump_info().
-For more detailed information about this function and the user choices,
-see the manuscript <arXiv:2112.15273>,
-which includes a detailed Technical Appendix
-including information about the designs and models
-and parameters.
 }
 \examples{
 mdes <-  pump_mdes(
@@ -181,4 +176,12 @@ mdes <-  pump_mdes(
   ICC.2 = 0.2, ICC.3 = 0.2,
   omega.2 = 0.1, omega.3 = 0.1, 
   rho = 0.5, tnum = 2000)
+}
+\seealso{
+For more detailed information about this function 
+and the user choices,
+see the manuscript \url{https://arxiv.org/abs/2112.15273},
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }

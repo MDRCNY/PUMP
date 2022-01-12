@@ -13,5 +13,5 @@ The PUMP package provides three core functions:
 }
 }
 \details{
-For a full package description, see <arXiv:2112.15273>
+For a full package description, see \url{https://arxiv.org/abs/2112.15273}.
 }

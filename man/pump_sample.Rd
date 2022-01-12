@@ -177,11 +177,6 @@ power definition, and choices of all relevant design parameters.
 The functions performs a search algorithm,
 and returns the sample size value within the specified tolerance.
 For a list of choices for specific parameters, see pump_info().
-For more detailed information about this function and the user choices,
-see the manuscript <arXiv:2112.15273>,
-which includes a detailed Technical Appendix
-including information about the designs and models
-and parameters.
 }
 \examples{
 J <- pump_sample(
@@ -197,4 +192,12 @@ J <- pump_sample(
   numCovar.1 = 1,
   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2,
   tnum = 1000)
+}
+\seealso{
+For more detailed information about this function 
+and the user choices,
+see the manuscript \url{https://arxiv.org/abs/2112.15273},
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }
