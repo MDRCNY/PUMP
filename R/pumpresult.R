@@ -204,7 +204,8 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #'
 #' @seealso update
 #' @seealso update_grid
-#'
+#' @seealso print_context
+#' 
 #' @param x a pumpresult object (except for is.pumpresult, where it is a generic
 #'   object to check).
 #' @rdname pumpresult
@@ -472,11 +473,17 @@ dim.pumpresult <- function( x, ... ) {
 
 #' @title Pretty print pump result with parameters
 #'
+#' @description
+#'
+#' Calls the print_context method with results and control both set to TRUE.
+#'
+#' @seealso print_context
+#'
 #' @export
 #' @param object Object to summarize.
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
-#' 
+#'   
 summary.pumpresult <- function( object, ... ) {
   print_context( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
@@ -535,8 +542,7 @@ print.pumpresult <- function( x, n = 10,
       print( as.data.frame( x ), row.names=FALSE )
       
     } else {
-      SE <- pmax( x[1,2], 1 - x[1,2] ) + 2/tnum
-      SE <- calc_binomial_SE( SE, tnum )
+      SE <- calc_binomial_SE( x$`min1 power`[[1]], tnum )
       x$SE <- SE
       print( as.data.frame( x ), row.names=FALSE )
     }
@@ -595,9 +601,16 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' @title Print context (design and model) of given pump result object
+#' @title Print context (design and model)
 #'
-#' @param x A pumpresult object.
+#' @description
+#'
+#' Print out the context (design and model, with parameter values) of given pump
+#' result or pump grid result object.  The "***" denotes varying values in the
+#' printout.
+#' 
+#'
+#' @param x A pumpresult object or pumpgridresult object.
 #' @param insert_results Include actual results in the printout.
 #' @param insert_control Include the optimizer control parameter information.
 #' @param ... Extra arguments to pass to print.pumpresult.

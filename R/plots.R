@@ -1,44 +1,95 @@
 
 
-get_sample_tick_marks <- function( pt, breaks = 5, include.points = TRUE ) {
+get_sample_tick_marks <- function( desired_pts, breaks = 5, include.points = TRUE, log = FALSE ) {
   
-  pt <- round( pt )
+  desired_pts <- sort( unique( round( desired_pts ) ) )
   
-  mn <- min( pt, na.rm = TRUE  )
-  mx <- max( pt, na.rm = TRUE )
-  
-  sq <- round( seq( mn, mx, length.out = breaks ) )
-  
-  pts <- unique( c( sq, mn, mx ) )
-  
-  if ( include.points ) {
-    pts <- union( pts, pt )
+  if ( log ) {
+    desired_pts = log( desired_pts )
   }
   
-  return( sort( pts ) )
+  mn <- min( desired_pts, na.rm = TRUE )
+  mx <- max( desired_pts, na.rm = TRUE )
+  rng = mx - mn
+  
+  if ( log == FALSE && rng < breaks ) {
+    breaks = round(rng)
+  }
+  
+  pts <- seq( mn, mx, length.out = breaks )
+  
+  if ( include.points ) {
+    
+    bw = rng / (breaks+1)
+    
+    rg = cut( desired_pts, 
+              breaks = seq( mn - bw/2, mx + bw/2, length.out = breaks+1 ), 
+              labels = pts )
+    
+    grab_pt = function( pt, gpts ) {
+      if ( length( gpts) == 0 ) {
+        pt
+      } else {
+        dels = abs( gpts - pt )
+        gpts[ which.min( dels ) ]
+      }
+    }
+    
+    gps <- split( desired_pts, rg )
+    
+    vals = purrr::map2_dbl( pts, gps, grab_pt )
+    
+    pts <- vals
+  } 
+  
+  if ( log ) {
+    return( unique( round( exp( pts ) ) ) )
+  } else {
+    return( round( pts ) )
+  }
+}
+
+
+get_sample_size_scale = function( points, breaks = 5, include.points = FALSE ) {
+
+  delrange <- diff( range( points, na.rm=TRUE ) )
+  if ( delrange > 50 ) {
+    xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
+                                  include.points = include.points,
+                                  log = TRUE )
+    ggplot2::scale_x_log10( breaks=xpt )
+  } else if ( delrange >= 2 && delrange <= 15 ) {
+    # Tick marks for each sample size.
+    xpt <- seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
+    ggplot2::scale_x_continuous( breaks = xpt )
+  } else {
+    xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
+                                  include.points = include.points,
+                                  log = FALSE )
+    ggplot2::scale_x_continuous( breaks = xpt )
+  }
 }
 
 
 #' @title Examine a power curve
 #'
-#' @description This will give a plot of power vs. 
-#' MDES or sample size. It can be useful to
-#' see how quickly power changes as a function of 
-#' these design parameters. Can be useful to diagnose
-#' relatively flat power curves, where power changes
-#' little as a function of MDES or sample size, and can
-#' also be useful to gauge where convergence went poorly.
+#' @description This will give a plot of power vs. MDES or sample size. It can
+#'   be useful to see how quickly power changes as a function of these design
+#'   parameters. Can be useful to diagnose relatively flat power curves, where
+#'   power changes little as a function of MDES or sample size, and can also be
+#'   useful to gauge where convergence went poorly.
 #'
 #' @param pwr Result from the pump_sample or pump_mdes (or data frame from,
 #'   e.g., power_curve()).
 #' @param plot.points flag; whether to plot individually tested points on curve
-#' @param fit A four parameter bounded logistic curve
-#' (if NULL will fit one to passed points).
+#' @param fit A four parameter bounded logistic curve (if NULL will fit one to
+#'   passed points).
+#' @param breaks The desired number of tick marks on the axes
 #'
 #' @inheritParams power_curve
 #'
 #' @export
-#' 
+#'
 #' @examples
 #' mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
 #'   power.definition = 'D1indiv', target.power = 0.7,
@@ -49,6 +100,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
                               all = TRUE,
                               low = NULL, high = NULL,
                               grid.size = 5, tnum = 2000,
+                              breaks = grid.size, 
                               fit = NULL ) {
   
   sample_axes = TRUE
@@ -98,21 +150,9 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
     ggplot2::labs( x = x_label, y = "power" )
   
   if ( sample_axes ) {
-    xpt <- get_sample_tick_marks(test.pts$pt, breaks = 5,
-                                 include.points = plot.points )
-    
-    delrange <- diff( xrng )
-    if ( delrange > 50 ) {
-      plot1 <- plot1 +  ggplot2::scale_x_log10( breaks=xpt )
-    } else if ( delrange >= 2 && delrange <= 15 ) {
-      # Tick marks for each sample size.
-      xpt <- seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
-      plot1 <- plot1 +
-        ggplot2::scale_x_continuous( breaks = xpt )
-    } else {
-      plot1 <- plot1 +
-        ggplot2::scale_x_continuous( breaks = xpt )
-    }
+    scale = get_sample_size_scale( test.pts$pt, breaks = breaks,
+                                   include.points = plot.points )
+    plot1 <- plot1 + scale
   }
   
   if ( plot.points ) {
@@ -302,7 +342,7 @@ plot.pumpresult <- function( x, ... )
       low = 0  
     }
     
-    return( plot_power_curve(x, low=low ) )
+    return( plot_power_curve(x, low=low, ... ) )
   } else {
     stop('Invalid pumpresult type.')
   }

@@ -2,12 +2,12 @@
 % Please edit documentation in R/pumpresult.R
 \name{print_context}
 \alias{print_context}
-\title{Print context (design and model) of given pump result object}
+\title{Print context (design and model)}
 \usage{
 print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
 }
 \arguments{
-\item{x}{A pumpresult object.}
+\item{x}{A pumpresult object or pumpgridresult object.}
 
 \item{insert_results}{Include actual results in the printout.}
 
@@ -16,5 +16,7 @@ print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
 \item{...}{Extra arguments to pass to print.pumpresult.}
 }
 \description{
-Print context (design and model) of given pump result object
+Print out the context (design and model, with parameter values) of given pump
+result or pump grid result object.  The "***" denotes varying values in the
+printout.
 }

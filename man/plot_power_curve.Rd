@@ -12,6 +12,7 @@ plot_power_curve(
   high = NULL,
   grid.size = 5,
   tnum = 2000,
+  breaks = grid.size,
   fit = NULL
 )
 }
@@ -31,17 +32,17 @@ e.g., power_curve()).}
 
 \item{tnum}{Number of iterations to calculate power at each grid point.}
 
-\item{fit}{A four parameter bounded logistic curve
-(if NULL will fit one to passed points).}
+\item{breaks}{The desired number of tick marks on the axes}
+
+\item{fit}{A four parameter bounded logistic curve (if NULL will fit one to
+passed points).}
 }
 \description{
-This will give a plot of power vs. 
-MDES or sample size. It can be useful to
-see how quickly power changes as a function of 
-these design parameters. Can be useful to diagnose
-relatively flat power curves, where power changes
-little as a function of MDES or sample size, and can
-also be useful to gauge where convergence went poorly.
+This will give a plot of power vs. MDES or sample size. It can
+  be useful to see how quickly power changes as a function of these design
+  parameters. Can be useful to diagnose relatively flat power curves, where
+  power changes little as a function of MDES or sample size, and can also be
+  useful to gauge where convergence went poorly.
 }
 \examples{
 mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',

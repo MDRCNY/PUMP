@@ -93,6 +93,8 @@ and combined.  The return values from the `grid` functions will just return
 data frames in general.
 
 returns whether call was power, mdes, or sample
+
+Calls the print_context method with results and control both set to TRUE.
 }
 \examples{
 pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -128,4 +130,8 @@ power_curve(J)
 update
 
 update_grid
+
+print_context
+
+print_context
 }
