@@ -36,17 +36,17 @@ parse_power_definition <- function( power.definition, M ) {
 get_power_names <- function( M, long=FALSE ) {
     
     if ( M == 1 ) {
-        nms = c( "D1indiv" )
-        lnms = c( "individual outcome 1" )
+        nms <- c( "D1indiv" )
+        lnms <- c( "individual outcome 1" )
     } else {
         nms <- c( paste('D', 1:M, "indiv", sep="" ),
                   'indiv.mean',
                   paste('min', 1:(M-1), sep = ''),
                   'complete' )
-    
+        
         lnms <- c( paste("individual outcome", 1:M),
-                  'mean individual',  paste(1:(M-1),'minimum', sep = '-'),
-                  'complete')
+                   'mean individual',  paste(1:(M-1),'minimum', sep = '-'),
+                   'complete')
     }
     
     if ( long ) {
@@ -56,7 +56,6 @@ get_power_names <- function( M, long=FALSE ) {
         names( nms ) <- lnms
         return( nms )
     }
-    
 }
 
 # # Stolen from development purrr
@@ -89,13 +88,14 @@ smessage <- function( str, ... ) {
 }
 
 
-
 swarning <- function( str, ... ) {
     warning( sprintf( str, ... ), call. = FALSE )
 }
 
 
-
 sstop <- function( str, ... ) {
     stop( sprintf( str, ... ), call. = FALSE )
 }
+
+
+

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pump_power.R
 \name{get_power_results}
 \alias{get_power_results}
-\title{Calculates different definitions of power}
+\title{Calculates different definitions of power (support function)}
 \usage{
 get_power_results(
   adj.pval.mat,

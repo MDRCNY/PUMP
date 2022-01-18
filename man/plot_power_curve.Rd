@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_curve}
 \alias{plot_power_curve}
-\title{Examine a power curve}
+\title{Examine a power curve (result function)}
 \usage{
 plot_power_curve(
   pwr,

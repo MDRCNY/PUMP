@@ -1,4 +1,21 @@
-#' @title Provides details about supported package features
+
+#' PUMP: A package for estimating power under multiplicity
+#'
+#' The PUMP package provides three core functions:
+#' \itemize{
+#' \item pump_power() for estimating power
+#' \item pump_mdes() for estimating minimum detectable effect size
+#' \item pump_sample() for estimating sample size.
+#' }
+#' 
+#' For a full package description, see \url{https://arxiv.org/abs/2112.15273}.
+#'
+#' @docType package
+#' @name PUMP
+NULL
+
+
+#' @title Provides details about supported package features (core function)
 #' 
 #' @description List user options:
 #' designs and models (d_m), including what
@@ -7,16 +24,24 @@
 #' types of power;
 #' design and model parameters.
 #' 
-#' @param topic: What kind of info.  One of 
+#' @seealso For more detailed information about user choices,
+#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' which includes a detailed Technical Appendix
+#' including information about the designs and models
+#' and parameters.
+#'
+#' @param topic What kind of info. One of:
+#' all, context, adjustment, power, parameters
 #' @param comment TRUE/FALSE, prints out 
 #' long description of
 #' each design and method
 #'
 #' @export
-pump_info <- function( topic = c( "all", "context", "adjustment", "power", "parameters" ), 
-                       comment = TRUE ) {
-  
-  topic = match.arg( topic )
+pump_info <- function( 
+    topic = c( "all", "context", "adjustment", "power", "parameters" ), 
+    comment = TRUE 
+) {
+  topic <- match.arg( topic )
   
     context <- tibble::tribble(
         ~d_m, ~PowerUp, ~Params, ~ Comment,
@@ -292,7 +317,7 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 }
 
 
-#' @title Calculate the degrees of freedom for a particular context (d_m code)
+#' @title Calculate degrees of freedom (support function)
 #'
 #' @description Given sample sizes, return the used degrees of freedom 
 #' (frequently conservative) for the design and model.
@@ -880,6 +905,13 @@ validate_inputs <- function( d_m, params.list,
        any(params.list$ICC.2 + params.list$ICC.3 > 1))
     {
       stop('ICC.2 + ICC.3 must be <= 1')
+    }
+    
+    # ICC
+    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
+       any(params.list$ICC.2 + params.list$ICC.3 == 1))
+    {
+        warning('ICC.2 + ICC.3 = 1, leaving no variation at level 1')
     }
 
     # invalid rho

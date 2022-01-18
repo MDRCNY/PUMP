@@ -2,7 +2,7 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_mdes_grid}
 \alias{pump_mdes_grid}
-\title{Run pump_mdes on varying values of parameter(s)}
+\title{Run pump_mdes on varying values of parameters (grid function)}
 \usage{
 pump_mdes_grid(
   d_m,
@@ -34,17 +34,17 @@ pump_mdes_grid(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
 including zero outcomes.}
 
 \item{target.power}{Target power for search algorithm}
 
-\item{power.definition}{see pump_info()$Power for 
+\item{power.definition}{see pump_info() for 
 possible power definitions}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
@@ -121,7 +121,7 @@ g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",
   tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
-  rho = 0.4, tnum = 1000)
+  rho = 0.4, tnum = 500)
 }
 \seealso{
 Other grid functions: 

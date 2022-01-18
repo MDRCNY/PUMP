@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{gen_Yobs}
 \alias{gen_Yobs}
-\title{Generate observed outcomes (simulations)}
+\title{Generate observed outcomes (simulation function)}
 \usage{
 gen_Yobs(full.data, T.x)
 }
@@ -18,4 +18,8 @@ Yobs
 Takes in a full dataset of both observed
 and latent potential outcomes and the treatment assignment vector,
 and returns only the observed outcomes.
+
+This function is beyond the main scope of calculating power,
+and is instead used for simulating data.
+For more info on use, see the simulation vignette.
 }

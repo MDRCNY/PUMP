@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{update.pumpresult}
 \alias{update.pumpresult}
-\title{Update a pump call, tweaking some parameters}
+\title{Update a pump call, tweaking some parameters (core function)}
 \usage{
 \method{update}{pumpresult}(object, type = NULL, ...)
 }

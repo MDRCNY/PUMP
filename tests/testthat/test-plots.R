@@ -140,7 +140,7 @@ test_that("Grid plot works for MDES", {
     
     expect_true( length( attr( grid, "var_names") ) == 2 )
     
-    gg = PUMP:::handle_power_definition(grid, "min1", "MDES", "ICC.3", FALSE )
+    gg <- handle_power_definition(grid, "min1", "MDES", "ICC.3", FALSE )
     expect_true( gg$powerType == "1-minimum" )
     expect_true( !gg$multiPower)
     expect_true( is.null( gg$title ) )

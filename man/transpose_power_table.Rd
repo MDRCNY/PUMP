@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{transpose_power_table}
 \alias{transpose_power_table}
-\title{Convert power table from wide to long}
+\title{Convert power table from wide to long (result function)}
 \usage{
 transpose_power_table(power_table, M = NULL)
 }

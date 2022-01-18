@@ -2,7 +2,7 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_power_grid}
 \alias{pump_power_grid}
-\title{Run pump_power on varying values of parameter(s)}
+\title{Run pump_power on varying values of parameters (grid function)}
 \usage{
 pump_power_grid(
   d_m,
@@ -34,10 +34,10 @@ pump_power_grid(
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info()$Adjustment for list of choices.}
+See pump_info() for list of choices.}
 
 \item{MDES}{vector of numeric; This is *not* a list of MDES for 
 each outcome, but rather a list

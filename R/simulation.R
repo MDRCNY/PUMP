@@ -2,7 +2,7 @@
 # generate simulation data
 # ------------------------------#
 
-#' @title Generate correlation matrix given rho and M (simulations)
+#' @title Generate correlation matrix (simulation function)
 #'
 #' @param M dimension of matrix
 #' @param rho.scalar fixed rho value
@@ -65,7 +65,7 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 
 
 
-#' @title Generate simulated multi-level data
+#' @title Generate simulated multi-level data (simulation function)
 #' 
 #' @description Generates simulated data for multi-level
 #' RCTs for pump-suppored designs and models for
@@ -73,7 +73,8 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #' 
 #' Takes in a list of necessary data-generating parameters.
 #' 
-#' This function is beyond the main scope of calculating power.
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
 #'
@@ -111,7 +112,7 @@ gen_full_data <- function(dgp.params.list) {
     # ------------------------------#
     # generates vector of school and district assignments, assuming equal sizes of everything
     if ( is.null( S.id ) ) {
-        assignments <- gen_simple_assignments( J, K, nbar )
+        assignments <- gen_assignments( J, K, nbar )
         S.id        <- assignments[['S.id']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
         D.id        <- assignments[['D.id']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
     }
@@ -296,12 +297,16 @@ gen_full_data <- function(dgp.params.list) {
 
 
 
-#' @title Converts model-based parameters into DGP parameters (simulations)
+#' @title Converts model params into DGP params (simulation function)
 #' 
 #' @description Converts user-provided parameters such as ICC
 #' and omega into data-generating parameters that can 
 #' produce simulated data,
 #' such as variance values and covariate coefficients.
+#' 
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
+#' For more info on use, see the simulation vignette.
 #' 
 #' @param model.params.list list of DGP parameters
 #'
@@ -456,12 +461,16 @@ convert_params <- function(model.params.list) {
     
 }
 
-#' @title Generates school and district ID assignments (simulations)
+#' @title Generates school and district assignments (simulation function)
 #' 
 #' @description Generates simple default schools and 
 #' districts IDs for individual students for the purpose of
 #' simulations. This assumes equal sized schools in 
 #' equal sized districts.
+#' 
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
+#' For more info on use, see the simulation vignette.
 #'
 #' @param K number of districts
 #' @param J number of schools per district
@@ -470,7 +479,7 @@ convert_params <- function(model.params.list) {
 #' @return list(S.id, D.id) of school and district 
 #' assignments for each individual
 #' @export
-gen_simple_assignments <- function(J, K, nbar){
+gen_assignments <- function(J, K, nbar){
     
     N <- nbar * J * K
     
@@ -501,10 +510,14 @@ gen_simple_assignments <- function(J, K, nbar){
     return(list(S.id = S.id, D.id = D.id))
 }
 
-#' @title Generate treatment assignment vector (simulations)
+#' @title Generate treatment assignment vector (simulation function)
 #' 
 #' @description Given a RCT design and supporting information,
 #' generates treatment assignments for each student.
+#' 
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
+#' For more info on use, see the simulation vignette.
 #'
 #' @param d_m design and model
 #' @param S.id vector of school assignments
@@ -542,11 +555,15 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 
 
 
-#' @title Generate observed outcomes (simulations)
+#' @title Generate observed outcomes (simulation function)
 #' 
 #' @description Takes in a full dataset of both observed
 #' and latent potential outcomes and the treatment assignment vector,
 #' and returns only the observed outcomes.
+#' 
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
+#' For more info on use, see the simulation vignette.
 #' 
 #' @param full.data full dataset of potential outcomes
 #' @param T.x N-vector of binary assignment to treat/control

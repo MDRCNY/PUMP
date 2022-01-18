@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{plot_power_search}
 \alias{plot_power_search}
-\title{Examine search path of a power search}
+\title{Examine search path of a power search (result function)}
 \usage{
 plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
@@ -11,8 +11,8 @@ plot_power_search(pwr, fit = NULL, target.line = NULL)
 
 \item{fit}{A fitted curve to the search.}
 
-\item{target.line}{If non-NULL, add a reference line for the true power (if
-known, e.g., from a pump_power call).}
+\item{target.line}{If non-NULL, add a reference line 
+for the true power (if known, e.g., from a pump_power call).}
 }
 \value{
 a ggplot plot (a ggpubr arrangement of 3 plots, technically).

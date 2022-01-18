@@ -2,13 +2,13 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_df}
 \alias{calc_df}
-\title{Calculate the degrees of freedom for a particular context (d_m code)}
+\title{Calculate degrees of freedom (support function)}
 \usage{
 calc_df(d_m, J, K, nbar, numCovar.1, numCovar.2, numCovar.3, validate = TRUE)
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
-See pump_info()$Context for list of choices.}
+See pump_info() for list of choices.}
 
 \item{J}{scalar; the harmonic mean of number of level 2 
 units per level 3 unit (schools per district). Note that

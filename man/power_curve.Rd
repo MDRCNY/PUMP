@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{power_curve}
 \alias{power_curve}
-\title{Obtain power curve over a range of parameters}
+\title{Obtain power curve over a range of parameters (result function)}
 \usage{
 power_curve(
   x,

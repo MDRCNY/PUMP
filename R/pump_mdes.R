@@ -1,16 +1,24 @@
-#' @title Estimate the minimum detectable effect size (MDES) 
-#' using PUMP method.
+#' @title Estimate the minimum detectable effect size (MDES) (core function)
 #'
 #' @description The user chooses the context (d_m), MTP,
 #' power definition, and choices of all relevant design parameters.
 #' 
 #' The functions performs a search algorithm,
 #' and returns the MDES value within the specified tolerance.
+#' For a list of choices for specific parameters, see pump_info().
+#' 
+#' 
+#' @seealso For more detailed information about this function 
+#' and the user choices,
+#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' which includes a detailed Technical Appendix
+#' including information about the designs and models
+#' and parameters.
 #'
 #' @inheritParams pump_power
 #'
 #' @param target.power Target power for search algorithm
-#' @param power.definition see pump_info()$Power for 
+#' @param power.definition see pump_info() for 
 #' possible power definitions
 #' @param tol tolerance for target power, defaults to 0.01 (1%).  
 #' This parameter controls when the search is done: 

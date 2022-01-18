@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{pump_info}
 \alias{pump_info}
-\title{Provides details about supported package features}
+\title{Provides details about supported package features (core function)}
 \usage{
 pump_info(
   topic = c("all", "context", "adjustment", "power", "parameters"),
@@ -10,11 +10,12 @@ pump_info(
 )
 }
 \arguments{
+\item{topic}{What kind of info. One of:
+all, context, adjustment, power, parameters}
+
 \item{comment}{TRUE/FALSE, prints out 
 long description of
 each design and method}
-
-\item{topic:}{What kind of info.  One of}
 }
 \description{
 List user options:
@@ -23,4 +24,11 @@ parameters are relevant for each context;
 multiple testing procedures;
 types of power;
 design and model parameters.
+}
+\seealso{
+For more detailed information about user choices,
+see the manuscript \url{https://arxiv.org/abs/2112.15273},
+which includes a detailed Technical Appendix
+including information about the designs and models
+and parameters.
 }

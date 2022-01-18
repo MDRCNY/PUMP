@@ -225,7 +225,7 @@ pump_sample_raw <- function(
 
 
 
-#' @title Estimate the required sample size using PUMP method.
+#' @title Estimate the required sample size (core function)
 #'
 #' @description The user chooses the context (d_m), MTP,
 #' type of sample size, 
@@ -234,6 +234,14 @@ pump_sample_raw <- function(
 #' 
 #' The functions performs a search algorithm,
 #' and returns the sample size value within the specified tolerance.
+#' For a list of choices for specific parameters, see pump_info().
+#' 
+#' @seealso For more detailed information about this function 
+#' and the user choices,
+#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' which includes a detailed Technical Appendix
+#' including information about the designs and models
+#' and parameters.
 #'
 #' @inheritParams pump_mdes
 #' @inheritParams pump_power
@@ -260,7 +268,8 @@ pump_sample_raw <- function(
 #'   MDES = 0.125,
 #'   Tbar = 0.5, alpha = 0.05,
 #'   numCovar.1 = 1,
-#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+#'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2,
+#'   tnum = 1000)
 
 pump_sample <- function(
   d_m, MTP = NULL, typesample,
