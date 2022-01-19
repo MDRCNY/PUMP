@@ -61,7 +61,7 @@ get_sample_size_scale = function( points, breaks = 5, include.points = FALSE ) {
     ggplot2::scale_x_log10( breaks=xpt )
   } else if ( delrange >= 2 && delrange <= 15 ) {
     # Tick marks for each sample size.
-    xpt <- seq( floor( xrng[[1]] ), ceiling( xrng[[2]] ) )
+    xpt <- seq( round( min( points ) - 0.25 ), round( max( points ) + 0.25 ) )
     ggplot2::scale_x_continuous( breaks = xpt )
   } else {
     xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
