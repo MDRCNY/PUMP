@@ -2,7 +2,8 @@
 % Please edit documentation in R/pumpresult.R
 \name{print_context}
 \alias{print_context}
-\title{Print context (design, model, parameter values) of pumpresult or pumpgridresult}
+\title{Print context (design, model, parameter values) of 
+pumpresult or pumpgridresult}
 \usage{
 print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
 }

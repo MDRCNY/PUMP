@@ -545,8 +545,8 @@ print.pumpresult <- function( x, n = 10,
       print( as.data.frame( x ), row.names=FALSE )
       
     } else {
-      SE <- calc_binomial_SE( x$`min1 power`[[1]], tnum )
-      x$SE <- SE
+      SE <- calc_binomial_SE( x[[3]], tnum )
+      x$SE <- round( SE, digits = 2 )
       print( as.data.frame( x ), row.names=FALSE )
     }
   } else {
