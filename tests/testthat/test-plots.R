@@ -307,10 +307,10 @@ test_that( "power curve plotting works", {
     expect_true(!is.null(p))
     
     
-    pts = PUMP:::get_sample_tick_marks(desired_pts = sp$pt[sp$pt<1000], breaks = 10, 
+    pts <- PUMP:::get_sample_tick_marks(desired_pts = sp$pt[sp$pt<1000], breaks = 10, 
                                        include.points = TRUE, log = TRUE )
     expect_true( length( pts ) == 10 )
-    pts = PUMP:::get_sample_tick_marks(desired_pts = sp$pt[sp$pt<1000], breaks = 10, 
+    pts <- PUMP:::get_sample_tick_marks(desired_pts = sp$pt[sp$pt<1000], breaks = 10, 
                                        include.points = TRUE, log = FALSE )
     expect_true( length( pts ) == 10 )
     
