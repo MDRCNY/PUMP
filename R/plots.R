@@ -1,44 +1,46 @@
 
 
 
-get_sample_tick_marks <- function( desired_pts, breaks = 5, include.points = TRUE, log = FALSE ) {
+get_sample_tick_marks <- function( 
+    desired_pts, breaks = 5, include.points = TRUE, log = FALSE 
+) {
   
   desired_pts <- sort( unique( round( desired_pts ) ) )
   
   if ( log ) {
-    desired_pts = log( desired_pts )
+    desired_pts <- log( desired_pts )
   }
   
   mn <- min( desired_pts, na.rm = TRUE )
   mx <- max( desired_pts, na.rm = TRUE )
-  rng = mx - mn
+  rng <- mx - mn
   
   if ( log == FALSE && rng < breaks ) {
-    breaks = round(rng)
+    breaks <- round(rng)
   }
   
   pts <- seq( mn, mx, length.out = breaks )
   
   if ( include.points ) {
     
-    bw = rng / (breaks+1)
+    bw <- rng / (breaks+1)
     
-    rg = cut( desired_pts, 
+    rg <- cut( desired_pts, 
               breaks = seq( mn - bw/2, mx + bw/2, length.out = breaks+1 ), 
               labels = pts )
     
-    grab_pt = function( pt, gpts ) {
+    grab_pt <- function( pt, gpts ) {
       if ( length( gpts) == 0 ) {
         pt
       } else {
-        dels = abs( gpts - pt )
+        dels <- abs( gpts - pt )
         gpts[ which.min( dels ) ]
       }
     }
     
     gps <- split( desired_pts, rg )
     
-    vals = purrr::map2_dbl( pts, gps, grab_pt )
+    vals <- purrr::map2_dbl( pts, gps, grab_pt )
     
     pts <- vals
   } 
@@ -51,9 +53,11 @@ get_sample_tick_marks <- function( desired_pts, breaks = 5, include.points = TRU
 }
 
 
-get_sample_size_scale = function( points, breaks = 5, include.points = FALSE ) {
+get_sample_size_scale <- function( 
+    points, breaks = 5, include.points = FALSE 
+) {
   
-  delrange <- diff( range( points, na.rm=TRUE ) )
+  delrange <- diff( range( points, na.rm = TRUE ) )
   if ( delrange > 50 ) {
     xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
                                   include.points = include.points,
@@ -104,7 +108,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
                               breaks = grid.size, 
                               fit = NULL ) {
   
-  sample_axes = TRUE
+  sample_axes <- TRUE
   
   if ( is.pumpresult( pwr ) ) {
     
@@ -112,13 +116,13 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
                             grid.size = grid.size,
                             tnum = params(pwr)$tnum, all = all )
     x_label <- pump_type(pwr)
-    sample_axes = x_label == "sample"
+    sample_axes <- x_label == "sample"
     
   } else {
     stopifnot( is.data.frame(pwr) )
     test.pts <- pwr
     x_label <- "parameter"
-    sample_axes = max( test.pts$pt >= 2, na.rm=TRUE )
+    sample_axes <- max( test.pts$pt >= 2, na.rm=TRUE )
   }
   
   tp <- dplyr::filter( test.pts, !is.na( .data$power ) )
@@ -144,14 +148,15 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
     ggplot2::geom_hline( yintercept = test.pts$target.power[[1]],
                          col = "purple" ) +
     ggplot2::theme_minimal() +
-    ggplot2::stat_function( col = "red",
-                            fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
+    ggplot2::stat_function( 
+        col = "red",
+        fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
     ggplot2::guides(colour = "none", size="none") +
     ggplot2::coord_cartesian( ylim = c(0,1), xlim = limsX ) +
     ggplot2::labs( x = x_label, y = "power" )
   
   if ( sample_axes ) {
-    scale = get_sample_size_scale( test.pts$pt, breaks = breaks,
+    scale <- get_sample_size_scale( test.pts$pt, breaks = breaks,
                                    include.points = plot.points )
     plot1 <- plot1 + scale
   }
@@ -229,8 +234,9 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   lims <- grDevices::extendrange( r = range( test.pts$power, 
                                              test.pts$target.power[[1]], 
                                              na.rm = TRUE ), 0.15 )
-  plot2 <-  ggplot2::ggplot( test.pts,
-                             ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
+  plot2 <-  ggplot2::ggplot( 
+      test.pts,
+      ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
     ggplot2::geom_hline( yintercept = test.pts$target.power[1],
                          col = "purple" ) +
     ggplot2::geom_point( alpha = 0.5 ) +
@@ -239,8 +245,9 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
     ggplot2::coord_cartesian(ylim = lims ) +
     ggplot2::guides(colour = "none", size = "none")
   
-  plot3 <-  ggplot2::ggplot( test.pts,
-                             ggplot2::aes(.data$step, .data$pt, size = .data$w) ) +
+  plot3 <-  ggplot2::ggplot( 
+      test.pts,
+      ggplot2::aes(.data$step, .data$pt, size = .data$w) ) +
     ggplot2::geom_point( alpha = 0.5 ) +
     ggplot2::scale_x_continuous( breaks=0:max(test.pts$step) ) +
     ggplot2::theme_minimal() +
@@ -342,7 +349,7 @@ plot.pumpresult <- function( x, ... )
   } else if( pump_type(x) %in% c('mdes', 'sample') ) {
     low <- NULL
     if ( pump_type( x ) == "mdes" ) {
-      low = 0  
+      low <- 0  
     }
     
     return( plot_power_curve(x, low=low, ... ) )
@@ -475,7 +482,7 @@ plot.pumpgridresult.power <- function(
       position = ggplot2::position_dodge(width = 0.125))
   }
   
-  title = NULL
+  title <- NULL
   if ( include.title ) {
     title <- paste0(powerType , " power when ", var.vary, " varies")
   } 
@@ -567,10 +574,10 @@ handle_power_definition <- function(
   title <- NULL
   if ( include.title ) {
     if ( powerType == "" ) {
-      title = paste0( outcome, " for ", powerPer, powerType,
+      title <- paste0( outcome, " for ", powerPer, powerType,
                       " power when ", var.vary, " varies")
     } else {
-      title = paste0( outcome, " for ", powerPer,
+      title <- paste0( outcome, " for ", powerPer,
                       "power when ", var.vary, " varies")
     }
   }
@@ -771,10 +778,11 @@ plot.pumpgridresult.sample <- function(
 #'the specified parameter.
 #'
 #'@param x pumpgridresult object
-#'@param power.definition string; definition of power to plot.  If NULL, plot all
-#'  definitions as a facet wrap.
-#'@param var.vary string; variable to vary on X axis.  If NULL, and only one thing
-#'  varies, then it will default to single varying parameter.
+#'@param power.definition string; definition of power to plot.  
+#' If NULL, plot all definitions as a facet wrap.
+#'@param var.vary string; variable to vary on X axis.  
+#' If NULL, and only one thing varies, then it will default 
+#' to single varying parameter.
 #'@param lines logical; TRUE means connect dots with lines on the plots.  
 #' FALSE means no lines.
 #'@param include.title logical; whether to include/exclude title 

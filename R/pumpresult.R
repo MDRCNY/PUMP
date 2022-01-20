@@ -244,7 +244,8 @@ NULL
 
 
 
-#' @title Get design and model parameters from pumpresult object (result function)
+#' @title Get design and model parameters from 
+#' pumpresult object (result function)
 #'
 #' @return params: List of design parameters used.
 #'
@@ -264,7 +265,8 @@ params <- function( x, ... ) {
 
 
 
-#' @title Get context (design and model) from pumpresult object (result function)
+#' @title Get context (design and model) from 
+#' pumpresult object (result function)
 #'
 #' @return d_m: d_m used (as string)
 #'
@@ -602,7 +604,8 @@ print_search <- function( x, n = 10 ) {
 
 
 
-#' @title Print context (design, model, parameter values) of pumpresult or pumpgridresult
+#' @title Print context (design, model, parameter values) of 
+#' pumpresult or pumpgridresult
 #'
 #' @description
 #'
