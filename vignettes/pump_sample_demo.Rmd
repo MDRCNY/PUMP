@@ -11,6 +11,7 @@ editor_options:
 
 ```{r initialize, include = FALSE}
 knitr::opts_chunk$set(
+  cache = FALSE,
   collapse = TRUE,
   comment = "#>",
   warning = FALSE,

@@ -7,7 +7,7 @@ Authors@R: c(
   person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre")),
   person("Kristen", "Hunter", email = "kristenbhunter@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5678-4620")),
   person("Zarni", "Htet", email = "zarni.htet@mdrc.org", role = "aut"),
-  person("MDRC", role = c("fnd", "cph")),
+  person("MDRC", role = "cph"),
   person("Institute of Education Sciences", role = "fnd")
   )
 Description: Estimates power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030). For a full package description, including a detailed technical appendix, see <arXiv:2112.15273>.

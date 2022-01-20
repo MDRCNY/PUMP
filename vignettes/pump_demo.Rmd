@@ -16,7 +16,7 @@ geometry: margin=1.5in
 library( PUMP )
 
 knitr::opts_chunk$set(
-  cache = TRUE,
+  cache = FALSE,
   collapse = TRUE,
   comment = "#>",
   warning = FALSE,
@@ -406,10 +406,6 @@ In particular, we might want to determine the needed number of students per scho
 The `pump_sample` method will search over any one of these.
 
 Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10):
-
-```{r setseedsamp, include = FALSE}
-
-```
 
 ```{r samplesizecalc}
 smp <- pump_sample(
