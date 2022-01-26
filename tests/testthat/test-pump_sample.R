@@ -1,6 +1,7 @@
 # library( PUMP )
 # library( testthat )
 
+default.tnum <- 1000
 
 test_that("calc_nbar works", {
 
@@ -122,7 +123,7 @@ test_that("BF for non individual power", {
                     Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
                     numCovar.1 = 5,
                     R2.1 = 0.1, ICC.2 = 0.05,
-                    rho = 0.4 )
+                    rho = 0.4, tnum = default.tnum )
   p
 
   ss <- pump_sample(    d_m = "d2.1_m2fc",
@@ -136,7 +137,7 @@ test_that("BF for non individual power", {
                         Tbar = 0.50, alpha = 0.05, two.tailed = FALSE,
                         numCovar.1 = 5,
                         R2.1 = 0.1, ICC.2 = 0.05,
-                        rho = 0.4 )
+                        rho = 0.4, tnum = default.tnum )
 
 
   expect_equal(ss$`Sample.size`, 10, tol = 1)
@@ -243,7 +244,7 @@ test_that("sample search when one end is missing", {
                          Tbar = 0.50, alpha = 0.05,
                          numCovar.1 = 5, numCovar.2 = 1,
                          R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
-                         rho = 0.2, tnum = 10000)
+                         rho = 0.2 )
 
   pow_ref
 
@@ -314,7 +315,7 @@ test_that("Sample with different correlations", {
                       Tbar = 0.50, alpha = 0.05,
                       numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      rho = 0 )
+                      rho = 0, tnum = default.tnum )
     p
 
     ss <- pump_sample(    d_m = "d2.1_m2fc",
@@ -344,7 +345,7 @@ test_that("Sample with different correlations", {
                       Tbar = 0.50, alpha = 0.05,
                       numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      rho = 0.95 )
+                      rho = 0.95, tnum = default.tnum )
     p
 
     ss <- pump_sample(    d_m = "d2.1_m2fc",
@@ -455,7 +456,7 @@ test_that( "different values for different outcomes", {
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5,
     R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
-    rho = 0.4 )
+    rho = 0.4, tnum = default.tnum )
 
   # sanity check: higher ICC means higher power
   expect_true(pow$D2indiv[1] > pow$D1indiv[1])
@@ -526,7 +527,7 @@ test_that( "different MDES values work", {
     Tbar = 0.50, alpha = 0.05,
     numCovar.1 = 5, numCovar.2 = 1,
     R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8, 0.01, 0.4),
-    rho = 0.4 ) 
+    rho = 0.4, tnum = default.tnum ) 
   pow
   
   ss1 <- update( pow, type="sample",

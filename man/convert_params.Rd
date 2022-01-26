@@ -7,10 +7,10 @@
 convert_params(model.params.list)
 }
 \arguments{
-\item{model.params.list}{list of DGP parameters}
+\item{model.params.list}{list; model parameters.}
 }
 \value{
-dgp.params.list
+list; data-generating parameters.
 }
 \description{
 Converts user-provided parameters such as ICC

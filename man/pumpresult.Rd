@@ -63,7 +63,7 @@ converting column names is optional.}
 \value{
 params: List of design parameters used.
 
-d_m: d_m used (as string)
+d_m: Context (d_m) used (as string).
 
 search_path: Dataframe describing search path, 
 if it was saved in the pumpresult object.
@@ -77,6 +77,10 @@ is.pumpresult: TRUE if object is a pumpresult object.
 `[[`: pull out single element of dataframe.
 
 dim: Dimension of pumpresult (as matrix)
+
+summary: No return value; prints results.
+
+print: No return value; prints results.
 
 as.data.frame: pumpresult object as a clean 
 dataframe (no more attributes from pumpresult).
@@ -93,7 +97,7 @@ Pump result objects are also data.frames, so they can be easily manipulated
 and combined.  The return values from the `grid` functions will just return
 data frames in general.
 
-returns whether call was power, mdes, or sample
+Returns whether call was power, mdes, or sample.
 
 Calls the print_context method with results and control both set to TRUE.
 }

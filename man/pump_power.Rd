@@ -49,7 +49,7 @@ See pump_info() for list of choices.}
 Please provide a scalar, a vector of length M, or vector of 
 values for non-zero outcomes.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed 
+\item{numZero}{scalar; additional number of outcomes assumed 
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
@@ -94,10 +94,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -129,10 +129,10 @@ parallel processing of WY-SD.}
 power results for outcomes with MDES = 0.}
 
 \item{updateProgress}{function to update progress bar 
-(only used for PUMP shiny app)}
+(only used for PUMP shiny app).}
 
 \item{validate.inputs}{TRUE/FALSE; whether or not to 
-check whether parameters are valid given the choice of d_m}
+check whether parameters are valid given the choice of d_m.}
 
 \item{long.table}{TRUE for table with power as rows, correction as columns,
 and with more verbose names. See `transpose_power_table`.}
@@ -140,7 +140,7 @@ and with more verbose names. See `transpose_power_table`.}
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
 \value{
-power results for MTP and unadjusted across all definitions of power
+a pumpresult object containing power results.
 }
 \description{
 The user chooses the context (d_m), MTP,

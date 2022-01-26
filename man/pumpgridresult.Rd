@@ -17,15 +17,20 @@ is.pumpgridresult(x)
 \item{x}{a pumpgridresult object 
 (except for is.pumpgridresult, where it is a generic object to check).}
 
-\item{header}{FALSE means skip some header info on the result, just print
+\item{header}{logical; FALSE means skip some 
+header info on the result, just print
 the data.frame of actual results.}
 
-\item{...}{Extra options passed to print.pumpgridresult}
+\item{...}{extra options passed to print.pumpgridresult}
 
-\item{object}{Object to summarize.}
+\item{object}{object to summarize.}
 }
 \value{
 is.pumpgridresult: TRUE if object is a pumpgridresult object.
+
+print: No return value; prints results.
+
+summary: No return value; prints results.
 }
 \description{
 The pumpgridresult object is an S3 class that holds the results from

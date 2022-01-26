@@ -43,7 +43,7 @@ level 1 covariates for each outcome.}
 level 2 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -53,7 +53,7 @@ variance of level 2 random intercepts.}
 level 3 covariates for each outcome.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.3}{scalar, or vector of length M; ratio of 
 variance of level 3 average impacts to

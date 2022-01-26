@@ -7,12 +7,13 @@
 update_grid(x, ...)
 }
 \arguments{
-\item{x}{Pump result object.}
+\item{x}{pump result object.}
 
-\item{...}{List of parameters to expand into a grid.}
+\item{...}{list of parameters to expand into a grid.}
 }
 \value{
-result of calling corresponding grid
+a pumpgridresult object; 
+result of calling corresponding grid.
 }
 \description{
 Take a pumpresult and provide lists 

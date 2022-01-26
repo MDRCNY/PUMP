@@ -34,9 +34,11 @@ make.pumpresult <- function( x,
 #' of the initial scenario.
 #' 
 #'
-#' @param x Pump result object.
-#' @param ... List of parameters to expand into a grid.
-#' @return result of calling corresponding grid
+#' @param x pump result object.
+#' @param ... list of parameters to expand into a grid.
+#' 
+#' @return a pumpgridresult object; 
+#' result of calling corresponding grid.
 #'
 #' @export
 #' 
@@ -96,14 +98,15 @@ update_grid <- function( x, ... ) {
 #' (pump_power, pump_sample, or pump_mdes,
 #' respectively).
 #'
-#' @param object Pump result object.
-#' @param ... Parameters as specified in `pump_power`, `pump_mdes`, and
+#' @param object pump result object.
+#' @param ... parameters as specified in `pump_power`, `pump_mdes`, and
 #'   `pump_sample` that should be overwritten.
-#' @param type Can be "power", "mdes" or "sample", sets the 
+#' @param type string; can be "power", "mdes" or "sample", sets the 
 #' type of the updated call (can be different from original).
 #'
-#' @return Results of a new call using parameters of old object with newly
-#'   specified parameters replaced.
+#' @return a pumpresult object: results of a new call 
+#' using parameters of old object with newly 
+#' specified parameters replaced.
 #'
 #' @export
 #' 
@@ -268,7 +271,7 @@ params <- function( x, ... ) {
 #' @title Get context (design and model) from 
 #' pumpresult object (result function)
 #'
-#' @return d_m: d_m used (as string)
+#' @return d_m: Context (d_m) used (as string).
 #'
 #' @rdname pumpresult
 #' @export
@@ -304,20 +307,24 @@ search_path <- function( x, ... ) {
 #' @description This is used to see rate of 
 #' power change as a function of sample size or MDES.
 #'
-#' @param x A pumpresult object.
-#'
-#' @param all If TRUE, merge in the search path from the original search.
-#' @param low Low range for the plot x-axis.
-#' @param high High range for the plot.
-#' @param grid.size Number of points to calculate power.
-#' @param tnum Number of iterations to calculate power at each grid point.
+#' @param x a pumpresult object.
+#' @param all logical; if TRUE, merge in the search path 
+#' from the original search.
+#' @param low scalar; low range for the plot x-axis.
+#' @param high scalar; high range for the plot.
+#' @param grid.size scalar; number of points to calculate power.
+#' @param tnum scalar; number of iterations to calculate 
+#' power at each grid point.
 #'
 #' @importFrom rlang .data
+#' 
+#' @return data.frame of power results.
 #'
 #' @export
 #' 
 power_curve <- function( x, all = FALSE,
-                         low = NULL, high = NULL, grid.size = 5, tnum = 2000 ) {
+                         low = NULL, high = NULL, 
+                         grid.size = 5, tnum = 2000 ) {
   stopifnot( is.pumpresult( x ) )
   fin_pts <- attr( x, "final.pts" )
   if ( is.null( fin_pts ) ) {
@@ -340,7 +347,7 @@ power_curve <- function( x, all = FALSE,
 
 
 #' @title Return type of pump object (result function)
-#' @description returns whether call was power, mdes, or sample
+#' @description Returns whether call was power, mdes, or sample.
 #' @return pump_type: power, mdes, or sample, as a string.
 #'
 #' @rdname pumpresult
@@ -376,8 +383,10 @@ is_long_table <- function( power_table ) {
 #' @param power_table pumpresult object for a power result (not mdes or sample).
 #'   (It can also take a raw dataframe of the wide table to convert to long, as
 #'   an internal helper method.)
-#' @param M Set if power_table is a data.frame without set number of outcomes.
-#'   Usually ignore this.
+#' @param M scalar; set if power_table is a data.frame 
+#' without set number of outcomes. Usually ignore this.
+#'   
+#' @return data.frame of power results in long format.
 #'
 #' @export
 #' 
@@ -427,7 +436,7 @@ transpose_power_table <- function( power_table, M = NULL ) {
     }    
   }
   
-  pp
+  return( pp )
 }
 
 
@@ -477,15 +486,17 @@ dim.pumpresult <- function( x, ... ) {
 #' @title Pretty print pump result with parameters
 #'
 #' @description
-#'
 #' Calls the print_context method with results and control both set to TRUE.
 #'
 #' @seealso print_context
 #'
-#' @export
 #' @param object Object to summarize.
 #' @param ... Extra options passed to print.pumpresult
 #' @rdname pumpresult
+#' 
+#' @return summary: No return value; prints results.
+#' 
+#' @export
 #'   
 summary.pumpresult <- function( object, ... ) {
   print_context( object, insert_results = TRUE, insert_control = TRUE, ... )
@@ -500,14 +511,18 @@ calc_binomial_SE <- function( prop, tnum ) {
 
 #' @title Pretty print pump result
 #'
-#' @export
 #' @param ... No extra options passed.
 #' @param n Number of lines of search path to print, max.
 #' @param header FALSE means skip some header info on the result, just print
 #'   the data.frame of actual results.
 #' @param search FALSE means don't print the search path for a result for
 #'   mdes or sample.
+#'   
+#' @return print: No return value; prints results.  
+#'   
 #' @rdname pumpresult
+#' 
+#' @export
 #' 
 print.pumpresult <- function( x, n = 10,
                              header = TRUE,
@@ -578,9 +593,10 @@ print.pumpresult <- function( x, n = 10,
 #' (abbreviated) search history.
 #'
 #' @inheritParams print.pumpresult
-#' @return Number of steps in search.
-#' @export
 #' 
+#' @return No return value; prints results.
+#' 
+#' @export
 print_search <- function( x, n = 10 ) {
   tr <- search_path( x )
   
@@ -618,6 +634,8 @@ print_search <- function( x, n = 10 ) {
 #' @param insert_results Include actual results in the printout.
 #' @param insert_control Include the optimizer control parameter information.
 #' @param ... Extra arguments to pass to print.pumpresult.
+#' 
+#' @return No return value; prints results.
 #'
 #' @export
 #' 

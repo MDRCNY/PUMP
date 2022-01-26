@@ -10,12 +10,16 @@ pump_info(
 )
 }
 \arguments{
-\item{topic}{What kind of info. One of:
-all, context, adjustment, power, parameters}
+\item{topic}{string; what kind of info. One of:
+all, context, adjustment, power, parameters.}
 
-\item{comment}{TRUE/FALSE, prints out 
+\item{comment}{logical; prints out 
 long description of
-each design and method}
+each design and method.}
+}
+\value{
+list; a list of data frames with 
+information about each topic.
 }
 \description{
 List user options:

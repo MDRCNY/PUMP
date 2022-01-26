@@ -7,12 +7,12 @@
 gen_Yobs(full.data, T.x)
 }
 \arguments{
-\item{full.data}{full dataset of potential outcomes}
+\item{full.data}{data.frame; full dataset of potential outcomes.}
 
-\item{T.x}{N-vector of binary assignment to treat/control}
+\item{T.x}{vector; binary assignment to treat/control.}
 }
 \value{
-Yobs
+vector; observed outcomes
 }
 \description{
 Takes in a full dataset of both observed

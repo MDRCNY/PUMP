@@ -62,7 +62,7 @@ unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{numZero}{scalar; Additional number of outcomes assumed 
+\item{numZero}{scalar; additional number of outcomes assumed 
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{Tbar}{scalar; the proportion of samples 
@@ -86,10 +86,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -111,8 +111,11 @@ as calls processed.  FALSE do not.}
 \item{drop.unique.columns}{logical; drop all parameter columns 
 that did not vary across the grid.}
 
-\item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
+\item{...}{extra arguments passed to the underlying pump_power, pump_sample,
 or pump_mdes functions.}
+}
+\value{
+a pumpgridresult object containing power results.
 }
 \description{
 This extension of `pump_power()` will 

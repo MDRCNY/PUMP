@@ -62,7 +62,7 @@ values for non-zero outcomes.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
 including zero outcomes.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed 
+\item{numZero}{scalar; additional number of outcomes assumed 
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{nbar}{scalar; the harmonic mean of the number of 
@@ -80,10 +80,10 @@ unit, so the total number of level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{target.power}{Target power for search algorithm}
+\item{target.power}{target power for search algorithm.}
 
 \item{power.definition}{see pump_info() for 
-possible power definitions}
+possible power definitions.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
@@ -109,10 +109,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{rho}{scalar; assumed correlation between 
 all pairs of test statistics.}
@@ -133,27 +133,27 @@ variance of level 3 random intercepts.}
 \item{B}{scalar; the number of permutations for 
 Westfall-Young procedures.}
 
-\item{max.steps}{how many steps allowed before terminating}
+\item{max.steps}{how many steps allowed before terminating.}
 
 \item{tnum}{max number of samples for first iteration 
-of search algorithm}
+of search algorithm.}
 
 \item{start.tnum}{number of samples to start search 
 (this will increase with each step).}
 
-\item{final.tnum}{number of samples for final draw}
+\item{final.tnum}{number of samples for final draw.}
 
 \item{parallel.WY.cores}{number of cores to use for 
 parallel processing of WY-SD.}
 
 \item{updateProgress}{function to update progress bar 
-(only used for PUMP shiny app)}
+(only used for PUMP shiny app).}
 
 \item{max_sample_size_nbar}{scalar; default upper bound for nbar 
-for search algorithm}
+for search algorithm.}
 
 \item{max_sample_size_JK}{scalar; default upper bound for J or K 
-for search algorithm}
+for search algorithm.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
 This parameter controls when the search is done: 
@@ -161,12 +161,12 @@ when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{give.optimizer.warnings}{whether to return 
-verbose optimizer warnings}
+verbose optimizer warnings.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
 \value{
-sample size results
+a pumpresult object containing sample size results.
 }
 \description{
 The user chooses the context (d_m), MTP,

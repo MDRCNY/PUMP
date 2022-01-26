@@ -30,11 +30,14 @@ NULL
 #' including information about the designs and models
 #' and parameters.
 #'
-#' @param topic What kind of info. One of:
-#' all, context, adjustment, power, parameters
-#' @param comment TRUE/FALSE, prints out 
+#' @param topic string; what kind of info. One of:
+#' all, context, adjustment, power, parameters.
+#' @param comment logical; prints out 
 #' long description of
-#' each design and method
+#' each design and method.
+#' 
+#' @return list; a list of data frames with 
+#' information about each topic.
 #'
 #' @export
 pump_info <- function( 
@@ -183,8 +186,8 @@ pump_info <- function(
 #'
 #' @param d_m string; context to parse.
 #'
-#' @return List of features including number of levels, level of randomization,
-#'   etc.
+#' @return list; list of features including number of levels, 
+#' level of randomization, etc.
 #'
 #' @family pump_info
 #'
@@ -217,7 +220,7 @@ parse_d_m <- function( d_m ) {
     FE.2 <- !is.na(l2) && substring( l2, 0, 1 ) == "f"
     FE.3 <- !is.na(l3) && substring( l3, 0, 1 ) == "f"
 
-    list( levels = levels,
+    return( list( levels = levels,
           rand_level = nums[[2]],
           model2 = l2,
           model2.p = l2.p,
@@ -225,7 +228,7 @@ parse_d_m <- function( d_m ) {
           model3.p = l3.p,
           FE.2 = FE.2,
           FE.3 = FE.3
-    )
+    ) )
 }
 
 
@@ -238,7 +241,7 @@ parse_d_m <- function( d_m ) {
 #' Function to calculate the theoretical true (unadjusted) standard error of the
 #' ATE estimate for a given d_m and model, in effect size units.
 #'
-#' @param d_m a single RCT d_m (see list/naming convention)
+#' @param d_m a single RCT d_m (see list/naming convention).
 #' @param J scalar; the number of schools
 #' @param K scalar; the number of districts
 #' @param nbar scalar; the harmonic mean of the number of units per school
@@ -257,7 +260,7 @@ parse_d_m <- function( d_m ) {
 #' @param omega.3 scalar, or vector of length M; ratio of district effect size
 #'   variability to random effects variability
 #'
-#' @return Q_m, the standard error of the effect size estimate
+#' @return vector; the standard error of the effect size estimate
 #' @keywords internal
 calc_SE <- function(d_m, J, K, nbar, Tbar, 
                     R2.1, R2.2, R2.3, ICC.2, ICC.3, 
@@ -323,9 +326,10 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 #' (frequently conservative) for the design and model.
 #'
 #' @inheritParams pump_power
-#' @param validate whether or not to validate if output df is <= 0
+#' @param validate logical; whether or not to validate 
+#' if output df is <= 0.
 #'
-#' @return Degree of freedom for the d_m.
+#' @return scalar; degrees of freedom for the context.
 #' @export
 calc_df <- function(d_m, J, K, nbar, 
                     numCovar.1, numCovar.2, numCovar.3, 

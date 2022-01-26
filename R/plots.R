@@ -65,7 +65,8 @@ get_sample_size_scale <- function(
     ggplot2::scale_x_log10( breaks=xpt )
   } else if ( delrange >= 2 && delrange <= 15 ) {
     # Tick marks for each sample size.
-    xpt <- seq( round( min( points ) - 0.25 ), round( max( points ) + 0.25 ) )
+    xpt <- seq( round( min( points, na.rm = TRUE ) - 0.25 ), 
+                round( max( points, na.rm = TRUE ) + 0.25 ) )
     ggplot2::scale_x_continuous( breaks = xpt )
   } else {
     xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
@@ -84,14 +85,16 @@ get_sample_size_scale <- function(
 #'   power changes little as a function of MDES or sample size, and can also be
 #'   useful to gauge where convergence went poorly.
 #'
-#' @param pwr Result from the pump_sample or pump_mdes (or data frame from,
-#'   e.g., power_curve()).
-#' @param plot.points flag; whether to plot individually tested points on curve
-#' @param fit A four parameter bounded logistic curve (if NULL will fit one to
-#'   passed points).
-#' @param breaks The desired number of tick marks on the axes
-#'
+#' @param pwr pumpresult object or data.frame; result from calling pump_sample or 
+#' pump_mdes (or data frame from, e.g., power_curve()).
+#' @param plot.points logical; whether to plot individually 
+#' tested points on curve.
+#' @param fit a four parameter bounded logistic curve 
+#' (if NULL will fit one to passed points).
+#' @param breaks scalar; the desired number of tick marks on the axes.
 #' @inheritParams power_curve
+#' 
+#' @return plot; a ggplot object of power across values.
 #'
 #' @export
 #'
@@ -184,12 +187,16 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #' final estimate.  Can be useful to gauge where 
 #' convergence went poorly.
 #'
-#' @param pwr Result from a pump_sample or pump_mdes call.
-#' @param fit A fitted curve to the search.
-#' @param target.line If non-NULL, add a reference line 
+#' @param pwr pumpresult object; result from a 
+#' pump_sample or pump_mdes call.
+#' @param fit a fitted curve to the search.
+#' @param target.line scalar; if non-NULL, add a reference line 
 #' for the true power (if known, e.g., from a pump_power call). 
 #'
-#' @return a ggplot plot (a ggpubr arrangement of 3 plots, technically).
+#' @return plot; a ggplot object
+#'  (a ggpubr arrangement of 3 plots, technically) of the
+#'  search path.
+#'
 #' @export
 #' 
 #' @examples
@@ -199,7 +206,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #'    nbar = 50, M = 3, MDES = 0.125,
 #'    Tbar = 0.5, alpha = 0.05,
 #'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-#'    rho = 0.2, tnum = 2000)
+#'    rho = 0.2, tnum = 1000)
 #' plot_power_search(J)
 #'
 plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
@@ -272,10 +279,12 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 #' or pump_sample() objects, as these functions only
 #' return a single value.
 #'
-#' @param x pumpresult object
-#' @param ... Additional parameters
+#' @param x pumpresult object.
+#' @param ... additional parameters.
 #'
-#' @return a ggplot plot.
+#' @return plot; a ggplot object of power across
+#' differen definitions.
+#'
 #' @export
 #'
 #' @examples 
@@ -364,7 +373,7 @@ plot.pumpresult <- function( x, ... )
 #'
 #' @inheritParams plot.pumpgridresult
 #' 
-#' @return a ggplot object
+#' @return Plot; a ggplot object
 #' 
 #' @importFrom stringr str_detect
 #' @keywords internal
@@ -777,7 +786,7 @@ plot.pumpgridresult.sample <- function(
 #'the grid as a multifactor simulation, with this showing the "main effect" of
 #'the specified parameter.
 #'
-#'@param x pumpgridresult object
+#'@param x pumpgridresult object.
 #'@param power.definition string; definition of power to plot.  
 #' If NULL, plot all definitions as a facet wrap.
 #'@param var.vary string; variable to vary on X axis.  
@@ -786,10 +795,11 @@ plot.pumpgridresult.sample <- function(
 #'@param lines logical; TRUE means connect dots with lines on the plots.  
 #' FALSE means no lines.
 #'@param include.title logical; whether to include/exclude title 
-#' (if planning a facet wrap, for example)
-#'@param ... additional parameters
+#' (if planning a facet wrap, for example).
+#'@param ... additional parameters.
 #'
-#'@return a ggplot object
+#'@return plot; a ggplot object of outcome across parameter values.
+#'
 #'@export
 #'
 #' @examples
@@ -797,7 +807,7 @@ plot.pumpgridresult.sample <- function(
 #'  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
 #'  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1,
 #'  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
-#'  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 500)
+#'  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 200)
 #'plot(g, power.definition = 'min1')
 
 plot.pumpgridresult <- function( 
