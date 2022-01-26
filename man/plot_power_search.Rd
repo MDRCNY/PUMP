@@ -7,15 +7,18 @@
 plot_power_search(pwr, fit = NULL, target.line = NULL)
 }
 \arguments{
-\item{pwr}{Result from a pump_sample or pump_mdes call.}
+\item{pwr}{pumpresult object; result from a 
+pump_sample or pump_mdes call.}
 
-\item{fit}{A fitted curve to the search.}
+\item{fit}{a fitted curve to the search.}
 
-\item{target.line}{If non-NULL, add a reference line 
+\item{target.line}{scalar; if non-NULL, add a reference line 
 for the true power (if known, e.g., from a pump_power call).}
 }
 \value{
-a ggplot plot (a ggpubr arrangement of 3 plots, technically).
+plot; a ggplot object
+ (a ggpubr arrangement of 3 plots, technically) of the
+ search path.
 }
 \description{
 This will give triple-plots about 
@@ -30,7 +33,7 @@ J <- pump_sample(d_m = "d2.1_m2fc",
    nbar = 50, M = 3, MDES = 0.125,
    Tbar = 0.5, alpha = 0.05,
    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-   rho = 0.2, tnum = 2000)
+   rho = 0.2, tnum = 1000)
 plot_power_search(J)
 
 }

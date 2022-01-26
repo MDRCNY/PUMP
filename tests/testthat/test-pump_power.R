@@ -1,5 +1,6 @@
 # library( PUMP )
 # library( testthat )
+default.tnum <- 200
 
 test_that("pump_power works without crashing", {
 
@@ -43,7 +44,8 @@ test_that( "pump_power handles small MDES right", {
     Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     numCovar.1 = 1,
     R2.1 = 0.1, ICC.2 = 0.05,
-    rho = 0.2)
+    rho = 0.2,
+    tnum = default.tnum)
   aa
   
   expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
@@ -58,7 +60,8 @@ test_that( "pump_power handles small MDES right", {
     Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
     numCovar.1 = 1,
     R2.1 = 0.1, ICC.2 = 0.05,
-    rho = 0.2)
+    rho = 0.2,
+    tnum = default.tnum)
   aa
   expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
   
@@ -233,7 +236,7 @@ test_that("K = 1 runs successfully", {
                       numCovar.1 = 0, numCovar.2 = 0,
                       R2.1 = 0, R2.2 = 0,
                       ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, tnum = 10000
+                      rho = 0.4, tnum = 200
     ))
     pp
 })
@@ -320,7 +323,7 @@ test_that("different correlations", {
                              MDES = rep( 0.2, 4 ),
                              Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
                              R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                             rho = 0)
+                             rho = 0, tnum = 1000)
 
     pp.rhomed <- pump_power(   d_m = "d2.2_m2rc",
                                MTP = "BF",
@@ -330,7 +333,7 @@ test_that("different correlations", {
                                MDES = rep( 0.2, 4 ),
                                Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                               rho = 0.4)
+                               rho = 0.4, tnum = 1000)
 
     pp.rhomax <- pump_power(   d_m = "d2.2_m2rc",
                                MTP = "BF",
@@ -340,7 +343,7 @@ test_that("different correlations", {
                                MDES = rep( 0.2, 4 ),
                                Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                               rho = 1)
+                               rho = 1, tnum = 1000)
 
     pp.rhomin
     pp.rhomed
@@ -366,7 +369,8 @@ test_that("numZero has expected behavior", {
                     ICC.2 = 0.1, R2.2 = 0.3, numCovar.2 = 1,
                     numZero = 3,
                     Tbar = 0.50,
-                    rho = 1)
+                    rho = 1,
+                    tnum = 200)
 
 
 
@@ -379,7 +383,8 @@ test_that("numZero has expected behavior", {
                     ICC.2 = 0.1, R2.2 = 0.3, numCovar.2 = 1,
                     numZero = 3,
                     Tbar = 0.50,
-                    rho = 1)
+                    rho = 1,
+                    tnum = 200)
   )
 
 })
@@ -395,7 +400,8 @@ test_that("do not report invalid power values", {
                     Tbar = 0.50,
                     ICC.2 = 0.1,
                     R2.2 = 0.1, numCovar.2 = 1,
-                    rho = 0.4)
+                    rho = 0.4,
+                    tnum = 200)
 
   expect_true(is.na(pp$min1[1]))
   expect_true(is.na(pp$min2[1]))
@@ -592,7 +598,7 @@ test_that("parallel WY", {
                       R2.1 = 0.1, R2.2 = 0.7,
                       ICC.2 = 0.05, ICC.3 = 0.4,
                       rho = 0.4, # how correlated outcomes are
-                      tnum = 1000, B = 100,
+                      tnum = 200, B = 100,
                       parallel.WY.cores = 1,
                       verbose = TRUE
     ))
@@ -612,7 +618,7 @@ test_that("parallel WY", {
                       R2.1 = 0.1, R2.2 = 0.7,
                       ICC.2 = 0.05, ICC.3 = 0.4,
                       rho = 0.4, # how correlated outcomes are
-                      tnum = 1000, B = 100,
+                      tnum = 200, B = 100,
                       parallel.WY.cores = 2
     ))
     expect_true(nrow(pp) == 2)

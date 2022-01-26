@@ -7,17 +7,18 @@
 \method{update}{pumpresult}(object, type = NULL, ...)
 }
 \arguments{
-\item{object}{Pump result object.}
+\item{object}{pump result object.}
 
-\item{type}{Can be "power", "mdes" or "sample", sets the 
+\item{type}{string; can be "power", "mdes" or "sample", sets the 
 type of the updated call (can be different from original).}
 
-\item{...}{Parameters as specified in `pump_power`, `pump_mdes`, and
+\item{...}{parameters as specified in `pump_power`, `pump_mdes`, and
 `pump_sample` that should be overwritten.}
 }
 \value{
-Results of a new call using parameters of old object with newly
-  specified parameters replaced.
+a pumpresult object: results of a new call 
+using parameters of old object with newly 
+specified parameters replaced.
 }
 \description{
 Works on objects returned by

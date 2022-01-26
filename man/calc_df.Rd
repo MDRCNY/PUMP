@@ -31,10 +31,11 @@ is nbar x J x K.}
 
 \item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
-\item{validate}{whether or not to validate if output df is <= 0}
+\item{validate}{logical; whether or not to validate 
+if output df is <= 0.}
 }
 \value{
-Degree of freedom for the d_m.
+scalar; degrees of freedom for the context.
 }
 \description{
 Given sample sizes, return the used degrees of freedom 

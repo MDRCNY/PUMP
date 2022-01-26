@@ -29,18 +29,17 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' This function is mostly for internal use, but may be of interest to
 #' users who wish to calculate power on their own.
 #'
-#' @param adj.pval.mat matrix of adjusted p-values, columns are outcomes
-#' dimention tnum X M
-#' @param unadj.pval.mat matrix of unadjusted p-values, columns are outcomes
-#' dimention tnum X M
-#' @param ind.nonzero vector indicating which outcomes are nonzero
-#' length M
-#' @param alpha scalar; the family wise error rate (FWER)
+#' @param adj.pval.mat matrix; adjusted p-values, columns are outcomes
+#' @param unadj.pval.mat matrix; unadjusted p-values, columns are outcomes
+#' @param ind.nonzero vector; which outcomes are nonzero.
+#' @param alpha scalar; the family wise error rate (FWER).
 #' @param drop.zero.outcomes logical; whether to report power results for 
-#' outcomes with MDES = 0
-#' @param adj logical; whether p-values are unadjusted or not
+#' outcomes with MDES = 0.
+#' @param adj logical; whether p-values are unadjusted or not.
 #'
-#' @return power results for individual, minimum, complete power
+#' @return data frame; power results for 
+#' individual, minimum, complete power.
+#' 
 #' @export 
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
                               ind.nonzero, alpha,
@@ -152,7 +151,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param MDES scalar or vector; the desired MDES values for each outcome. 
 #' Please provide a scalar, a vector of length M, or vector of 
 #' values for non-zero outcomes.
-#' @param numZero scalar; Additional number of outcomes assumed 
+#' @param numZero scalar; additional number of outcomes assumed 
 #' to be zero. Please provide NumZero + length(MDES) = M.
 #' @param M scalar; the number of hypothesis tests (outcomes), 
 #' including zero outcomes.
@@ -183,9 +182,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param R2.3 scalar, or vector of length M; percent of variation explained by
 #'   level 3 covariates for each outcome.
 #' @param ICC.2 scalar, or vector of length M; 
-#' level 2 (school) intraclass correlation
+#' level 2 (school) intraclass correlation.
 #' @param ICC.3 scalar, or vector length M; 
-#' level 3 (district) intraclass correlation
+#' level 3 (district) intraclass correlation.
 #' @param omega.2 scalar, or vector of length M; ratio of 
 #' variance of level 2 average impacts to
 #' variance of level 2 random intercepts.
@@ -208,14 +207,14 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #' @param drop.zero.outcomes whether to report 
 #' power results for outcomes with MDES = 0.
 #' @param updateProgress function to update progress bar 
-#' (only used for PUMP shiny app)
+#' (only used for PUMP shiny app).
 #' @param long.table TRUE for table with power as rows, correction as columns,
 #'   and with more verbose names. See `transpose_power_table`.
 #' @param verbose TRUE/FALSE; Print out diagnostics of time, etc.
 #' @param validate.inputs TRUE/FALSE; whether or not to 
-#' check whether parameters are valid given the choice of d_m
+#' check whether parameters are valid given the choice of d_m.
 #' 
-#' @return power results for MTP and unadjusted across all definitions of power
+#' @return a pumpresult object containing power results.
 #' @export
 #'
 #' @examples

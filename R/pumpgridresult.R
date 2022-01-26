@@ -51,9 +51,9 @@ NULL
 
 #' @return is.pumpgridresult: TRUE if object is a pumpgridresult object.
 #'
-#' @export
-#'
 #' @rdname pumpgridresult
+#' 
+#' @export
 is.pumpgridresult <- function( x ) {
     inherits(x, "pumpgridresult")
 }
@@ -79,11 +79,15 @@ print_grid_header <- function( x ) {
 
 #' @title Pretty print pump grid result (result function)
 #'
-#' @export
-#' @param ... No extra options passed.
-#' @param header FALSE means skip some header info on the result, just print
-#'   the data.frame of actual results.
+#' @param ... extra options passed.
+#' @param header logical; FALSE means skip some 
+#' header info on the result, just print
+#' the data.frame of actual results.
 #' @rdname pumpgridresult
+#' 
+#' @return print: No return value; prints results.
+#' 
+#' @export
 print.pumpgridresult <- function( x,
                              header = TRUE,
                              ... ) {
@@ -102,10 +106,13 @@ print.pumpgridresult <- function( x,
 
 #' @title Pretty print pump grid result with parameters (result function)
 #'
-#' @export
-#' @param object Object to summarize.
-#' @param ... Extra options passed to print.pumpgridresult
+#' @param object object to summarize.
+#' @param ... extra options passed to print.pumpgridresult
 #' @rdname pumpgridresult
+#' 
+#' @return summary: No return value; prints results.
+#' 
+#' @export
 summary.pumpgridresult <- function( object, ... ) {
     print_grid_header( object )
     

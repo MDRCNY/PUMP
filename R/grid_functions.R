@@ -115,8 +115,10 @@ setup_default_parallel_plan <- function() {
 #' as calls processed.  FALSE do not.
 #' @param drop.unique.columns logical; drop all parameter columns 
 #' that did not vary across the grid.
-#' @param ... Extra arguments passed to the underlying pump_power, pump_sample,
+#' @param ... extra arguments passed to the underlying pump_power, pump_sample,
 #'   or pump_mdes functions.
+#'   
+#' @return a pumpgridresult object containing power results.
 #'
 #' @importFrom magrittr %>%
 #' @family grid functions
@@ -186,6 +188,8 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 #'
 #' @inheritParams pump_mdes
 #' @inheritParams pump_power_grid
+#' 
+#' @return a pumpgridresult object containing MDES results.
 #'
 #' @family grid functions
 #'
@@ -197,7 +201,7 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 #'   tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
 #'   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
-#'   rho = 0.4, tnum = 500)
+#'   rho = 0.4, tnum = 200)
 pump_mdes_grid <- function( d_m, MTP, M,
                             target.power, power.definition, tol = 0.01,
                             nbar, J = 1, K = 1,
@@ -251,6 +255,8 @@ pump_mdes_grid <- function( d_m, MTP, M,
 #'
 #' @inheritParams pump_sample
 #' @inheritParams pump_power_grid
+#' 
+#' @return a pumpgridresult object containing sample results.
 #'
 #' @family grid functions
 #'

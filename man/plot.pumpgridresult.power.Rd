@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{x}{pumpgridresult object}
+\item{x}{pumpgridresult object.}
 
 \item{power.definition}{string; definition of power to plot.
 If NULL, plot all definitions as a facet wrap.}
@@ -27,12 +27,12 @@ to single varying parameter.}
 FALSE means no lines.}
 
 \item{include.title}{logical; whether to include/exclude title 
-(if planning a facet wrap, for example)}
+(if planning a facet wrap, for example).}
 
-\item{...}{additional parameters}
+\item{...}{additional parameters.}
 }
 \value{
-a ggplot object
+Plot; a ggplot object
 }
 \description{
 Plot a grid pump power object

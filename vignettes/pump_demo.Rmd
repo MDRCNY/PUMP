@@ -427,7 +427,7 @@ A check is easy to do; simply run the found design through `pump_power()`, which
 When we do this, we can also increase the number of iterations to get more precise estimates of power, as well:
 
 ```{r samplesizeverify}
-p_check <- update( smp, type = "power", tnum = 50000,
+p_check <- update( smp, type = "power", tnum = 20000,
                    long.table = TRUE )
 ```
 
@@ -470,11 +470,11 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 ```{r othercorrections}
 p2 <- update( p_check,
               MTP = c( "BF", "HO", "WY-SD" ),
-              tnum = 5000, parallel.WY.cores = 2 )
+              tnum = 1000 )
 plot( p2 )
 ```
 
-To speed up computation, we set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
+To speed up computation, we could also set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
 We also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
@@ -533,14 +533,15 @@ Using update allows for targeted comparison of major choices, but if we are inte
 
 We above saw that the ICC does impact power considerably.
 We next extend this evaluation by exploring a range of options for both level two and three ICCs, so we can assess whether our power is sufficient across a set of plausible values.
-The `update_grid()` call makes this straightforward: we pass our baseline scenario along with lists of parameters to additionally explore:
-
+The `update_grid()` call makes this straightforward: we pass our baseline scenario along with lists of parameters to additionally explore.
+To decrease computation time and achieve less precise estimates in this exploratory phase, we decrease `tnum`.
 We can then easily visualize the variation in min1 power by calling `plot()` on the object.
 
-```{r}
+```{r icc.grid}
 grid <- update_grid( p_check,
         	ICC.2 = seq( 0, 0.3, 0.05 ),
-        	ICC.3 = seq( 0, 0.60, 0.20 ) )
+        	ICC.3 = seq( 0, 0.60, 0.20 ),
+        	tnum = 1000 )
 
 plot( grid, power.definition = "min1" )
 ```
@@ -577,12 +578,12 @@ For example, with Westfall-Young, we saw that the correlation can improve our in
 We might not know what will happen to $2-$minimal power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this question relatively easily by letting `rho` vary as so:
 
-```{r}
+```{r rho.grid}
 gridRho <- update_grid( p_check,
         	  MTP = c( "BF", "WY-SD" ),
         	  rho = seq( 0, 0.9, by = 0.15 ),
         	  tnum = 500,
-        	  B = 10000 )
+        	  B = 3000 )
 ```
 
 We then plot our results.
@@ -603,7 +604,7 @@ We finally explore varying the number of outcomes with no effects.
 This exploration is an important way to hedge a design against the possibility that some number of the identified outcomes are measured poorly, or are simply not impacted by treatment.
 We use a grid search, varying the number of outcomes that have no treatment impact via the `numZero` design parameter:
 
-```{r, fig.height = 2.5 }
+```{r numzero.grid, fig.height = 2.5 }
 gridZero <- update_grid( p_check,
         	             numZero = 0:4,
                          M = 5 )

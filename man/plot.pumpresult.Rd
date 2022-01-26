@@ -7,12 +7,13 @@
 \method{plot}{pumpresult}(x, ...)
 }
 \arguments{
-\item{x}{pumpresult object}
+\item{x}{pumpresult object.}
 
-\item{...}{Additional parameters}
+\item{...}{additional parameters.}
 }
 \value{
-a ggplot plot.
+plot; a ggplot object of power across
+differen definitions.
 }
 \description{
 Works on an object returned by pump_power(),

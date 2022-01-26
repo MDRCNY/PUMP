@@ -4,10 +4,12 @@
 
 #' @title Generate correlation matrix (simulation function)
 #'
-#' @param M dimension of matrix
-#' @param rho.scalar fixed rho value
+#' @param M scalar; dimension of matrix.
+#' @param rho.scalar scalar; rho value.
 #'
-#' @return rho.matrix, M x M matrix with rho.scalar as diag
+#' @return matrix; M x M correlation matrix
+#' with rho.scalar as diagonal.
+#' 
 #' @export
 gen_corr_matrix <- function(M, rho.scalar)
 {
@@ -78,12 +80,10 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #' For more info on use, see the simulation vignette.
 #' 
 #'
-#' @param dgp.params.list list of data generating parameters
+#' @param dgp.params.list list of data generating parameters.
 #'
-#' @return list of: potential outcomes given control y0, treatment y1,
-#'         covariates V.k, X.jk, C.ijk
-#'         
-#'         Each block has 1 column for each outcome (called "domain")
+#' @return list; potential outcomes given control y0, treatment y1,
+#'         covariates V.k, X.jk, C.ijk.
 #'
 #' @export
 gen_full_data <- function(dgp.params.list) {
@@ -308,9 +308,9 @@ gen_full_data <- function(dgp.params.list) {
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
-#' @param model.params.list list of DGP parameters
+#' @param model.params.list list; model parameters.
 #'
-#' @return dgp.params.list
+#' @return list; data-generating parameters.
 #'
 #' @export
 convert_params <- function(model.params.list) {
@@ -472,12 +472,13 @@ convert_params <- function(model.params.list) {
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #'
-#' @param K number of districts
-#' @param J number of schools per district
-#' @param nbar number of individuals per school
+#' @param K scalar; number of districts.
+#' @param J scalar; number of schools per district.
+#' @param nbar scalar; number of individuals per school.
 #'
-#' @return list(S.id, D.id) of school and district 
-#' assignments for each individual
+#' @return list; school and district 
+#' assignments (S.id, D.id) for each individual.
+#' 
 #' @export
 gen_assignments <- function(J, K, nbar){
     
@@ -519,13 +520,14 @@ gen_assignments <- function(J, K, nbar){
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #'
-#' @param d_m design and model
-#' @param S.id vector of school assignments
-#' @param D.id vector of district assignments
-#' @param nbar number of level 1 units
-#' @param Tbar  probability of treatment assignment
+#' @param d_m string; design and model.
+#' @param S.id vector; school assignments.
+#' @param D.id vector; district assignments.
+#' @param nbar scalar; number of level 1 units.
+#' @param Tbar scalar; probability of treatment assignment.
 #'
-#' @return vector of treatment assignments for each unit
+#' @return vector; treatment assignments for each unit.
+#' 
 #' @export
 gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 {
@@ -565,10 +567,10 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
-#' @param full.data full dataset of potential outcomes
-#' @param T.x N-vector of binary assignment to treat/control
+#' @param full.data data.frame; full dataset of potential outcomes.
+#' @param T.x vector; binary assignment to treat/control.
 #'
-#' @return Yobs
+#' @return vector; observed outcomes
 #'
 #' @export
 gen_Yobs <- function(full.data, T.x) {

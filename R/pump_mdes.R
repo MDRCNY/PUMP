@@ -17,23 +17,23 @@
 #'
 #' @inheritParams pump_power
 #'
-#' @param target.power Target power for search algorithm
+#' @param target.power target power for search algorithm.
 #' @param power.definition see pump_info() for 
-#' possible power definitions
+#' possible power definitions.
 #' @param tol tolerance for target power, defaults to 0.01 (1%).  
 #' This parameter controls when the search is done: 
 #' when estimated power (checked with `final.tnum` iterations) 
 #' is within `tol`, the search stops.
-#' @param max.steps how many steps allowed before terminating
+#' @param max.steps how many steps allowed before terminating.
 #' @param tnum max number of samples for first iteration 
-#' of search algorithm
+#' of search algorithm.
 #' @param start.tnum number of samples to start search 
 #' (this will increase with each step).
-#' @param final.tnum number of samples for final draw
+#' @param final.tnum number of samples for final draw.
 #' @param give.optimizer.warnings whether to return 
-#' verbose optimizer warnings
+#' verbose optimizer warnings.
 #'
-#' @return mdes results
+#' @return a pumpresult object containing MDES results.
 #' @export
 #'
 #' @examples 

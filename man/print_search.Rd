@@ -13,7 +13,7 @@ object to check).}
 \item{n}{Number of lines of search path to print, max.}
 }
 \value{
-Number of steps in search.
+No return value; prints results.
 }
 \description{
 For pump_mdes and pump_sample, print the 

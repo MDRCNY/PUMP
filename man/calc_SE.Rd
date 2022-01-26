@@ -20,7 +20,7 @@ calc_SE(
 )
 }
 \arguments{
-\item{d_m}{a single RCT d_m (see list/naming convention)}
+\item{d_m}{a single RCT d_m (see list/naming convention).}
 
 \item{J}{scalar; the number of schools}
 
@@ -51,7 +51,7 @@ variability to random effects variability}
 variability to random effects variability}
 }
 \value{
-Q_m, the standard error of the effect size estimate
+vector; the standard error of the effect size estimate
 }
 \description{
 Function to calculate the theoretical true (unadjusted) standard error of the

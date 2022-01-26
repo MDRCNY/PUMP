@@ -54,10 +54,10 @@ Options: K, J, nbar, mdes}
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
 See pump_info() for list of choices.}
 
-\item{target.power}{Target power for search algorithm}
+\item{target.power}{target power for search algorithm.}
 
 \item{power.definition}{see pump_info() for 
-possible power definitions}
+possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
 This parameter controls when the search is done: 
@@ -90,7 +90,7 @@ is nbar x J x K.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
 including zero outcomes.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed 
+\item{numZero}{scalar; additional number of outcomes assumed 
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{Tbar}{scalar; the proportion of samples 
@@ -117,10 +117,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -139,7 +139,7 @@ Westfall-Young procedures.}
 \item{parallel.WY.cores}{number of cores to use for 
 parallel processing of WY-SD.}
 
-\item{max.steps}{how many steps allowed before terminating}
+\item{max.steps}{how many steps allowed before terminating.}
 
 \item{tnum}{scalar; the number of test statistics
 to draw. Increasing tnum increases precision and
@@ -148,7 +148,7 @@ computation time.}
 \item{start.tnum}{number of samples to start search 
 (this will increase with each step).}
 
-\item{final.tnum}{number of samples for final draw}
+\item{final.tnum}{number of samples for final draw.}
 
 \item{give.warnings}{whether to return optimizer warnings}
 

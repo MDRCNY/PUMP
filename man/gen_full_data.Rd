@@ -7,13 +7,11 @@
 gen_full_data(dgp.params.list)
 }
 \arguments{
-\item{dgp.params.list}{list of data generating parameters}
+\item{dgp.params.list}{list of data generating parameters.}
 }
 \value{
-list of: potential outcomes given control y0, treatment y1,
-        covariates V.k, X.jk, C.ijk
-        
-        Each block has 1 column for each outcome (called "domain")
+list; potential outcomes given control y0, treatment y1,
+        covariates V.k, X.jk, C.ijk.
 }
 \description{
 Generates simulated data for multi-level
