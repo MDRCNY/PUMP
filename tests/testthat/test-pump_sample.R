@@ -303,70 +303,6 @@ test_that("sample search when one end is missing", {
 })
 
 
-test_that("Sample with different correlations", {
-
-    # zero correlation
-    p <- pump_power(  d_m = "d2.1_m2fc",
-                      MTP = "HO",
-                      J = 10,
-                      nbar = 200,
-                      M = 20,
-                      MDES = rep(0.05, 20),
-                      Tbar = 0.50, alpha = 0.05,
-                      numCovar.1 = 5,
-                      R2.1 = 0.1, ICC.2 = 0.05,
-                      rho = 0, tnum = default.tnum )
-    p
-
-    ss <- pump_sample(    d_m = "d2.1_m2fc",
-                          MTP = "HO",
-                          typesample = "J",
-                          nbar = 200,
-                          power.definition = "min1",
-                          M = 20,
-                          MDES = 0.05, target.power = p$min1[2],
-                          tol = 0.01,
-                          Tbar = 0.50, alpha = 0.05,
-                          numCovar.1 = 5,
-                          R2.1 = 0.1, ICC.2 = 0.05,
-                          rho = 0 )
-
-
-    expect_equal(ss$`Sample.size`, 10, tol = 1)
-
-
-    # high correlation
-    p <- pump_power(  d_m = "d2.1_m2fc",
-                      MTP = "HO",
-                      J = 10,
-                      nbar = 200,
-                      M = 20,
-                      MDES = rep(0.05, 20),
-                      Tbar = 0.50, alpha = 0.05,
-                      numCovar.1 = 5,
-                      R2.1 = 0.1, ICC.2 = 0.05,
-                      rho = 0.95, tnum = default.tnum )
-    p
-
-    ss <- pump_sample(    d_m = "d2.1_m2fc",
-                          MTP = "HO",
-                          typesample = "J",
-                          nbar = 200,
-                          power.definition = "min1",
-                          M = 20,
-                          MDES = 0.05, target.power = p$min1[2],
-                          tol = 0.01,
-                          Tbar = 0.50, alpha = 0.05,
-                          numCovar.1 = 5,
-                          R2.1 = 0.1, ICC.2 = 0.05,
-                          rho = 0.95 )
-
-
-    expect_equal(ss$`Sample.size`, 10, tol = 1)
-
-} )
-
-
 test_that("No adjustment", {
 
   nbar <- pump_sample(
@@ -441,111 +377,6 @@ test_that( "sample errors out for MDES vector", {
     rho = 0.2))
 })
 
-
-test_that( "different values for different outcomes", {
-
-  set.seed(03443)
-
-  pow <- pump_power(
-    d_m = "d2.1_m2fc",
-    MTP = "HO",
-    J = 20,
-    nbar = 200,
-    M = 3,
-    MDES = 0.05,
-    Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5,
-    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
-    rho = 0.4, tnum = default.tnum )
-
-  # sanity check: higher ICC means higher power
-  expect_true(pow$D2indiv[1] > pow$D1indiv[1])
-  expect_true(pow$D3indiv[1] > pow$D2indiv[1])
-
-  ss1 <- pump_sample(
-    d_m = "d2.1_m2fc",
-    MTP = "HO",
-    typesample = 'J',
-    target.power = 0.8,
-    power.definition = 'D1indiv',
-    nbar = 200,
-    M = 3,
-    MDES = 0.05,
-    Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5,
-    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
-    rho = 0.4
-  )
-
-  ss2 <- pump_sample(
-    d_m = "d2.1_m2fc",
-    MTP = "HO",
-    typesample = 'J',
-    target.power = 0.8,
-    power.definition = 'D2indiv',
-    nbar = 200,
-    M = 3,
-    MDES = 0.05,
-    Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, 
-    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
-    rho = 0.4
-  )
-
-  ss3 <- pump_sample(
-    d_m = "d2.1_m2fc",
-    MTP = "HO",
-    typesample = 'J',
-    target.power = 0.8,
-    power.definition = 'D3indiv',
-    nbar = 200,
-    M = 3,
-    MDES = 0.05,
-    Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5,
-    R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
-    rho = 0.4
-  )
-
-  # for same target power, we should need a bigger sample size for smaller ICC
-  expect_true(ss1$`Sample.size` > ss2$`Sample.size`)
-  expect_true(ss2$`Sample.size` > ss3$`Sample.size`)
-
-})
-
-test_that( "different MDES values work", {
-  
-  set.seed(034443)
-  
-  pow <- pump_power(
-    d_m = "d2.2_m2rc",
-    MTP = "BH",
-    J = 40,
-    nbar = 100,
-    M = 5,
-    MDES = c( 0.10, 0.05, 0.6, 0.05, 0.7 ),
-    Tbar = 0.50, alpha = 0.05,
-    numCovar.1 = 5, numCovar.2 = 1,
-    R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8, 0.01, 0.4),
-    rho = 0.4, tnum = default.tnum ) 
-  pow
-  
-  ss1 <- update( pow, type="sample",
-                typesample = "J",
-                power.definition = "D4indiv",
-                target.power = pow$D4indiv[[2]])
-  ss1
-  expect_equal( ss1$Sample.size, 40, tol=0.05 )
-  
-  ss2 <- update( pow, type="sample",
-                typesample = "J",
-                power.definition = "D5indiv",
-                target.power = 0.80 )
-  ss2
-  expect_true( ss2$Sample.size < 40 )
-
-})
-
 test_that("M > 1 with MTP None", {
     
     ss <- expect_warning(pump_sample(
@@ -582,4 +413,177 @@ test_that("M > 1 with MTP None", {
         ICC.2 = 0.05,
         rho = 0.4
     )))
+})
+
+test_that("Sample with different correlations", {
+    
+    skip_on_cran()
+    
+    # zero correlation
+    p <- pump_power(  d_m = "d2.1_m2fc",
+                      MTP = "HO",
+                      J = 10,
+                      nbar = 200,
+                      M = 20,
+                      MDES = rep(0.05, 20),
+                      Tbar = 0.50, alpha = 0.05,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
+                      rho = 0, tnum = default.tnum )
+    p
+    
+    ss <- pump_sample(    d_m = "d2.1_m2fc",
+                          MTP = "HO",
+                          typesample = "J",
+                          nbar = 200,
+                          power.definition = "min1",
+                          M = 20,
+                          MDES = 0.05, target.power = p$min1[2],
+                          tol = 0.01,
+                          Tbar = 0.50, alpha = 0.05,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1, ICC.2 = 0.05,
+                          rho = 0 )
+    
+    
+    expect_equal(ss$`Sample.size`, 10, tol = 1)
+    
+    
+    # high correlation
+    p <- pump_power(  d_m = "d2.1_m2fc",
+                      MTP = "HO",
+                      J = 10,
+                      nbar = 200,
+                      M = 20,
+                      MDES = rep(0.05, 20),
+                      Tbar = 0.50, alpha = 0.05,
+                      numCovar.1 = 5,
+                      R2.1 = 0.1, ICC.2 = 0.05,
+                      rho = 0.95, tnum = default.tnum )
+    p
+    
+    ss <- pump_sample(    d_m = "d2.1_m2fc",
+                          MTP = "HO",
+                          typesample = "J",
+                          nbar = 200,
+                          power.definition = "min1",
+                          M = 20,
+                          MDES = 0.05, target.power = p$min1[2],
+                          tol = 0.01,
+                          Tbar = 0.50, alpha = 0.05,
+                          numCovar.1 = 5,
+                          R2.1 = 0.1, ICC.2 = 0.05,
+                          rho = 0.95 )
+    
+    
+    expect_equal(ss$`Sample.size`, 10, tol = 1)
+    
+} )
+
+test_that( "different values for different outcomes", {
+    
+    skip_on_cran()
+    
+    set.seed(03443)
+    
+    pow <- pump_power(
+        d_m = "d2.1_m2fc",
+        MTP = "HO",
+        J = 20,
+        nbar = 200,
+        M = 3,
+        MDES = 0.05,
+        Tbar = 0.50, alpha = 0.05,
+        numCovar.1 = 5,
+        R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
+        rho = 0.4, tnum = default.tnum )
+    
+    # sanity check: higher ICC means higher power
+    expect_true(pow$D2indiv[1] > pow$D1indiv[1])
+    expect_true(pow$D3indiv[1] > pow$D2indiv[1])
+    
+    ss1 <- pump_sample(
+        d_m = "d2.1_m2fc",
+        MTP = "HO",
+        typesample = 'J',
+        target.power = 0.8,
+        power.definition = 'D1indiv',
+        nbar = 200,
+        M = 3,
+        MDES = 0.05,
+        Tbar = 0.50, alpha = 0.05,
+        numCovar.1 = 5,
+        R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
+        rho = 0.4
+    )
+    
+    ss2 <- pump_sample(
+        d_m = "d2.1_m2fc",
+        MTP = "HO",
+        typesample = 'J',
+        target.power = 0.8,
+        power.definition = 'D2indiv',
+        nbar = 200,
+        M = 3,
+        MDES = 0.05,
+        Tbar = 0.50, alpha = 0.05,
+        numCovar.1 = 5, 
+        R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
+        rho = 0.4
+    )
+    
+    ss3 <- pump_sample(
+        d_m = "d2.1_m2fc",
+        MTP = "HO",
+        typesample = 'J',
+        target.power = 0.8,
+        power.definition = 'D3indiv',
+        nbar = 200,
+        M = 3,
+        MDES = 0.05,
+        Tbar = 0.50, alpha = 0.05,
+        numCovar.1 = 5,
+        R2.1 = 0.1, ICC.2 = c(0.1, 0.5, 0.8),
+        rho = 0.4
+    )
+    
+    # for same target power, we should need a bigger sample size for smaller ICC
+    expect_true(ss1$`Sample.size` > ss2$`Sample.size`)
+    expect_true(ss2$`Sample.size` > ss3$`Sample.size`)
+    
+})
+
+test_that( "different MDES values work", {
+    
+    skip_on_cran()
+    
+    set.seed(034443)
+    
+    pow <- pump_power(
+        d_m = "d2.2_m2rc",
+        MTP = "BH",
+        J = 40,
+        nbar = 100,
+        M = 5,
+        MDES = c( 0.10, 0.05, 0.6, 0.05, 0.7 ),
+        Tbar = 0.50, alpha = 0.05,
+        numCovar.1 = 5, numCovar.2 = 1,
+        R2.1 = 0.1, R2.2 = 0.7, ICC.2 = c(0.1, 0.5, 0.8, 0.01, 0.4),
+        rho = 0.4, tnum = default.tnum ) 
+    pow
+    
+    ss1 <- update( pow, type="sample",
+                   typesample = "J",
+                   power.definition = "D4indiv",
+                   target.power = pow$D4indiv[[2]])
+    ss1
+    expect_equal( ss1$Sample.size, 40, tol=0.05 )
+    
+    ss2 <- update( pow, type="sample",
+                   typesample = "J",
+                   power.definition = "D5indiv",
+                   target.power = 0.80 )
+    ss2
+    expect_true( ss2$Sample.size < 40 )
+    
 })
