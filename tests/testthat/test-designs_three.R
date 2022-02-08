@@ -15,7 +15,6 @@ skip_on_cran()
 
 test_that("testing of d3.1_m3rr2rr one-tailed", {
 
-    skip_on_cran()
     if ( FALSE ) {
 
         set.seed( 524235326 )
@@ -113,8 +112,6 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
 
 test_that("testing of d3.2_m3ff2rc two-tailed", {
-
-    skip_on_cran()
     
     if ( FALSE ) {
 
@@ -192,8 +189,6 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
 
 
 test_that("testing of d3.2_m3rr2rc one tailed", {
-
-    skip_on_cran()
     
     if ( FALSE ) {
         set.seed( 245444 )
@@ -246,8 +241,6 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that("testing of d3.3_m3rc2rc two tailed", {
-
-    skip_on_cran()
     
     set.seed(2344)
 
@@ -351,8 +344,6 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that( "testing of lower limit", {
-    
-    skip_on_cran()
     
     # This should hit lower limit (too powerful, want J < 3).
     set.seed( 24553453 )

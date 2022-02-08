@@ -515,8 +515,6 @@ pump_sample <- function(
   {
     ss.low <- 1
   }
-  
-  # check whether low value has valid degrees of freedom
 
   ss.high.vals <- vapply(ss.high.list, function(x) x$ss, numeric(1))
   which.ss.high <- which.max(ss.high.vals)

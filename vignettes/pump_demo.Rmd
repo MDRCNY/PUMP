@@ -17,7 +17,7 @@ library( PUMP )
 recompile <- FALSE
 
 knitr::opts_chunk$set(
-  output = FALSE,
+  cache = FALSE,
   collapse = TRUE,
   comment = "#>",
   warning = FALSE,
@@ -598,10 +598,6 @@ The last two are particularly important for multiple outcome contexts.
 ### Exploring power with update()
 
 Update allows for a quick change of some of the set of parameters used in a prior call; we saw `update()` used several times above.
-
-
-
-Next, we will evaluate a variety of different scenarios.
 As a further example, here we examine what happens if the ICCs are more equally split across levels two and three:
 ```{r powICC, eval = FALSE}
 p_b <- update( pow, ICC.2 = 0.20, ICC.3 = 0.25 )
@@ -715,6 +711,7 @@ When faced with contexts where it is believed that these parameters do vary, we 
 ### Exploring the impact of rho
 
 The correlation of test statistics, $\rho$, is a critical parameter for how power will play out across the multiple tests.
+For example, with Westfall-Young, we saw that the correlation can improve our individual power, as compared to Bonferroni.
 We might not know what will happen to $2-$minimal power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this question relatively easily by letting `rho` vary as so:
 
@@ -748,10 +745,10 @@ We then plot our results.
 plot( gridRho )
 ```
 
-The impact on individual adjustment is flat, as anticipated.
-Additionally, across a very broad range of rho, we maintain good $1-$minimal power.
+First, we see the benefit of the Westfall-Young single-step procedure is minimal, as compared to Bonferroni.
+Second, the impact on individual adjustment is flat, as anticipated.
+Third, across a very broad range of rho, we maintain good $1-$minimal power.
 Complete power climbs as correlation increases, and $2-$minimal power is generally unchanged.
-
 
 ### Exploring the impact of null outcomes
 

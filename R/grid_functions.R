@@ -198,7 +198,7 @@ pump_power_grid <- function( d_m, MTP, MDES, M, nbar,
 #' @examples
 #' g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",
 #'   target.power = c( 0.50, 0.80 ), power.definition = "D1indiv",
-#'   tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
+#'   tol = 0.05, M = 5, J = c( 3, 9 ), K = 7, nbar = 58,
 #'   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
 #'   rho = 0.4, tnum = 200)
