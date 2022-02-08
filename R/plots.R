@@ -343,7 +343,7 @@ plot.pumpresult <- function( x, ... )
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across
                                different definitions of power")) +
-      
+      ggplot2::theme_minimal() +
       ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
                                                         face = "bold",
                                                         vjust = 1,
@@ -480,7 +480,6 @@ plot.pumpgridresult.power <- function(
                         shape = "MTP",
                         color = "MTP"))
   
-  
   if ( lines ) {
     grid.plot <- grid.plot +
       ggplot2::geom_point(size = 2) +
@@ -500,6 +499,7 @@ plot.pumpgridresult.power <- function(
     ggplot2::scale_y_continuous(limits = c(0,1)) +
     ggplot2::labs(x = var.vary, y = yLabel, title = title,
                   color = "", shape = "") +
+    ggplot2::theme_minimal() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
                                                       face = "bold",
                                                       vjust = 1,
@@ -659,6 +659,7 @@ plot.pumpgridresult.mdes <- function(
                   y = "MDES",
                   color = "",
                   shape = "") +
+    ggplot2::theme_minimal() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
                                                       face = "bold",
                                                       vjust = 1,
@@ -754,6 +755,7 @@ plot.pumpgridresult.sample <- function(
                   y = "Sample size",
                   color = "",
                   shape = "") +
+    ggplot2::theme_minimal() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
                                                       face = "bold",
                                                       vjust = 1,

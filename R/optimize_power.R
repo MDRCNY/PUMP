@@ -91,7 +91,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   }
 
   # Generate grid of test points (no searching)
-  gen_test_pts <- function(start.low, start.high, tnum, round=FALSE) {
+  gen_test_pts <- function(start.low, start.high, tnum, round = FALSE) {
     # generate a series of points to try
     # (on quadratic scale, especially relevant for sample size)
     pt <- seq(sqrt(start.low), sqrt(start.high), length.out = grid.size)^2
@@ -135,7 +135,6 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   if ( search.type != "mdes" ) {
     start.low <- pmax( start.low, 1 )
   }
-
 
   # Step 1: fit initial series of points to start search
   test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
@@ -394,6 +393,35 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
 
   }
 
+  # corner case: check that low value has valid df
+  if(pump_type(p) == 'sample')
+  {
+      check.J <- ifelse(
+          p$Sample.type == 'J', low,
+          ifelse(is.null(params(p)$J), 1, is.null(params(p)$J))
+      )
+      check.K <- ifelse(
+          p$Sample.type == 'K', low,
+          ifelse(is.null(params(p)$K), 1, is.null(params(p)$K))
+      )
+      check.nbar <- ifelse(
+          p$Sample.type == 'nbar', low, params(p)$nbar
+      )
+      
+      check.df  <- calc_df(
+          d_m = d_m(p), J = check.J, K = check.K, nbar = check.nbar,
+          numCovar.1 = params(p)$numCovar.1,
+          numCovar.2 = params(p)$numCovar.2,
+          numCovar.3 = params(p)$numCovar.3, 
+          validate = FALSE
+      ) 
+     
+      if(check.df < 1)
+      {
+          low <- low + abs(check.df) + 1
+      }
+  }
+  
   search_type <- ifelse( pump_type(p) == "mdes",
                          "mdes",
                          attr(p, "sample.level" ) )

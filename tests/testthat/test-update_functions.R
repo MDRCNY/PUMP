@@ -52,6 +52,8 @@ test_that( "update generally works", {
 
 
 test_that( "update_grid generally works", {
+    
+    skip_on_cran()
 
     set.seed( 101010 )
     ss <- pump_mdes(    d_m = "d2.1_m2fc",

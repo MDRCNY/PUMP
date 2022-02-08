@@ -32,6 +32,8 @@ test_that("pump_power works without crashing", {
 
 test_that( "pump_power handles small MDES right", {
   
+  skip_on_cran()
+    
   set.seed(58554343)
   
   aa <- pump_power(
@@ -71,6 +73,8 @@ test_that( "pump_power handles small MDES right", {
 
 test_that("pump_power long.table", {
 
+  skip_on_cran()
+    
   set.seed(9515)
 
   pp <- pump_power( d_m = "d3.2_m3ff2rc",
@@ -110,6 +114,8 @@ test_that("pump_power long.table", {
 
 
 test_that("skipping level three inputs for level 2 works", {
+    
+  skip_on_cran()
 
   expect_warning(pp <- pump_power(   d_m = "d2.1_m2fc",
                                      MTP = "BF",
@@ -132,6 +138,9 @@ test_that("skipping level three inputs for level 2 works", {
 })
 
 test_that("having no covariates is fine", {
+
+  skip_on_cran()
+    
   pp <- pump_power(   d_m = "d2.1_m2fc",
                       MTP = "BF",
                       MDES = rep( 0.10, 3 ),
@@ -173,6 +182,8 @@ test_that("pump_power works with multiple MTP", {
 
 test_that("M = 1 runs successfully", {
 
+  skip_on_cran()
+    
   pp <- pump_power(   d_m = "d2.1_m2fc",
                       MTP = "None",
                       MDES = 0.10,
@@ -207,6 +218,8 @@ test_that("M = 1 runs successfully", {
 
 test_that("J = 1 runs successfully", {
 
+    skip_on_cran()
+
     expect_warning(pp <- pump_power(   d_m = "d2.1_m2fc",
                         MTP = "None",
                         MDES = 0.10,
@@ -224,6 +237,8 @@ test_that("J = 1 runs successfully", {
 })
 
 test_that("K = 1 runs successfully", {
+
+    skip_on_cran()
     expect_warning(pp <- pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = "BF",
                       MDES = rep( 0.10, 3 ),
@@ -242,6 +257,8 @@ test_that("K = 1 runs successfully", {
 })
 
 test_that("unblocked d_ms", {
+
+  skip_on_cran()
 
   pp <- pump_power(   d_m = "d1.1_m1c",
                       MTP = "BF",
@@ -268,6 +285,8 @@ test_that("unblocked d_ms", {
 })
 
 test_that("Correct MTP parameter validation.", {
+
+    skip_on_cran()
 
     pp <- expect_warning(pump_power(   d_m = "d2.1_m2fc",
                                        MTP = "None",
@@ -313,52 +332,10 @@ test_that("Correct MTP parameter validation.", {
     expect_true( nrow( pp ) == 1 )
 })
 
-test_that("different correlations", {
-
-    pp.rhomin <- pump_power( d_m = "d2.2_m2rc",
-                             MTP = "BF",
-                             J = 10,
-                             M = 4,
-                             nbar = 100,
-                             MDES = rep( 0.2, 4 ),
-                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
-                             R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                             rho = 0, tnum = 1000)
-
-    pp.rhomed <- pump_power(   d_m = "d2.2_m2rc",
-                               MTP = "BF",
-                               J = 10,
-                               M = 4,
-                               nbar = 100,
-                               MDES = rep( 0.2, 4 ),
-                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
-                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                               rho = 0.4, tnum = 1000)
-
-    pp.rhomax <- pump_power(   d_m = "d2.2_m2rc",
-                               MTP = "BF",
-                               J = 10,
-                               M = 4,
-                               nbar = 100,
-                               MDES = rep( 0.2, 4 ),
-                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
-                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
-                               rho = 1, tnum = 1000)
-
-    pp.rhomin
-    pp.rhomed
-    pp.rhomax
-    # lower correlation means higher min1 power (more chances to hit one out of the park)
-    expect_true( pp.rhomin$min1[2] > pp.rhomed$min1[2] )
-    expect_true( pp.rhomed$min1[2] > pp.rhomax$min1[2]  )
-
-    # complete power is the reverse
-    expect_true( pp.rhomin$complete[2] < pp.rhomed$complete[2] )
-    expect_true( pp.rhomed$complete[2] < pp.rhomax$complete[2] )
-
-})
 
 test_that("numZero has expected behavior", {
+    
+  skip_on_cran()
 
   pp <- pump_power( d_m = "d2.2_m2rc",
                     MTP = "BF",
@@ -391,6 +368,8 @@ test_that("numZero has expected behavior", {
 
 test_that("do not report invalid power values", {
 
+  skip_on_cran()
+
   pp <- pump_power( d_m = "d2.2_m2rc",
                     MTP = "BF",
                     J = 10,
@@ -409,6 +388,8 @@ test_that("do not report invalid power values", {
 })
 
 test_that("M > 1 with MTP None runs successfully", {
+
+    skip_on_cran()
     
     pp <- expect_warning(pump_power(   d_m = "d2.1_m2fc",
                         MTP = "None",
@@ -442,6 +423,8 @@ test_that("M > 1 with MTP None runs successfully", {
 })
 
 test_that("zero MDES values", {
+    
+    skip_on_cran()
     
     # zero in middle of vector
     pp <- pump_power(   d_m = "d2.1_m2fc",
@@ -500,9 +483,57 @@ test_that("zero MDES values", {
     expect_true(is.na(pp$D1indiv[1]) && is.na(pp$D1indiv[2]))
 })
 
+test_that("different correlations", {
+    
+    skip_on_cran()
+    
+    pp.rhomin <- pump_power( d_m = "d2.2_m2rc",
+                             MTP = "BF",
+                             J = 10,
+                             M = 4,
+                             nbar = 100,
+                             MDES = rep( 0.2, 4 ),
+                             Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+                             R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                             rho = 0, tnum = 1000)
+    
+    pp.rhomed <- pump_power(   d_m = "d2.2_m2rc",
+                               MTP = "BF",
+                               J = 10,
+                               M = 4,
+                               nbar = 100,
+                               MDES = rep( 0.2, 4 ),
+                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                               rho = 0.4, tnum = 1000)
+    
+    pp.rhomax <- pump_power(   d_m = "d2.2_m2rc",
+                               MTP = "BF",
+                               J = 10,
+                               M = 4,
+                               nbar = 100,
+                               MDES = rep( 0.2, 4 ),
+                               Tbar = 0.50, alpha = 0.05, numCovar.1 = 1, numCovar.2 = 1,
+                               R2.1 = 0.1, R2.2 = 0.5, ICC.2 = 0.05,
+                               rho = 1, tnum = 1000)
+    
+    pp.rhomin
+    pp.rhomed
+    pp.rhomax
+    # lower correlation means higher min1 power (more chances to hit one out of the park)
+    expect_true( pp.rhomin$min1[2] > pp.rhomed$min1[2] )
+    expect_true( pp.rhomed$min1[2] > pp.rhomax$min1[2]  )
+    
+    # complete power is the reverse
+    expect_true( pp.rhomin$complete[2] < pp.rhomed$complete[2] )
+    expect_true( pp.rhomed$complete[2] < pp.rhomax$complete[2] )
+    
+})
 
 test_that("testing against Porter 2017", {
-
+    
+    skip_on_cran()
+    
     # NOTE: compare to Figure 1, setting with:
     # all outcomes have effects
     # 3 outcomes
@@ -536,18 +567,20 @@ test_that("testing against Porter 2017", {
         Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
         numCovar.1 = 1, tnum = 1000, B = 1000,
         R2.1 = 0.5, ICC.2 = 0, rho = 0.8)
-
+    
     expect_equal(0.65, pp2$D1indiv[2], tol = 0.01)
     expect_equal(0.71, pp2$D1indiv[3], tol = 0.01)
     expect_equal(0.75, pp2$D1indiv[4], tol = 0.01)
     expect_equal(0.71, pp2$D1indiv[5], tol = 0.01)
     expect_equal(0.76, pp2$D1indiv[6], tol = 0.01)
-
+    
 })
 
 
 test_that("MTP behavior", {
-
+    
+    skip_on_cran()
+    
     set.seed(13434)
     pp <- pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = c("BF", "HO", "BH", "WY-SS", "WY-SD"),
@@ -565,62 +598,66 @@ test_that("MTP behavior", {
                       tnum = 1000, B = 1000
     )
     pp
-
+    
     # for biggest effect, BF same as HO
     expect_equal(pp$D5indiv[pp$MTP == 'BF'], pp$D5indiv[pp$MTP == 'HO'], tol = 0.1)
     # for smaller effects, HO more powerful than Bonf
     expect_true(pp$D1indiv[pp$MTP == 'BF'] <pp$D1indiv[pp$MTP == 'HO'])
-
+    
     # BH least conservative (for small effects)
     expect_true(pp$D1indiv[pp$MTP == 'BF'] < pp$D1indiv[pp$MTP == 'BH'])
-
+    
     # WY more powerful than BF
     expect_true(pp$D5indiv[pp$MTP == 'BF'] < pp$D5indiv[pp$MTP == 'WY-SS'])
     # for biggest effect, WY-SD similar to WY-SS for largest outcome
     expect_equal(pp$D1indiv[pp$MTP == 'WY-SS'], pp$D1indiv[pp$MTP == 'WY-SD'], tol = 0.1)
     # for smaller effects, WY-SD more powerful than WY-SS for largest outcome
     expect_true(pp$D1indiv[pp$MTP == 'WY-SS'] < pp$D1indiv[pp$MTP == 'WY-SD'])
-
+    
 })
 
 test_that("parallel WY", {
     
-    pp <- expect_warning(pump_power( d_m = "d3.2_m3ff2rc",
-                      MTP = c("WY-SD"),
-                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
-                      M = 5,
-                      J = 3, # number of schools/block
-                      K = 10, # number RA blocks
-                      nbar = 258,
-                      Tbar = 0.50, # prop Tx
-                      alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, # how correlated outcomes are
-                      tnum = 200, B = 100,
-                      parallel.WY.cores = 1,
-                      verbose = TRUE
-    ))
-    expect_true(nrow(pp) == 2)
-
+    skip_on_cran()
     
     pp <- expect_warning(pump_power( d_m = "d3.2_m3ff2rc",
-                      MTP = c("WY-SD"),
-                      MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
-                      M = 5,
-                      J = 3, # number of schools/block
-                      K = 10, # number RA blocks
-                      nbar = 258,
-                      Tbar = 0.50, # prop Tx
-                      alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, # how correlated outcomes are
-                      tnum = 200, B = 100,
-                      parallel.WY.cores = 2
+                                     MTP = c("WY-SD"),
+                                     MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
+                                     M = 5,
+                                     J = 3, # number of schools/block
+                                     K = 10, # number RA blocks
+                                     nbar = 258,
+                                     Tbar = 0.50, # prop Tx
+                                     alpha = 0.05, # significance level
+                                     numCovar.1 = 5, numCovar.2 = 3,
+                                     R2.1 = 0.1, R2.2 = 0.7,
+                                     ICC.2 = 0.05, ICC.3 = 0.4,
+                                     rho = 0.4, # how correlated outcomes are
+                                     tnum = 200, B = 100,
+                                     parallel.WY.cores = 1,
+                                     verbose = TRUE
     ))
     expect_true(nrow(pp) == 2)
-
+    
+    
+    pp <- expect_warning(pump_power( d_m = "d3.2_m3ff2rc",
+                                     MTP = c("WY-SD"),
+                                     MDES = c(0.025, 0.05, 0.1, 0.15, 0.2),
+                                     M = 5,
+                                     J = 3, # number of schools/block
+                                     K = 10, # number RA blocks
+                                     nbar = 258,
+                                     Tbar = 0.50, # prop Tx
+                                     alpha = 0.05, # significance level
+                                     numCovar.1 = 5, numCovar.2 = 3,
+                                     R2.1 = 0.1, R2.2 = 0.7,
+                                     ICC.2 = 0.05, ICC.3 = 0.4,
+                                     rho = 0.4, # how correlated outcomes are
+                                     tnum = 200, B = 100,
+                                     parallel.WY.cores = 2
+    ))
+    expect_true(nrow(pp) == 2)
+    
 })
+
+

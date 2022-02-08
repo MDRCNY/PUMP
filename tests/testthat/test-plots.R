@@ -1,6 +1,8 @@
 # library( PUMP )
 # library( testthat )
 
+skip_on_cran()
+
 test_that("Single Scenario plot works", {
 
   pp <- pump_power( d_m = "d3.2_m3ff2rc",

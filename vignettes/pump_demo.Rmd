@@ -14,6 +14,7 @@ geometry: margin=1.5in
 
 ```{r initialize, include = FALSE}
 library( PUMP )
+recompile <- FALSE
 
 knitr::opts_chunk$set(
   cache = FALSE,
@@ -28,9 +29,9 @@ knitr::opts_chunk$set(
 options(knitr.kable.NA = '')
 library( dplyr )
 library( ggplot2 )
+library( here )
 library( kableExtra )
 library( knitr )
-theme_set( theme_minimal() )
 set.seed( 0440044 )
 ```
 
@@ -338,7 +339,7 @@ We set our goal by specifying the type (`power.definition`) and desired power (`
 
 Here, for example, we find the MDES if we want an 80% chance of detecting an impact on our first outcome when using the Holm procedure:
 
-```{r MDEScalc}
+```{r MDEScalc, eval = FALSE}
 m <- pump_mdes(
   d_m = "d3.2_m3fc2rc",         # choice of design and analysis strategy
   MTP = "HO",                   # multiple testing procedure
@@ -357,12 +358,38 @@ m <- pump_mdes(
   rho = 0.4 )                   # how correlated outcomes are
 ```
 
+```{r MDEScalc-compile, echo = FALSE}
+if(recompile)
+{
+    m <- pump_mdes(
+      d_m = "d3.2_m3fc2rc",         # choice of design and analysis strategy
+      MTP = "HO",                   # multiple testing procedure
+      target.power = 0.80,          # desired power
+      power.definition = "D1indiv", # power type
+      M = 5,                        # number of outcomes
+      J = 3,                        # number of schools per block
+      K = 21,                       # number districts
+      nbar = 258,                   # average number of students per school
+      Tbar = 0.50,                  # prop treated
+      alpha = 0.05,                 # significance level
+      numCovar.1 = 5,               # number of covariates at level 1
+      numCovar.2 = 3,               # number of covariates at level 2
+      R2.1 = 0.1, R2.2 = 0.7,       # explanatory power of covariates for each level
+      ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
+      rho = 0.4 ) 
+    
+    saveRDS(m, here::here("vignettes/output", "MDEScalc.RDS"))
+} else
+{
+    m <- readRDS(here::here("vignettes/output", "MDEScalc.RDS"))
+}
+```
+
 The results are easily made into a nice table via the `knitr` `kable()` command:
 ```{r echo = TRUE}
 knitr::kable( m, digits = 3 ) %>%
   kableExtra::kable_styling( position = "center" )
 ```
-
 
 The answers `pump_mdes()` gives are approximate as we are calculating them via monte carlo simulation.
 To control accuracy, we can specify a tolerance (`tol`) of how close the estimated power needs to be to the desired target along with the number of iterations in the search sequence (via `start.tnum`, `tnum`, and `final.tnum`).
@@ -371,11 +398,19 @@ Lower tolerance and higher `tnum` values will give more exact results (and take 
 
 Changing the type of power is straightforward: for example, to identify the MDES for $1-$minimal power (i.e., what effect do we have to assume across all observations such that we will find at least one significant result with 80% power?), we simply update our result with our new power definition:
 
-```{r MDEScalcmin1, echo=TRUE}
+```{r MDEScalcmin1, echo = TRUE, eval = FALSE}
 m2 <- update( m, power.definition = "min1" )
 ```
 
-```{r echo = FALSE}
+```{r MDEScalcmin1-compile, echo = FALSE}
+if(recompile)
+{
+    m2 <- update( m, power.definition = "min1" )
+    saveRDS(m2, here::here("vignettes/output", "MDEScalcmin1.RDS"))
+} else
+{
+    m2 <- readRDS(here::here("vignettes/output", "MDEScalcmin1.RDS"))
+}
 print( m2 )
 ```
 
@@ -385,11 +420,19 @@ Our results show that if we just want to detect at least one outcome with 80% po
 When estimating power for multiple outcomes, it is important to consider cases where some of the outcomes in fact have null, or very small, effects, to hedge against circumstances such as one of the outcomes not being well measured.
 One way to do this is to set two of our outcomes to no effect with the `numZero` parameter:
 
-```{r MDESwithNumZero, echo=TRUE}
+```{r MDESwithNumZero, echo = TRUE, eval = FALSE}
 m3 <- update( m2, numZero = 2 )
 ```
 
-```{r echo = FALSE}
+```{r MDESwithNumZero-compile, echo = FALSE}
+if(recompile)
+{
+    m3 <- update( m2, numZero = 2 )
+    saveRDS(m3, here::here("vignettes/output", "MDESwithNumZero.RDS"))
+} else
+{
+    m3 <- readRDS(here::here("vignettes/output", "MDESwithNumZero.RDS"))
+}
 print( m3 )
 ```
 
@@ -407,7 +450,7 @@ The `pump_sample` method will search over any one of these.
 
 Assuming we have three schools per block, we first calculate how many blocks we would need to achieve a MDES of 0.10 for $1-$minimal power (this answers the question of how big of an experiment do we need in order to have an 80% chance of finding at least one outcome significant, if all outcomes had a true effect size of 0.10):
 
-```{r samplesizecalc}
+```{r samplesizecalc, eval = FALSE}
 smp <- pump_sample(
   d_m = "d3.2_m3fc2rc",
   MTP = "HO",
@@ -420,18 +463,46 @@ smp <- pump_sample(
 print( smp )
 ```
 
+```{r samplesizecalc-compile, echo = FALSE}
+if(recompile)
+{
+    smp <- pump_sample(
+      d_m = "d3.2_m3fc2rc",
+      MTP = "HO",
+      typesample = "K",
+      target.power = 0.80, power.definition = "min1", tol = 0.01,
+      MDES = 0.10, M = 5, nbar = 258, J = 3,
+      Tbar = 0.50, alpha = 0.05, numCovar.1 = 5, numCovar.2 = 3,
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.40, rho = 0.4 )
+    saveRDS(smp, here::here("vignettes/output", "samplesizecalc.RDS"))
+} else
+{
+    smp <- readRDS(here::here("vignettes/output", "samplesizecalc.RDS"))
+}
+print( smp )
+```
+
 We would need 15 blocks, rather than the originally specified 21, giving 45 total schools in our study, to achieve 80% $1-$minimal power.
 
 We recommend checking MDES and sample-size calculators, as the estimation error combined with the stochastic search can give results a bit off the target in some cases.
 A check is easy to do; simply run the found design through `pump_power()`, which directly calculates power for a given scenario, to see if we recover our originally targeted power (we can use `update()` and set the type to `power` to pass all the design parameters automatically).
 When we do this, we can also increase the number of iterations to get more precise estimates of power, as well:
 
-```{r samplesizeverify}
+```{r samplesizeverify, eval = FALSE}
 p_check <- update( smp, type = "power", tnum = 20000,
                    long.table = TRUE )
 ```
 
-```{r echo = FALSE}
+```{r samplesizeverify-compile, echo = FALSE}
+if(recompile)
+{
+    p_check <- update( smp, type = "power", tnum = 20000,
+                   long.table = TRUE )
+    saveRDS(p_check, here::here("vignettes/output", "samplesizeverify.RDS"))
+} else
+{
+    p_check<- readRDS(here::here("vignettes/output", "samplesizeverify.RDS"))
+}
 knitr::kable( p_check, digits = 2 ) %>%
   kableExtra::kable_styling(position = "center")
 ```
@@ -442,7 +513,6 @@ In the above, the first five rows are the powers for rejecting each of the five 
 The "mean individual" is the mean individual power across all outcomes.
 The first column is power without adjustment, and the second has our power with the listed $p$-value adjustment.
 
-
 The next rows show different multi-outcome definitions of power.
 In particular, `1-minimum` shows the chance of rejecting at least one hypotheses.
 The `complete` row shows the power to reject all hypotheses; it is only defined if all outcomes are specified to have a non-zero effect.^[The package does not show power for these without adjustment for multiple testing, as that power would be grossly inflated and meaningless.]
@@ -451,6 +521,24 @@ We can look at a power curve of our `pump_sample()` call to assess how sensitive
 
 ```{r plotsamplepowercurve, fig.height = 3.5, fig.width=5, echo=TRUE}
 plot( smp )
+```
+
+Though increasing `tnum` is useful for checking the power calculation, it also increases computation time.
+Thus, for future calculations we save a call with the default `tnum` to reduce computation time.
+
+```{r powbase, eval = FALSE}
+pow <- update( p_check, tnum = 10000 )
+```
+
+```{r powbase-compile, echo = FALSE}
+if(recompile)
+{
+    pow <- update( p_check, tnum = 10000 )
+    saveRDS(pow, here::here("vignettes/output", "powbase.RDS"))
+} else
+{
+    pow <- readRDS(here::here("vignettes/output", "powbase.RDS"))
+}
 ```
 
 *Remark.*
@@ -467,10 +555,22 @@ Alternatively, simply provide a list of procedures you wish to compare.
 If you provide a list, the package will re-run the power calculator for each item on the list; this can make the overall call computationally intensive.
 Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments, and plot the results using the default `plot()` method:
 
-```{r othercorrections}
-p2 <- update( p_check,
-              MTP = c( "BF", "HO", "WY-SD" ),
-              tnum = 1000 )
+```{r othercorrections, eval = FALSE}
+p2 <- update( pow,
+              MTP = c( "BF", "HO", "WY-SD" ) )
+plot( p2 )
+```
+
+```{r othercorrections-compile, echo = FALSE}
+if(recompile)
+{
+    p2 <- update( pow,
+      MTP = c( "BF", "HO", "WY-SD" ) )
+    saveRDS(p2, here::here("vignettes/output", "othercorrections.RDS"))
+} else
+{
+    p2 <- readRDS(here::here("vignettes/output", "othercorrections.RDS"))
+}
 plot( p2 )
 ```
 
@@ -483,9 +583,7 @@ Accounting for the correlation of the test statistics when adjusting $p$-values 
 See @Porter2018 for further discussion; while the paper focuses on the multisite randomized trial context, the lessons learned there apply to all designs as the only substantive differences between different design and modeling choices is in how we calculate the unadjusted distribution of their test statistics.
 
 
-
 ## Exploring sensitivity to design parameters
-
 
 Within the pump package we have two general ways of exploring design sensitivity.
 The first is with `update()`, which allows for quickly generating a single alternate scenario.
@@ -501,8 +599,20 @@ The last two are particularly important for multiple outcome contexts.
 
 Update allows for a quick change of some of the set of parameters used in a prior call; we saw `update()` used several times above.
 As a further example, here we examine what happens if the ICCs are more equally split across levels two and three:
-```{r}
-p_b <- update( p_check, ICC.2 = 0.20, ICC.3 = 0.25 )
+```{r powICC, eval = FALSE}
+p_b <- update( pow, ICC.2 = 0.20, ICC.3 = 0.25 )
+print( p_b )
+```
+
+```{r powICC-compile, echo = FALSE}
+if(recompile)
+{
+    p_b <- update( pow, ICC.2 = 0.20, ICC.3 = 0.25 )
+    saveRDS(p_b, here::here("vignettes/output", "powICC.RDS"))
+} else
+{
+    p_b <- readRDS(here::here("vignettes/output", "powICC.RDS"))
+}
 print( p_b )
 ```
 
@@ -511,10 +621,24 @@ We immediately see that our assumption of substantial variation in level three m
 When calculating power for a given scenario, it is also easy to vary many of our design parameters by outcome.
 For example, if we thought we had better predictive covariates for our second outcome, we might try:
 
-```{r}
-p_d <- update( p_check,
+```{r powR2, eval = FALSE}
+p_d <- update( pow,
           	   R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
           	   R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ) )
+print( p_d )
+```
+
+```{r powR2-compile, echo = FALSE}
+if(recompile)
+{
+    p_d <- update( pow,
+          	   R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
+          	   R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ) )
+    saveRDS(p_d, here::here("vignettes/output", "powR2.RDS"))
+} else
+{
+    p_d <- readRDS(here::here("vignettes/output", "powR2.RDS"))
+}
 print( p_d )
 ```
 
@@ -537,12 +661,25 @@ The `update_grid()` call makes this straightforward: we pass our baseline scenar
 To decrease computation time and achieve less precise estimates in this exploratory phase, we decrease `tnum`.
 We can then easily visualize the variation in min1 power by calling `plot()` on the object.
 
-```{r icc.grid}
-grid <- update_grid( p_check,
+```{r ICCgrid, eval = FALSE}
+grid <- update_grid( pow,
         	ICC.2 = seq( 0, 0.3, 0.05 ),
-        	ICC.3 = seq( 0, 0.60, 0.20 ),
-        	tnum = 1000 )
+        	ICC.3 = seq( 0, 0.60, 0.20 ) )
 
+plot( grid, power.definition = "min1" )
+```
+
+```{r ICCgrid-compile, echo = FALSE}
+if(recompile)
+{
+    grid <- update_grid( pow,
+        	ICC.2 = seq( 0, 0.3, 0.05 ),
+        	ICC.3 = seq( 0, 0.60, 0.20 ) )
+    saveRDS(grid, here::here("vignettes/output", "ICCgrid.RDS"))
+} else
+{
+    grid <- readRDS(here::here("vignettes/output", "ICCgrid.RDS"))
+}
 plot( grid, power.definition = "min1" )
 ```
 
@@ -578,13 +715,29 @@ For example, with Westfall-Young, we saw that the correlation can improve our in
 We might not know what will happen to $2-$minimal power, however: on one hand, correlated statistics make individual adjustment less severe, and on the other correlation means we succeed or fail all together.
 We can explore this question relatively easily by letting `rho` vary as so:
 
-```{r rho.grid}
-gridRho <- update_grid( p_check,
+```{r rhogrid, eval = FALSE}
+gridRho <- update_grid( pow,
         	  MTP = c( "BF", "WY-SD" ),
         	  rho = seq( 0, 0.9, by = 0.15 ),
-        	  tnum = 500,
+        	  tnum = 1000,
         	  B = 3000 )
 ```
+
+```{r rhogrid-compile, echo = FALSE}
+if(recompile)
+{
+    gridRho <- update_grid( pow,
+        	  MTP = c( "BF", "WY-SD" ),
+        	  rho = seq( 0, 0.9, by = 0.15 ),
+        	  tnum = 1000,
+        	  B = 3000 )
+    saveRDS(gridRho, here::here("vignettes/output", "rhogrid.RDS"))
+} else
+{
+    gridRho <- readRDS(here::here("vignettes/output", "rhogrid.RDS"))
+}
+```
+
 
 We then plot our results.
 
@@ -597,17 +750,30 @@ Second, the impact on individual adjustment is flat, as anticipated.
 Third, across a very broad range of rho, we maintain good $1-$minimal power.
 Complete power climbs as correlation increases, and $2-$minimal power is generally unchanged.
 
-
 ### Exploring the impact of null outcomes
 
 We finally explore varying the number of outcomes with no effects.
 This exploration is an important way to hedge a design against the possibility that some number of the identified outcomes are measured poorly, or are simply not impacted by treatment.
 We use a grid search, varying the number of outcomes that have no treatment impact via the `numZero` design parameter:
 
-```{r numzero.grid, fig.height = 2.5 }
-gridZero <- update_grid( p_check,
+```{r numzerogrid, fig.height = 2.5, eval = FALSE }
+gridZero <- update_grid( pow,
         	             numZero = 0:4,
                          M = 5 )
+plot( gridZero, nrow = 1 )
+```
+
+```{r numzerogrid-compile, echo = FALSE, fig.height = 2.5}
+if(recompile)
+{
+    gridZero <- update_grid( pow,
+                             numZero = 0:4,
+                             M = 5 )
+    saveRDS(gridZero, here::here("vignettes/output", "numzerogrid.RDS"))
+} else
+{
+   gridZero <- readRDS(here::here("vignettes/output", "numzerogrid.RDS"))
+}
 plot( gridZero, nrow = 1 )
 ```
 

@@ -11,6 +11,8 @@ default.tnum <- 1000
 # --------    d3.1_m3rr2rr    --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
+skip_on_cran()
+
 test_that("testing of d3.1_m3rr2rr one-tailed", {
 
     if ( FALSE ) {
@@ -110,7 +112,7 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
 
 test_that("testing of d3.2_m3ff2rc two-tailed", {
-
+    
     if ( FALSE ) {
 
       set.seed( 245444 )
@@ -187,7 +189,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
 
 
 test_that("testing of d3.2_m3rr2rc one tailed", {
-
+    
     if ( FALSE ) {
         set.seed( 245444 )
 
@@ -239,7 +241,7 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that("testing of d3.3_m3rc2rc two tailed", {
-
+    
     set.seed(2344)
 
     if ( FALSE ) {
@@ -342,6 +344,7 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that( "testing of lower limit", {
+    
     # This should hit lower limit (too powerful, want J < 3).
     set.seed( 24553453 )
     expect_warning( pp <- pump_sample(    d_m = "d3.2_m3ff2rc",

@@ -10,6 +10,8 @@
 # --------    d3.1_m3rr2rr    --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
+skip_on_cran()
+
 test_that("numZero reduces power as expected and can be inverted", {
 
   set.seed(101003)
