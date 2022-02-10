@@ -4,7 +4,7 @@ Title: Power Under Multiplicity Project
 Version: 1.0.0
 Authors@R: c(
   person("Kristin", "Porter", email = "kristin.porter@mdrc.org", role = "aut"),
-  person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre")),
+  person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0078-1906")),
   person("Kristen", "Hunter", email = "kristenbhunter@gmail.com", role = "aut", comment = c(ORCID = "0000-0002-5678-4620")),
   person("Zarni", "Htet", email = "zarni.htet@mdrc.org", role = "aut"),
   person("MDRC", role = "cph"),
