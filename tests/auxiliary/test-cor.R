@@ -1,5 +1,5 @@
 # simulation parameters
-n.sims <- 20
+n.sims <- 1000
 Tbar <- 0.5
 
 skip_on_cran()
@@ -37,51 +37,12 @@ test_that('Correlations are as expected for design d2.1_m2fr', {
     
     rho.default <- 0
     model.params.list$rho.default <- rho.default
-    cor.tstat <- expect_warning(check_cor(
+    cor.tstat <- check_cor(
         d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    ))
-
-    expect_equal(cor.tstat[1], rho.default, 0.1)
-    expect_equal(cor.tstat[2], rho.default, 0.1)
-    expect_equal(cor.tstat[3], rho.default, 0.1)
-
-    rho.default <- 0.2
-    model.params.list$rho.default <- rho.default
-    cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    ))
-
+    )
+    
     expect_equal(cor.tstat[1], rho.default, 0.1)
     expect_equal(cor.tstat[2], rho.default, 0.1)
     expect_equal(cor.tstat[3], rho.default, 0.1)
     
-    rho.default <- 0.5
-    model.params.list$rho.default <- rho.default
-    cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    ))
-
-    expect_equal(cor.tstat[1], rho.default, 0.1)
-    expect_equal(cor.tstat[2], rho.default, 0.1)
-    expect_equal(cor.tstat[3], rho.default, 0.1)
-
-    rho.default <- 0.8
-    model.params.list$rho.default <- rho.default
-    cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    ))
-
-    expect_equal(cor.tstat[1], rho.default, 0.1)
-    expect_equal(cor.tstat[2], rho.default, 0.1)
-    expect_equal(cor.tstat[3], rho.default, 0.1)
-
-    rho.default <- 0.99
-    model.params.list$rho.default <- rho.default
-    cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    ))
-
-    expect_equal(cor.tstat[1], rho.default, 0.1)
-    expect_equal(cor.tstat[2], rho.default, 0.1)
-    expect_equal(cor.tstat[3], rho.default, 0.1)
 })
