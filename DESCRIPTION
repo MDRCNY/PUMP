@@ -1,7 +1,7 @@
 Package: PUMP
 Type: Package
 Title: Power Under Multiplicity Project
-Version: 1.0.1
+Version: 1.0.0
 Authors@R: c(
   person("Kristin", "Porter", email = "kristin.porter@mdrc.org", role = "aut"),
   person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0078-1906")),
@@ -21,7 +21,6 @@ Imports:
      ggpubr,
      here,
      future,
-     lme4,
      magrittr,
      mvtnorm,
      parallel,
