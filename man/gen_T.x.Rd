@@ -4,7 +4,7 @@
 \alias{gen_T.x}
 \title{Generate treatment assignment vector (simulation function)}
 \usage{
-gen_T.x(d_m, S.id, D.id, nbar, Tbar)
+gen_T.x(d_m, S.id, D.id, Tbar)
 }
 \arguments{
 \item{d_m}{string; design and model.}
@@ -12,8 +12,6 @@ gen_T.x(d_m, S.id, D.id, nbar, Tbar)
 \item{S.id}{vector; school assignments.}
 
 \item{D.id}{vector; district assignments.}
-
-\item{nbar}{scalar; number of level 1 units.}
 
 \item{Tbar}{scalar; probability of treatment assignment.}
 }
