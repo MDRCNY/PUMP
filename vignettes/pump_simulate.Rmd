@@ -126,32 +126,51 @@ model.params.list <- list(
 
 # Simulate data
 
-The user-given parameters are then converted into parameters that inform the data-generating process (DGP).
+Once the user has chosen the model parameters, the only remaining choice is `Tbar`, 
+the proportion of units assigned to the treatment.
+This parameter is not considered a modeling parameter as it instead informs the randomization
+process.
+
+```{r}
+sim.data <- gen_sim_data(d_m = 'd3.3_m3rc2rc', model.params.list, Tbar = 0.5)
+```
+
+The final output contains a list of the following vectors:
+- potential outcomes `Y0` and `Y1`.
+- observed outcomes `Yobs`.
+- treatment assignment `T.x`.
+- covariates at each level: level 3 `V.k`, level 2 `X.jk`, level 1 `C.ijk`.
+- ID assignments at each level: level 2 `S.id`, level 3 `D.id`.
+
+Note that the simulated data contains both observed parameters and unobserved parameters (the unobserved potential outcome, depending on treatment assignment).
+
+# Simulation process
+
+We briefly walk through the steps conducted by the `gen_sim_data` function in case the user wants to inspect intermediate steps of the process.
+
+First, the user-given parameters are then converted into parameters that inform the data-generating process (DGP).
 For example, a certain value of $R^2$ is converted in a coefficient value.
-Then, the user can generate a full set of simulated data.
+```{r}
+dgp.params.list <- convert_params(model.params.list)
+```
+
+Next, we generate a set of full simulation data, but without assuming any treatment assignment has occurred.
 The simulated data includes both unobserved and unobserved quantities, such as both potential outcomes. 
 
 ```{r}
-d_m <- 'd3.3_m3rc2rc'
-dgp.params.list <- convert_params(model.params.list)
-sim.data.full <- gen_full_data(dgp.params.list)
+sim.data <- gen_base_sim_data(dgp.params.list)
 ```
 
 Finally, we generate the treatment assignment, and the observed outcomes $Y^{obs}$.
+At this point, we need to specify the design and `Tbar` to generate the correct treatment assignment.
 
 ```{r}
-T.x <- gen_T.x(
-    d_m = d_m, S.id = sim.data.full$ID$S.id, D.id = sim.data.full$ID$D.id,
-    nbar = model.params.list$nbar, Tbar = 0.5
+d_m <- 'd3.3_m3rc2rc'
+sim.data$T.x <- gen_T.x(
+    d_m = d_m,
+    S.id = sim.data$ID$S.id,
+    D.id = sim.data$ID$D.id,
+    Tbar = 0.5
 )
-sim.data.obs <- sim.data.full
-sim.data.obs$Yobs <- gen_Yobs(sim.data.full, T.x)
+sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
 ```
-
-```{r, echo = FALSE}
-str(sim.data.obs)
-```
-
-
-
-
