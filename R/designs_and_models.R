@@ -931,7 +931,6 @@ validate_inputs <- function( d_m, params.list,
     # one level models
     if( par.d_m$levels == 1 ) {
       if( (!is.null( params.list$J ) && params.list$J != 1 ) ||
-          (!is.null( params.list$K ) && params.list$K != 1 ) ||
           (!is.null( params.list$numCovar.2 ) && params.list$numCovar.2 > 0 ) ||
           (!is.null( params.list$R2.2 ) && any(params.list$R2.2 > 0 ) ) ||
           (!is.null( params.list$ICC.2 ) && any(params.list$ICC.2 > 0 ) ) ||
@@ -939,7 +938,7 @@ validate_inputs <- function( d_m, params.list,
 
         warning('The following parameters are not valid for
                  one-level designs, and will be ignored:\n
-                 J, K, numCovar.2, R2.2, ICC.2, omega.2')
+                 J, numCovar.2, R2.2, ICC.2, omega.2')
       params.list$J <- NULL
       params.list$R2.2 <- NULL
       params.list$ICC.2 <- NULL
