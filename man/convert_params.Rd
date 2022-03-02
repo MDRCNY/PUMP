@@ -7,7 +7,8 @@
 convert_params(model.params.list)
 }
 \arguments{
-\item{model.params.list}{list; model parameters.}
+\item{model.params.list}{list; model parameters such as ICC,
+R2, etc.}
 }
 \value{
 list; data-generating parameters.
