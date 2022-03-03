@@ -1,9 +1,3 @@
-# simulation parameters
-n.sims <- 1000
-Tbar <- 0.5
-
-skip_on_cran()
-
 model.params.list <- list(
     M = 3                             # number of outcomes
     , J = 30                          # number of schools
@@ -33,16 +27,25 @@ model.params.list <- list(
 )
 
 
-test_that('Correlations are as expected for design d2.1_m2fr', {
+test_that('Correlations checker runs', {
+    
+    skip_on_cran()
+    
+    sink("sink.txt")
+    
+    # note: this is not enough simulations to check if the tool works,
+    # just if it runs!
     
     rho.default <- 0
     model.params.list$rho.default <- rho.default
-    cor.tstat <- check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = Tbar, n.sims = n.sims
-    )
+    cor.tstat <- expect_warning(check_cor(
+        d_m = 'd2.1_m2fr', model.params.list, Tbar = 0.5, n.sims = 10
+    ))
     
-    expect_equal(cor.tstat[1], rho.default, 0.1)
-    expect_equal(cor.tstat[2], rho.default, 0.1)
-    expect_equal(cor.tstat[3], rho.default, 0.1)
+    expect_true(length(cor.tstat) == 3)
+    expect_true(all(!is.na(cor.tstat)))
+    
+    sink()
+    file.remove("sink.txt")
     
 })
