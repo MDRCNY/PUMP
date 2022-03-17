@@ -690,19 +690,21 @@ plot.pumpgridresult.sample <- function(
     include.title = include.title, var.vary = var.vary )
   
   plot.data <- res$plot.data
-  
+
   # Aggregate data, if multiple things varying
   var_names <- setdiff( attr( x, "var_names" ), 
                         c( "MTP", "power.definition" ) )
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
       dplyr::group_by( dplyr::across( c( "MTP", var.vary ) ) ) %>%
-      dplyr::summarise( Sample.size = mean( .data$Sample.size ) )
+      dplyr::summarise( Sample.size = mean( .data$Sample.size, na.rm=TRUE ) )
     
     smessage('Note: Averaged Sample.size across other 
                  varying factors in grid: %s',
              paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
   }
+  
+  plot.data = dplyr::filter( plot.data, !is.na( Sample.size ) )
   
   # for nice axes
   if(max(plot.data$Sample.size) - min(plot.data$Sample.size) < 5)

@@ -474,12 +474,12 @@ Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young 
 ```{r othercorrections}
 p2 <- update( p_check,
               MTP = c( "BF", "HO", "WY-SD" ),
-              tnum = 5000, parallel.WY.cores = 2 )
+              tnum = 5000 )
 plot( p2 )
 ```
 
-To speed up computation, we set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
-We also reduce `tnum` to decrease computation time.
+To speed up computation, we could add `parallel.WY.cores = 2` (or however many cores we wish to allocate) to the call to parallelize the computation.
+We could also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
 Note, however, that we do not see elevated rates for $1-$minimal power.
