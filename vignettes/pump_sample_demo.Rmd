@@ -178,7 +178,7 @@ We see it is not particularly large, meaning an increase of $J$ by 4 would resul
 We can also plot the path the algorithm took to estimate $J$:
 
 ```{r, fig.width=7, fig.align="center"}
-plot_power_search(J1)
+plot(J1, type = "search")
 ```
 
 The first plot on the left shows how power varies over different sample sizes.
@@ -210,7 +210,7 @@ This outcome means that a variety of sample size values result in relatively sim
 Finally, we can also visualize this power curve.
 
 ```{r, fig.width=5, fig.align="center"}
-plot_power_curve(J1)
+plot(J1)
 ```
 
 # Flat power curves
@@ -280,7 +280,7 @@ We also see a warning message that the derivative is flat.
 Given the warning message about the flatness, we examine the power curve plot.
 
 ```{r, fig.width=5, fig.align="center"}
-plot_power_curve(nbar1)
+plot( nbar1 )
 ```
 
 Remember that our original nbar value was 50.
@@ -393,7 +393,7 @@ We see that the algorithm returns `NA` as the required sample size.
 Let's examine the power search for more information.
 
 ```{r, fig.width=7, fig.align="center"}
-plot_power_search(nbar3)
+plot(nbar3, type = "search")
 ```
 
 The first plot shows us the sample size against power.

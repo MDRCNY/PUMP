@@ -4,10 +4,15 @@
 \alias{plot.pumpresult}
 \title{Plot a single scenario pump object (result function)}
 \usage{
-\method{plot}{pumpresult}(x, ...)
+\method{plot}{pumpresult}(x, type = "power", ...)
 }
 \arguments{
 \item{x}{pumpresult object.}
+
+\item{type}{string; "power" or "search".
+Specifies whether to plot the default power graph,
+or the search path. The search path is only valid
+for MDES and SS results.}
 
 \item{...}{additional parameters.}
 }
@@ -30,4 +35,21 @@ pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
  ICC.2 = 0.05, rho = 0.2, tnum = 5000)
  
 plot(pp1)
+
+mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
+  power.definition = 'D1indiv', target.power = 0.7,
+  J = 60, nbar = 50, M = 3, Tbar = 0.5, alpha = 0.05,
+  numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
+  
+plot(mdes)
+
+J <- pump_sample(d_m = "d2.1_m2fc",
+   MTP = 'HO', power.definition = 'D1indiv',
+   typesample = 'J', target.power = 0.6,
+   nbar = 50, M = 3, MDES = 0.125,
+   Tbar = 0.5, alpha = 0.05,
+   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
+   rho = 0.2, tnum = 1000)
+plot(J, type = "search")
+
 }
