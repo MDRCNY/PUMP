@@ -2,54 +2,78 @@
 % Please edit documentation in R/plots.R
 \name{plot.pumpresult}
 \alias{plot.pumpresult}
-\title{Plot a single scenario pump object (result function)}
+\title{Plot a pump result}
 \usage{
-\method{plot}{pumpresult}(x, type = "power", ...)
+\method{plot}{pumpresult}(
+  x,
+  type = "power",
+  all = TRUE,
+  low = NULL,
+  high = NULL,
+  grid.size = 5,
+  breaks = grid.size,
+  ...
+)
 }
 \arguments{
 \item{x}{pumpresult object.}
 
-\item{type}{string; "power" or "search".
-Specifies whether to plot the default power graph,
-or the search path. The search path is only valid
-for MDES and SS results.}
+\item{type}{string; "power" or "search". Specifies whether to plot
+the default power graph, or the search path. The search path is
+only valid for MDES and SS results.}
 
-\item{...}{additional parameters.}
+\item{all}{Logical. If TRUE, merge in the search path from the
+original search to the estimated power curve, for MDES or sample
+plots.}
+
+\item{low}{Low range of x-axis and curve calculation for sample or
+MDES plots.  (Optional.)}
+
+\item{high}{High range of x-axis and curve calculation. (Optional.)}
+
+\item{grid.size}{If calculating curve for sample or MDES plot, how
+many grid points?}
+
+\item{breaks}{If plotting a curve for sample or MDES, where to put
+the grid points?}
+
+\item{...}{additional parameters, such as, in case of sample or
+mdes objects, tnum for setting number of replicates or all
+(logical) for determining whether to include original points in
+the estimated curve, or include.points  (logical) for including
+points on the plot itself.}
 }
 \value{
-plot; a ggplot object of power across
-differen definitions.
+plot; a ggplot object of power across different
+  definitions.
 }
 \description{
-Works on an object returned by pump_power(),
-and visualizes different definitions of power across
-MTPs. This function does not apply to pump_mdes()
-or pump_sample() objects, as these functions only
-return a single value.
+For the object returned by pump_power(), visualizes
+  different definitions of power across MTPs. For the object
+  returned by pump_mdes() or pump_sample(), plot a power curve as a
+  function of MDES or sample size, respectively.  This latter call
+  will do a grid search over a passed range from low to high to
+  generate this curve.
+
+  Several of the passed parameters only apply to the mdes or sample
+  versions, and are for controlling the grid search and plot.
 }
 \examples{
 pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
  nbar = 50, J = 20, M = 8, numZero = 5,
  MDES = 0.30, Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
- numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7, 
- ICC.2 = 0.05, rho = 0.2, tnum = 5000)
- 
-plot(pp1)
+ numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
+ ICC.2 = 0.05, rho = 0.2, tnum = 200)
 
-mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
-  power.definition = 'D1indiv', target.power = 0.7,
-  J = 60, nbar = 50, M = 3, Tbar = 0.5, alpha = 0.05,
-  numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-  
-plot(mdes)
+plot(pp1)
 
 J <- pump_sample(d_m = "d2.1_m2fc",
    MTP = 'HO', power.definition = 'D1indiv',
    typesample = 'J', target.power = 0.6,
    nbar = 50, M = 3, MDES = 0.125,
    Tbar = 0.5, alpha = 0.05,
-   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-   rho = 0.2, tnum = 1000)
+   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05,
+   rho = 0.2, tnum = 200)
 plot(J, type = "search")
 
 }

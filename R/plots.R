@@ -252,45 +252,66 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 }
 
 
-#' @title Plot a single scenario pump object (result function)
-#' 
-#' @description Works on an object returned by pump_power(),
-#' and visualizes different definitions of power across
-#' MTPs. This function does not apply to pump_mdes()
-#' or pump_sample() objects, as these functions only
-#' return a single value.
+#' @title Plot a pump result
+#'
+#' @description For the object returned by pump_power(), visualizes
+#'   different definitions of power across MTPs. For the object
+#'   returned by pump_mdes() or pump_sample(), plot a power curve as a
+#'   function of MDES or sample size, respectively.  This latter call
+#'   will do a grid search over a passed range from low to high to
+#'   generate this curve.
+#'
+#'   Several of the passed parameters only apply to the mdes or sample
+#'   versions, and are for controlling the grid search and plot.
 #'
 #' @param x pumpresult object.
-#' @param type string; "power" or "search".
-#' Specifies whether to plot the default power graph,
-#' or the search path. The search path is only valid
-#' for MDES and SS results.
-#' @param ... additional parameters.
+#' @param type string; "power" or "search". Specifies whether to plot
+#'   the default power graph, or the search path. The search path is
+#'   only valid for MDES and SS results.
+#' @param low Low range of x-axis and curve calculation for sample or
+#'   MDES plots.  (Optional.)
+#' @param high High range of x-axis and curve calculation. (Optional.)
+#' @param all Logical. If TRUE, merge in the search path from the
+#'   original search to the estimated power curve, for MDES or sample
+#'   plots.
+#' @param grid.size If calculating curve for sample or MDES plot, how
+#'   many grid points?
+#' @param breaks If plotting a curve for sample or MDES, where to put
+#'   the grid points?
+#' @param ... additional parameters, such as, in case of sample or
+#'   mdes objects, tnum for setting number of replicates or all
+#'   (logical) for determining whether to include original points in
+#'   the estimated curve, or include.points  (logical) for including
+#'   points on the plot itself.
 #'
-#' @return plot; a ggplot object of power across
-#' differen definitions.
+#' @return plot; a ggplot object of power across different
+#'   definitions.
 #'
 #' @export
 #'
-#' @examples 
+#' @examples
 #' pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
 #'  nbar = 50, J = 20, M = 8, numZero = 5,
 #'  MDES = 0.30, Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
-#'  numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7, 
+#'  numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
 #'  ICC.2 = 0.05, rho = 0.2, tnum = 200)
-#'  
+#'
 #' plot(pp1)
-#' 
+#'
 #' J <- pump_sample(d_m = "d2.1_m2fc",
 #'    MTP = 'HO', power.definition = 'D1indiv',
 #'    typesample = 'J', target.power = 0.6,
 #'    nbar = 50, M = 3, MDES = 0.125,
 #'    Tbar = 0.5, alpha = 0.05,
-#'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
+#'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05,
 #'    rho = 0.2, tnum = 200)
 #' plot(J, type = "search")
 #' 
-plot.pumpresult <- function( x, type = "power", ... )
+plot.pumpresult <- function( x, type = "power", 
+                             all = TRUE,
+                             low = NULL, high = NULL,
+                             grid.size = 5,
+                             breaks = grid.size, ... )
 {
   stopifnot( is.pumpresult( x ) )
   stopifnot( type %in% c("power", "search") )
@@ -356,15 +377,14 @@ plot.pumpresult <- function( x, type = "power", ... )
     
   } else if( pump_type(x) %in% c('mdes', 'sample') ) {
     
-    if( type == "power" )
-    {
-      low <- NULL
-      if ( pump_type( x ) == "mdes" ) {
+    if( type == "power" ) {
+      if ( is.null( low ) && pump_type( x ) == "mdes" ) {
         low <- 0  
       }
-      return( plot_power_curve(x, low = low, ... ) )
-    } else
-    {
+      return( plot_power_curve(x, low = low, high = high,
+                               grid.size = grid.size,
+                               breaks = breaks, ... ) )
+    } else {
       return( plot_power_search(x, ... ) )
     }
   } else {

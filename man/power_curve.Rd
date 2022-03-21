@@ -2,7 +2,7 @@
 % Please edit documentation in R/pumpresult.R
 \name{power_curve}
 \alias{power_curve}
-\title{Obtain power curve over a range of parameters (result function)}
+\title{Obtain a power curve for a range of sample size or MDES values}
 \usage{
 power_curve(
   x,
@@ -16,22 +16,24 @@ power_curve(
 \arguments{
 \item{x}{a pumpresult object.}
 
-\item{all}{logical; if TRUE, merge in the search path 
-from the original search.}
+\item{all}{logical; if TRUE, merge in the search path from the
+original search.}
 
-\item{low}{scalar; low range for the plot x-axis.}
+\item{low}{scalar; low range for curve.}
 
-\item{high}{scalar; high range for the plot.}
+\item{high}{scalar; high range for the curve.}
 
-\item{grid.size}{scalar; number of points to calculate power.}
+\item{grid.size}{scalar; number of points to calculate power for.}
 
-\item{tnum}{scalar; number of iterations to calculate 
-power at each grid point.}
+\item{tnum}{scalar; number of iterations to calculate power at each
+grid point.}
 }
 \value{
 data.frame of power results.
 }
 \description{
-This is used to see rate of 
-power change as a function of sample size or MDES.
+This is used to see how power changes as a function of
+  sample size or MDES.  It takes a fit pumpresult and calculates a power
+  curve based on that scenario coupled with a passed range of
+  values to make the curve over.
 }
