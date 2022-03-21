@@ -95,15 +95,7 @@ get_sample_size_scale <- function(
 #' @inheritParams power_curve
 #' 
 #' @return plot; a ggplot object of power across values.
-#'
-#' @export
-#'
-#' @examples
-#' mdes <- pump_mdes(d_m = "d2.1_m2fc", MTP = 'HO',
-#'   power.definition = 'D1indiv', target.power = 0.7,
-#'   J = 60, nbar = 50, M = 3, Tbar = 0.5, alpha = 0.05,
-#'   numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2)
-#' plot_power_curve(mdes)
+#' @keywords internal
 plot_power_curve <- function( pwr, plot.points = TRUE,
                               all = TRUE,
                               low = NULL, high = NULL,
@@ -197,18 +189,7 @@ plot_power_curve <- function( pwr, plot.points = TRUE,
 #'  (a ggpubr arrangement of 3 plots, technically) of the
 #'  search path.
 #'
-#' @export
-#' 
-#' @examples
-#'J <- pump_sample(d_m = "d2.1_m2fc",
-#'    MTP = 'HO', power.definition = 'D1indiv',
-#'    typesample = 'J', target.power = 0.6,
-#'    nbar = 50, M = 3, MDES = 0.125,
-#'    Tbar = 0.5, alpha = 0.05,
-#'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
-#'    rho = 0.2, tnum = 1000)
-#' plot_power_search(J)
-#'
+#' @keywords internal
 plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
   if ( is.pumpresult(pwr) ) {
     test.pts <- search_path(pwr)
@@ -280,6 +261,10 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 #' return a single value.
 #'
 #' @param x pumpresult object.
+#' @param type string; "power" or "search".
+#' Specifies whether to plot the default power graph,
+#' or the search path. The search path is only valid
+#' for MDES and SS results.
 #' @param ... additional parameters.
 #'
 #' @return plot; a ggplot object of power across
@@ -292,16 +277,30 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 #'  nbar = 50, J = 20, M = 8, numZero = 5,
 #'  MDES = 0.30, Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
 #'  numCovar.1 = 1, numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7, 
-#'  ICC.2 = 0.05, rho = 0.2, tnum = 5000)
+#'  ICC.2 = 0.05, rho = 0.2, tnum = 200)
 #'  
 #' plot(pp1)
-
-plot.pumpresult <- function( x, ... )
+#' 
+#' J <- pump_sample(d_m = "d2.1_m2fc",
+#'    MTP = 'HO', power.definition = 'D1indiv',
+#'    typesample = 'J', target.power = 0.6,
+#'    nbar = 50, M = 3, MDES = 0.125,
+#'    Tbar = 0.5, alpha = 0.05,
+#'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05, 
+#'    rho = 0.2, tnum = 200)
+#' plot(J, type = "search")
+#' 
+plot.pumpresult <- function( x, type = "power", ... )
 {
   stopifnot( is.pumpresult( x ) )
+  stopifnot( type %in% c("power", "search") )
   
-  if(pump_type(x) == 'power')
+  if(pump_type(x) == "power")
   {
+    if( type == "search" )
+    {
+      stop("Invalid plot type.")
+    }
     if(attr( x, "long.table" ))
     {
       x <- transpose_power_table(x)
@@ -356,12 +355,18 @@ plot.pumpresult <- function( x, ... )
     return(ss.plot)
     
   } else if( pump_type(x) %in% c('mdes', 'sample') ) {
-    low <- NULL
-    if ( pump_type( x ) == "mdes" ) {
-      low <- 0  
-    }
     
-    return( plot_power_curve(x, low=low, ... ) )
+    if( type == "power" )
+    {
+      low <- NULL
+      if ( pump_type( x ) == "mdes" ) {
+        low <- 0  
+      }
+      return( plot_power_curve(x, low = low, ... ) )
+    } else
+    {
+      return( plot_power_search(x, ... ) )
+    }
   } else {
     stop('Invalid pumpresult type.')
   }
