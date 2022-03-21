@@ -48,7 +48,7 @@ See pump_info() for list of choices.}
 \item{MTP}{string, or vector of strings; multiple testing procedure(s).
 See pump_info() for list of choices.}
 
-\item{numZero}{scalar; Additional number of outcomes assumed 
+\item{numZero}{scalar; additional number of outcomes assumed 
 to be zero. Please provide NumZero + length(MDES) = M.}
 
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
@@ -77,10 +77,10 @@ that are assigned to the treatment.}
 \item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
 one-tailed power calculation.}
 
-\item{target.power}{Target power for search algorithm}
+\item{target.power}{target power for search algorithm.}
 
 \item{power.definition}{see pump_info() for 
-possible power definitions}
+possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
 This parameter controls when the search is done: 
@@ -103,10 +103,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -127,29 +127,29 @@ rho or rho.matrix, but not both.}
 \item{B}{scalar; the number of permutations for 
 Westfall-Young procedures.}
 
-\item{max.steps}{how many steps allowed before terminating}
+\item{max.steps}{how many steps allowed before terminating.}
 
 \item{tnum}{max number of samples for first iteration 
-of search algorithm}
+of search algorithm.}
 
 \item{start.tnum}{number of samples to start search 
 (this will increase with each step).}
 
-\item{final.tnum}{number of samples for final draw}
+\item{final.tnum}{number of samples for final draw.}
 
 \item{parallel.WY.cores}{number of cores to use for 
 parallel processing of WY-SD.}
 
 \item{updateProgress}{function to update progress bar 
-(only used for PUMP shiny app)}
+(only used for PUMP shiny app).}
 
 \item{give.optimizer.warnings}{whether to return 
-verbose optimizer warnings}
+verbose optimizer warnings.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 }
 \value{
-mdes results
+a pumpresult object containing MDES results.
 }
 \description{
 The user chooses the context (d_m), MTP,

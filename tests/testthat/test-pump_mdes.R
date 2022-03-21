@@ -2,6 +2,7 @@
 # library( testthat )
 
 test_that("pump_mdes runs for BF", {
+  
   set.seed( 2424424 )
 
   pmdesB <- pump_mdes( d_m = "d2.1_m2fc",
@@ -18,6 +19,7 @@ test_that("pump_mdes runs for BF", {
   expect_true( pmdesB$`Adjusted.MDES` > 0 )
   expect_true( abs(pmdesB$`D2indiv power` - 0.80) <  0.01 )
 
+  skip_on_cran()
   pmdesR <- expect_warning( pump_mdes( d_m = "d2.1_m2fc",
                        MTP = "None",
                        nbar = 200, J = 50,
@@ -97,6 +99,8 @@ test_that("pump_mdes runs for BF", {
 
 
 test_that("pump_mdes runs for D1indiv, HO", {
+    
+  skip_on_cran()
 
   set.seed( 1010101 )
   pmdes <- pump_mdes( d_m = "d2.1_m2fc",
@@ -128,6 +132,8 @@ test_that("pump_mdes runs for D1indiv, HO", {
 
 
 test_that("pump_mdes runs for d1.1_m1c", {
+    
+  skip_on_cran()
 
   set.seed( 10130103 )
   R2.1 <- 0.61
@@ -150,6 +156,8 @@ test_that("pump_mdes runs for d1.1_m1c", {
 
 
 test_that("No adjustment", {
+    
+    skip_on_cran()
 
     pmdes <- expect_warning( pump_mdes( d_m = "d2.1_m2fc",
                         MTP = "None",
@@ -187,6 +195,8 @@ test_that("No adjustment", {
 })
 
 test_that("power definitions", {
+    
+  skip_on_cran()
 
   pmdes <- pump_mdes( d_m = "d2.1_m2fc",
                       MTP = "HO",
@@ -203,6 +213,9 @@ test_that("power definitions", {
 
 
 test_that( "errors out when providing MDES", {
+    
+  skip_on_cran()
+    
   expect_error(pmdes <- pump_mdes(
     d_m = "d2.1_m2fc",
     MDES = rep(0.2, 5),
@@ -220,6 +233,8 @@ test_that( "errors out when providing MDES", {
 })
 
 test_that( "different values for different outcomes", {
+    
+  skip_on_cran()
 
   set.seed(03443)
 
@@ -289,6 +304,8 @@ test_that( "different values for different outcomes", {
 
 
 test_that("M > 1 with MTP None", {
+
+    skip_on_cran()
     
     pmdes <- expect_warning(pump_mdes(
                           d_m = "d2.1_m2fc",

@@ -11,8 +11,11 @@ transpose_power_table(power_table, M = NULL)
 (It can also take a raw dataframe of the wide table to convert to long, as
 an internal helper method.)}
 
-\item{M}{Set if power_table is a data.frame without set number of outcomes.
-Usually ignore this.}
+\item{M}{scalar; set if power_table is a data.frame 
+without set number of outcomes. Usually ignore this.}
+}
+\value{
+data.frame of power results in long format.
 }
 \description{
 Transform table returned from pump_power 

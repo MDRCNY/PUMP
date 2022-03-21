@@ -14,17 +14,22 @@ power_curve(
 )
 }
 \arguments{
-\item{x}{A pumpresult object.}
+\item{x}{a pumpresult object.}
 
-\item{all}{If TRUE, merge in the search path from the original search.}
+\item{all}{logical; if TRUE, merge in the search path 
+from the original search.}
 
-\item{low}{Low range for the plot x-axis.}
+\item{low}{scalar; low range for the plot x-axis.}
 
-\item{high}{High range for the plot.}
+\item{high}{scalar; high range for the plot.}
 
-\item{grid.size}{Number of points to calculate power.}
+\item{grid.size}{scalar; number of points to calculate power.}
 
-\item{tnum}{Number of iterations to calculate power at each grid point.}
+\item{tnum}{scalar; number of iterations to calculate 
+power at each grid point.}
+}
+\value{
+data.frame of power results.
 }
 \description{
 This is used to see rate of 

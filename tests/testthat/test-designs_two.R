@@ -10,6 +10,8 @@
 # test pump sample raw
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # -----------------------------------------------#
 
+skip_on_cran()
+
 test_that("testing of d2.2_m2rc raw", {
 
   set.seed( 101010 )
@@ -127,21 +129,25 @@ test_that("testing of d3.2_m3rr2rc raw", {
 # -------- d1.1_m1c --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
-pp <- pump_sample( d_m = "d1.1_m1c",
-                   MTP = c("BF"),
-                   MDES = 0.125,
-                   power.definition = 'D1indiv',
-                   target.power = 0.8,
-                   typesample = 'nbar',
-                   M = 5,
-                   Tbar = 0.50, # prop Tx
-                   alpha = 0.05, # significance level
-                   numCovar.1 = 5,
-                   R2.1 = 0.1, 
-                   rho = 0.4, # how correlated outcomes are
-                   tnum = 1000
-)
-
+test_that("testing of d1.1_m1c", {
+    
+    pp <- pump_sample( d_m = "d1.1_m1c",
+                       MTP = c("BF"),
+                       MDES = 0.125,
+                       power.definition = 'D1indiv',
+                       target.power = 0.8,
+                       typesample = 'nbar',
+                       M = 5,
+                       Tbar = 0.50, # prop Tx
+                       alpha = 0.05, # significance level
+                       numCovar.1 = 5,
+                       R2.1 = 0.1, 
+                       rho = 0.4, # how correlated outcomes are
+                       tnum = 1000
+    )
+    
+  expect_true(!is.null(pp))
+})
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # -------- d2.1_m2fc --------
@@ -539,6 +545,6 @@ test_that("testing of d2.2_m2rc", {
       R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.3, rho = 0.2
   )
   
-  expect_true(!is.null(expect_warning(plot_power_curve(ss3))))
+  expect_true(!is.null(plot_power_curve(ss3)))
   
 })

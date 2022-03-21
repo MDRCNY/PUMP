@@ -16,6 +16,9 @@ print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
 
 \item{...}{Extra arguments to pass to print.pumpresult.}
 }
+\value{
+No return value; prints results.
+}
 \description{
 Print out the context (design and model, with parameter values) of given pump
 result or pump grid result object.  The "***" denotes varying values in the

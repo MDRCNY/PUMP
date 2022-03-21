@@ -34,6 +34,8 @@ test_that( "pumpgridresult dimensions work", {
     
     capture_output( pd <- print_context(ss) )
     
+    skip_on_cran()
+    
     set.seed( 1010310 )
     ssL <- pump_power_grid(    d_m = "d2.1_m2fc",
                               MTP = c( "HO", "BH" ),

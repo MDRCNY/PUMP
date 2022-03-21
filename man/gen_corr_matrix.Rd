@@ -7,12 +7,13 @@
 gen_corr_matrix(M, rho.scalar)
 }
 \arguments{
-\item{M}{dimension of matrix}
+\item{M}{scalar; dimension of matrix.}
 
-\item{rho.scalar}{fixed rho value}
+\item{rho.scalar}{scalar; rho value.}
 }
 \value{
-rho.matrix, M x M matrix with rho.scalar as diag
+matrix; M x M correlation matrix
+with rho.scalar as diagonal.
 }
 \description{
 Generate correlation matrix (simulation function)

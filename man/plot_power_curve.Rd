@@ -17,25 +17,31 @@ plot_power_curve(
 )
 }
 \arguments{
-\item{pwr}{Result from the pump_sample or pump_mdes (or data frame from,
-e.g., power_curve()).}
+\item{pwr}{pumpresult object or data.frame; result from calling pump_sample or 
+pump_mdes (or data frame from, e.g., power_curve()).}
 
-\item{plot.points}{flag; whether to plot individually tested points on curve}
+\item{plot.points}{logical; whether to plot individually 
+tested points on curve.}
 
-\item{all}{If TRUE, merge in the search path from the original search.}
+\item{all}{logical; if TRUE, merge in the search path 
+from the original search.}
 
-\item{low}{Low range for the plot x-axis.}
+\item{low}{scalar; low range for the plot x-axis.}
 
-\item{high}{High range for the plot.}
+\item{high}{scalar; high range for the plot.}
 
-\item{grid.size}{Number of points to calculate power.}
+\item{grid.size}{scalar; number of points to calculate power.}
 
-\item{tnum}{Number of iterations to calculate power at each grid point.}
+\item{tnum}{scalar; number of iterations to calculate 
+power at each grid point.}
 
-\item{breaks}{The desired number of tick marks on the axes}
+\item{breaks}{scalar; the desired number of tick marks on the axes.}
 
-\item{fit}{A four parameter bounded logistic curve (if NULL will fit one to
-passed points).}
+\item{fit}{a four parameter bounded logistic curve 
+(if NULL will fit one to passed points).}
+}
+\value{
+plot; a ggplot object of power across values.
 }
 \description{
 This will give a plot of power vs. MDES or sample size. It can

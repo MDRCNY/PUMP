@@ -4,21 +4,19 @@
 \alias{gen_T.x}
 \title{Generate treatment assignment vector (simulation function)}
 \usage{
-gen_T.x(d_m, S.id, D.id, nbar, Tbar)
+gen_T.x(d_m, S.id, D.id, Tbar)
 }
 \arguments{
-\item{d_m}{design and model}
+\item{d_m}{string; design and model.}
 
-\item{S.id}{vector of school assignments}
+\item{S.id}{vector; school assignments.}
 
-\item{D.id}{vector of district assignments}
+\item{D.id}{vector; district assignments.}
 
-\item{nbar}{number of level 1 units}
-
-\item{Tbar}{probability of treatment assignment}
+\item{Tbar}{scalar; probability of treatment assignment.}
 }
 \value{
-vector of treatment assignments for each unit
+vector; treatment assignments for each unit.
 }
 \description{
 Given a RCT design and supporting information,

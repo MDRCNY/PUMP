@@ -7,15 +7,15 @@
 gen_assignments(J, K, nbar)
 }
 \arguments{
-\item{J}{number of schools per district}
+\item{J}{scalar; number of schools per district.}
 
-\item{K}{number of districts}
+\item{K}{scalar; number of districts.}
 
-\item{nbar}{number of individuals per school}
+\item{nbar}{scalar; number of individuals per school.}
 }
 \value{
-list(S.id, D.id) of school and district 
-assignments for each individual
+list; school and district 
+assignments (S.id, D.id) for each individual.
 }
 \description{
 Generates simple default schools and 

@@ -14,7 +14,7 @@
 )
 }
 \arguments{
-\item{x}{pumpgridresult object}
+\item{x}{pumpgridresult object.}
 
 \item{power.definition}{string; definition of power to plot.
 If NULL, plot all definitions as a facet wrap.}
@@ -27,12 +27,12 @@ to single varying parameter.}
 FALSE means no lines.}
 
 \item{include.title}{logical; whether to include/exclude title 
-(if planning a facet wrap, for example)}
+(if planning a facet wrap, for example).}
 
-\item{...}{additional parameters}
+\item{...}{additional parameters.}
 }
 \value{
-a ggplot object
+plot; a ggplot object of outcome across parameter values.
 }
 \description{
 Plots grid results across values of a single parameter, specified by the user
@@ -49,6 +49,6 @@ g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1,
  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
- ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 500)
+ ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 200)
 plot(g, power.definition = 'min1')
 }

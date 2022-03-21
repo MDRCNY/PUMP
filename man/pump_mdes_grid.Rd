@@ -42,10 +42,10 @@ See pump_info() for list of choices.}
 \item{M}{scalar; the number of hypothesis tests (outcomes), 
 including zero outcomes.}
 
-\item{target.power}{Target power for search algorithm}
+\item{target.power}{target power for search algorithm.}
 
 \item{power.definition}{see pump_info() for 
-possible power definitions}
+possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
 This parameter controls when the search is done: 
@@ -88,10 +88,10 @@ level 2 covariates for each outcome.}
 level 3 covariates for each outcome.}
 
 \item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation}
+level 2 (school) intraclass correlation.}
 
 \item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation}
+level 3 (district) intraclass correlation.}
 
 \item{omega.2}{scalar, or vector of length M; ratio of 
 variance of level 2 average impacts to
@@ -109,8 +109,11 @@ all pairs of test statistics.}
 \item{drop.unique.columns}{logical; drop all parameter columns 
 that did not vary across the grid.}
 
-\item{...}{Extra arguments passed to the underlying pump_power, pump_sample,
+\item{...}{extra arguments passed to the underlying pump_power, pump_sample,
 or pump_mdes functions.}
+}
+\value{
+a pumpgridresult object containing MDES results.
 }
 \description{
 See pump_power_grid() for more details.
@@ -118,10 +121,10 @@ See pump_power_grid() for more details.
 \examples{
 g <- pump_mdes_grid(d_m = "d3.2_m3ff2rc", MTP = "HO",
   target.power = c( 0.50, 0.80 ), power.definition = "D1indiv",
-  tol = 0.05, M = 5, J = c( 3, 9), K = 7, nbar = 58,
+  tol = 0.05, M = 5, J = c( 3, 9 ), K = 7, nbar = 58,
   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
-  rho = 0.4, tnum = 500)
+  rho = 0.4, tnum = 200)
 }
 \seealso{
 Other grid functions: 

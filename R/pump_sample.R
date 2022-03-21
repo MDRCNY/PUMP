@@ -249,11 +249,11 @@ pump_sample_raw <- function(
 #' @param typesample string; type of sample size to 
 #' calculate: "nbar", "J", or "K".
 #' @param max_sample_size_nbar scalar; default upper bound for nbar 
-#' for search algorithm
+#' for search algorithm.
 #' @param max_sample_size_JK scalar; default upper bound for J or K 
-#' for search algorithm
+#' for search algorithm.
 #'
-#' @return sample size results
+#' @return a pumpresult object containing sample size results.
 #' @export
 #' 
 #' @examples

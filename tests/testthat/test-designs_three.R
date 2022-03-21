@@ -1,6 +1,7 @@
 # library( PUMP )
 # library( testthat )
 
+default.tnum <- 1000
 
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # ----- three level models ------
@@ -9,6 +10,8 @@
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # --------    d3.1_m3rr2rr    --------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
+
+skip_on_cran()
 
 test_that("testing of d3.1_m3rr2rr one-tailed", {
 
@@ -47,7 +50,8 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
       numCovar.1 = 1, numCovar.2 = 1,
       R2.1 = 0.1, R2.2 = 0.1,
       ICC.2 = 0.2, ICC.3 = 0.2,
-      omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
+      omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+      tnum = default.tnum )
     
     
     vals
@@ -72,7 +76,8 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
       numCovar.1 = 1, numCovar.2 = 1,
       R2.1 = 0.1, R2.2 = 0.1,
       ICC.2 = 0.2, ICC.3 = 0.2,
-      omega.2 = 0.1, omega.3 = 0.1, rho = 0.5)
+      omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+      tnum = default.tnum )
     
     expect_equal(0.125, mdes1$Adjusted.MDES, tolerance = 0.1)
 
@@ -94,6 +99,7 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
         R2.1 = 0.1, R2.2 = 0.1,
         ICC.2 = 0.2, ICC.3 = 0.2,
         omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
+        tnum = default.tnum,
         max_sample_size_nbar = 40 )
     expect_true(nbar2$`Sample.size` < 40 )
 })
@@ -106,7 +112,7 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
 
 test_that("testing of d3.2_m3ff2rc two-tailed", {
-
+    
     if ( FALSE ) {
 
       set.seed( 245444 )
@@ -140,7 +146,8 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
                                numCovar.1 = 1, numCovar.2 = 1,
                                R2.1 = 0.1, R2.2 = 0.1,
                                ICC.2 = 0.2, ICC.3 = 0.2,
-                               omega.2 = 0, omega.3 = 0.1, rho = 0.5 )
+                               omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+                               tnum = default.tnum )
     vals[1:3]
 
     # nbar ends up not converging
@@ -182,7 +189,7 @@ test_that("testing of d3.2_m3ff2rc two-tailed", {
 
 
 test_that("testing of d3.2_m3rr2rc one tailed", {
-
+    
     if ( FALSE ) {
         set.seed( 245444 )
 
@@ -216,7 +223,8 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
                               numCovar.1 = 1, numCovar.2 = 1,
                               R2.1 = 0.1, R2.2 = 0.1,
                               ICC.2 = 0.2, ICC.3 = 0.2,
-                              omega.2 = 0, omega.3 = 0.1, rho = 0.5 )
+                              omega.2 = 0, omega.3 = 0.1, rho = 0.5,
+                              tnum = default.tnum )
     vals[1:3]
 
     # nbar is flat!
@@ -233,7 +241,7 @@ test_that("testing of d3.2_m3rr2rc one tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that("testing of d3.3_m3rc2rc two tailed", {
-
+    
     set.seed(2344)
 
     if ( FALSE ) {
@@ -272,7 +280,8 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
                                numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
                                R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
                                ICC.2 = 0.1, ICC.3 = 0.1,
-                               omega.2 = 0, omega.3 = 0, rho = 0.5)
+                               omega.2 = 0, omega.3 = 0, rho = 0.5,
+                               tnum = default.tnum )
     vals[1:3]
 
     expect_equal( 20, vals$K, tol = 0.1)
@@ -299,7 +308,8 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
         numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1,
         R2.1 = 0.1, R2.2 = 0.1, R2.3 = 0.1,
         ICC.2 = 0.1, ICC.3 = 0.1,
-        omega.2 = 0, omega.3 = 0, rho = 0.5))
+        omega.2 = 0, omega.3 = 0, rho = 0.5,
+        tnum = default.tnum ))
     J1
     expect_true(!is.na(J1$`Sample.size`))
     expect_true( attr(J1, "flat") ) 
@@ -334,6 +344,7 @@ test_that("testing of d3.3_m3rc2rc two tailed", {
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 
 test_that( "testing of lower limit", {
+    
     # This should hit lower limit (too powerful, want J < 3).
     set.seed( 24553453 )
     expect_warning( pp <- pump_sample(    d_m = "d3.2_m3ff2rc",

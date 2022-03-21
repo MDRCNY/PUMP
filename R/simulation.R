@@ -4,10 +4,12 @@
 
 #' @title Generate correlation matrix (simulation function)
 #'
-#' @param M dimension of matrix
-#' @param rho.scalar fixed rho value
+#' @param M scalar; dimension of matrix.
+#' @param rho.scalar scalar; rho value.
 #'
-#' @return rho.matrix, M x M matrix with rho.scalar as diag
+#' @return matrix; M x M correlation matrix
+#' with rho.scalar as diagonal.
+#' 
 #' @export
 gen_corr_matrix <- function(M, rho.scalar)
 {
@@ -65,11 +67,13 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 
 
 
-#' @title Generate simulated multi-level data (simulation function)
+#' @title Generate base simulated multi-level data (simulation function)
 #' 
 #' @description Generates simulated data for multi-level
-#' RCTs for pump-suppored designs and models for
-#' both unobserved and observed potential outcomes.
+#' RCTs for pump-supported designs and models for
+#' both unobserved potential outcomes.
+#' This function does not generate treatment assignments
+#' or observed outcomes.
 #' 
 #' Takes in a list of necessary data-generating parameters.
 #' 
@@ -78,15 +82,13 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #' For more info on use, see the simulation vignette.
 #' 
 #'
-#' @param dgp.params.list list of data generating parameters
+#' @param dgp.params.list list of data generating parameters.
 #'
-#' @return list of: potential outcomes given control y0, treatment y1,
-#'         covariates V.k, X.jk, C.ijk
-#'         
-#'         Each block has 1 column for each outcome (called "domain")
+#' @return list; potential outcomes given control y0, treatment y1,
+#'         covariates V.k, X.jk, C.ijk.
 #'
 #' @export
-gen_full_data <- function(dgp.params.list) {
+gen_base_sim_data <- function(dgp.params.list) {
     
     # ------------------------------#
     # setup: convert model params.list to variables
@@ -113,8 +115,10 @@ gen_full_data <- function(dgp.params.list) {
     # generates vector of school and district assignments, assuming equal sizes of everything
     if ( is.null( S.id ) ) {
         assignments <- gen_assignments( J, K, nbar )
-        S.id        <- assignments[['S.id']]  # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
-        D.id        <- assignments[['D.id']]  # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+        # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
+        S.id        <- assignments[['S.id']] 
+        # N-length vector of indiv district assignments i.e. (1,1,1,2,2,2)
+        D.id        <- assignments[['D.id']]  
     }
     N <- length( S.id )
     
@@ -295,6 +299,45 @@ gen_full_data <- function(dgp.params.list) {
     }
 }
 
+#' @title Generate simulated multi-level data (simulation function)
+#' 
+#' @description Generates simulated data for multi-level
+#' RCTs for pump-suppored designs and models for
+#' both unobserved and observed potential outcomes.
+#' 
+#' Takes in a list of necessary data-generating parameters.
+#' 
+#' This function is beyond the main scope of calculating power,
+#' and is instead used for simulating data.
+#' For more info on use, see the simulation vignette.
+#' 
+#' @param d_m string; a single context, which is a design and model code. 
+#' See pump_info() for list of choices.
+#' @param model.params.list list; model parameters such as ICC,
+#' R2, etc. See simulation vignette for details.
+#' @param Tbar scalar; the proportion of samples 
+#' that are assigned to the treatment.
+#'
+#' @return list; potential outcomes, covariates,
+#' observed outcomes, and treatment assignment.
+#' 
+#'
+#' @export
+gen_sim_data <- function(d_m, model.params.list, Tbar = 0.5) {
+    
+    dgp.params.list <- convert_params(model.params.list)
+    sim.data <- gen_base_sim_data(dgp.params.list)
+    sim.data$T.x <- gen_T.x(
+        d_m = d_m,
+        S.id = sim.data$ID$S.id,
+        D.id = sim.data$ID$D.id,
+        Tbar = Tbar
+    )
+    sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
+    
+    return(sim.data)
+}
+
 
 
 #' @title Converts model params into DGP params (simulation function)
@@ -308,9 +351,10 @@ gen_full_data <- function(dgp.params.list) {
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
-#' @param model.params.list list of DGP parameters
+#' @param model.params.list list; model parameters such as ICC,
+#' R2, etc.
 #'
-#' @return dgp.params.list
+#' @return list; data-generating parameters.
 #'
 #' @export
 convert_params <- function(model.params.list) {
@@ -339,8 +383,20 @@ convert_params <- function(model.params.list) {
     # if rho.default is provided, fill out all the rhos
     if(!is.null(rho.default))
     {
-        message('Using default rho for all rho matrices, 
+        if(
+           !is.null(model.params.list$rho.V)  |
+           !is.null(model.params.list$rho.w0) |
+           !is.null(model.params.list$rho.w1) |
+           !is.null(model.params.list$rho.X)  |
+           !is.null(model.params.list$rho.u0) |
+           !is.null(model.params.list$rho.u1) |
+           !is.null(model.params.list$rho.C)  |
+           !is.null(model.params.list$rho.r) 
+        )
+        {
+            message('Using default rho for all rho matrices, 
                 overriding any user-input rho matrices.')
+        }
         default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
 
         model.params.list$rho.V  <- default.rho.matrix
@@ -472,15 +528,18 @@ convert_params <- function(model.params.list) {
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #'
-#' @param K number of districts
-#' @param J number of schools per district
-#' @param nbar number of individuals per school
+#' @param K scalar; number of districts.
+#' @param J scalar; number of schools per district.
+#' @param nbar scalar; number of individuals per school.
 #'
-#' @return list(S.id, D.id) of school and district 
-#' assignments for each individual
+#' @return list; school and district 
+#' assignments (S.id, D.id) for each individual.
+#' 
 #' @export
 gen_assignments <- function(J, K, nbar){
     
+    J <- ifelse(is.null(J), 1, J)
+    K <- ifelse(is.null(K), 1, K)
     N <- nbar * J * K
     
     # vector of assignments to schools
@@ -519,19 +578,19 @@ gen_assignments <- function(J, K, nbar){
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #'
-#' @param d_m design and model
-#' @param S.id vector of school assignments
-#' @param D.id vector of district assignments
-#' @param nbar number of level 1 units
-#' @param Tbar  probability of treatment assignment
+#' @param d_m string; design and model.
+#' @param S.id vector; school assignments.
+#' @param D.id vector; district assignments.
+#' @param Tbar scalar; probability of treatment assignment.
 #'
-#' @return vector of treatment assignments for each unit
+#' @return vector; treatment assignments for each unit.
+#' 
 #' @export
-gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
+gen_T.x <- function(d_m, S.id, D.id, Tbar)
 {
     if(startsWith(d_m, 'd1.1'))
     {
-        T.x <- randomizr::simple_ra(N = nbar, prob = Tbar)
+        T.x <- randomizr::simple_ra(N = length(S.id), prob = Tbar)
     } else if(startsWith(d_m, 'd2.1') | startsWith(d_m, 'd3.1'))
     {
         T.x <- randomizr::block_ra( S.id, prob = Tbar )
@@ -565,15 +624,301 @@ gen_T.x <- function(d_m, S.id, D.id, nbar, Tbar)
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
-#' @param full.data full dataset of potential outcomes
-#' @param T.x N-vector of binary assignment to treat/control
+#' @param full.data data.frame; full dataset of potential outcomes.
+#' @param T.x vector; binary assignment to treat/control.
 #'
-#' @return Yobs
+#' @return vector; observed outcomes
 #'
 #' @export
 gen_Yobs <- function(full.data, T.x) {
     Yobs <- full.data$Y0
     Yobs[T.x == 1,] <- full.data$Y1[T.x == 1,]
     return(Yobs)
+}
+
+
+#' takes in multi-outcome data and returns a list for each outcome
+#'
+#' @param samp.obs a single iteration of observed data
+#' @param T.x vector of treatment assignments
+#' @keywords internal
+makelist_samp <-function(samp.obs, T.x) {
+    
+    mdat.rn <- NULL
+    for(m in 1:ncol(samp.obs$Yobs))
+    {
+        # level 3
+        if(!is.null(samp.obs[['V.k']]))
+        {
+            mdat.rn[[m]] <- data.frame(
+                Yobs        = samp.obs[['Yobs']][,m],
+                V.k         = samp.obs[['V.k']][,m],
+                X.jk        = samp.obs[['X.jk']][,m],
+                C.ijk       = samp.obs[['C.ijk']][,m],
+                T.x         = T.x,
+                S.id        = as.factor(samp.obs$ID$S.id),
+                D.id        = as.factor(samp.obs$ID$D.id)
+            )
+        } else
+            # level 2
+        {
+            mdat.rn[[m]] <- data.frame(
+                Yobs        = samp.obs[['Yobs']][,m],
+                X.jk        = samp.obs[['X.jk']][,m],
+                C.ijk       = samp.obs[['C.ijk']][,m],
+                T.x       = T.x,
+                S.id        = as.factor(samp.obs$ID$S.id)
+            )
+        }
+    }
+    return(mdat.rn)
+}
+
+
+#' takes in multi-outcome data and returns a list for each outcome
+#'
+#' @param samp.obs a list of observed data components
+#' @param T.x vector of treatment assignments
+#' 
+#' @keywords internal
+makelist_samp <-function(samp.obs, T.x) {
+    
+    mdat.rn <- NULL
+    for(m in 1:ncol(samp.obs$Yobs))
+    {
+        # level 3
+        if(!is.null(samp.obs[['V.k']]))
+        {
+            mdat.rn[[m]] <- data.frame(
+                Yobs        = samp.obs[['Yobs']][,m],
+                V.k         = samp.obs[['V.k']][,m],
+                X.jk        = samp.obs[['X.jk']][,m],
+                C.ijk       = samp.obs[['C.ijk']][,m],
+                T.x         = T.x,
+                S.id        = as.factor(samp.obs$ID$S.id),
+                D.id        = as.factor(samp.obs$ID$D.id)
+            )
+        } else
+        # level 2
+        {
+            mdat.rn[[m]] <- data.frame(
+                Yobs        = samp.obs[['Yobs']][,m],
+                X.jk        = samp.obs[['X.jk']][,m],
+                C.ijk       = samp.obs[['C.ijk']][,m],
+                T.x       = T.x,
+                S.id        = as.factor(samp.obs$ID$S.id)
+            )
+        }
+    }
+    return(mdat.rn)
+}
+
+
+#' Function: get_rawpt                                      
+#'  
+#' fits models and extracts p values and t statistics
+#'
+#' @param dat.all list of datasets (of length M)
+#' @param d_m design/model
+#' @param model.params.list list of model parameters
+#'
+#' @keywords internal
+get_rawpt <- function(dat.all, d_m, model.params.list) {
+    mods.out <- lapply(dat.all, function(m) make_model(m, d_m))
+    mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
+    singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
+    failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
+    rawpt <- lapply(mods, function(x) get_pval_tstat(x, d_m, model.params.list))
+    return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
+}
+
+
+#'  Function: get_pval_tstat	                                       
+#'  
+#' extracts p-value and t statistics from a given model
+#'
+#' @param mod model object
+#' @param d_m design/model
+#' @param model.params.list list of model parameters
+#' 
+#' @keywords internal
+get_pval_tstat <- function(mod, d_m, model.params.list) {
+    if(class(mod) == "lm") {
+        tstat <- summary(mod)$coefficients["T.x","t value"]
+        pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
+    } else if(class(mod) == "lmerMod") {
+        df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
+                            model.params.list[['nbar']],
+                            numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+        tstat <- summary(mod)$coefficients["T.x","t value"]
+        pval <- (1 - stats::pt(abs(tstat), df = df))*2
+    } else if (class(mod) == "data.frame") {
+        # fixed effects models
+        df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
+                            model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+        tstat <- mod$ATE_hat[1]/mod$SE[1]
+        pval <- 2*(1 - stats::pt(abs(tstat), df = df))
+    } else
+    {
+        stop('Unknown model type')
+    }
+    return(list(tstat = tstat, pval = pval))
+}
+
+
+#'  Function: make.model		                                       
+#'  
+#'  function to generate a model for simulated data
+#'
+#' @param dat.m a data frame for a single outcome
+#' @param d_m design/model
+#' 
+#' @keywords internal
+make_model <- function(dat.m, d_m) {
+    # dat.m = dat.all[[1]];
+    
+    singular <- FALSE
+    failed.converge <- FALSE
+    
+    dat.m$S.id <- as.factor(dat.m$S.id)
+    if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
+    
+    if (d_m == "d1.1_m1c") {
+        form <- stats::as.formula("Yobs ~ 1 + T.x + C.ijk")
+        mod <- stats::lm(form, data = dat.m)
+    } else if (d_m == "d2.1_m2fc") {
+        form <- stats::as.formula("Yobs ~ 1 + T.x + C.ijk + S.id")
+        mod <- stats::lm(form, data = dat.m)
+    } else if (d_m == "d2.1_m2ff") {
+        mod.out <- interacted_linear_estimators(
+            Yobs = dat.m$Yobs, Z = dat.m$T.x,
+            B = dat.m$S.id, data = dat.m,
+            control_formula = "C.ijk", use.lmer = FALSE
+        )
+        singular <- mod.out[['singular']]
+        mod <- mod.out[['mod']]
+    } else if (d_m == "d2.1_m2fr") {
+        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+    } else if (d_m == "d3.1_m3rr2rr") {
+        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
+                                  C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+    } else if (d_m == "d2.2_m2rc") {
+        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+    } else if (d_m == "d3.3_m3rc2rc") {
+        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + 
+                                  (1 | S.id) + (1 | D.id)"))
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+    } else if (d_m == "d3.2_m3ff2rc") {
+        mod.out <- interacted_linear_estimators(
+            Yobs = dat.m$Yobs, Z = dat.m$T.x,
+            B = dat.m$D.id, data = dat.m,
+            control_formula = "X.jk + C.ijk + (1 | S.id)",
+            use.lmer = TRUE
+        )
+        singular <- mod.out[['singular']]
+        mod <- mod.out[['mod']]
+    } else if (d_m == "d3.2_m3rr2rc") {
+        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
+                                  C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+    } else {
+        stop(paste('Unknown d_m:', d_m)) 
+    }
+    
+    return(list(mod = mod, singular = singular, failed.converge = failed.converge))
+}
+
+
+#' Interacted linear regression models
+#' https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
+#'
+#' These linear models have block by treatment interaction terms.  The final ATE
+#' estimates are then weighted average of the block (site) specific ATE
+#' estimates.
+#'
+#' If siteID passed, it will weight the RA blocks within site and then average
+#' these site estimates.
+#'
+#' SEs come from the overall variance-covariance matrix.
+#'
+#' @return Dataframe of the different versions of this estimator (person and
+#'   site weighted)
+#' @family linear model estimators
+#' 
+#' @keywords internal
+interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
+                                         control_formula = NULL, use.lmer = FALSE) {
+    # siteID = NULL;
+    # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$D.id; data = dat.m; control_formula = "X.jk + C.ijk + (1 | S.id)"; use.lmer = TRUE
+    # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$S.id; data = dat.m; control_formula = "C.ijk"; use.lmer = FALSE
+    
+    # keep track of singularity
+    singular <- FALSE
+    
+    # This code block takes the parameters of
+    # Yobs, Z, B, siteID = NULL, data=NULL, ...
+    # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
+    d2$Yobs <- Yobs
+    d2$Z <- Z
+    d2$B <- B
+    data <- d2
+    rm(d2)
+    
+    
+    data$B <- droplevels(as.factor(data$B))
+    J <- length(unique(data$B))
+    nj <- table(data$B)
+    n <- nrow(data)
+    
+    formula <- stats::as.formula(sprintf(
+        "%s ~ 0 + %s * %s - %s + %s", "Yobs", "Z", "B", "Z", control_formula))
+    
+    if(use.lmer)
+    {
+        M0.int <- lme4::lmer(formula, data = data)
+        ids <- grep( "Z:", rownames(summary(M0.int)$coefficients))
+    } else
+    {
+        M0.int <- stats::lm(formula, data = data)
+        ids <- grep( "Z:", names(stats::coef(M0.int)))
+    }
+    
+    if(length(ids) != J)
+    {
+        message('Proceeding with rank deficient model')
+        singular <- TRUE
+        J <- length(ids)
+    }
+    
+    VC <- as.matrix(stats::vcov(M0.int))
+    ATE_hats <- summary(M0.int)$coefficients[ids,1]
+    wts <- rep(1 / J, J)
+    
+    # the block SEs from our linear model
+    SE_hat <- diag(VC)[ids]
+    
+    ATE_hat_site <- stats::weighted.mean(ATE_hats, wts)
+    
+    # Calculate SE for ATE_hat_site
+    SE_site <- sqrt(sum(wts ^ 2 * SE_hat))
+    
+    interactModels <- data.frame(method = c("FE-Int-Sites"), ATE_hat = c(ATE_hat_site), SE = c(SE_site), stringsAsFactors = FALSE)
+    if (!is.null(control_formula)) {
+        interactModels$method <- paste0(interactModels$method, "-adj")
+    }
+    return(list(mod = interactModels, singular = singular))
 }
 

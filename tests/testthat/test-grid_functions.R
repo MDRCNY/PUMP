@@ -3,6 +3,7 @@
 
 test_that("pump_power_grid works", {
 
+  
   pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
                             MTP = "HO",
                             MDES = c( 0.05, 0.2 ),
@@ -22,8 +23,11 @@ test_that("pump_power_grid works", {
   pp
   expect_equal( nrow(pp), 3 * 2 * 2 )
 
+})
 
-
+test_that("More extensive testing of grid()", {
+ 
+  skip_on_cran()
   pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
                             MTP = "HO",
                             MDES = c( 0.05, 0.2 ),
@@ -40,7 +44,6 @@ test_that("pump_power_grid works", {
                             tnum = 200,
                             verbose = FALSE
   )
-  pp
   expect_equal( nrow(pp), 2 * 2 )
 
 
@@ -69,7 +72,6 @@ test_that("pump_power_grid works", {
   )
   pp
   expect_equal( nrow(pp), 2 * 3 * 2)
-
 
 
   grid <- pump_power_grid( d_m="d3.2_m3ff2rc",
@@ -135,6 +137,8 @@ test_that("pump_power_grid works", {
 
 
 test_that("pump_mdes_grid works", {
+    
+  skip_on_cran()
 
   pp <- pump_mdes_grid(    d_m = "d3.2_m3ff2rc",
                            MTP = "HO",
@@ -160,6 +164,8 @@ test_that("pump_mdes_grid works", {
 
 
 test_that("pump_sample_grid works", {
+    
+  skip_on_cran()
 
   pp <- pump_sample_grid(    d_m = "d3.2_m3ff2rc",
                              typesample = "J",
@@ -188,6 +194,7 @@ test_that("pump_sample_grid works", {
 
 test_that( "grid allows multiple MTP and power definitions", {
 
+  skip_on_cran()
   pp <- pump_mdes_grid(    d_m = "d3.2_m3ff2rc",
                            MTP = c( "BF", "HO" ),
                            target.power = 0.5,
@@ -236,6 +243,7 @@ test_that( "grid allows multiple MTP and power definitions", {
 
 
 test_that( "grid works for long tables", {
+  skip_on_cran()    
   pp <- pump_power_grid(    d_m = "d3.2_m3ff2rc",
                             MTP = c( "HO", "BF" ),
                             MDES = 0.10,
@@ -258,6 +266,7 @@ test_that( "grid works for long tables", {
 
 
 test_that( "grid breaks with invalid inputs", {
+  skip_on_cran()
   expect_error(pp <- pump_sample_grid(
     d_m = "d2.2_m2rc",
     MTP = c("HO"),
