@@ -740,7 +740,7 @@ plot.pumpgridresult.sample <- function(
              paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
   }
   
-  plot.data = dplyr::filter( plot.data, !is.na( Sample.size ) )
+  plot.data = dplyr::filter( plot.data, !is.na( .data$Sample.size ) )
   
   # for nice axes
   if(max(plot.data$Sample.size) - min(plot.data$Sample.size) < 5)
