@@ -179,7 +179,7 @@ pump_info <- function(
 
 
 
-#' @title Return characteristics of a given context (d_m code)
+#' @title Return characteristics of a given context/d_m code (support function)
 #'
 #' @description Returns number of levels and model at each level.
 #' See pump_info()$Context to get a list of supported d_ms.
