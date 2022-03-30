@@ -621,7 +621,7 @@ print_search <- function( x, n = 10 ) {
 
 
 #' @title Print context (design, model, parameter values) of 
-#' pumpresult or pumpgridresult
+#' pumpresult or pumpgridresult (result function)
 #'
 #' @description
 #'

@@ -122,5 +122,44 @@ summary.pumpgridresult <- function( object, ... ) {
     invisible( object )
 }
 
+#' @title Cast pumpgridresult result to data.frame
+#'
+#' @param row.names NULL or a character vector giving the 
+#' row names for the data frame.
+#' @param optional logical. If TRUE, setting row names and 
+#' converting column names is optional.
+#' @param ... additional arguments to be passed to the 
+#' as.data.frame.list methods.
+#'
+#' @return as.data.frame: pumpgridresult object as a clean 
+#' dataframe (no more attributes from pumpgridresult).
+#' @rdname pumpgridresult
+#'
+#' @export
+#' 
+as.data.frame.pumpgridresult <- function( 
+    x, row.names = NULL, optional = FALSE, ... 
+) {
+    class(x) <- "list"
+    as.data.frame( x, row.names = row.names, optional = optional, ... )
+    
+}
+
+#' @return `[`: pull out rows and columns of the dataframe.
+#'
+#' @rdname pumpgridresult
+#' @export
+`[.pumpgridresult` <- function( x, ... ) {
+    as.data.frame(x)[...] 
+}
 
 
+
+
+#' @return `[[`: pull out single element of dataframe.
+#'
+#' @rdname pumpgridresult
+#' @export
+`[[.pumpgridresult` <- function( x, ... ) {
+    as.data.frame(x)[[...]] 
+}
