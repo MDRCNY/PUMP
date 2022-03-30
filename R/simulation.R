@@ -374,10 +374,10 @@ convert_params <- function(model.params.list) {
     has.level.three <- TRUE
     if ( is.null( ICC.3 ) ) {
         has.level.three <- FALSE
-        ICC.3 <- rep(0, M)
-        R2.3 <- rep(0, M)
-        omega.3 <- rep(0, M)
-        K <- 1
+        ICC.3 <- model.params.list$ICC.3 <- rep(0, M)
+        R2.3 <- model.params.list$R2.3 <- rep(0, M)
+        omega.3 <- model.params.list$omega.3 <- rep(0, M)
+        K <- model.params.list$K <- 1
     }
     
     # if rho.default is provided, fill out all the rhos

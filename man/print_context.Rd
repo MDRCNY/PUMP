@@ -3,7 +3,7 @@
 \name{print_context}
 \alias{print_context}
 \title{Print context (design, model, parameter values) of 
-pumpresult or pumpgridresult}
+pumpresult or pumpgridresult (result function)}
 \usage{
 print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
 }

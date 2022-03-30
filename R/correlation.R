@@ -6,7 +6,6 @@
 get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
 {
     rawt.all <- matrix(NA, nrow = n.sims, ncol = model.params.list$M)
-    dgp.params.list <- convert_params(model.params.list)
     
     start.time <- Sys.time()
     

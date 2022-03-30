@@ -252,7 +252,7 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 }
 
 
-#' @title Plot a pump result
+#' @title Plot a pumpresult object (result function)
 #'
 #' @description For the object returned by pump_power(), visualizes
 #'   different definitions of power across MTPs. For the object
@@ -305,6 +305,7 @@ plot_power_search <- function( pwr, fit = NULL, target.line = NULL) {
 #'    Tbar = 0.5, alpha = 0.05,
 #'    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05,
 #'    rho = 0.2, tnum = 200)
+#' plot(J)
 #' plot(J, type = "search")
 #' 
 plot.pumpresult <- function( x, type = "power", 
@@ -802,7 +803,7 @@ plot.pumpgridresult.sample <- function(
 }
 
 
-#'@title Plot a pump grid result object (result function)
+#'@title Plot a pumpgridresult object (result function)
 #'
 #'@description
 #'

@@ -5,6 +5,9 @@
 \alias{is.pumpgridresult}
 \alias{print.pumpgridresult}
 \alias{summary.pumpgridresult}
+\alias{as.data.frame.pumpgridresult}
+\alias{[.pumpgridresult}
+\alias{[[.pumpgridresult}
 \title{Result object for results of grid power calculations}
 \usage{
 is.pumpgridresult(x)
@@ -12,6 +15,12 @@ is.pumpgridresult(x)
 \method{print}{pumpgridresult}(x, header = TRUE, ...)
 
 \method{summary}{pumpgridresult}(object, ...)
+
+\method{as.data.frame}{pumpgridresult}(x, row.names = NULL, optional = FALSE, ...)
+
+\method{[}{pumpgridresult}(x, ...)
+
+\method{[[}{pumpgridresult}(x, ...)
 }
 \arguments{
 \item{x}{a pumpgridresult object 
@@ -21,9 +30,16 @@ is.pumpgridresult(x)
 header info on the result, just print
 the data.frame of actual results.}
 
-\item{...}{extra options passed to print.pumpgridresult}
+\item{...}{additional arguments to be passed to the 
+as.data.frame.list methods.}
 
 \item{object}{object to summarize.}
+
+\item{row.names}{NULL or a character vector giving the 
+row names for the data frame.}
+
+\item{optional}{logical. If TRUE, setting row names and 
+converting column names is optional.}
 }
 \value{
 is.pumpgridresult: TRUE if object is a pumpgridresult object.
@@ -31,6 +47,13 @@ is.pumpgridresult: TRUE if object is a pumpgridresult object.
 print: No return value; prints results.
 
 summary: No return value; prints results.
+
+as.data.frame: pumpgridresult object as a clean 
+dataframe (no more attributes from pumpgridresult).
+
+`[`: pull out rows and columns of the dataframe.
+
+`[[`: pull out single element of dataframe.
 }
 \description{
 The pumpgridresult object is an S3 class that holds the results from
