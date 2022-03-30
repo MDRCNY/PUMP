@@ -14,7 +14,11 @@ geometry: margin=1.5in
 
 ```{r initialize, include = FALSE}
 library( PUMP )
-recompile <- FALSE
+
+# This allows us to stash precalculated results so the vignette
+# compiles in time for CRAN.
+vignette_cache <- here::here("vignettes/output", "MDEScalc.RDS")
+recompile <- !file.exists(vignette_cache)
 
 knitr::opts_chunk$set(
   cache = FALSE,
@@ -378,10 +382,10 @@ if(recompile)
       ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
       rho = 0.4 ) 
     
-    saveRDS(m, here::here("vignettes/output", "MDEScalc.RDS"))
+    saveRDS(m,  here::here("vignettes/output", "MDEScalc.RDS"))
 } else
 {
-    m <- readRDS(here::here("vignettes/output", "MDEScalc.RDS"))
+    m <- readRDS( here::here("vignettes/output", "MDEScalc.RDS") )
 }
 ```
 
@@ -555,6 +559,17 @@ Alternatively, simply provide a list of procedures you wish to compare.
 If you provide a list, the package will re-run the power calculator for each item on the list; this can make the overall call computationally intensive.
 Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments, and plot the results using the default `plot()` method:
 
+<<<<<<< HEAD
+```{r othercorrections}
+p2 <- update( p_check,
+              MTP = c( "BF", "HO", "WY-SD" ),
+              tnum = 5000 )
+plot( p2 )
+```
+
+To speed up computation, we could add `parallel.WY.cores = 2` (or however many cores we wish to allocate) to the call to parallelize the computation.
+We could also reduce `tnum` to decrease computation time.
+=======
 ```{r othercorrections, eval = FALSE}
 p2 <- update( pow,
               MTP = c( "BF", "HO", "WY-SD" ) )
@@ -576,6 +591,7 @@ plot( p2 )
 
 To speed up computation, we could also set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
 We also reduce `tnum` to decrease computation time.
+>>>>>>> faa2d883e666af36b04b357f79012c8d2a6ab54a
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
 Note, however, that we do not see elevated rates for $1-$minimal power.

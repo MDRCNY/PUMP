@@ -302,22 +302,24 @@ search_path <- function( x, ... ) {
 }
 
 
-#' @title Obtain power curve over a range of parameters (result function)
+#' @title Obtain a power curve for a range of sample size or MDES values
 #'
-#' @description This is used to see rate of 
-#' power change as a function of sample size or MDES.
+#' @description This is used to see how power changes as a function of
+#'   sample size or MDES.  It takes a fit pumpresult and calculates a power
+#'   curve based on that scenario coupled with a passed range of
+#'   values to make the curve over.
 #'
 #' @param x a pumpresult object.
-#' @param all logical; if TRUE, merge in the search path 
-#' from the original search.
-#' @param low scalar; low range for the plot x-axis.
-#' @param high scalar; high range for the plot.
-#' @param grid.size scalar; number of points to calculate power.
-#' @param tnum scalar; number of iterations to calculate 
-#' power at each grid point.
+#' @param all logical; if TRUE, merge in the search path from the
+#'   original search.
+#' @param low scalar; low range for curve.
+#' @param high scalar; high range for the curve.
+#' @param grid.size scalar; number of points to calculate power for.
+#' @param tnum scalar; number of iterations to calculate power at each
+#'   grid point.
 #'
 #' @importFrom rlang .data
-#' 
+#'
 #' @return data.frame of power results.
 #'
 #' @export
