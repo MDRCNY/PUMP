@@ -13,7 +13,7 @@ geometry: margin=1.5in
 
 
 ```{r initialize, include = FALSE}
-# library( PUMP )
+library( PUMP )
 
 # This allows us to stash precalculated results so the vignette
 # compiles in a timely manner for CRAN.

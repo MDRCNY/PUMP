@@ -127,7 +127,6 @@ J <- pump_sample(d_m = "d2.1_m2fc",
   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2, tnum = 1000)
   
-print_search(J)   
 search_path(J)
 power_curve(J)   
 }

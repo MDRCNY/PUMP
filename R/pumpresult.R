@@ -239,7 +239,6 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #'   Tbar = 0.5, alpha = 0.05, numCovar.1 = 1,
 #'   R2.1 = 0.1, ICC.2 = 0.05, rho = 0.2, tnum = 1000)
 #'   
-#' print_search(J)   
 #' search_path(J)
 #' power_curve(J)   
 NULL
@@ -598,7 +597,7 @@ print.pumpresult <- function( x, n = 10,
 #' 
 #' @return No return value; prints results.
 #' 
-#' @export
+#' @keywords internal
 print_search <- function( x, n = 10 ) {
   tr <- search_path( x )
   
