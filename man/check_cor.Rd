@@ -4,7 +4,13 @@
 \alias{check_cor}
 \title{Check correlation of test statistics (simulation function)}
 \usage{
-check_cor(d_m, model.params.list, Tbar, n.sims = 100)
+check_cor(
+  d_m = NULL,
+  model.params.list = NULL,
+  Tbar = NULL,
+  pump.object = NULL,
+  n.sims = 100
+)
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
@@ -16,17 +22,46 @@ R2, etc. See simulation vignette for details.}
 \item{Tbar}{scalar; the proportion of samples 
 that are assigned to the treatment.}
 
+\item{pump.object}{A pumpresult object}
+
 \item{n.sims}{Number of simulated datasets to generate.
 More datasets will achieve a more accurate result
 but also increase computation time.}
 }
 \value{
-dataframe; contains estimated pairwise
-correlations between all outcomes, plus information
-about input parameters.
+vector; pairwise correlations between
+all outcomes.
 }
 \description{
-Given a design, model, and set of model parameters,
-estimates the pairwise correlations between test statistics for
-all outcomes.
+Estimates the pairwise correlations
+between test statistics for all outcomes.
+
+Takes in two options:
+- a pumpresult object
+OR
+- a list of necessary data-generating parameters
+- the context (d_m)
+- Tbar
+
+Note that this function can take several minutes to run.
+}
+\examples{
+pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                  MTP = "BF",
+                  MDES = rep( 0.10, 2 ),
+                  M = 2,
+                  J = 4, # number of schools/block
+                  K = 10, # number RA blocks
+                  nbar = 50,
+                  Tbar = 0.50, # prop Tx
+                  alpha = 0.05, # significance level
+                  numCovar.1 = 5, numCovar.2 = 3,
+                  R2.1 = 0.1, R2.2 = 0.7,
+                  ICC.2 = 0.05, ICC.3 = 0.4,
+                  rho = 0.4, # how correlated outcomes are
+                  tnum = 200
+)
+cor.tstat <- check_cor(
+    pump.object = pp, n.sims = 4
+)
 }

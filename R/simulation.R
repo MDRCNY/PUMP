@@ -305,12 +305,18 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' RCTs for pump-suppored designs and models for
 #' both unobserved and observed potential outcomes.
 #' 
-#' Takes in a list of necessary data-generating parameters.
+#' Takes in two options:
+#' - a pumpresult object
+#' OR
+#' - a list of necessary data-generating parameters
+#' - the context (d_m)
+#' - Tbar
 #' 
 #' This function is beyond the main scope of calculating power,
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
+#' @param pump.object A pumpresult object
 #' @param d_m string; a single context, which is a design and model code. 
 #' See pump_info() for list of choices.
 #' @param model.params.list list; model parameters such as ICC,
@@ -323,7 +329,49 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' 
 #'
 #' @export
-gen_sim_data <- function(d_m, model.params.list, Tbar = 0.5) {
+#' @examples
+#'
+#' pp <- pump_power( d_m = "d3.2_m3ff2rc",
+#'                   MTP = "BF",
+#'                   MDES = rep( 0.10, 3 ),
+#'                   M = 3,
+#'                   J = 3, # number of schools/block
+#'                   K = 21, # number RA blocks
+#'                   nbar = 258,
+#'                   Tbar = 0.50, # prop Tx
+#'                   alpha = 0.05, # significance level
+#'                   numCovar.1 = 5, numCovar.2 = 3,
+#'                   R2.1 = 0.1, R2.2 = 0.7,
+#'                   ICC.2 = 0.05, ICC.3 = 0.4,
+#'                   rho = 0.4, # how correlated outcomes are
+#'                   tnum = 200
+#' )
+#' sim.data <- gen_sim_data(pump.object = pp)
+#'
+gen_sim_data <- function(
+    d_m = NULL, model.params.list = NULL,
+    Tbar = 0.5, pump.object = NULL)
+{
+    if(is.null(pump.object))
+    {
+      if(is.null(d_m) | is.null(model.params.list))
+      {
+          stop('You must provide either a pump object
+                or both a d_m string and list of model params.')
+      }
+
+    } else
+    {
+      if(!is.null(d_m) | !is.null(model.params.list))
+      {
+          stop('You must provide either a pump object
+                or both a d_m string and list of model params.')
+      }
+      model.params.list <- params(pump.object)
+      d_m <- d_m(pump.object)
+      Tbar <- model.params.list$Tbar
+      model.params.list$rho.default <- model.params.list$rho
+    }
     
     dgp.params.list <- convert_params(model.params.list)
     sim.data <- gen_base_sim_data(dgp.params.list)
@@ -675,45 +723,6 @@ makelist_samp <-function(samp.obs, T.x) {
 }
 
 
-#' takes in multi-outcome data and returns a list for each outcome
-#'
-#' @param samp.obs a list of observed data components
-#' @param T.x vector of treatment assignments
-#' 
-#' @keywords internal
-makelist_samp <-function(samp.obs, T.x) {
-    
-    mdat.rn <- NULL
-    for(m in 1:ncol(samp.obs$Yobs))
-    {
-        # level 3
-        if(!is.null(samp.obs[['V.k']]))
-        {
-            mdat.rn[[m]] <- data.frame(
-                Yobs        = samp.obs[['Yobs']][,m],
-                V.k         = samp.obs[['V.k']][,m],
-                X.jk        = samp.obs[['X.jk']][,m],
-                C.ijk       = samp.obs[['C.ijk']][,m],
-                T.x         = T.x,
-                S.id        = as.factor(samp.obs$ID$S.id),
-                D.id        = as.factor(samp.obs$ID$D.id)
-            )
-        } else
-        # level 2
-        {
-            mdat.rn[[m]] <- data.frame(
-                Yobs        = samp.obs[['Yobs']][,m],
-                X.jk        = samp.obs[['X.jk']][,m],
-                C.ijk       = samp.obs[['C.ijk']][,m],
-                T.x       = T.x,
-                S.id        = as.factor(samp.obs$ID$S.id)
-            )
-        }
-    }
-    return(mdat.rn)
-}
-
-
 #' Function: get_rawpt                                      
 #'  
 #' fits models and extracts p values and t statistics
@@ -871,6 +880,7 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     # This code block takes the parameters of
     # Yobs, Z, B, siteID = NULL, data=NULL, ...
     # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
+    d2 <- data
     d2$Yobs <- Yobs
     d2$Z <- Z
     d2$B <- B
