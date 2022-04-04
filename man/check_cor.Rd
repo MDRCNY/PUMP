@@ -7,8 +7,9 @@
 check_cor(
   d_m = NULL,
   model.params.list = NULL,
-  Tbar = NULL,
+  Tbar = 0.5,
   pump.object = NULL,
+  outcome.cor = NULL,
   n.sims = 100
 )
 }
@@ -23,6 +24,9 @@ R2, etc. See simulation vignette for details.}
 that are assigned to the treatment.}
 
 \item{pump.object}{A pumpresult object}
+
+\item{outcome.cor}{The correlation between outcomes
+(in contrast to the correlation between test statistics)..}
 
 \item{n.sims}{Number of simulated datasets to generate.
 More datasets will achieve a more accurate result
@@ -62,6 +66,6 @@ pp <- pump_power( d_m = "d3.2_m3ff2rc",
                   tnum = 200
 )
 cor.tstat <- check_cor(
-    pump.object = pp, n.sims = 4
+    pump.object = pp, outcome.cor = 0.4, n.sims = 4
 )
 }
