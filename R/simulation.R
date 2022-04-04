@@ -317,6 +317,8 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' For more info on use, see the simulation vignette.
 #' 
 #' @param pump.object A pumpresult object
+#' @param outcome.cor The correlation between outcomes
+#' (in contrast to the correlation between test statistics)..
 #' @param d_m string; a single context, which is a design and model code. 
 #' See pump_info() for list of choices.
 #' @param model.params.list list; model parameters such as ICC,
@@ -346,31 +348,34 @@ gen_base_sim_data <- function(dgp.params.list) {
 #'                   rho = 0.4, # how correlated outcomes are
 #'                   tnum = 200
 #' )
-#' sim.data <- gen_sim_data(pump.object = pp)
+#' sim.data <- gen_sim_data(pump.object = pp, outcome.cor = 0.4)
 #'
 gen_sim_data <- function(
-    d_m = NULL, model.params.list = NULL,
-    Tbar = 0.5, pump.object = NULL)
+    d_m = NULL, model.params.list = NULL, Tbar = 0.5,
+    pump.object = NULL, outcome.cor = NULL)
 {
     if(is.null(pump.object))
     {
       if(is.null(d_m) | is.null(model.params.list))
       {
-          stop('You must provide either a pump object
-                or both a d_m string and list of model params.')
+          stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
       }
-
     } else
     {
       if(!is.null(d_m) | !is.null(model.params.list))
       {
-          stop('You must provide either a pump object
-                or both a d_m string and list of model params.')
+          stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
+      }
+      if(is.null(outcome.cor))
+      {
+          stop("You must provide the correlation between outcomes.")
       }
       model.params.list <- params(pump.object)
       d_m <- d_m(pump.object)
       Tbar <- model.params.list$Tbar
-      model.params.list$rho.default <- model.params.list$rho
+      model.params.list$rho.default <- outcome.cor
     }
     
     dgp.params.list <- convert_params(model.params.list)

@@ -88,31 +88,35 @@ get_cor <- function(rawt.all)
 #'                   tnum = 200
 #' )
 #' cor.tstat <- check_cor(
-#'     pump.object = pp, n.sims = 4
+#'     pump.object = pp, outcome.cor = 0.4, n.sims = 4
 #' )
-check_cor <- function(d_m = NULL, model.params.list = NULL, Tbar = NULL,
-                      pump.object = NULL, n.sims = 100)
+check_cor <- function(d_m = NULL, model.params.list = NULL, Tbar = 0.5, 
+                      pump.object = NULL, outcome.cor = NULL,
+                      n.sims = 100)
 {
     
     if(is.null(pump.object))
     {
         if(is.null(d_m) | is.null(model.params.list))
         {
-            stop('You must provide either a pump object
-                 or both a d_m string and list of model params.')
+            stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
         }
-        
     } else
     {
         if(!is.null(d_m) | !is.null(model.params.list))
         {
-            stop('You must provide either a pump object
-                 or both a d_m string and list of model params.')
+            stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
+        }
+        if(is.null(outcome.cor))
+        {
+            stop("You must provide the correlation between outcomes.")
         }
         model.params.list <- params(pump.object)
         d_m <- d_m(pump.object)
         Tbar <- model.params.list$Tbar
-        model.params.list$rho.default <- model.params.list$rho
+        model.params.list$rho.default <- outcome.cor
     }
     
     rawt.all <- get_rawt(

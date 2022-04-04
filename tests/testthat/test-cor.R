@@ -61,7 +61,7 @@ test_that('Correlations checker runs', {
                       tnum = 200
     )
     cor.tstat <- check_cor(
-        pump.object = pp, n.sims = 10
+        pump.object = pp, outcome.cor = 0.4, n.sims = 10
     )
     expect_true(length(cor.tstat) == 3)
     expect_true(all(!is.na(cor.tstat)))
