@@ -433,35 +433,56 @@ convert_params <- function(model.params.list) {
         K <- model.params.list$K <- 1
     }
     
-    # if rho.default is provided, fill out all the rhos
-    if(!is.null(rho.default))
+    if(is.null(rho.default) & any(c(
+        is.null(model.params.list$rho.V), 
+        is.null(model.params.list$rho.w0),
+        is.null(model.params.list$rho.w1),
+        is.null(model.params.list$rho.X), 
+        is.null(model.params.list$rho.u0),
+        is.null(model.params.list$rho.u1),
+        is.null(model.params.list$rho.C), 
+        is.null(model.params.list$rho.r))))
     {
-        if(
-           !is.null(model.params.list$rho.V)  |
-           !is.null(model.params.list$rho.w0) |
-           !is.null(model.params.list$rho.w1) |
-           !is.null(model.params.list$rho.X)  |
-           !is.null(model.params.list$rho.u0) |
-           !is.null(model.params.list$rho.u1) |
-           !is.null(model.params.list$rho.C)  |
-           !is.null(model.params.list$rho.r) 
-        )
-        {
-            message('Using default rho for all rho matrices, 
-                overriding any user-input rho matrices.')
-        }
-        default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+        stop('Please provide either a rho.default or
+             ALL necessary correlation matrices.')
+    }
+    
 
-        model.params.list$rho.V  <- default.rho.matrix
-        model.params.list$rho.w0 <- default.rho.matrix
-        model.params.list$rho.w1 <- default.rho.matrix
-        
-        model.params.list$rho.X  <- default.rho.matrix
-        model.params.list$rho.u0 <- default.rho.matrix
-        model.params.list$rho.u1 <- default.rho.matrix
-        
-        model.params.list$rho.C  <- default.rho.matrix
-        model.params.list$rho.r  <- default.rho.matrix
+    default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+    
+    if(is.null(model.params.list$rho.V))
+    {
+        model.params.list$rho.V  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.w0))
+    {
+        model.params.list$rho.w0  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.w1))
+    {
+        model.params.list$rho.w1 <- default.rho.matrix 
+    }
+    
+    if(is.null(model.params.list$rho.X))
+    {
+        model.params.list$rho.X  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.u0))
+    {
+           model.params.list$rho.u0  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.u1))
+    {
+        model.params.list$rho.u1 <- default.rho.matrix 
+    }
+    
+    if(is.null(model.params.list$rho.C))
+    {
+        model.params.list$rho.C  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.r))
+    {
+           model.params.list$rho.r  <- default.rho.matrix 
     }
     
     convert.scalar <- function(x, M)
@@ -930,7 +951,9 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     # Calculate SE for ATE_hat_site
     SE_site <- sqrt(sum(wts ^ 2 * SE_hat))
     
-    interactModels <- data.frame(method = c("FE-Int-Sites"), ATE_hat = c(ATE_hat_site), SE = c(SE_site), stringsAsFactors = FALSE)
+    interactModels <- data.frame(method = c("FE-Int-Sites"),
+                                 ATE_hat = c(ATE_hat_site),
+                                 SE = c(SE_site), stringsAsFactors = FALSE)
     if (!is.null(control_formula)) {
         interactModels$method <- paste0(interactModels$method, "-adj")
     }
