@@ -8,8 +8,7 @@ gen_sim_data(
   d_m = NULL,
   model.params.list = NULL,
   Tbar = 0.5,
-  pump.object = NULL,
-  outcome.cor = NULL
+  pump.object = NULL
 )
 }
 \arguments{
@@ -22,10 +21,7 @@ R2, etc. See simulation vignette for details.}
 \item{Tbar}{scalar; the proportion of samples 
 that are assigned to the treatment.}
 
-\item{pump.object}{A pumpresult object}
-
-\item{outcome.cor}{The correlation between outcomes
-(in contrast to the correlation between test statistics)..}
+\item{pump.object}{A pumpresult object.}
 }
 \value{
 list; potential outcomes, covariates,
@@ -61,9 +57,9 @@ pp <- pump_power( d_m = "d3.2_m3ff2rc",
                   numCovar.1 = 5, numCovar.2 = 3,
                   R2.1 = 0.1, R2.2 = 0.7,
                   ICC.2 = 0.05, ICC.3 = 0.4,
-                  rho = 0.4, # how correlated outcomes are
+                  rho = 0.4,
                   tnum = 200
 )
-sim.data <- gen_sim_data(pump.object = pp, outcome.cor = 0.4)
+sim.data <- gen_sim_data(pump.object = pp)
 
 }

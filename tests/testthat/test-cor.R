@@ -3,7 +3,7 @@ model.params.list <- list(
     , J = 30                          # number of schools
     , K = 10                          # number of districts
     , nbar = 50                       # number of individuals per school
-    , rho.default = 0.5                 # default rho value (optional)
+    , rho.default = 0.5               # default rho value (optional)
     ################################################## impact
     , MDES = 0.125                    # minimum detectable effect size      
     ################################################## level 3: districts
@@ -38,10 +38,12 @@ test_that('Correlations checker runs', {
     
     set.seed(23)
     cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = 0.5, n.sims = 10
+        d_m = 'd2.1_m2fr', model.params.list = model.params.list,
+        Tbar = 0.5, n.sims = 3
     ))
     
-    expect_true(length(cor.tstat) == 3)
+    expect_true(nrow(cor.tstat) == 3)
+    expect_true(ncol(cor.tstat) == 3)
     expect_true(all(!is.na(cor.tstat)))
     
     # provide a pump object
@@ -61,9 +63,10 @@ test_that('Correlations checker runs', {
                       tnum = 200
     )
     cor.tstat <- check_cor(
-        pump.object = pp, outcome.cor = 0.4, n.sims = 10
+        pump.object = pp, n.sims = 3
     )
-    expect_true(length(cor.tstat) == 3)
+    expect_true(nrow(cor.tstat) == 3)
+    expect_true(ncol(cor.tstat) == 3)
     expect_true(all(!is.na(cor.tstat)))
     
     sink()

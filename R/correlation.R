@@ -36,16 +36,6 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
     return(rawt.all)
 }
 
-get_cor <- function(rawt.all)
-{
-    
-    # calculate correlation
-    cor.tstat <- stats::cor(rawt.all)
-    est.cor <- cor.tstat[lower.tri(cor.tstat)]
-    
-    return(est.cor)
-}
-
 #' @title Check correlation of test statistics (simulation function)
 #' 
 #' @description Estimates the pairwise correlations
@@ -61,12 +51,19 @@ get_cor <- function(rawt.all)
 #' Note that this function can take several minutes to run.
 #'
 #' @inheritParams gen_sim_data
-#' @param n.sims Number of simulated datasets to generate.
+#' @param rho.V matrix; correlation matrix of level 3 covariates.
+#' @param rho.w0 matrix; correlation matrix of level 3 random effects.
+#' @param rho.w1 matrix; correlation matrix of level 3 random impacts.
+#' @param rho.X matrix; correlation matrix of level 2 covariates.
+#' @param rho.u0 matrix; correlation matrix of level 2 random effects.
+#' @param rho.u1 matrix; correlation matrix of level 2 random impacts.
+#' @param rho.C matrix; correlation matrix of level 1 covariates.
+#' @param rho.r matrix; correlation matrix of level 1 residuals.
+#' @param n.sims numeric; Number of simulated datasets to generate.
 #' More datasets will achieve a more accurate result
 #' but also increase computation time.
 #'
-#' @return vector; pairwise correlations between
-#' all outcomes.
+#' @return matrix; M x M correlation matrix between test statistics.
 #' 
 #'
 #' @export
@@ -84,14 +81,19 @@ get_cor <- function(rawt.all)
 #'                   numCovar.1 = 5, numCovar.2 = 3,
 #'                   R2.1 = 0.1, R2.2 = 0.7,
 #'                   ICC.2 = 0.05, ICC.3 = 0.4,
-#'                   rho = 0.4, # how correlated outcomes are
+#'                   rho = 0.4, # how correlated test statistics are
 #'                   tnum = 200
 #' )
 #' cor.tstat <- check_cor(
-#'     pump.object = pp, outcome.cor = 0.4, n.sims = 4
+#'     pump.object = pp, n.sims = 4
 #' )
-check_cor <- function(d_m = NULL, model.params.list = NULL, Tbar = 0.5, 
-                      pump.object = NULL, outcome.cor = NULL,
+#' est.cor <- mean(cor.tstat[lower.tri(cor.tstat)])
+
+check_cor <- function(pump.object = NULL,
+                      rho.V = NULL, rho.w0 = NULL, rho.w1 = NULL,
+                      rho.X = NULL, rho.u0 = NULL, rho.u1 = NULL,
+                      rho.C = NULL, rho.r = NULL,
+                      d_m = NULL, model.params.list = NULL, Tbar = 0.5,
                       n.sims = 100)
 {
     
@@ -109,14 +111,44 @@ check_cor <- function(d_m = NULL, model.params.list = NULL, Tbar = 0.5,
             stop("You must provide either a pump object
                 or both a d_m string and list of model params.")
         }
-        if(is.null(outcome.cor))
-        {
-            stop("You must provide the correlation between outcomes.")
-        }
         model.params.list <- params(pump.object)
         d_m <- d_m(pump.object)
         Tbar <- model.params.list$Tbar
-        model.params.list$rho.default <- outcome.cor
+        model.params.list$rho.default <- model.params.list$rho
+        # fill in correlations
+        if(!is.null(rho.V))
+        {
+            model.params.list$rho.V <- rho.V
+        }
+        if(!is.null(rho.w0))
+        {
+            model.params.list$rho.w0 <- rho.w0
+        }
+        if(!is.null(rho.w1))
+        {
+            model.params.list$rho.w1 <- rho.w1
+        }
+        if(!is.null(rho.X))
+        {
+            model.params.list$rho.X <- rho.X
+        }
+        if(!is.null(rho.u0))
+        {
+            model.params.list$rho.u0 <- rho.u0
+        }
+        if(!is.null(rho.u1))
+        {
+            model.params.list$rho.u1 <- rho.u1
+        }
+        if(!is.null(rho.C))
+        {
+            model.params.list$rho.C <- rho.C
+        }
+        if(!is.null(rho.r))
+        {
+            model.params.list$rho.r <- rho.r
+        }
+        
     }
     
     rawt.all <- get_rawt(
@@ -126,7 +158,7 @@ check_cor <- function(d_m = NULL, model.params.list = NULL, Tbar = 0.5,
         n.sims = n.sims
     )
     
-    est.cor <- get_cor(rawt.all)
+    est.cor.mat <- stats::cor(rawt.all)
     
-    return(est.cor)
+    return(est.cor.mat)
 }
