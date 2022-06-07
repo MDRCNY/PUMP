@@ -316,9 +316,7 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
-#' @param pump.object A pumpresult object
-#' @param outcome.cor The correlation between outcomes
-#' (in contrast to the correlation between test statistics)..
+#' @param pump.object A pumpresult object.
 #' @param d_m string; a single context, which is a design and model code. 
 #' See pump_info() for list of choices.
 #' @param model.params.list list; model parameters such as ICC,
@@ -345,14 +343,14 @@ gen_base_sim_data <- function(dgp.params.list) {
 #'                   numCovar.1 = 5, numCovar.2 = 3,
 #'                   R2.1 = 0.1, R2.2 = 0.7,
 #'                   ICC.2 = 0.05, ICC.3 = 0.4,
-#'                   rho = 0.4, # how correlated outcomes are
+#'                   rho = 0.4,
 #'                   tnum = 200
 #' )
-#' sim.data <- gen_sim_data(pump.object = pp, outcome.cor = 0.4)
+#' sim.data <- gen_sim_data(pump.object = pp)
 #'
 gen_sim_data <- function(
     d_m = NULL, model.params.list = NULL, Tbar = 0.5,
-    pump.object = NULL, outcome.cor = NULL)
+    pump.object = NULL)
 {
     if(is.null(pump.object))
     {
@@ -368,14 +366,10 @@ gen_sim_data <- function(
           stop("You must provide either a pump object
                 or both a d_m string and list of model params.")
       }
-      if(is.null(outcome.cor))
-      {
-          stop("You must provide the correlation between outcomes.")
-      }
       model.params.list <- params(pump.object)
       d_m <- d_m(pump.object)
       Tbar <- model.params.list$Tbar
-      model.params.list$rho.default <- outcome.cor
+      model.params.list$rho.default <- model.params.list$rho
     }
     
     dgp.params.list <- convert_params(model.params.list)
@@ -434,20 +428,19 @@ convert_params <- function(model.params.list) {
     }
     
     if(is.null(rho.default) & any(c(
-        is.null(model.params.list$rho.V), 
-        is.null(model.params.list$rho.w0),
-        is.null(model.params.list$rho.w1),
-        is.null(model.params.list$rho.X), 
-        is.null(model.params.list$rho.u0),
-        is.null(model.params.list$rho.u1),
-        is.null(model.params.list$rho.C), 
-        is.null(model.params.list$rho.r))))
+       is.null(model.params.list$rho.V), 
+       is.null(model.params.list$rho.w0),
+       is.null(model.params.list$rho.w1),
+       is.null(model.params.list$rho.X), 
+       is.null(model.params.list$rho.u0),
+       is.null(model.params.list$rho.u1),
+       is.null(model.params.list$rho.C), 
+       is.null(model.params.list$rho.r))))
     {
         stop('Please provide either a rho.default or
              ALL necessary correlation matrices.')
     }
     
-
     default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
     
     if(is.null(model.params.list$rho.V))
@@ -833,24 +826,30 @@ make_model <- function(dat.m, d_m) {
         singular <- mod.out[['singular']]
         mod <- mod.out[['mod']]
     } else if (d_m == "d2.1_m2fr") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
+        form <- stats::as.formula(paste0(
+            "Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.1_m3rr2rr") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
-                                  C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d2.2_m2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
+        form <- stats::as.formula(paste0(
+            "Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.3_m3rc2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + 
-                                  (1 | S.id) + (1 | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
@@ -863,9 +862,18 @@ make_model <- function(dat.m, d_m) {
         )
         singular <- mod.out[['singular']]
         mod <- mod.out[['mod']]
+    }
+    else if (d_m == "d3.2_m3fc2rc") {
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + X.jk + C.ijk + D.id + (1 | S.id)")
+        )
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.2_m3rr2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
-                                  C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)

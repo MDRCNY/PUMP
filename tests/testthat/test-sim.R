@@ -70,7 +70,7 @@ test_that("simulation function works", {
                       rho = 0.4, # how correlated outcomes are
                       tnum = 200
     )
-    sim.data <- gen_sim_data(pump.object = pp, outcome.cor = 0.3)
+    sim.data <- gen_sim_data(pump.object = pp)
     expect_true( !is.null(sim.data))
     expect_equal(8, length(sim.data))
     expect_equal(3, ncol(sim.data$Yobs))
