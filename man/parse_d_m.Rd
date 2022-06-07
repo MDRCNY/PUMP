@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{parse_d_m}
 \alias{parse_d_m}
-\title{Return characteristics of a given context (d_m code)}
+\title{Return characteristics of a given context/d_m code (support function)}
 \usage{
 parse_d_m(d_m)
 }

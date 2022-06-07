@@ -101,9 +101,6 @@ print.pumpgridresult <- function( x,
     invisible( x )
 }
 
-
-
-
 #' @title Pretty print pump grid result with parameters (result function)
 #'
 #' @param object object to summarize.
@@ -121,6 +118,3 @@ summary.pumpgridresult <- function( object, ... ) {
     
     invisible( object )
 }
-
-
-

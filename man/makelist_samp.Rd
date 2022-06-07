@@ -5,17 +5,13 @@
 \title{takes in multi-outcome data and returns a list for each outcome}
 \usage{
 makelist_samp(samp.obs, T.x)
-
-makelist_samp(samp.obs, T.x)
 }
 \arguments{
-\item{samp.obs}{a list of observed data components}
+\item{samp.obs}{a single iteration of observed data}
 
 \item{T.x}{vector of treatment assignments}
 }
 \description{
-takes in multi-outcome data and returns a list for each outcome
-
 takes in multi-outcome data and returns a list for each outcome
 }
 \keyword{internal}

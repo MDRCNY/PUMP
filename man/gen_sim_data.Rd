@@ -4,7 +4,12 @@
 \alias{gen_sim_data}
 \title{Generate simulated multi-level data (simulation function)}
 \usage{
-gen_sim_data(d_m, model.params.list, Tbar = 0.5)
+gen_sim_data(
+  d_m = NULL,
+  model.params.list = NULL,
+  Tbar = 0.5,
+  pump.object = NULL
+)
 }
 \arguments{
 \item{d_m}{string; a single context, which is a design and model code. 
@@ -15,6 +20,8 @@ R2, etc. See simulation vignette for details.}
 
 \item{Tbar}{scalar; the proportion of samples 
 that are assigned to the treatment.}
+
+\item{pump.object}{A pumpresult object.}
 }
 \value{
 list; potential outcomes, covariates,
@@ -25,9 +32,34 @@ Generates simulated data for multi-level
 RCTs for pump-suppored designs and models for
 both unobserved and observed potential outcomes.
 
-Takes in a list of necessary data-generating parameters.
+Takes in two options:
+- a pumpresult object
+OR
+- a list of necessary data-generating parameters
+- the context (d_m)
+- Tbar
 
 This function is beyond the main scope of calculating power,
 and is instead used for simulating data.
 For more info on use, see the simulation vignette.
+}
+\examples{
+
+pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                  MTP = "BF",
+                  MDES = rep( 0.10, 3 ),
+                  M = 3,
+                  J = 3, # number of schools/block
+                  K = 21, # number RA blocks
+                  nbar = 258,
+                  Tbar = 0.50, # prop Tx
+                  alpha = 0.05, # significance level
+                  numCovar.1 = 5, numCovar.2 = 3,
+                  R2.1 = 0.1, R2.2 = 0.7,
+                  ICC.2 = 0.05, ICC.3 = 0.4,
+                  rho = 0.4,
+                  tnum = 200
+)
+sim.data <- gen_sim_data(pump.object = pp)
+
 }

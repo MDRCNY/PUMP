@@ -305,12 +305,18 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' RCTs for pump-suppored designs and models for
 #' both unobserved and observed potential outcomes.
 #' 
-#' Takes in a list of necessary data-generating parameters.
+#' Takes in two options:
+#' - a pumpresult object
+#' OR
+#' - a list of necessary data-generating parameters
+#' - the context (d_m)
+#' - Tbar
 #' 
 #' This function is beyond the main scope of calculating power,
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #' 
+#' @param pump.object A pumpresult object.
 #' @param d_m string; a single context, which is a design and model code. 
 #' See pump_info() for list of choices.
 #' @param model.params.list list; model parameters such as ICC,
@@ -323,7 +329,48 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' 
 #'
 #' @export
-gen_sim_data <- function(d_m, model.params.list, Tbar = 0.5) {
+#' @examples
+#'
+#' pp <- pump_power( d_m = "d3.2_m3ff2rc",
+#'                   MTP = "BF",
+#'                   MDES = rep( 0.10, 3 ),
+#'                   M = 3,
+#'                   J = 3, # number of schools/block
+#'                   K = 21, # number RA blocks
+#'                   nbar = 258,
+#'                   Tbar = 0.50, # prop Tx
+#'                   alpha = 0.05, # significance level
+#'                   numCovar.1 = 5, numCovar.2 = 3,
+#'                   R2.1 = 0.1, R2.2 = 0.7,
+#'                   ICC.2 = 0.05, ICC.3 = 0.4,
+#'                   rho = 0.4,
+#'                   tnum = 200
+#' )
+#' sim.data <- gen_sim_data(pump.object = pp)
+#'
+gen_sim_data <- function(
+    d_m = NULL, model.params.list = NULL, Tbar = 0.5,
+    pump.object = NULL)
+{
+    if(is.null(pump.object))
+    {
+      if(is.null(d_m) | is.null(model.params.list))
+      {
+          stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
+      }
+    } else
+    {
+      if(!is.null(d_m) | !is.null(model.params.list))
+      {
+          stop("You must provide either a pump object
+                or both a d_m string and list of model params.")
+      }
+      model.params.list <- params(pump.object)
+      d_m <- d_m(pump.object)
+      Tbar <- model.params.list$Tbar
+      model.params.list$rho.default <- model.params.list$rho
+    }
     
     dgp.params.list <- convert_params(model.params.list)
     sim.data <- gen_base_sim_data(dgp.params.list)
@@ -374,41 +421,61 @@ convert_params <- function(model.params.list) {
     has.level.three <- TRUE
     if ( is.null( ICC.3 ) ) {
         has.level.three <- FALSE
-        ICC.3 <- rep(0, M)
-        R2.3 <- rep(0, M)
-        omega.3 <- rep(0, M)
-        K <- 1
+        ICC.3 <- model.params.list$ICC.3 <- rep(0, M)
+        R2.3 <- model.params.list$R2.3 <- rep(0, M)
+        omega.3 <- model.params.list$omega.3 <- rep(0, M)
+        K <- model.params.list$K <- 1
     }
     
-    # if rho.default is provided, fill out all the rhos
-    if(!is.null(rho.default))
+    if(is.null(rho.default) & any(c(
+       is.null(model.params.list$rho.V), 
+       is.null(model.params.list$rho.w0),
+       is.null(model.params.list$rho.w1),
+       is.null(model.params.list$rho.X), 
+       is.null(model.params.list$rho.u0),
+       is.null(model.params.list$rho.u1),
+       is.null(model.params.list$rho.C), 
+       is.null(model.params.list$rho.r))))
     {
-        if(
-           !is.null(model.params.list$rho.V)  |
-           !is.null(model.params.list$rho.w0) |
-           !is.null(model.params.list$rho.w1) |
-           !is.null(model.params.list$rho.X)  |
-           !is.null(model.params.list$rho.u0) |
-           !is.null(model.params.list$rho.u1) |
-           !is.null(model.params.list$rho.C)  |
-           !is.null(model.params.list$rho.r) 
-        )
-        {
-            message('Using default rho for all rho matrices, 
-                overriding any user-input rho matrices.')
-        }
-        default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
-
-        model.params.list$rho.V  <- default.rho.matrix
-        model.params.list$rho.w0 <- default.rho.matrix
-        model.params.list$rho.w1 <- default.rho.matrix
-        
-        model.params.list$rho.X  <- default.rho.matrix
-        model.params.list$rho.u0 <- default.rho.matrix
-        model.params.list$rho.u1 <- default.rho.matrix
-        
-        model.params.list$rho.C  <- default.rho.matrix
-        model.params.list$rho.r  <- default.rho.matrix
+        stop('Please provide either a rho.default or
+             ALL necessary correlation matrices.')
+    }
+    
+    default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+    
+    if(is.null(model.params.list$rho.V))
+    {
+        model.params.list$rho.V  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.w0))
+    {
+        model.params.list$rho.w0  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.w1))
+    {
+        model.params.list$rho.w1 <- default.rho.matrix 
+    }
+    
+    if(is.null(model.params.list$rho.X))
+    {
+        model.params.list$rho.X  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.u0))
+    {
+           model.params.list$rho.u0  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.u1))
+    {
+        model.params.list$rho.u1 <- default.rho.matrix 
+    }
+    
+    if(is.null(model.params.list$rho.C))
+    {
+        model.params.list$rho.C  <- default.rho.matrix 
+    }
+    if(is.null(model.params.list$rho.r))
+    {
+           model.params.list$rho.r  <- default.rho.matrix 
     }
     
     convert.scalar <- function(x, M)
@@ -675,45 +742,6 @@ makelist_samp <-function(samp.obs, T.x) {
 }
 
 
-#' takes in multi-outcome data and returns a list for each outcome
-#'
-#' @param samp.obs a list of observed data components
-#' @param T.x vector of treatment assignments
-#' 
-#' @keywords internal
-makelist_samp <-function(samp.obs, T.x) {
-    
-    mdat.rn <- NULL
-    for(m in 1:ncol(samp.obs$Yobs))
-    {
-        # level 3
-        if(!is.null(samp.obs[['V.k']]))
-        {
-            mdat.rn[[m]] <- data.frame(
-                Yobs        = samp.obs[['Yobs']][,m],
-                V.k         = samp.obs[['V.k']][,m],
-                X.jk        = samp.obs[['X.jk']][,m],
-                C.ijk       = samp.obs[['C.ijk']][,m],
-                T.x         = T.x,
-                S.id        = as.factor(samp.obs$ID$S.id),
-                D.id        = as.factor(samp.obs$ID$D.id)
-            )
-        } else
-        # level 2
-        {
-            mdat.rn[[m]] <- data.frame(
-                Yobs        = samp.obs[['Yobs']][,m],
-                X.jk        = samp.obs[['X.jk']][,m],
-                C.ijk       = samp.obs[['C.ijk']][,m],
-                T.x       = T.x,
-                S.id        = as.factor(samp.obs$ID$S.id)
-            )
-        }
-    }
-    return(mdat.rn)
-}
-
-
 #' Function: get_rawpt                                      
 #'  
 #' fits models and extracts p values and t statistics
@@ -798,24 +826,30 @@ make_model <- function(dat.m, d_m) {
         singular <- mod.out[['singular']]
         mod <- mod.out[['mod']]
     } else if (d_m == "d2.1_m2fr") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)"))
+        form <- stats::as.formula(paste0(
+            "Yobs ~ 1 + T.x + X.jk + C.ijk + (1 + T.x | S.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.1_m3rr2rr") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
-                                  C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d2.2_m2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)"))
+        form <- stats::as.formula(paste0(
+            "Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.3_m3rc2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + 
-                                  (1 | S.id) + (1 | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
@@ -828,9 +862,18 @@ make_model <- function(dat.m, d_m) {
         )
         singular <- mod.out[['singular']]
         mod <- mod.out[['mod']]
+    }
+    else if (d_m == "d3.2_m3fc2rc") {
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + X.jk + C.ijk + D.id + (1 | S.id)")
+        )
+        mod <- suppressMessages(lme4::lmer(form, data = dat.m))
+        singular <- lme4::isSingular(mod)
+        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
     } else if (d_m == "d3.2_m3rr2rc") {
-        form <- stats::as.formula(paste0("Yobs ~ 1 + T.x + V.k + X.jk + 
-                                  C.ijk + (1 | S.id) + (1 + T.x | D.id)"))
+        form <- stats::as.formula(paste0(
+          "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)")
+        )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
         failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
@@ -871,6 +914,7 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     # This code block takes the parameters of
     # Yobs, Z, B, siteID = NULL, data=NULL, ...
     # and makes a dataframe with canonical Yobs, Z, B, and siteID columns.
+    d2 <- data
     d2$Yobs <- Yobs
     d2$Z <- Z
     d2$B <- B
@@ -915,7 +959,9 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     # Calculate SE for ATE_hat_site
     SE_site <- sqrt(sum(wts ^ 2 * SE_hat))
     
-    interactModels <- data.frame(method = c("FE-Int-Sites"), ATE_hat = c(ATE_hat_site), SE = c(SE_site), stringsAsFactors = FALSE)
+    interactModels <- data.frame(method = c("FE-Int-Sites"),
+                                 ATE_hat = c(ATE_hat_site),
+                                 SE = c(SE_site), stringsAsFactors = FALSE)
     if (!is.null(control_formula)) {
         interactModels$method <- paste0(interactModels$method, "-adj")
     }

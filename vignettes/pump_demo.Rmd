@@ -16,7 +16,7 @@ geometry: margin=1.5in
 library( PUMP )
 
 # This allows us to stash precalculated results so the vignette
-# compiles in time for CRAN.
+# compiles in a timely manner for CRAN.
 vignette_cache <- here::here("vignettes/output", "MDEScalc.RDS")
 recompile <- !file.exists(vignette_cache)
 
@@ -559,17 +559,7 @@ Alternatively, simply provide a list of procedures you wish to compare.
 If you provide a list, the package will re-run the power calculator for each item on the list; this can make the overall call computationally intensive.
 Here we obtain power for our scenario using Bonferroni, Holm and Westfall-Young adjustments, and plot the results using the default `plot()` method:
 
-<<<<<<< HEAD
-```{r othercorrections}
-p2 <- update( p_check,
-              MTP = c( "BF", "HO", "WY-SD" ),
-              tnum = 5000 )
-plot( p2 )
-```
 
-To speed up computation, we could add `parallel.WY.cores = 2` (or however many cores we wish to allocate) to the call to parallelize the computation.
-We could also reduce `tnum` to decrease computation time.
-=======
 ```{r othercorrections, eval = FALSE}
 p2 <- update( pow,
               MTP = c( "BF", "HO", "WY-SD" ) )
@@ -589,9 +579,8 @@ if(recompile)
 plot( p2 )
 ```
 
-To speed up computation, we could also set an additional option, `parallel.WY.cores`, to the number of desired cores to parallelize the computation.
-We also reduce `tnum` to decrease computation time.
->>>>>>> faa2d883e666af36b04b357f79012c8d2a6ab54a
+To speed up computation, we could add `parallel.WY.cores = 2` (or however many cores we wish to allocate) to the call to parallelize the computation.
+We could also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the correlation in our outcomes (`rho = 0.4`) to provide higher individual power.
 Note, however, that we do not see elevated rates for $1-$minimal power.
@@ -797,5 +786,35 @@ There are other ways of exploring the impact of weak or null effects on some out
 In particular, the `pump_power()` and `pump_sample()` methods allow the researcher to provide an MDES vector with different values for each outcome, including 0s for some outcomes.
 The `grid()` functions, by contrast, take a single MDES value for the non-null outcomes, with a separate specification of how many of the outcomes are 0.
 (This single value plus `numZero` parameter also works with `pump_power()` if desired.)
+
+### Methods for `PUMP` objects
+
+The `PUMP` package returns two types of S3 objects:
+
+- `pumpresult` objects are returned from single scenario calls: `pump_power()`, `pump_mdes()`, `pump_sample()`, and calls to `update()`.
+- `pumpgridresult` objects are returned from grid calls: `pump_power_grid()`, `pump_mdes_grid()`, `pump_sample_grid()`), and calls to `update_grid()`.
+
+We highlight some methods relevant to `pumpresult` objects:
+
+- `print()` displays a concise summary of the most relevant inputs and results of the call.
+- `summary()` prints a full summary of both the inputs and the results of the call.
+- `plot()` returns different plots tailored to whether the results are for power, MDES, or sample size:
+  - For power objects, it displays power across all power definitions and MTPs.
+  - For MDES and sample size objects, by default it displays a power curve showing how power changes as sample size or MDES changes.
+  - For MDES and sample size objects, the user can instead request a plot of the power search algorithm using `type = "search"`.
+- `power_curve()` returns a data frame of power values over a range of MDES or sample size values.
+- `print_context()` provides a summary of the user inputs, including the design and model and the parameter values.
+- `print_search()` returns the search history of the search algorithm for MDES and sample size calls.
+- `transpose_power_table()` converts a power table between wide and long formats.
+- `as.data.frame()` casts the object to a data frame.
+
+TODO: why do we need both `search_path()` and `print_search()`?
+
+Many of the above methods also apply to `pumpgridresult` objects, although some are not relevant to grid objects.
+The main difference in behavior between the `pumpresult` and `pumpgridresult` objects is the output of `plot()` function.
+By default, for grid objects the `plot()` function plots a facet wrap displaying how power changes across all MTPs, power definitions, and varying parameters provided during the grid call.
+If the user wants a smaller set of results, they can specify a single `power.definition`, or use `var.vary` to only plot variation in one parameter value.
+If the grid call varied multiple parameters, then each plot averages power across all other factors.
+For example, in Figure \ref{fig:ICCgrid}, the first plot averages over all values of `ICC.3` to show how power varies with just `ICC.2`, and the second plot does the opposite.
 
 # References

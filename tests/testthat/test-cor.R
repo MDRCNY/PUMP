@@ -36,13 +36,37 @@ test_that('Correlations checker runs', {
     # note: this is not enough simulations to check if the tool works,
     # just if it runs!
     
-    rho.default <- 0
-    model.params.list$rho.default <- rho.default
+    set.seed(23)
     cor.tstat <- expect_warning(check_cor(
-        d_m = 'd2.1_m2fr', model.params.list, Tbar = 0.5, n.sims = 10
+        d_m = 'd2.1_m2fr', model.params.list = model.params.list,
+        Tbar = 0.5, n.sims = 3
     ))
     
-    expect_true(length(cor.tstat) == 3)
+    expect_true(nrow(cor.tstat) == 3)
+    expect_true(ncol(cor.tstat) == 3)
+    expect_true(all(!is.na(cor.tstat)))
+    
+    # provide a pump object
+    pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = "BF",
+                      MDES = rep( 0.10, 3 ),
+                      M = 3,
+                      J = 3, # number of schools/block
+                      K = 21, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 200
+    )
+    cor.tstat <- check_cor(
+        pump.object = pp, n.sims = 3
+    )
+    expect_true(nrow(cor.tstat) == 3)
+    expect_true(ncol(cor.tstat) == 3)
     expect_true(all(!is.na(cor.tstat)))
     
     sink()
