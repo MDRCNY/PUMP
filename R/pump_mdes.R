@@ -55,9 +55,9 @@
 #'   rho = 0.5, tnum = 2000)
 
 pump_mdes <- function(
-  d_m, MTP = NULL, numZero = NULL, M, nbar, J, K = 1,
+  d_m, MTP = NULL, numZero = NULL, M = 1, nbar, J, K = 1,
   Tbar, alpha = 0.05, two.tailed = TRUE,
-  target.power, power.definition, tol = 0.01,
+  target.power = 0.80, power.definition, tol = 0.01,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,

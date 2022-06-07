@@ -918,10 +918,18 @@ validate_inputs <- function( d_m, params.list,
         warning('ICC.2 + ICC.3 = 1, leaving no variation at level 1')
     }
 
-    # invalid rho
-    if(params.list$rho > 1 | params.list$rho < -1)
-    {
-      stop('Please provide rho as a correlation between -1 and 1')
+    if ( is.null( params.list$rho ) ) {
+        if ( params.list$M > 1 ) {
+            stop('Please provide rho as a correlation between -1 and 1')
+        } else {
+            params.list$rho = 0
+        }
+    } else {
+        # invalid rho
+        if(params.list$rho > 1 | params.list$rho < -1)
+        {
+          stop('Please provide rho as a correlation between -1 and 1')
+        }
     }
 
     #-------------------------------------------------------#
