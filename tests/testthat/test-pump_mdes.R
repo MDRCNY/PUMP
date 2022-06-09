@@ -10,7 +10,7 @@ test_that("pump_mdes runs for BF", {
                        nbar = 200, J = 50,
                        power.definition = "D2indiv",
                        M = 3,
-                       target.power = 0.80, tol = 0.01,
+                       target.power = 0.80, tol = 0.03,
                        Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                        R2.1 = 0.1,ICC.2 = 0.05,
                        tnum = 300,
@@ -41,7 +41,7 @@ test_that("pump_mdes runs for BF", {
                       nbar = 200, J = 50,
                       power.definition = "min1",
                       M = 3,
-                      target.power = 0.80, tol = 0.01,
+                      target.power = 0.80, tol = 0.02,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
                       tnum = 1000,
@@ -59,7 +59,7 @@ test_that("pump_mdes runs for BF", {
                            target.power = 0.80, tol = 0.02,
                            Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                            R2.1 = 0.1, ICC.2 = 0.05,
-                           tnum = 300,
+                           tnum = 400,
                            rho = 0.4 )
   pmdes_comp
   expect_true( pmdes_comp$`Adjusted.MDES` > pmdesB$`Adjusted.MDES` )
@@ -67,7 +67,7 @@ test_that("pump_mdes runs for BF", {
 
   sp <- search_path( pmdes_comp )
   expect_true( is.data.frame(sp) )
-  expect_true( max( sp$w ) == 300*4 )
+  expect_true( max( sp$w ) == 400*4 )
   
   ppBcomp <- pump_power(
                    d_m = "d2.1_m2fc",
@@ -108,7 +108,7 @@ test_that("pump_mdes runs for D1indiv, HO", {
                       nbar = 200, J = 50,
                       power.definition = "D1indiv",
                       M = 3,
-                      target.power = 0.80, tol = 0.01,
+                      target.power = 0.80, tol = 0.02,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
                       tnum = 1000,
@@ -203,10 +203,10 @@ test_that("power definitions", {
                       nbar = 200, J = 50,
                       power.definition = "indiv.mean",
                       M = 3,
-                      target.power = 0.80, tol = 0.02,
+                      target.power = 0.80,
                       Tbar = 0.50, alpha = 0.05, numCovar.1 = 5,
                       R2.1 = 0.1, ICC.2 = 0.05,
-                      tnum = 300,
+                      tnum = 400,
                       rho = 0.4 )
   expect_true(!is.null(pmdes))
 })

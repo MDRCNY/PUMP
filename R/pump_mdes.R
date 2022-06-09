@@ -55,9 +55,9 @@
 #'   rho = 0.5, tnum = 2000)
 
 pump_mdes <- function(
-  d_m, MTP = NULL, numZero = NULL, M = 1, nbar, J, K = 1,
+  d_m, MTP = NULL, numZero = NULL, propZero = NULL, M = 1, nbar, J, K = 1,
   Tbar, alpha = 0.05, two.tailed = TRUE,
-  target.power = 0.80, power.definition, tol = 0.01,
+  target.power = 0.80, power.definition, tol = 0.02,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
   R2.1 = 0, R2.2 = 0, R2.3 = 0,
   ICC.2 = 0, ICC.3 = 0,
@@ -85,13 +85,20 @@ pump_mdes <- function(
     stop( "Cannot have NULL tol (tolerance)" )
   }
 
+    err = sqrt( target.power * (1-target.power) / tnum )
+    tnum_est = round( (target.power*(1-target.power) ) /  ( tol^2 ) )
+    if ( err > tol ) {
+        warning( sprintf( "Number of replicates (tnum) is too small given target tolerance.  Suggested tnum=%d",
+                          as.integer( tnum_est ) ), call. = FALSE )
+    }
+    
   pow_params <- list( target.power = target.power,
                       power.definition = power.definition,
                       tol = tol )
 
   # validate input parameters
   params.list <- list(
-    MTP = MTP, numZero = numZero, 
+    MTP = MTP, numZero = numZero, propZero = propZero,
     M = M, J = J, K = K,
     nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
     numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
@@ -108,7 +115,7 @@ pump_mdes <- function(
   )
   ##
   MTP <- params.list$MTP
-  MDES <- params.list$MDES; numZero <- params.list$numZero
+  MDES <- params.list$MDES; numZero <- params.list$numZero;
   M <- params.list$M; J <- params.list$J; K <- params.list$K
   nbar <- params.list$nbar; Tbar <- params.list$Tbar
   alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
@@ -261,7 +268,8 @@ pump_mdes <- function(
                              target.power, power.definition, tol,
                              start.low = mdes.low, start.high = mdes.high,
                              MDES = NULL, J = J, K = K, nbar = nbar,
-                             M = M, numZero = numZero, Tbar = Tbar, 
+                             M = M, numZero = numZero,
+                             Tbar = Tbar, 
                              alpha = alpha, 
                              two.tailed = two.tailed,
                              numCovar.1 = numCovar.1,

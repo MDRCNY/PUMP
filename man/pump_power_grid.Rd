@@ -2,7 +2,8 @@
 % Please edit documentation in R/grid_functions.R
 \name{pump_power_grid}
 \alias{pump_power_grid}
-\title{Run pump_power on varying values of parameters (grid function)}
+\title{Run pump_power on varying values of parameters (grid
+  function)}
 \usage{
 pump_power_grid(
   d_m,
@@ -13,6 +14,7 @@ pump_power_grid(
   J = 1,
   K = 1,
   numZero = NULL,
+  propZero = NULL,
   Tbar,
   alpha = 0.05,
   numCovar.1 = NULL,
@@ -33,106 +35,108 @@ pump_power_grid(
 )
 }
 \arguments{
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
+\item{d_m}{string; a single context, which is a design and model
+code. See pump_info() for list of choices.}
 
-\item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info() for list of choices.}
+\item{MTP}{string, or vector of strings; multiple testing
+procedure(s). See pump_info() for list of choices.}
 
-\item{MDES}{vector of numeric; This is *not* a list of MDES for 
-each outcome, but rather a list
-of MDES to explore. Each value will be assumed held constant across all M
-outcomes.}
+\item{MDES}{vector of numeric; This is *not* a list of MDES for
+each outcome, but rather a list of MDES to explore. Each value
+will be assumed held constant across all M outcomes.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), 
+\item{M}{scalar; the number of hypothesis tests (outcomes),
 including zero outcomes.}
 
-\item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school). 
-Note that this is not the total number of level 1 units, 
-but instead the number of level 1 units nested within 
-each level 2 unit, so the total number of level 1 units
-is nbar x J x K.}
+\item{nbar}{scalar; the harmonic mean of the number of level 1
+units per level 2 unit (students per school). Note that this is
+not the total number of level 1 units, but instead the number of
+level 1 units nested within each level 2 unit, so the total
+number of level 1 units is nbar x J x K.}
 
-\item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district). Note that
-this is not the total number of level 2 units, but instead
-the number of level 2 units nested within each level 3 
-unit, so the total number of level 2 units is J x K.}
+\item{J}{scalar; the harmonic mean of number of level 2 units per
+level 3 unit (schools per district). Note that this is not the
+total number of level 2 units, but instead the number of level 2
+units nested within each level 3 unit, so the total number of
+level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{numZero}{scalar; additional number of outcomes assumed 
-to be zero. Please provide NumZero + length(MDES) = M.}
+\item{numZero}{scalar; additional number of outcomes assumed to be
+zero. Please provide NumZero + length(MDES) = M, if length(MDES)
+is not 1.}
 
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{propZero}{Proportion of outcomes that have 0 impact (this
+will be used to override numZero, only one can be defined)}
+
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
+\item{numCovar.1}{scalar; number of level 1 (individual)
+covariates.}
 
 \item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
 \item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
-\item{R2.1}{scalar, or vector of length M; percent of variation explained by
-level 1 covariates for each outcome.}
+\item{R2.1}{scalar, or vector of length M; percent of variation
+explained by level 1 covariates for each outcome.}
 
-\item{R2.2}{scalar, or vector of length M; percent of variation explained by
-level 2 covariates for each outcome.}
+\item{R2.2}{scalar, or vector of length M; percent of variation
+explained by level 2 covariates for each outcome.}
 
-\item{R2.3}{scalar, or vector of length M; percent of variation explained by
-level 3 covariates for each outcome.}
+\item{R2.3}{scalar, or vector of length M; percent of variation
+explained by level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation.}
+\item{ICC.2}{scalar, or vector of length M; level 2 (school)
+intraclass correlation.}
 
-\item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation.}
+\item{ICC.3}{scalar, or vector length M; level 3 (district)
+intraclass correlation.}
 
-\item{omega.2}{scalar, or vector of length M; ratio of 
-variance of level 2 average impacts to
-variance of level 2 random intercepts.}
+\item{omega.2}{scalar, or vector of length M; ratio of variance of
+level 2 average impacts to variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of 
-variance of level 3 average impacts to
-variance of level 3 random intercepts.}
+\item{omega.3}{scalar, or vector of length M; ratio of variance of
+level 3 average impacts to variance of level 3 random intercepts.}
 
-\item{rho}{scalar; assumed correlation between 
-all pairs of test statistics.}
+\item{rho}{scalar; assumed correlation between all pairs of test
+statistics.}
 
-\item{long.table}{TRUE for table with power as rows, correction as columns,
-and with more verbose names. See `transpose_power_table`.}
+\item{long.table}{TRUE for table with power as rows, correction as
+columns, and with more verbose names. See
+`transpose_power_table`.}
 
-\item{verbose}{logical; TRUE means print out some text 
-as calls processed.  FALSE do not.}
+\item{verbose}{logical; TRUE means print out some text as calls
+processed.  FALSE do not.}
 
-\item{drop.unique.columns}{logical; drop all parameter columns 
-that did not vary across the grid.}
+\item{drop.unique.columns}{logical; drop all parameter columns that
+did not vary across the grid.}
 
-\item{...}{extra arguments passed to the underlying pump_power, pump_sample,
-or pump_mdes functions.}
+\item{...}{extra arguments passed to the underlying pump_power,
+pump_sample, or pump_mdes functions.}
 }
 \value{
 a pumpgridresult object containing power results.
 }
 \description{
-This extension of `pump_power()` will 
-take lists of parameter values and run
-`pump_power()` on all combinations of these values.
+This extension of `pump_power()` will take lists of
+  parameter values and run `pump_power()` on all combinations of
+  these values.
 
-It can only assume the same MDES value for all outcomes due to this.  (I.e.,
-a vector of MDES values will be interpreted as a sequence of calls to
-pump_power, one for each MDES value given).
+  It can only assume the same MDES value for all outcomes due to
+  this.  (I.e., a vector of MDES values will be interpreted as a
+  sequence of calls to pump_power, one for each MDES value given).
 
-Each parameter in the parameter list can be a list, not scalar.  It will
-cross all combinations of the list.
+  Each parameter in the parameter list can be a list, not scalar.
+  It will cross all combinations of the list.
 }
 \examples{
 g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
  MDES = 0.10, J = seq(5, 10, 1), M = 5, K = 7, nbar = 58,
- Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, 
+ Tbar = 0.50, alpha = 0.15, numCovar.1 = 1,
  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
 }

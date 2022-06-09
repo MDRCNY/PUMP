@@ -33,31 +33,29 @@ needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
-\item{R2.1}{scalar, or vector of length M; percent of variation explained by
-level 1 covariates for each outcome.}
+\item{R2.1}{scalar, or vector of length M; percent of variation
+explained by level 1 covariates for each outcome.}
 
-\item{R2.2}{scalar, or vector of length M; percent of variation explained by
-level 2 covariates for each outcome.}
+\item{R2.2}{scalar, or vector of length M; percent of variation
+explained by level 2 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation.}
+\item{ICC.2}{scalar, or vector of length M; level 2 (school)
+intraclass correlation.}
 
-\item{omega.2}{scalar, or vector of length M; ratio of 
-variance of level 2 average impacts to
-variance of level 2 random intercepts.}
+\item{omega.2}{scalar, or vector of length M; ratio of variance of
+level 2 average impacts to variance of level 2 random intercepts.}
 
-\item{R2.3}{scalar, or vector of length M; percent of variation explained by
-level 3 covariates for each outcome.}
+\item{R2.3}{scalar, or vector of length M; percent of variation
+explained by level 3 covariates for each outcome.}
 
-\item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation.}
+\item{ICC.3}{scalar, or vector length M; level 3 (district)
+intraclass correlation.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of 
-variance of level 3 average impacts to
-variance of level 3 random intercepts.}
+\item{omega.3}{scalar, or vector of length M; ratio of variance of
+level 3 average impacts to variance of level 3 random intercepts.}
 }
 \value{
 nbar, the number of individuals needed, 

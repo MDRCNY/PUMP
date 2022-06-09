@@ -131,89 +131,90 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 
 #' @title Estimate power across definitions (core function)
 #'
-#' @description The user chooses the context (d_m), MTP,
-#' MDES, and choices of all relevant design parameters.
-#' 
-#' The functions returns power for all definitions of power for any MTP.
-#' For a list of choices for specific parameters, see pump_info().
-#' 
-#' @seealso For more detailed information about this function 
-#' and the user choices,
-#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
-#' which includes a detailed Technical Appendix
-#' including information about the designs and models
-#' and parameters.
+#' @description The user chooses the context (d_m), MTP, MDES, and
+#'   choices of all relevant design parameters.
 #'
-#' @param d_m string; a single context, which is a design and model code. 
-#' See pump_info() for list of choices.
-#' @param MTP string, or vector of strings; multiple testing procedure(s).
-#' See pump_info() for list of choices.
-#' @param MDES scalar or vector; the desired MDES values for each outcome. 
-#' Please provide a scalar, a vector of length M, or vector of 
-#' values for non-zero outcomes.
-#' @param numZero scalar; additional number of outcomes assumed 
-#' to be zero. Please provide NumZero + length(MDES) = M.
-#' @param M scalar; the number of hypothesis tests (outcomes), 
-#' including zero outcomes.
-#' @param J scalar; the harmonic mean of number of level 2 
-#' units per level 3 unit (schools per district). Note that
-#' this is not the total number of level 2 units, but instead
-#' the number of level 2 units nested within each level 3 
-#' unit, so the total number of level 2 units is J x K.
+#'   The functions returns power for all definitions of power for any
+#'   MTP. For a list of choices for specific parameters, see
+#'   pump_info().
+#'
+#' @seealso For more detailed information about this function and the
+#'   user choices, see the manuscript
+#'   \url{https://arxiv.org/abs/2112.15273}, which includes a detailed
+#'   Technical Appendix including information about the designs and
+#'   models and parameters.
+#'
+#' @param d_m string; a single context, which is a design and model
+#'   code. See pump_info() for list of choices.
+#' @param MTP string, or vector of strings; multiple testing
+#'   procedure(s). See pump_info() for list of choices.
+#' @param MDES scalar or vector; the desired MDES values for each
+#'   outcome. Please provide a scalar, a vector of length M, or vector
+#'   of values for non-zero outcomes.
+#' @param numZero scalar; additional number of outcomes assumed to be
+#'   zero. Please provide NumZero + length(MDES) = M, if length(MDES)
+#'   is not 1.
+#' @param propZero scalar; proportion of outcomes assumed to be zero
+#'   (alternative specification to numZero).  length(MDES) should be 1
+#'   or equal to (1-propZero)*M.
+#' @param M scalar; the number of hypothesis tests (outcomes),
+#'   including zero outcomes.
+#' @param J scalar; the harmonic mean of number of level 2 units per
+#'   level 3 unit (schools per district). Note that this is not the
+#'   total number of level 2 units, but instead the number of level 2
+#'   units nested within each level 3 unit, so the total number of
+#'   level 2 units is J x K.
 #' @param K scalar; the number of level 3 units (districts).
-#' @param nbar scalar; the harmonic mean of the number of 
-#' level 1 units per level 2 unit (students per school). 
-#' Note that this is not the total number of level 1 units, 
-#' but instead the number of level 1 units nested within 
-#' each level 2 unit, so the total number of level 1 units
-#' is nbar x J x K.
-#' @param Tbar scalar; the proportion of samples 
-#' that are assigned to the treatment.
+#' @param nbar scalar; the harmonic mean of the number of level 1
+#'   units per level 2 unit (students per school). Note that this is
+#'   not the total number of level 1 units, but instead the number of
+#'   level 1 units nested within each level 2 unit, so the total
+#'   number of level 1 units is nbar x J x K.
+#' @param Tbar scalar; the proportion of samples that are assigned to
+#'   the treatment.
 #' @param alpha scalar; the family wise error rate (FWER).
-#' @param two.tailed scalar; TRUE/FALSE for two-tailed or 
-#' one-tailed power calculation.
-#' @param numCovar.1 scalar; number of level 1 (individual) covariates.
+#' @param two.tailed scalar; TRUE/FALSE for two-tailed or one-tailed
+#'   power calculation.
+#' @param numCovar.1 scalar; number of level 1 (individual)
+#'   covariates.
 #' @param numCovar.2 scalar; number of level 2 (school) covariates.
 #' @param numCovar.3 scalar; number of level 3 (district) covariates.
-#' @param R2.1 scalar, or vector of length M; percent of variation explained by
-#'   level 1 covariates for each outcome.
-#' @param R2.2 scalar, or vector of length M; percent of variation explained by
-#'   level 2 covariates for each outcome.
-#' @param R2.3 scalar, or vector of length M; percent of variation explained by
-#'   level 3 covariates for each outcome.
-#' @param ICC.2 scalar, or vector of length M; 
-#' level 2 (school) intraclass correlation.
-#' @param ICC.3 scalar, or vector length M; 
-#' level 3 (district) intraclass correlation.
-#' @param omega.2 scalar, or vector of length M; ratio of 
-#' variance of level 2 average impacts to
-#' variance of level 2 random intercepts.
-#' @param omega.3 scalar, or vector of length M; ratio of 
-#' variance of level 3 average impacts to
-#' variance of level 3 random intercepts.
-#' @param rho scalar; assumed correlation between 
-#' all pairs of test statistics.
-#' @param rho.matrix matrix; alternate specification 
-#' allowing a full matrix of correlations between 
-#' test statistics. Must specify either
-#' rho or rho.matrix, but not both.
-#' @param tnum scalar; the number of test statistics
-#' to draw. Increasing tnum increases precision and
-#' computation time.
-#' @param B scalar; the number of permutations for 
-#' Westfall-Young procedures.
-#' @param parallel.WY.cores number of cores to use for 
-#' parallel processing of WY-SD.
-#' @param drop.zero.outcomes whether to report 
-#' power results for outcomes with MDES = 0.
-#' @param updateProgress function to update progress bar 
-#' (only used for PUMP shiny app).
-#' @param long.table TRUE for table with power as rows, correction as columns,
-#'   and with more verbose names. See `transpose_power_table`.
+#' @param R2.1 scalar, or vector of length M; percent of variation
+#'   explained by level 1 covariates for each outcome.
+#' @param R2.2 scalar, or vector of length M; percent of variation
+#'   explained by level 2 covariates for each outcome.
+#' @param R2.3 scalar, or vector of length M; percent of variation
+#'   explained by level 3 covariates for each outcome.
+#' @param ICC.2 scalar, or vector of length M; level 2 (school)
+#'   intraclass correlation.
+#' @param ICC.3 scalar, or vector length M; level 3 (district)
+#'   intraclass correlation.
+#' @param omega.2 scalar, or vector of length M; ratio of variance of
+#'   level 2 average impacts to variance of level 2 random intercepts.
+#' @param omega.3 scalar, or vector of length M; ratio of variance of
+#'   level 3 average impacts to variance of level 3 random intercepts.
+#' @param rho scalar; assumed correlation between all pairs of test
+#'   statistics.
+#' @param rho.matrix matrix; alternate specification allowing a full
+#'   matrix of correlations between test statistics. Must specify
+#'   either rho or rho.matrix, but not both.
+#' @param tnum scalar; the number of test statistics to draw.
+#'   Increasing tnum increases precision and computation time.
+#' @param B scalar; the number of permutations for Westfall-Young
+#'   procedures.
+#' @param parallel.WY.cores number of cores to use for parallel
+#'   processing of WY-SD.
+#' @param drop.zero.outcomes whether to report power results for
+#'   outcomes with MDES = 0.
+#' @param updateProgress function to update progress bar (only used
+#'   for PUMP shiny app).
+#' @param long.table TRUE for table with power as rows, correction as
+#'   columns, and with more verbose names. See
+#'   `transpose_power_table`.
 #' @param verbose TRUE/FALSE; Print out diagnostics of time, etc.
-#' @param validate.inputs TRUE/FALSE; whether or not to 
-#' check whether parameters are valid given the choice of d_m.
-#' 
+#' @param validate.inputs TRUE/FALSE; whether or not to check whether
+#'   parameters are valid given the choice of d_m.
+#'
 #' @return a pumpresult object containing power results.
 #' @export
 #'
@@ -230,11 +231,12 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'    numCovar.1 = 1, numCovar.2 = 1,
 #'    R2.1 = 0.1, R2.2 = 0.1,
 #'    ICC.2 = 0.2, ICC.3 = 0.2,
-#'    omega.2 = 0, omega.3 = 0.1, 
+#'    omega.2 = 0, omega.3 = 0.1,
 #'    rho = 0.5)
-#'
+#' 
 pump_power <- function(
-  d_m, MTP = NULL, MDES, numZero = NULL,
+  d_m, MTP = NULL, MDES, 
+  numZero = NULL, propZero = NULL,
   M,
   nbar, J = 1, K = 1, Tbar,
   alpha = 0.05, two.tailed = TRUE,
@@ -270,7 +272,7 @@ pump_power <- function(
     des <- purrr::map( MTP,
                       pump_power, d_m = d_m, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
-                      numZero = numZero,
+                      numZero = numZero, propZero = propZero,
                       Tbar = Tbar,
                       alpha = alpha, two.tailed = two.tailed,
                       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
@@ -310,7 +312,8 @@ pump_power <- function(
     # validate input parameters
     params.list <- list(
       MTP = MTP,
-      MDES = MDES, numZero = numZero, M = M, J = J, K = K,
+      MDES = MDES, numZero = numZero, propZero = propZero, 
+      M = M, J = J, K = K,
       nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
       numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
@@ -318,11 +321,11 @@ pump_power <- function(
       rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum,
       power.definition = NULL
     )
-    ##
     params.list <- validate_inputs(
         d_m, params.list, power.call = TRUE, verbose = verbose 
     )
     ##
+    
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K

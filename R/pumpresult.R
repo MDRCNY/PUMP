@@ -125,6 +125,14 @@ update.pumpresult <- function( object, type = NULL, ... ) {
   params["type"] <- orig_result_type
   params["d_m"] <- d_m(object)
   
+  # for any vectors, collapse to single value of vector is identical
+  # (this allows change in number of outcomes more easily)
+  for ( i in seq_along(params) ) {
+      if ( length( params[[i]] ) > 1 && length( unique( params[[i]] ) ) == 1 ) {
+          params[i] = params[[i]][[1]]
+      }
+  }
+  
   # Get new parameters
   dts <- list(...)
   

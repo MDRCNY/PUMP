@@ -33,13 +33,13 @@ pump_mdes_grid(
 )
 }
 \arguments{
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
+\item{d_m}{string; a single context, which is a design and model
+code. See pump_info() for list of choices.}
 
-\item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info() for list of choices.}
+\item{MTP}{string, or vector of strings; multiple testing
+procedure(s). See pump_info() for list of choices.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), 
+\item{M}{scalar; the number of hypothesis tests (outcomes),
 including zero outcomes.}
 
 \item{target.power}{target power for search algorithm.}
@@ -52,65 +52,63 @@ This parameter controls when the search is done:
 when estimated power (checked with `final.tnum` iterations) 
 is within `tol`, the search stops.}
 
-\item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school). 
-Note that this is not the total number of level 1 units, 
-but instead the number of level 1 units nested within 
-each level 2 unit, so the total number of level 1 units
-is nbar x J x K.}
+\item{nbar}{scalar; the harmonic mean of the number of level 1
+units per level 2 unit (students per school). Note that this is
+not the total number of level 1 units, but instead the number of
+level 1 units nested within each level 2 unit, so the total
+number of level 1 units is nbar x J x K.}
 
-\item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district). Note that
-this is not the total number of level 2 units, but instead
-the number of level 2 units nested within each level 3 
-unit, so the total number of level 2 units is J x K.}
+\item{J}{scalar; the harmonic mean of number of level 2 units per
+level 3 unit (schools per district). Note that this is not the
+total number of level 2 units, but instead the number of level 2
+units nested within each level 3 unit, so the total number of
+level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
+\item{numCovar.1}{scalar; number of level 1 (individual)
+covariates.}
 
 \item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
 \item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
-\item{R2.1}{scalar, or vector of length M; percent of variation explained by
-level 1 covariates for each outcome.}
+\item{R2.1}{scalar, or vector of length M; percent of variation
+explained by level 1 covariates for each outcome.}
 
-\item{R2.2}{scalar, or vector of length M; percent of variation explained by
-level 2 covariates for each outcome.}
+\item{R2.2}{scalar, or vector of length M; percent of variation
+explained by level 2 covariates for each outcome.}
 
-\item{R2.3}{scalar, or vector of length M; percent of variation explained by
-level 3 covariates for each outcome.}
+\item{R2.3}{scalar, or vector of length M; percent of variation
+explained by level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation.}
+\item{ICC.2}{scalar, or vector of length M; level 2 (school)
+intraclass correlation.}
 
-\item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation.}
+\item{ICC.3}{scalar, or vector length M; level 3 (district)
+intraclass correlation.}
 
-\item{omega.2}{scalar, or vector of length M; ratio of 
-variance of level 2 average impacts to
-variance of level 2 random intercepts.}
+\item{omega.2}{scalar, or vector of length M; ratio of variance of
+level 2 average impacts to variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of 
-variance of level 3 average impacts to
-variance of level 3 random intercepts.}
+\item{omega.3}{scalar, or vector of length M; ratio of variance of
+level 3 average impacts to variance of level 3 random intercepts.}
 
-\item{rho}{scalar; assumed correlation between 
-all pairs of test statistics.}
+\item{rho}{scalar; assumed correlation between all pairs of test
+statistics.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
 
-\item{drop.unique.columns}{logical; drop all parameter columns 
-that did not vary across the grid.}
+\item{drop.unique.columns}{logical; drop all parameter columns that
+did not vary across the grid.}
 
-\item{...}{extra arguments passed to the underlying pump_power, pump_sample,
-or pump_mdes functions.}
+\item{...}{extra arguments passed to the underlying pump_power,
+pump_sample, or pump_mdes functions.}
 }
 \value{
 a pumpgridresult object containing MDES results.

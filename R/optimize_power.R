@@ -137,8 +137,8 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   }
 
   # Step 1: fit initial series of points to start search
-  test.pts <- gen_test_pts(start.low, start.high, tnum = start.tnum,
-                           round = FALSE )
+  test.pts <- gen_test_pts( start.low, start.high, 
+                            tnum = start.tnum, round = FALSE )
   
   if ( grid.only ) {
     return( test.pts )
@@ -169,8 +169,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   # MAIN LOOP
   # Iteratively search by checking best point and then updating our curve.
   done <- FALSE
-  while( !done && step < max.steps )
-  {
+  while( !done && step < max.steps ) {
     step <- step + 1
 
     current.tnum <- pmin(tnum, round(current.tnum * 1.1))
@@ -222,15 +221,14 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
     
     
     if ( search.type == "mdes" && current.try < 0 ) {
-      warning( "Test point below 0 for mdes.
-               Need to fix to set to 0 exactly.", call. = FALSE )
+      warning( "Test point below 0 for mdes. Setting to epsilon > 0.", call. = FALSE )
       current.try <- 0.00000001
     }
 
-   
 
     iter.results <- power_check_df( current.try, current.tnum )
     if ( ct$result$x != current.try ) {
+        # Our test point changed from expected, so recalculate derivative, etc for actual point
       iter.results$dx <- d_bounded_logistic_curve( current.try,
                                                    ct$result$params )
     } else {
@@ -358,10 +356,10 @@ estimate_power_curve <- function( p, low = NULL, high = NULL,
   test.pts <- search_path(p)
   
   if ( is.null( low ) ) {
-    low <- sp[[1]]
+    low <- sp[["min"]]
   }
   if ( is.null( high ) ) {
-    high <- sp[[2]] * 1.2
+    high <- sp[["max"]] * 1.2
   }
 
   # for Bonferroni
@@ -477,6 +475,9 @@ d_bounded_logistic_curve <- function( x, params ) {
   return( deriv )
 }
 
+
+# Solve the given function to figure out where the function crosses
+# target power
 find_crossover <- function( target_power, params ) {
   beta0 <- params[["beta0"]]
   beta1 <- params[["beta1"]]
@@ -570,7 +571,7 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
   if ( nrow( test.pts ) > 5 ) {
     test.pts$del <- abs(test.pts$power - target.power )
     test.pts <- dplyr::filter( test.pts,
-      .data$del < stats::quantile(.data$del,0.75) + 1.5* stats::IQR(.data$del) )
+      .data$del < stats::quantile(.data$del, 0.75) + 1.5*stats::IQR(.data$del) )
   }
   
   fit <- fit_bounded_logistic( test.pts$pt, test.pts$power, sqrt( test.pts$w ) )
@@ -591,7 +592,7 @@ find_best <- function(test.pts, target.power, gamma = 1.5)
     cc <- max( cc, start.low / gamma )
   }
   
-  return( list( x = cc, 
+  return( list( x = cc,
                 dx = d_bounded_logistic_curve(cc, fit), 
                 params = fit ) )
 }

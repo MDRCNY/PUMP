@@ -585,17 +585,20 @@ calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
 
 #### Parameter and call validation code ####
 
-make_MDES_vector <- function( MDES, M, numZero = NULL, verbose = TRUE ) {
+make_MDES_vector <- function( MDES, M, 
+                              numZero = NULL,
+                              verbose = TRUE ) {
+    
     if( !is.null(numZero) ) {
-        if( ( length(MDES) > 1 ) && ( numZero + length(MDES) != M ) )
-        {
-            stop('Please provide an MDES vector + numZero that add up to M.\n
-             Example: MDES = c(0.1, 0.1), numZero = 3, M = 5.\n
-             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
-        }
         if( numZero >= M )
         {
-            stop('numZero cannot be greater than or equal to M' )
+            stop('numZero (or propZero*M) cannot be greater than or equal to M' )
+        }
+        if( ( length(MDES) > 1 ) && ( numZero + length(MDES) != M ) )
+        {
+            stop('Please provide an MDES vector + numZero (or propZero) that identify exactly M outcomes.\n
+             Example: MDES = c(0.1, 0.1), numZero = 3 or propZero = 3/5 with M = 5\n
+             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
         }
         if ( length(MDES) == 1 ) {
             MDES <- c(rep( MDES, M - numZero), rep(0, numZero) )
@@ -613,9 +616,8 @@ make_MDES_vector <- function( MDES, M, numZero = NULL, verbose = TRUE ) {
         if ( length(MDES) == 1 ) {
             MDES <- rep( MDES, M )
         } else {
-            stop(paste('Please provide a vector of MDES 
-                       values of length 1 or M. Current vector:',
-                       MDES, 'M =', M))
+            stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector: ',
+                       paste0( MDES, collapse = ", " ), 'M =', M))
         }
     }
 
@@ -755,17 +757,30 @@ validate_inputs <- function( d_m, params.list,
     # MDES
     #-------------------------------------------------------#
 
+    if ( !is.null(params.list$propZero) ) {
+        if (!is.null(params.list$numZero) ) {
+            stop( "Only one of numZero and propZero can be non-null" )
+        }
+        if ( params.list$propZero < 0 || params.list$propZero >= 1 ) {
+            stop( "propZero must be in [0,1) range" )
+        }        
+        params.list$numZero = round( params.list$M * params.list$propZero )
+        params.list$propZero = NULL
+    }
+    
     if ( mdes.call ) {
         if ( !is.null( params.list$MDES ) ) {
             stop( "You cannot provide MDES to pump_mdes()" )
         }
+        
         if ( !is.null( params.list$numZero ) &&
              params.list$numZero >= params.list$M ) {
-            stop( sprintf( "You cannot specify %s zeros with %s outcomes",
+            stop( sprintf( "You cannot specify %s zeros via numZero or propZero with only %s outcomes",
                            params.list$numZero, params.list$M ) )
         }
         
     } else {
+        
         params.list$MDES <- make_MDES_vector(
             params.list$MDES,
             params.list$M, params.list$numZero,
@@ -1108,6 +1123,9 @@ validate_inputs <- function( d_m, params.list,
           stop('Please provide a rho matrix with values between -1 and 1.')
         }
     }
+    
+    params.list$propZero = NULL
+    
     return(params.list)
 
 }

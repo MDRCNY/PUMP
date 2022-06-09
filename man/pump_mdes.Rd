@@ -8,16 +8,17 @@ pump_mdes(
   d_m,
   MTP = NULL,
   numZero = NULL,
-  M,
+  propZero = NULL,
+  M = 1,
   nbar,
   J,
   K = 1,
   Tbar,
   alpha = 0.05,
   two.tailed = TRUE,
-  target.power,
+  target.power = 0.8,
   power.definition,
-  tol = 0.01,
+  tol = 0.02,
   numCovar.1 = 0,
   numCovar.2 = 0,
   numCovar.3 = 0,
@@ -42,40 +43,44 @@ pump_mdes(
 )
 }
 \arguments{
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
+\item{d_m}{string; a single context, which is a design and model
+code. See pump_info() for list of choices.}
 
-\item{MTP}{string, or vector of strings; multiple testing procedure(s).
-See pump_info() for list of choices.}
+\item{MTP}{string, or vector of strings; multiple testing
+procedure(s). See pump_info() for list of choices.}
 
-\item{numZero}{scalar; additional number of outcomes assumed 
-to be zero. Please provide NumZero + length(MDES) = M.}
+\item{numZero}{scalar; additional number of outcomes assumed to be
+zero. Please provide NumZero + length(MDES) = M, if length(MDES)
+is not 1.}
 
-\item{M}{scalar; the number of hypothesis tests (outcomes), 
+\item{propZero}{scalar; proportion of outcomes assumed to be zero
+(alternative specification to numZero).  length(MDES) should be 1
+or equal to (1-propZero)*M.}
+
+\item{M}{scalar; the number of hypothesis tests (outcomes),
 including zero outcomes.}
 
-\item{nbar}{scalar; the harmonic mean of the number of 
-level 1 units per level 2 unit (students per school). 
-Note that this is not the total number of level 1 units, 
-but instead the number of level 1 units nested within 
-each level 2 unit, so the total number of level 1 units
-is nbar x J x K.}
+\item{nbar}{scalar; the harmonic mean of the number of level 1
+units per level 2 unit (students per school). Note that this is
+not the total number of level 1 units, but instead the number of
+level 1 units nested within each level 2 unit, so the total
+number of level 1 units is nbar x J x K.}
 
-\item{J}{scalar; the harmonic mean of number of level 2 
-units per level 3 unit (schools per district). Note that
-this is not the total number of level 2 units, but instead
-the number of level 2 units nested within each level 3 
-unit, so the total number of level 2 units is J x K.}
+\item{J}{scalar; the harmonic mean of number of level 2 units per
+level 3 unit (schools per district). Note that this is not the
+total number of level 2 units, but instead the number of level 2
+units nested within each level 3 unit, so the total number of
+level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or 
-one-tailed power calculation.}
+\item{two.tailed}{scalar; TRUE/FALSE for two-tailed or one-tailed
+power calculation.}
 
 \item{target.power}{target power for search algorithm.}
 
@@ -87,45 +92,43 @@ This parameter controls when the search is done:
 when estimated power (checked with `final.tnum` iterations) 
 is within `tol`, the search stops.}
 
-\item{numCovar.1}{scalar; number of level 1 (individual) covariates.}
+\item{numCovar.1}{scalar; number of level 1 (individual)
+covariates.}
 
 \item{numCovar.2}{scalar; number of level 2 (school) covariates.}
 
 \item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
-\item{R2.1}{scalar, or vector of length M; percent of variation explained by
-level 1 covariates for each outcome.}
+\item{R2.1}{scalar, or vector of length M; percent of variation
+explained by level 1 covariates for each outcome.}
 
-\item{R2.2}{scalar, or vector of length M; percent of variation explained by
-level 2 covariates for each outcome.}
+\item{R2.2}{scalar, or vector of length M; percent of variation
+explained by level 2 covariates for each outcome.}
 
-\item{R2.3}{scalar, or vector of length M; percent of variation explained by
-level 3 covariates for each outcome.}
+\item{R2.3}{scalar, or vector of length M; percent of variation
+explained by level 3 covariates for each outcome.}
 
-\item{ICC.2}{scalar, or vector of length M; 
-level 2 (school) intraclass correlation.}
+\item{ICC.2}{scalar, or vector of length M; level 2 (school)
+intraclass correlation.}
 
-\item{ICC.3}{scalar, or vector length M; 
-level 3 (district) intraclass correlation.}
+\item{ICC.3}{scalar, or vector length M; level 3 (district)
+intraclass correlation.}
 
-\item{omega.2}{scalar, or vector of length M; ratio of 
-variance of level 2 average impacts to
-variance of level 2 random intercepts.}
+\item{omega.2}{scalar, or vector of length M; ratio of variance of
+level 2 average impacts to variance of level 2 random intercepts.}
 
-\item{omega.3}{scalar, or vector of length M; ratio of 
-variance of level 3 average impacts to
-variance of level 3 random intercepts.}
+\item{omega.3}{scalar, or vector of length M; ratio of variance of
+level 3 average impacts to variance of level 3 random intercepts.}
 
-\item{rho}{scalar; assumed correlation between 
-all pairs of test statistics.}
+\item{rho}{scalar; assumed correlation between all pairs of test
+statistics.}
 
-\item{rho.matrix}{matrix; alternate specification 
-allowing a full matrix of correlations between 
-test statistics. Must specify either
-rho or rho.matrix, but not both.}
+\item{rho.matrix}{matrix; alternate specification allowing a full
+matrix of correlations between test statistics. Must specify
+either rho or rho.matrix, but not both.}
 
-\item{B}{scalar; the number of permutations for 
-Westfall-Young procedures.}
+\item{B}{scalar; the number of permutations for Westfall-Young
+procedures.}
 
 \item{max.steps}{how many steps allowed before terminating.}
 
@@ -137,11 +140,11 @@ of search algorithm.}
 
 \item{final.tnum}{number of samples for final draw.}
 
-\item{parallel.WY.cores}{number of cores to use for 
-parallel processing of WY-SD.}
+\item{parallel.WY.cores}{number of cores to use for parallel
+processing of WY-SD.}
 
-\item{updateProgress}{function to update progress bar 
-(only used for PUMP shiny app).}
+\item{updateProgress}{function to update progress bar (only used
+for PUMP shiny app).}
 
 \item{give.optimizer.warnings}{whether to return 
 verbose optimizer warnings.}
