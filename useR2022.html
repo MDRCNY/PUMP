@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Power Under Multiplicity</title>
+    <meta charset="utf-8" />
+    <script src="libs/header-attrs-2.14/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+class: center, inverse
+
+&lt;br&gt;&lt;br&gt;
+
+&lt;h1 style="font-size:3.5rem;"&gt; Power Under Multiplicity &lt;/h1&gt;
+
+&lt;br&gt;
+
+&lt;h2 style="font-size:1.75rem;"&gt;Kristen Hunter,&lt;sup&gt;1*&lt;/sup&gt; Luke Miratrix,&lt;sup&gt;1,2&lt;/sup&gt; Kristin Porter&lt;sup&gt;3&lt;/sup&gt; &lt;/h2&gt;
+
+&lt;h3 style="font-size:1.5rem;"&gt;useR! 2022 &lt;/h3&gt;
+
+Slides available: github.com/MDRCNY/PUMP
+
+&lt;br&gt;
+
+&lt;p style="text-align:left;font-size:0.75rem"&gt;
+*Contact: kristenbhunter@gmail.com &lt;br&gt;
+[1] Harvard Department of Statistics&lt;br&gt;
+[2] Harvard Graduate School of Education &lt;br&gt;
+[3] MDRC 
+&lt;/p&gt;
+
+
+
+
+
+
+&lt;style type="text/css"&gt;
+ul {
+  line-height: 1.5;
+}
+&lt;/style&gt;
+
+---
+
+# Multiple outcomes
+
+- With **multiple outcomes** in a study, must use a multiple testing procedure (MTP) to obtain valid conclusions.
+- The use of MTPs changes statistical **power**.
+
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 30%; margin-right: 1%; margin-bottom: 2em"&gt;&lt;img src="figures/agility1.jpg" style="width: 100%; height: 300px"&gt;Image by &lt;a href="https://pixabay.com/users/yamabsm-1300729/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=3120383"&gt;Yama Zsuzsanna Márkus&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=3120383"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 30%; margin-right: 1%; margin-bottom: 0.5em;"&gt;&lt;img src="figures/agility2.jpg" style="width: 100%; height: 300px"&gt;Image by &lt;a href="https://pixabay.com/users/825545-825545/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=748260"&gt;Katrin B.&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=748260"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 30%; margin-right: 1%; margin-bottom: 0.5em;"&gt;&lt;img src="figures/agility3.jpg" style="width: 100%; height: 300px"&gt;Image by &lt;a href="https://pixabay.com/users/825545-825545/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=747770"&gt;Katrin B.&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=747770"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+&lt;p style="clear: both;"&gt;
+
+---
+
+# Motivation
+
+.pull-left[
+Problem:
+- Current practice for determining statistical power does not take the use of MTPs into account.
+
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 100%; margin-right: 1%; margin-bottom: 2em"&gt;&lt;img src="figures/pump.jpg" style="width: 100%; height: 200px"&gt;&lt;br&gt;Image by &lt;a href="https://pixabay.com/users/947051-947051/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=1008977"&gt;Jan Steiner&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=1008977"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+
+]
+
+.pull-right[
+Solution:
+- Introducing **PUMP**.
+- R package.
+- Power Under Multiplicity Project.
+- Calculates power for multiple hypotheses in multilevel randomized controlled trial (RCT) designs.
+
+&lt;br&gt;
+
+- Multilevel: hierarchical structure, such as students nested within schools nested within districts
+- Assumes analyst will use frequentist mixed effects models
+- Running example: education experiments
+
+]
+
+
+
+
+---
+
+# Example
+
+
+
+I have 3 outcomes, with a 2-level blocked design.
+My power to detect the effect for any individual outcome:
+- Without any adjustment (no MTP): 0.81.
+- Using Bonferroni adjustment: 0.67.
+
+Having multiple outcomes has reduced my power...or has it? Stay tuned!
+
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 2em"&gt;&lt;img src="figures/flyingdog.jpg" style="width: 100%; height: 250px"&gt;Image by &lt;a href="https://pixabay.com/users/brian_cragun-19680916/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=5946987"&gt;Brian Cragun&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=5946987"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 0.5em;"&gt;&lt;img src="figures/smalldog.jpg" style="width: 60%; height: 250px; align="middle"&gt;&lt;br&gt;Photo by &lt;a href="https://unsplash.com/@just_another_photographa?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText"&gt;James Watson&lt;/a&gt; on &lt;a href="https://unsplash.com/s/photos/funny-dog?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText"&gt;Unsplash&lt;/a&gt;&lt;/p&gt;
+
+
+---
+
+# Factors affecting power
+
+With at least one outcome:
+
+- design of the study and assumed model
+- `\(\bar{n}\)`, `\(J\)`, `\(K\)`: number of level 1/2/3 units
+- `\(\bar{T}\)`: proportion of students treated
+- number of covariates, `\(R^2\)`: explanatory power of covariates
+- `\(ICC\)`: intraclass correlation (ratio of variance at a particular level to overall variance)
+
+
+Unique to **multiple** outcomes:
+
+- definition of power
+- `\(M\)`: number of outcomes/tests
+- `\(\rho\)`: correlation between test statistics
+- proportion of outcomes for which there are truly effects
+- multiple testing procedure (MTP)
+  
+---
+
+# Define the setup
+
+.pull-left[
+How to **design** the experiment
+- Levels: 1, 2, 3
+- Randomization level: 1, 2, 3
+
+How to **model** the experiment
+- Assumes mixed effects regression models
+- Intercepts: fixed or random
+- Treatment effects: constant, fixed, or random
+]
+
+.pull-right[
+Supported designs and models:
+- d1.1_m1c
+- d2.1_m2fc
+- d2.1_m2ff
+- d2.1_m2fr
+- d2.1_m2rr
+- d2.2_m2rc
+- d3.1_m3rr2rr
+- d3.2_m3fc2rc
+- d3.2_m3ff2rc
+- d3.2_m3rr2rc
+- d3.3_m3rc2rc
+]
+
+---
+
+# Definitions of power
+
+How do we define power if we have *multiple* hypotheses/outcomes?
+- **Individual** power: probability of rejecting a particular null hypothesis
+- **1-Minimal** power: probability of rejecting at least one null hypothesis
+- **D-Minimal** power: probability of rejecting at least d null hypotheses
+- **Complete** power: probability of rejecting all the null hypotheses
+
+All valid options--the choice depends on how we want to define success!
+
+
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 2em"&gt;&lt;img src="figures/pug.jpg" style="width: 80%; height: 200px"&gt;&lt;br&gt;Image by &lt;a href="https://pixabay.com/users/woodsilver-4045569/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=2105686"&gt;woodsilver&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=2105686"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 0.5em;"&gt;&lt;img src="figures/bigjump.jpg" style="width: 80%; height: 200px; align="middle"&gt;&lt;br&gt;Image by &lt;a href="https://pixabay.com/users/snottyboggins-6421955/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=4048815"&gt;SnottyBoggins&lt;/a&gt; from &lt;a href="https://pixabay.com/?utm_source=link-attribution&amp;amp;utm_medium=referral&amp;amp;utm_campaign=image&amp;amp;utm_content=4048815"&gt;Pixabay&lt;/a&gt;&lt;/p&gt;
+
+---
+# Multiple testing procedures
+
+- **Bonferroni**
+  - simple
+  - most conservative
+- **Holm**
+  - step down version of Bonferroni
+  - less conservative for larger `\(p\)`-values than Bonferroni
+- **Benjamini-Hochberg** 
+  - step up procedure
+  - controls the false discovery rate (less conservative)
+- **Westfall-Young** (single step and step down versions)
+  - permutation-based approach
+  - takes into account correlation structure of outcomes
+  - computationally intensive
+  - not overly conservative
+---
+
+# Diving in!
+
+
+```r
+library( PUMP )
+
+pow &lt;- pump_power(
+  d_m =  "d2.1_m2fc",    # choice of design and model
+  MTP = "BF",            # multiple testing procedure
+  MDES = rep( 0.10, 3 ), # assumed effect size
+  M = 3,                 # number of outcomes
+  J = 10,                # number of schools/blocks
+  nbar = 275,            # average number of students per school
+  Tbar = 0.50,           # proportion of students treated per school
+  alpha = 0.05,          # significance level
+  numCovar.1 = 5,        # number of covariates at level 1
+  R2.1 = 0.1,            # assumed R^2 of level 1 covariates
+  ICC.2 = 0.05,          # intraclass correlation
+  rho = 0.4              # test statistic correlation
+) 
+```
+
+---
+
+# Power results
+
+
+|MTP  | D1indiv| D2indiv| D3indiv| indiv.mean| min1| min2| complete|
+|:----|-------:|-------:|-------:|----------:|----:|----:|--------:|
+|None |    0.81|    0.81|    0.81|       0.81|   NA|   NA|       NA|
+|BF   |    0.68|    0.67|    0.67|       0.67|  0.9| 0.71|     0.61|
+
+Takeaways
+- Individual power using Bonferroni is lower
+- Min1 power is higher than individual power
+- Complete power is lowest
+
+---
+
+# How it works
+
+- For simple designs and one outcome, we often have a formula for power
+- It would be difficult (in some cases impossible) to derive explicit formulas for every design, model, number of outcomes, MTP, and definition of power
+
+&lt;br&gt;&lt;br&gt;
+
+Instead, we use **simulation**! A full simulation approach would be:
+
+1. *Simulate data* according to the alternative hypotheses.
+2. *Calculate test statistics* under the alternative hypotheses.
+3. Use these test statistics to calculate `\(p\)`-values.
+4. Calculate power using the distribution of `\(p\)`-values.
+
+---
+
+# How it works
+
+- We can simplify this approach by skipping step 1.
+- Given:
+  - design and model
+  - correlation between test statistics for different hypotheses
+- We know the joint alternative distribution of test statistics!
+- Results in **simpler** and **faster** power calculations.
+
+&lt;br&gt;
+
+Simulation approach to calculating power:
+1. *Sample test statistics* under the alternative hypotheses.
+2. Use these test statistics to calculate `\(p\)`-values.
+3. Calculate power using the distribution of `\(p\)`-values.
+
+&lt;br&gt;
+Note: because we use simulations to calculate power, estimates are approximate, but the user can increase the number of test statistic draws to increase precision.
+
+---
+
+# Sample size and MDES
+
+We can also calculate:
+- `pump_mdes()`: minimum detectable effect size (MDES) for a particular target power
+- `pump_sample()`: sample size for a given target power and MDES
+
+Types of sample size calculations:
+- K: number of level 3 units (districts)
+- J: number of level 2 units (schools)
+- nbar: number of level 1 units (students)
+
+---
+
+# Sample size example
+
+
+```r
+ss &lt;- pump_sample(
+  target.power = 0.8,        # target power
+  power.definition = "min1", # power definition
+  typesample = "J",          # type of sample size procedure
+  tol = 0.01,                # tolerance
+  d_m =  "d2.1_m2fc", MTP = "BF",
+  MDES = 0.1, M = 3, nbar = 350, Tbar = 0.50, alpha = 0.05,
+  numCovar.1 = 5, R2.1 = 0.1, ICC.2 = 0.05, rho = 0.4
+)
+```
+
+&lt;br&gt;
+
+
+|MTP |Sample.type | Sample.size| min1.power|
+|:---|:-----------|-----------:|----------:|
+|BF  |J           |           7|       0.81|
+  
+---
+
+# Assessing sensitivity
+
+We can use the grid function to assess sensitivity to different model and design parameters.
+
+
+```r
+pgrid &lt;- update_grid(
+  pow,
+  # vary parameter values
+  rho = seq( 0, 0.9, by = 0.1 ), 
+  # compare multiple MTPs
+  MTP = c( "BF", "HO", "WY-SS", "BH" )
+)
+```
+---
+
+# Assessing sensitivity
+
+
+```r
+plot( pgrid, var.vary = 'rho' )
+```
+
+![](pump_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+
+class: inverse
+
+# Summary: PUMP
+
+- Estimates power for multiple outcomes for multilevel RCTs
+- Takes into account multiple testing procedures
+- Calculates minimum detectable effect size (MDES) and sample size
+- Allows user to assess sensitivity of power to different parameters
+
+---
+
+class: inverse
+
+# Available now!
+
+
+
+- CRAN: [CRAN.R-project.org/package=PUMP](https://cran.r-project.org/web/packages/PUMP/index.html)
+- Shiny app: [mdrc.shinyapps.io/pump](https://mdrc.shinyapps.io/pump/)
+- Github: [github.com/MDRCNY/PUMP](https://github.com/MDRCNY/PUMP)
+- arXiv: [arxiv.org/abs/2112.15273](https://arxiv.org/abs/2112.15273)
+- Contact: kristenbhunter@gmail.com
+
+&lt;p style="float: left; font-size: 5pt; text-align: center; width: 100%; margin-right: 1%; margin-bottom: 0.5em;"&gt;&lt;img src="figures/wasabi.jpg" style="width: 60%; height: 300px; align="middle"&gt;&lt;br&gt;Image by NYTimes&lt;/p&gt;
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
