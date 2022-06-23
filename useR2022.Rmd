@@ -17,22 +17,21 @@ output:
 
 class: center, inverse
 
-<br><br>
-
-<h1 style="font-size:3.5rem;"> Power Under Multiplicity </h1>
-
 <br>
 
-<h2 style="font-size:1.75rem;">Kristen Hunter,<sup>1*</sup> Luke Miratrix,<sup>1,2</sup> Kristin Porter<sup>3</sup> </h2>
+<h1 style="font-size:3.5rem;"> PUMP: Power Under Multiplicity Project </h1>
 
-<h3 style="font-size:1.5rem;">useR! 2022 </h3>
+
+<h2 style="font-size:1.5rem;">Kristen Hunter<sup>1</sup>, Luke Miratrix<sup>1,2</sup>, <br>
+Kristin Porter<sup>3</sup>, Zarni Htet <sup>3</sup></h2>
+
+<h3 style="font-size:1.25rem;">useR! 2022 </h3>
 
 Slides available: github.com/MDRCNY/PUMP
 
 <br>
 
 <p style="text-align:left;font-size:0.75rem">
-*Contact: kristenbhunter@gmail.com <br>
 [1] Harvard Department of Statistics<br>
 [2] Harvard Graduate School of Education <br>
 [3] MDRC 
@@ -75,8 +74,9 @@ ul {
 
 # Multiple outcomes
 
-- With **multiple outcomes** in a study, must use a multiple testing procedure (MTP) to obtain valid conclusions.
-- The use of MTPs changes statistical **power**.
+- With **multiple outcomes** in a study, must use a multiple testing procedure (MTP) to obtain valid conclusions
+- The use of MTPs changes statistical **power**
+- **Problem**: Current practice for determining statistical power does not take the use of MTPs into account
 
 <p style="float: left; font-size: 5pt; text-align: center; width: 30%; margin-right: 1%; margin-bottom: 2em"><img src="figures/agility1.jpg" style="width: 100%; height: 300px">Image by <a href="https://pixabay.com/users/yamabsm-1300729/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3120383">Yama Zsuzsanna Márkus</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=3120383">Pixabay</a></p>
 <p style="float: left; font-size: 5pt; text-align: center; width: 30%; margin-right: 1%; margin-bottom: 0.5em;"><img src="figures/agility2.jpg" style="width: 100%; height: 300px">Image by <a href="https://pixabay.com/users/825545-825545/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=748260">Katrin B.</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=748260">Pixabay</a></p>
@@ -88,26 +88,18 @@ ul {
 # Motivation
 
 .pull-left[
-Problem:
-- Current practice for determining statistical power does not take the use of MTPs into account.
 
-<p style="float: left; font-size: 5pt; text-align: center; width: 100%; margin-right: 1%; margin-bottom: 2em"><img src="figures/pump.jpg" style="width: 100%; height: 200px"><br>Image by <a href="https://pixabay.com/users/947051-947051/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1008977">Jan Steiner</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1008977">Pixabay</a></p>
+Solution: 
+
+- **PUMP**: Power Under Multiplicity Project
+- Calculates power for multiple hypotheses in multilevel randomized controlled trials (RCTs)
+- Multilevel: hierarchical structure, such as students nested within schools nested within districts
+- Assumes frequentist mixed effects models
 
 ]
 
 .pull-right[
-Solution:
-- Introducing **PUMP**.
-- R package.
-- Power Under Multiplicity Project.
-- Calculates power for multiple hypotheses in multilevel randomized controlled trial (RCT) designs.
-
-<br>
-
-- Multilevel: hierarchical structure, such as students nested within schools nested within districts
-- Assumes analyst will use frequentist mixed effects models
-- Running example: education experiments
-
+<p style="float: left; font-size: 5pt; text-align: center; width: 100%; margin-right: 1%; margin-bottom: 2em"><img src="figures/pump.jpg" style="width: 80%; height: 400px"><br>Image by <a href="https://pixabay.com/users/947051-947051/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1008977">Jan Steiner</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=1008977">Pixabay</a></p>
 ]
 
 
@@ -141,8 +133,8 @@ My power to detect the effect for any individual outcome:
 
 Having multiple outcomes has reduced my power...or has it? Stay tuned!
 
-<p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 2em"><img src="figures/flyingdog.jpg" style="width: 100%; height: 250px">Image by <a href="https://pixabay.com/users/brian_cragun-19680916/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5946987">Brian Cragun</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5946987">Pixabay</a></p>
-<p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 0.5em;"><img src="figures/smalldog.jpg" style="width: 60%; height: 250px; align="middle"><br>Photo by <a href="https://unsplash.com/@just_another_photographa?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">James Watson</a> on <a href="https://unsplash.com/s/photos/funny-dog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></p>
+<p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 2em"><img src="figures/flyingdog.jpg" style="width: 100%; height: 250px; margin-left: 20px;">Image by <a href="https://pixabay.com/users/brian_cragun-19680916/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5946987">Brian Cragun</a> from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=image&amp;utm_content=5946987">Pixabay</a></p>
+<p style="float: left; font-size: 5pt; text-align: center; width: 45%; margin-right: 1%; margin-bottom: 0.5em; margin-left: 60px;"><img src="figures/smalldog.jpg" style="width: 60%; height: 250px; align="middle"><br>Photo by <a href="https://unsplash.com/@just_another_photographa?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">James Watson</a> on <a href="https://unsplash.com/s/photos/funny-dog?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a></p>
 
 
 ---
@@ -153,7 +145,7 @@ With at least one outcome:
 
 - design of the study and assumed model
 - $\bar{n}$, $J$, $K$: number of level 1/2/3 units
-- $\bar{T}$: proportion of students treated
+- $\bar{T}$: proportion of units treated
 - number of covariates, $R^2$: explanatory power of covariates
 - $ICC$: intraclass correlation (ratio of variance at a particular level to overall variance)
 
@@ -276,21 +268,21 @@ Takeaways
 
 Instead, we use **simulation**! A full simulation approach would be:
 
-1. *Simulate data* according to the alternative hypotheses.
-2. *Calculate test statistics* under the alternative hypotheses.
-3. Use these test statistics to calculate $p$-values.
-4. Calculate power using the distribution of $p$-values.
+1. *Simulate data* according to the alternative hypotheses
+2. *Calculate test statistics* under the alternative hypotheses
+3. Use these test statistics to calculate $p$-values
+4. Calculate power using the distribution of $p$-values
 
 ---
 
 # How it works
 
-- We can simplify this approach by skipping step 1.
+- We can simplify this approach by skipping step 1
 - Given:
   - design and model
   - correlation between test statistics for different hypotheses
 - We know the joint alternative distribution of test statistics!
-- Results in **simpler** and **faster** power calculations.
+- Results in **simpler** and **faster** power calculations
 
 <br>
 
@@ -376,6 +368,11 @@ class: inverse
 - Calculates minimum detectable effect size (MDES) and sample size
 - Allows user to assess sensitivity of power to different parameters
 
+
+Acknowledgments
+
+- Institute of Education Sciences (Grant R305D170030)
+
 ---
 
 class: inverse
@@ -383,11 +380,10 @@ class: inverse
 # Available now!
 
 
-
-- CRAN: [CRAN.R-project.org/package=PUMP](https://cran.r-project.org/web/packages/PUMP/index.html)
-- Shiny app: [mdrc.shinyapps.io/pump](https://mdrc.shinyapps.io/pump/)
-- Github: [github.com/MDRCNY/PUMP](https://github.com/MDRCNY/PUMP)
-- arXiv: [arxiv.org/abs/2112.15273](https://arxiv.org/abs/2112.15273)
+- CRAN: [<span style="color:pink">CRAN.R-project.org/package=PUMP</span>](https://cran.r-project.org/web/packages/PUMP/index.html)
+- Shiny app: [<span style="color:pink">mdrc.shinyapps.io/pump</span>](https://mdrc.shinyapps.io/pump/)
+- Github: [<span style="color:pink">github.com/MDRCNY/PUMP</span>](https://github.com/MDRCNY/PUMP)
+- arXiv: [<span style="color:pink">arxiv.org/abs/2112.15273</span>](https://arxiv.org/abs/2112.15273)
 - Contact: kristenbhunter@gmail.com
 
 <p style="float: left; font-size: 5pt; text-align: center; width: 100%; margin-right: 1%; margin-bottom: 0.5em;"><img src="figures/wasabi.jpg" style="width: 60%; height: 300px; align="middle"><br>Image by NYTimes</p>
