@@ -5,16 +5,13 @@
 \title{Generate simulated multi-level data (simulation function)}
 \usage{
 gen_sim_data(
-  d_m = NULL,
+  design = NULL,
   model.params.list = NULL,
   Tbar = 0.5,
   pump.object = NULL
 )
 }
 \arguments{
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
-
 \item{model.params.list}{list; model parameters such as ICC,
 R2, etc. See simulation vignette for details.}
 
@@ -22,6 +19,9 @@ R2, etc. See simulation vignette for details.}
 that are assigned to the treatment.}
 
 \item{pump.object}{A pumpresult object.}
+
+\item{d_m}{string; a single context, which is a design and model code. 
+See pump_info() for list of choices.}
 }
 \value{
 list; potential outcomes, covariates,
@@ -37,7 +37,7 @@ Takes in two options:
 OR
 - a list of necessary data-generating parameters
 - the context (d_m)
-- Tbar
+- Tbar (proportion assigned to treatment)
 
 This function is beyond the main scope of calculating power,
 and is instead used for simulating data.

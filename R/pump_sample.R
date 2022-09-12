@@ -273,7 +273,7 @@ pump_sample_raw <- function(
 
 pump_sample <- function(
   d_m, MTP = NULL, typesample,
-  MDES, M, numZero = NULL,
+  MDES, M = 1, numZero = NULL,
   nbar = NULL, J = NULL, K = NULL,
   target.power, power.definition,
   alpha, two.tailed = TRUE,

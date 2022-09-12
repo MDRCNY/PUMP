@@ -9,7 +9,7 @@ pump_sample(
   MTP = NULL,
   typesample,
   MDES,
-  M,
+  M = 1,
   numZero = NULL,
   nbar = NULL,
   J = NULL,

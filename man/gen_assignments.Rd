@@ -2,7 +2,8 @@
 % Please edit documentation in R/simulation.R
 \name{gen_assignments}
 \alias{gen_assignments}
-\title{Generates school and district assignments (simulation function)}
+\title{Generates school and district assignments (simulation
+  function)}
 \usage{
 gen_assignments(J, K, nbar)
 }
@@ -14,16 +15,15 @@ gen_assignments(J, K, nbar)
 \item{nbar}{scalar; number of individuals per school.}
 }
 \value{
-list; school and district 
-assignments (S.id, D.id) for each individual.
+list; school and district assignments (S.id, D.id) for each
+  individual.
 }
 \description{
-Generates simple default schools and 
-districts IDs for individual students for the purpose of
-simulations. This assumes equal sized schools in 
-equal sized districts.
+Generates simple default schools and districts IDs for
+  individual students for the purpose of simulations. This assumes
+  equal sized schools in equal sized districts.
 
-This function is beyond the main scope of calculating power,
-and is instead used for simulating data.
-For more info on use, see the simulation vignette.
+  This function is beyond the main scope of calculating power, and
+  is instead used for simulating data. For more info on use, see
+  the simulation vignette.
 }

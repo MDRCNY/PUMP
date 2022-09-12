@@ -7,19 +7,18 @@
 convert_params(model.params.list)
 }
 \arguments{
-\item{model.params.list}{list; model parameters such as ICC,
-R2, etc.}
+\item{model.params.list}{list; model parameters such as ICC, R2,
+etc.}
 }
 \value{
 list; data-generating parameters.
 }
 \description{
-Converts user-provided parameters such as ICC
-and omega into data-generating parameters that can 
-produce simulated data,
-such as variance values and covariate coefficients.
+Converts user-provided parameters such as ICC and
+  omega into data-generating parameters that can produce simulated
+  data, such as variance values and covariate coefficients.
 
-This function is beyond the main scope of calculating power,
-and is instead used for simulating data.
-For more info on use, see the simulation vignette.
+  This function is beyond the main scope of calculating power, and
+  is instead used for simulating data. For more info on use, see
+  the simulation vignette.
 }

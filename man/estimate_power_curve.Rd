@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimize_power.R
 \name{estimate_power_curve}
 \alias{estimate_power_curve}
-\title{Calculate a power curve for sample size or mdes}
+\title{Calculate a power curve for sample size or mdes.}
 \usage{
 estimate_power_curve(
   p,

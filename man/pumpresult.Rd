@@ -4,6 +4,7 @@
 \alias{pumpresult}
 \alias{params}
 \alias{d_m}
+\alias{design}
 \alias{search_path}
 \alias{pump_type}
 \alias{is.pumpresult}
@@ -18,6 +19,8 @@
 params(x, ...)
 
 d_m(x, ...)
+
+design(x, ...)
 
 search_path(x, ...)
 
@@ -64,6 +67,8 @@ converting column names is optional.}
 params: List of design parameters used.
 
 d_m: Context (d_m) used (as string).
+
+design (the randomization and levels) as string.
 
 search_path: Dataframe describing search path, 
 if it was saved in the pumpresult object.

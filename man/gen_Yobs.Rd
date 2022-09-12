@@ -15,11 +15,11 @@ gen_Yobs(full.data, T.x)
 vector; observed outcomes
 }
 \description{
-Takes in a full dataset of both observed
-and latent potential outcomes and the treatment assignment vector,
-and returns only the observed outcomes.
+Takes in a full dataset of both observed and latent
+  potential outcomes and the treatment assignment vector, and
+  returns only the observed outcomes.
 
-This function is beyond the main scope of calculating power,
-and is instead used for simulating data.
-For more info on use, see the simulation vignette.
+  This function is beyond the main scope of calculating power, and
+  is instead used for simulating data. For more info on use, see
+  the simulation vignette.
 }

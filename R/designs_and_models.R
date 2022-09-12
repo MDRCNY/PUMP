@@ -227,7 +227,8 @@ parse_d_m <- function( d_m ) {
           model3 = l3,
           model3.p = l3.p,
           FE.2 = FE.2,
-          FE.3 = FE.3
+          FE.3 = FE.3,
+          design = paste0( "d", levels, ".", nums[[2]] )
     ) )
 }
 

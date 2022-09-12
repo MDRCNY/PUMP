@@ -47,7 +47,7 @@ test_that("simulation function works", {
         , rho.r = default.rho.matrix      # MxM matrix of correlations for individual residuals 
     )
     
-    sim.data <- gen_sim_data(d_m = 'd3.3_m3rc2rc',
+    sim.data <- gen_sim_data(design = 'd3.3',
                              model.params.list = model.params.list,
                              Tbar = 0.5)
     expect_true( !is.null(sim.data))

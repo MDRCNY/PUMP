@@ -291,6 +291,22 @@ d_m <- function( x, ... ) {
 }
 
 
+
+#' @title Get design from pumpresult object (result function)
+#'
+#' @return design (the randomization and levels) as string.
+#'
+#' @rdname pumpresult
+#' @export
+#' 
+design <- function( x, ... ) {
+    pp = d_m( x )
+    design = parse_d_m( pp )
+    return( design$design )
+}
+
+
+
 #' @title Obtain full search path of pump_mdes or pump_sample call
 #'
 #' @return search_path: Dataframe describing search path, 

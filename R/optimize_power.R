@@ -324,7 +324,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
 }
 
 
-#' Calculate a power curve for sample size or mdes
+#' Calculate a power curve for sample size or mdes.  
 #'
 #' @description
 #' For a grid of points based on a passed sample or mdes pumpresult, estimate

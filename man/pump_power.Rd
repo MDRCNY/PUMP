@@ -10,7 +10,7 @@ pump_power(
   MDES,
   numZero = NULL,
   propZero = NULL,
-  M,
+  M = 1,
   nbar,
   J = 1,
   K = 1,

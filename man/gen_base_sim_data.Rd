@@ -2,7 +2,8 @@
 % Please edit documentation in R/simulation.R
 \name{gen_base_sim_data}
 \alias{gen_base_sim_data}
-\title{Generate base simulated multi-level data (simulation function)}
+\title{Generate base simulated multi-level data (simulation
+  function)}
 \usage{
 gen_base_sim_data(dgp.params.list)
 }
@@ -11,18 +12,17 @@ gen_base_sim_data(dgp.params.list)
 }
 \value{
 list; potential outcomes given control y0, treatment y1,
-        covariates V.k, X.jk, C.ijk.
+  covariates V.k, X.jk, C.ijk.
 }
 \description{
-Generates simulated data for multi-level
-RCTs for pump-supported designs and models for
-both unobserved potential outcomes.
-This function does not generate treatment assignments
-or observed outcomes.
+Generates simulated data for multi-level RCTs for
+  pump-supported designs and models for both unobserved potential
+  outcomes. This function does not generate treatment assignments
+  or observed outcomes.
 
-Takes in a list of necessary data-generating parameters.
+  Takes in a list of necessary data-generating parameters.
 
-This function is beyond the main scope of calculating power,
-and is instead used for simulating data.
-For more info on use, see the simulation vignette.
+  This function is beyond the main scope of calculating power, and
+  is instead used for simulating data. For more info on use, see
+  the simulation vignette.
 }

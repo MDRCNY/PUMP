@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{makelist_samp}
 \alias{makelist_samp}
-\title{takes in multi-outcome data and returns a list for each outcome}
+\title{Convert multi-outcome data structure to list for each outcome.}
 \usage{
 makelist_samp(samp.obs, T.x)
 }
@@ -11,7 +11,11 @@ makelist_samp(samp.obs, T.x)
 
 \item{T.x}{vector of treatment assignments}
 }
+\value{
+List of dataframes.
+}
 \description{
-takes in multi-outcome data and returns a list for each outcome
+Given the simulated multi-outcome structure, make a list of
+complete (tidy) rectangular datasets, one for each outcome.
 }
 \keyword{internal}

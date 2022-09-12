@@ -237,7 +237,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 pump_power <- function(
   d_m, MTP = NULL, MDES, 
   numZero = NULL, propZero = NULL,
-  M,
+  M = 1,
   nbar, J = 1, K = 1, Tbar,
   alpha = 0.05, two.tailed = TRUE,
   numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
