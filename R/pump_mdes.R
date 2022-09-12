@@ -85,12 +85,16 @@ pump_mdes <- function(
     stop( "Cannot have NULL tol (tolerance)" )
   }
 
-    err = sqrt( target.power * (1-target.power) / tnum )
-    tnum_est = round( (target.power*(1-target.power) ) /  ( tol^2 ) )
-    if ( err > tol ) {
-        warning( sprintf( "Number of replicates (tnum) is too small given target tolerance.  Suggested tnum=%d",
-                          as.integer( tnum_est ) ), call. = FALSE )
-    }
+  err <- sqrt( target.power * (1 - target.power) / tnum )
+  tnum_est <- round( (target.power*(1 - target.power) ) /  ( tol^2 ) )
+  if ( err > tol ) {
+    warning( sprintf( 
+      "Number of replicates (tnum) is too small given target tolerance.  Increasing tnum from %d to %d",
+      as.integer( tnum ), as.integer( tnum_est ) ), call. = FALSE )
+    tnum <- tnum_est
+    start.tnum <- tnum / 10
+    final.tnum <- 4*tnum
+  }
     
   pow_params <- list( target.power = target.power,
                       power.definition = power.definition,

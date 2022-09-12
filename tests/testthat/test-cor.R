@@ -37,10 +37,10 @@ test_that('Correlations checker runs', {
     # just if it runs!
     
     set.seed(23)
-    cor.tstat <- expect_warning(check_cor(
+    cor.tstat <- check_cor(
         d_m = 'd2.1_m2fr', model.params.list = model.params.list,
         Tbar = 0.5, n.sims = 3
-    ))
+    )
     
     expect_true(nrow(cor.tstat) == 3)
     expect_true(ncol(cor.tstat) == 3)
