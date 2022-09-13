@@ -766,21 +766,20 @@ get_rawpt <- function(dat.all, d_m, model.params.list) {
 #' extracts p-value and t statistics from a given model
 #'
 #' @param mod model object
-#' @param d_m design/model
 #' @param model.params.list list of model parameters
 #' 
 #' @keywords internal
 get_pval_tstat <- function(mod, d_m, model.params.list) {
-    if(class(mod) == "lm") {
+    if(methods::is(mod, "lm")) {
         tstat <- summary(mod)$coefficients["T.x","t value"]
         pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
-    } else if(class(mod) == "lmerMod") {
+    } else if(methods::is(mod, "lmerMod")) {
         df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                             model.params.list[['nbar']],
                             numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
         tstat <- summary(mod)$coefficients["T.x","t value"]
         pval <- (1 - stats::pt(abs(tstat), df = df))*2
-    } else if (class(mod) == "data.frame") {
+    } else if(methods::is(mod, "data.frame")) {
         # fixed effects models
         df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                             model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)

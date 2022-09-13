@@ -388,7 +388,7 @@ pump_power <- function(
 
   } else if (MTP == "BH") {
 
-    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "hochberg"))
+    adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "BH"))
 
   } else if (MTP == "WY-SS"){
 
