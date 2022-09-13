@@ -572,14 +572,15 @@ test_that( "different MDES values work", {
         rho = 0.4, tnum = default.tnum ) 
     pow
     
-    ss1 <- update( pow, type="sample",
+    ss1 <- update( pow, type = "sample",
                    typesample = "J",
                    power.definition = "D4indiv",
-                   target.power = pow$D4indiv[[2]])
+                   target.power = pow$D4indiv[[2]],
+                   max.steps = 30)
     ss1
-    expect_equal( ss1$Sample.size, 40, tol=0.05 )
+    expect_equal( ss1$Sample.size, 40, tol = 0.05 )
     
-    ss2 <- update( pow, type="sample",
+    ss2 <- update( pow, type = "sample",
                    typesample = "J",
                    power.definition = "D5indiv",
                    target.power = 0.80 )

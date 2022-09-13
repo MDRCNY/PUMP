@@ -11,8 +11,6 @@ get_pval_tstat(mod, d_m, model.params.list)
 \arguments{
 \item{mod}{model object}
 
-\item{d_m}{design/model}
-
 \item{model.params.list}{list of model parameters}
 }
 \description{
