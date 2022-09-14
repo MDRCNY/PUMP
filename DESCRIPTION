@@ -19,10 +19,10 @@ Imports:
      dplyr,
      ggplot2,
      ggpubr,
-     here,
      future,
      lme4,
      magrittr,
+     methods,
      mvtnorm,
      parallel,
      purrr,
@@ -35,12 +35,13 @@ Imports:
      tidyr,
      tidyselect
 Suggests: 
-    testthat,
+    furrr,
+    here,
     kableExtra,
     knitr,
-    furrr,
-    PowerUpR (>= 1.1.0)
+    PowerUpR (>= 1.1.0),
+    testthat
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr

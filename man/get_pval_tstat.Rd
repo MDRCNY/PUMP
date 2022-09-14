@@ -20,4 +20,15 @@ Function: get_pval_tstat
  
 extracts p-value and t statistics from a given fitted model.
 }
+\keyword{Function:}
+\keyword{a}
+\keyword{and}
+\keyword{extracts}
+\keyword{from}
+\keyword{get_pval_tstat}
+\keyword{given}
 \keyword{internal}
+\keyword{model}
+\keyword{p-value}
+\keyword{statistics}
+\keyword{t}

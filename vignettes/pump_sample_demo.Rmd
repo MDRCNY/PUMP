@@ -91,7 +91,6 @@ K <- pump_sample(
 ```
 
 ```{r, echo = FALSE}
-# print(K)
 knitr::kable(K)
 ```
 
@@ -116,7 +115,6 @@ p <- update(K, type = "power", tnum = 100000)
 ```
 
 ```{r, echo = FALSE}
-# print(p)
 knitr::kable(p)
 ```
 
@@ -152,12 +150,11 @@ J1 <- pump_sample(
 ```
 
 ```{r, include=FALSE}
-sp = search_path(J1)
+sp <- search_path(J1)
 sp$dx[nrow(sp)] * 4
 ```
 
 ```{r, echo = FALSE}
-# print(J1)
 knitr::kable(J1)
 ```
 
