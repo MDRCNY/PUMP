@@ -751,8 +751,16 @@ print_context <- function(
     }
   }
   
-  scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
-        params$nbar, params$J, params$K, params$Tbar )
+  if ( des$levels < 2 ) {
+      scat( "  nbar: %s\tTbar: %s\n",
+            params$nbar, params$Tbar )
+  } else if ( des$levels < 3 ) {
+      scat( "  nbar: %s\tJ: %s\tTbar: %s\n",
+            params$nbar, params$J, params$Tbar )
+  } else {
+      scat( "  nbar: %s\tJ: %s\tK: %s\tTbar: %s\n",
+            params$nbar, params$J, params$K, params$Tbar )
+  }
   scat( "  alpha: %s\t\n", params$alpha)
   scat( "  Level:\n    1: R2: %s (%s)\n",
         params$R2.1, cname( params$numCovar.1 ) )

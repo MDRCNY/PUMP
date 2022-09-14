@@ -6,11 +6,13 @@
 \usage{
 pump_mdes_grid(
   d_m,
-  MTP,
-  M,
+  MTP = NULL,
+  M = 1,
   target.power,
   power.definition,
   tol = 0.01,
+  propZero = NULL,
+  numZero = NULL,
   nbar,
   J = 1,
   K = 1,
@@ -26,7 +28,7 @@ pump_mdes_grid(
   ICC.3 = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
-  rho,
+  rho = NULL,
   verbose = FALSE,
   drop.unique.columns = TRUE,
   ...
@@ -51,6 +53,14 @@ possible power definitions.}
 This parameter controls when the search is done: 
 when estimated power (checked with `final.tnum` iterations) 
 is within `tol`, the search stops.}
+
+\item{propZero}{scalar; proportion of outcomes assumed to be zero
+(alternative specification to numZero).  length(MDES) should be 1
+or equal to (1-propZero)*M.}
+
+\item{numZero}{scalar; additional number of outcomes assumed to be
+zero. Please provide NumZero + length(MDES) = M, if length(MDES)
+is not 1.}
 
 \item{nbar}{scalar; the harmonic mean of the number of level 1
 units per level 2 unit (students per school). Note that this is

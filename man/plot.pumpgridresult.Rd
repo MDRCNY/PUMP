@@ -8,6 +8,7 @@
   x,
   power.definition = NULL,
   var.vary = NULL,
+  color = "MTP",
   lines = TRUE,
   include.title = FALSE,
   ...
@@ -16,18 +17,21 @@
 \arguments{
 \item{x}{pumpgridresult object.}
 
-\item{power.definition}{string; definition of power to plot.
-If NULL, plot all definitions as a facet wrap.}
+\item{power.definition}{string; definition of power to plot. If
+NULL, plot all definitions as a facet wrap.}
 
-\item{var.vary}{string; variable to vary on X axis.
-If NULL, and only one thing varies, then it will default 
-to single varying parameter.}
+\item{var.vary}{string; variable to vary on X axis. If NULL, and
+only one thing varies, then it will default to single varying
+parameter.}
 
-\item{lines}{logical; TRUE means connect dots with lines on the plots.
-FALSE means no lines.}
+\item{color}{string; Group lines by this element to make an
+interaction plot (default "MTP", giving one curve for each MTP).}
 
-\item{include.title}{logical; whether to include/exclude title 
-(if planning a facet wrap, for example).}
+\item{lines}{logical; TRUE means connect dots with lines on the
+plots. FALSE means no lines.}
+
+\item{include.title}{logical; whether to include/exclude title (if
+planning a facet wrap, for example).}
 
 \item{...}{additional parameters.}
 }
@@ -35,14 +39,14 @@ FALSE means no lines.}
 plot; a ggplot object of outcome across parameter values.
 }
 \description{
-Plots grid results across values of a single parameter, specified by the user
-using var.vary, for a single definition of power, specified by
-power.definition.
+Plots grid results across values of a single parameter, specified by
+the user using var.vary, for a single definition of power, specified
+by power.definition.
 
-If multiple things vary in the grid, the outcome (power, mdes, or sample size)
-will be averaged (marginalized) across the other varying factors. This treats
-the grid as a multifactor simulation, with this showing the "main effect" of
-the specified parameter.
+If multiple things vary in the grid, the outcome (power, mdes, or
+sample size) will be averaged (marginalized) across the other
+varying factors. This treats the grid as a multifactor simulation,
+with this showing the "main effect" of the specified parameter.
 }
 \examples{
 g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),

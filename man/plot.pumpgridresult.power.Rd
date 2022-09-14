@@ -16,18 +16,18 @@
 \arguments{
 \item{x}{pumpgridresult object.}
 
-\item{power.definition}{string; definition of power to plot.
-If NULL, plot all definitions as a facet wrap.}
+\item{power.definition}{string; definition of power to plot. If
+NULL, plot all definitions as a facet wrap.}
 
-\item{var.vary}{string; variable to vary on X axis.
-If NULL, and only one thing varies, then it will default 
-to single varying parameter.}
+\item{var.vary}{string; variable to vary on X axis. If NULL, and
+only one thing varies, then it will default to single varying
+parameter.}
 
-\item{lines}{logical; TRUE means connect dots with lines on the plots.
-FALSE means no lines.}
+\item{lines}{logical; TRUE means connect dots with lines on the
+plots. FALSE means no lines.}
 
-\item{include.title}{logical; whether to include/exclude title 
-(if planning a facet wrap, for example).}
+\item{include.title}{logical; whether to include/exclude title (if
+planning a facet wrap, for example).}
 
 \item{...}{additional parameters.}
 }

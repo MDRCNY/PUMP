@@ -6,12 +6,14 @@
 \usage{
 pump_sample_grid(
   d_m,
-  MTP,
-  M,
+  MTP = NULL,
+  M = 1,
   target.power,
   power.definition,
   tol = 0.01,
   MDES = NULL,
+  propZero = NULL,
+  numZero = NULL,
   typesample,
   nbar = NULL,
   J = NULL,
@@ -28,7 +30,7 @@ pump_sample_grid(
   ICC.3 = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
-  rho,
+  rho = NULL,
   verbose = FALSE,
   drop.unique.columns = TRUE,
   ...
@@ -57,6 +59,13 @@ is within `tol`, the search stops.}
 \item{MDES}{scalar or vector; the desired MDES values for each
 outcome. Please provide a scalar, a vector of length M, or vector
 of values for non-zero outcomes.}
+
+\item{propZero}{Proportion of outcomes that have 0 impact (this
+will be used to override numZero, only one can be defined)}
+
+\item{numZero}{scalar; additional number of outcomes assumed to be
+zero. Please provide NumZero + length(MDES) = M, if length(MDES)
+is not 1.}
 
 \item{typesample}{string; type of sample size to 
 calculate: "nbar", "J", or "K".}

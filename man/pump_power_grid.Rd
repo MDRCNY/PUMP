@@ -7,14 +7,14 @@
 \usage{
 pump_power_grid(
   d_m,
-  MTP,
+  MTP = NULL,
   MDES,
-  M,
+  M = 1,
   nbar,
   J = 1,
   K = 1,
-  numZero = NULL,
   propZero = NULL,
+  numZero = NULL,
   Tbar,
   alpha = 0.05,
   numCovar.1 = NULL,
@@ -27,7 +27,7 @@ pump_power_grid(
   ICC.3 = NULL,
   omega.2 = NULL,
   omega.3 = NULL,
-  rho,
+  rho = NULL,
   long.table = FALSE,
   verbose = FALSE,
   drop.unique.columns = TRUE,
@@ -62,12 +62,12 @@ level 2 units is J x K.}
 
 \item{K}{scalar; the number of level 3 units (districts).}
 
+\item{propZero}{Proportion of outcomes that have 0 impact (this
+will be used to override numZero, only one can be defined)}
+
 \item{numZero}{scalar; additional number of outcomes assumed to be
 zero. Please provide NumZero + length(MDES) = M, if length(MDES)
 is not 1.}
-
-\item{propZero}{Proportion of outcomes that have 0 impact (this
-will be used to override numZero, only one can be defined)}
 
 \item{Tbar}{scalar; the proportion of samples that are assigned to
 the treatment.}
