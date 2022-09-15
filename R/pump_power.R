@@ -260,7 +260,7 @@ pump_power <- function(
     MTP <- MTP[which(MTP != 'None')]
   }
     
-  # Call self for each element on MTP list.
+  # Recursively call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
     if ( verbose ) {
       smessage( "Multiple MTPs leading to %d calls\n", length(MTP) )
@@ -307,8 +307,7 @@ pump_power <- function(
                              long.table = long.table ) )
   }
 
-  if(validate.inputs)
-  {
+  if(validate.inputs) {
     # validate input parameters
     params.list <- list(
       MTP = MTP,

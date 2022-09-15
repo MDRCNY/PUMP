@@ -282,8 +282,7 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   } # end search loop
 
   # collect all warnings
-  if(!is.null(optimizer.warnings) & give.warnings)
-  {
+  if(!is.null(optimizer.warnings) & give.warnings) {
     warning(unique(optimizer.warnings))
   }
 
@@ -294,27 +293,28 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
 
   n_targ <- target.power * (1-target.power) / (tol^2)
   if ( n_targ > final.tnum ) {
-    swarning( "Number of final iterations (%d) not up to
-               specified tolerance (%0.2f).",
+    swarning( "Number of final iterations (%d) not up to specified tolerance (%0.2f).",
               final.tnum, tol )
   }
   
   if( above.df.threshold && abs(current.power - target.power) > tol) {
     if ( step == max.steps ) {
-      msg <- "Reached maximum iterations without converging on
-              estimate within tolerance.\n"
-      msg <- paste(msg, "See sample size vignette for suggestions.")
+      msg <- "Reached maximum iterations without converging on estimate within tolerance.\n"
+      msg <- paste0(msg, "See sample size vignette for suggestions.")
       warning(msg)
     } else if ( current.power < target.power ) {
-      warning( "Terminated search early, likely due to
-               needing extreme values to achieve desired power." )
+      warning( "Terminated search early, likely due to needing extreme values to achieve desired power." )
     }
-    iter.results <- data.frame(
-      step = step, MTP = MTP, target.power = target.power,
-      pt = NA, dx = NA,
-      power = NA, w = NA
-    )
-    test.pts <- dplyr::bind_rows(test.pts, iter.results )
+    
+    # Following code removed: Don't add a final NA for final value.  Just
+    # take where we are.
+      
+    #iter.results <- data.frame(
+    #  step = step, MTP = MTP, target.power = target.power,
+    #  pt = NA, dx = NA,
+    #  power = NA, w = NA
+    #)
+    #test.pts <- dplyr::bind_rows(test.pts, iter.results )
   }
   
   test.pts <- dplyr::relocate( test.pts, .data$step, .data$MTP,

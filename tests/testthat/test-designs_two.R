@@ -522,11 +522,12 @@ test_that("testing of d2.2_m2rc", {
       MDES = 0.125,
       Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
       numCovar.1 = 1, numCovar.2 = 1,
-      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2
-  )
+      R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, rho = 0.2 )
   )
  
-  expect_true(is.na(ss2$Sample.size))
+  # even though we didn't converge, we get a value
+  expect_true(!is.na(ss2$Sample.size))
+  expect_true(ss2$Sample.size > 100000 )
   
   # can achieve target
   # checks power curve works for BF

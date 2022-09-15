@@ -883,10 +883,9 @@ validate_inputs <- function( d_m, params.list,
     # Basic checks of data parameters
     #-------------------------------------------------------#
 
-    if( (!is.null( params.list$K ) && params.list$K <= 0) |
-        ( !is.null( params.list$J) && params.list$J <= 0) |
-        params.list$nbar <= 0)
-    {
+    if( ( !is.null( params.list$K ) && params.list$K <= 0) |
+        ( !is.null( params.list$J ) && params.list$J <= 0) |
+        ( !is.null( params.list$nbar ) && params.list$nbar <= 0) ) {
         stop('Provided values of J, K, and/or nbar need to be positive.')
     }
 

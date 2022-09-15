@@ -299,7 +299,8 @@ test_that("sample search when one end is missing", {
                                           R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05,
                                           rho = 0.2, tnum = 1000 ) )
   nbar3
-  expect_true( is.na( nbar3$`Sample.size` ) )
+  expect_true( !is.na( nbar3$`Sample.size` ) )
+  expect_true( nbar3$`Sample.size` > 100000 )
 })
 
 

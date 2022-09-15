@@ -55,7 +55,8 @@
 #'   rho = 0.5, tnum = 2000)
 
 pump_mdes <- function(
-        d_m, MTP = NULL, numZero = NULL, propZero = NULL, M = 1, nbar, J = 1, K = 1,
+        d_m, MTP = NULL, numZero = NULL, propZero = NULL, M = 1, 
+        nbar, J = 1, K = 1,
         Tbar, alpha = 0.05, two.tailed = TRUE,
         target.power = 0.80, power.definition, tol = 0.02,
         numCovar.1 = 0, numCovar.2 = 0, numCovar.3 = 0,
@@ -69,6 +70,7 @@ pump_mdes <- function(
         parallel.WY.cores = 1,
         updateProgress = NULL, give.optimizer.warnings = FALSE,
         verbose = FALSE ) {
+    
     if ( verbose ) {
         scat( "pump_mdes with %d max iterations per search, 
           starting at %d iterations with final %d iterations 
@@ -90,7 +92,7 @@ pump_mdes <- function(
     }
     
     err <- sqrt( target.power * (1 - target.power) / tnum )
-    tnum_est <- round( (target.power*(1 - target.power) ) /  ( tol^2 ) )
+    tnum_est <- round( (target.power*(1 - target.power) ) / ( tol^2 ) )
     if ( err > tol ) {
         warning( sprintf( 
             "Number of replicates (tnum) is too small given target tolerance.  Increasing tnum from %d to %d",
@@ -135,6 +137,7 @@ pump_mdes <- function(
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
     B <- params.list$B
     power.definition <- params.list$power.definition
+
     params.list <- params.list[names(params.list) != 'power.definition']
     
     # extract power definition
@@ -305,7 +308,7 @@ pump_mdes <- function(
     {
         msg <- "Note: this function returns one possible value of MDES, 
     but other (smaller values) may also be valid.\n"
-        msg <- paste(msg, "Please refer to sample size vignette for 
+        msg <- paste0(msg, "Please refer to sample size vignette for 
                  interpretation.\n")
         message(msg)
         flat <- TRUE

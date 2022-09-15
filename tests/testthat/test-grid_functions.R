@@ -322,3 +322,21 @@ test_that( "grid breaks with invalid inputs", {
       rho = c(0.2, 0.2)))
   
 })
+
+
+
+test_that( "0 MDES does something reasonable", {
+    
+ 
+    pp1 = pump_power( d_m = "d1.1_m1c",
+                      MDES = 0.3, M = 1, Tbar = 0.5,
+                      nbar = 100 )
+    pp1
+    
+    pp2 = update_grid( pp1, MDES = seq( 0, 1, by=0.1 ) )
+    pp2
+
+    expect_equal( nrow( pp2 ), 11 )
+    expect_true( is.na( pp2$D1indiv[[1]] ) )
+    
+} )

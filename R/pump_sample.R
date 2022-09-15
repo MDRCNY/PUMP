@@ -321,6 +321,8 @@ pump_sample <- function(
             stop('Do not provide K if you are searching for K')
         }
         K <- 1000
+    } else {
+        stop( glue::glue( "Invalid typesample '{typesample}'" ) )
     }
     
     # validate input parameters
@@ -528,8 +530,7 @@ pump_sample <- function(
     {
         ss.high <- ss.high.list[[which.ss.high]]$ss
         default.max <- FALSE
-    } else
-    {
+    } else {
         if( typesample == 'nbar')
         {
             ss.high <- max_sample_size_nbar
@@ -545,8 +546,7 @@ pump_sample <- function(
         ss.results <- data.frame(MTP, typesample, ss.high, target.power)
         colnames(ss.results) <- output.colnames
         
-        if(default.max)
-        {
+        if(default.max) {
             warning('Cannot achieve target power with given parameters.')
             ss.results <- data.frame(MTP, typesample, NA, target.power)
             colnames(ss.results) <- output.colnames
@@ -555,8 +555,10 @@ pump_sample <- function(
                                  type = "sample", params.list = params.list,
                                  d_m = d_m,
                                  sample.level = typesample,
+                                 exact = TRUE,
                                  power.params.list = pow_params) )
     }
+    
     # Done if None is what we are looking for
     if (MTP == "None" ) {
         ss.results <- data.frame(MTP, typesample, ss.low, target.power)
@@ -573,14 +575,13 @@ pump_sample <- function(
                                  type = "sample", params.list = params.list,
                                  d_m = d_m,
                                  sample.level = typesample,
+                                 exact = TRUE,
                                  power.params.list = pow_params) )
     }
     
     if(default.max)
     {
-        warning( "Using default max sample size for one 
-             end of initial bounds of search, so 
-             estimation may take more time.", call. = FALSE )
+        warning( "Using default max sample size for one end of initial bounds of search, so estimation may take more time.", call. = FALSE )
     }
     
     # search in the grid from min to max.
