@@ -4,10 +4,10 @@
 \alias{gen_T.x}
 \title{Generate treatment assignment vector (simulation function)}
 \usage{
-gen_T.x(design, S.id, D.id, Tbar)
+gen_T.x(d_m, S.id, D.id, Tbar)
 }
 \arguments{
-\item{design}{string; design and model.}
+\item{d_m}{string; design and model.}
 
 \item{S.id}{vector; school assignments.}
 

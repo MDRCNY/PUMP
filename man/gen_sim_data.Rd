@@ -5,13 +5,16 @@
 \title{Generate simulated multi-level data (simulation function)}
 \usage{
 gen_sim_data(
-  design = NULL,
+  d_m = NULL,
   model.params.list = NULL,
   Tbar = 0.5,
   pump.object = NULL
 )
 }
 \arguments{
+\item{d_m}{string; a single context, which is a design and model code. 
+See pump_info() for list of choices.}
+
 \item{model.params.list}{list; model parameters such as ICC,
 R2, etc. See simulation vignette for details.}
 
@@ -19,9 +22,6 @@ R2, etc. See simulation vignette for details.}
 that are assigned to the treatment.}
 
 \item{pump.object}{A pumpresult object.}
-
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
 }
 \value{
 list; potential outcomes, covariates,

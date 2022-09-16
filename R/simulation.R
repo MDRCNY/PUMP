@@ -349,31 +349,31 @@ gen_base_sim_data <- function(dgp.params.list) {
 #' sim.data <- gen_sim_data(pump.object = pp)
 #'
 gen_sim_data <- function(
-    design = NULL, model.params.list = NULL, Tbar = 0.5,
+    d_m = NULL, model.params.list = NULL, Tbar = 0.5,
     pump.object = NULL)
 {
     
     # If first thing is a pump.object, swap
-    if ( !is.null(design) && (is.pumpresult(design) || is.pumpgridresult(design)) ) {
-        pump.object = design
-        design = NULL
+    if ( !is.null(d_m) && (is.pumpresult(d_m) || is.pumpgridresult(d_m)) ) {
+        pump.object <- d_m
+        d_m<- NULL
     }
     
     if(is.null(pump.object))
     {
-      if(is.null(design) | is.null(model.params.list))
+      if(is.null(d_m) | is.null(model.params.list))
       {
           stop("You must provide either a pump object
-                or both a design string and list of model params.")
+                or both a design string (d_m) and list of model params.")
       }
     } else {
-      if(!is.null(design) | !is.null(model.params.list))
+      if(!is.null(d_m) | !is.null(model.params.list))
       {
           stop("You must provide either a pump object or
-                a design string and list of model params pair (not both).")
+                a design string (d_m) and list of model params pair (not both).")
       }
       model.params.list <- params(pump.object)
-      design <- design(pump.object)
+      d_m <- d_m(pump.object)
       Tbar <- model.params.list$Tbar
       model.params.list$rho.default <- model.params.list$rho
     }
@@ -381,7 +381,7 @@ gen_sim_data <- function(
     dgp.params.list <- convert_params(model.params.list)
     sim.data <- gen_base_sim_data(dgp.params.list)
     sim.data$T.x <- gen_T.x(
-        design = design,
+        d_m = d_m,
         S.id = sim.data$ID$S.id,
         D.id = sim.data$ID$D.id,
         Tbar = Tbar
@@ -653,7 +653,7 @@ gen_assignments <- function(J, K, nbar){
 #' and is instead used for simulating data.
 #' For more info on use, see the simulation vignette.
 #'
-#' @param design string; design and model.
+#' @param d_m string; design and model.
 #' @param S.id vector; school assignments.
 #' @param D.id vector; district assignments.
 #' @param Tbar scalar; probability of treatment assignment.
@@ -661,24 +661,24 @@ gen_assignments <- function(J, K, nbar){
 #' @return vector; treatment assignments for each unit.
 #' 
 #' @export
-gen_T.x <- function(design, S.id, D.id, Tbar)
+gen_T.x <- function(d_m, S.id, D.id, Tbar)
 {
-    od = design
-    design = strsplit(design, "_")
-    design = design[[1]][[1]]
+    od <- d_m
+    d_m <- strsplit(d_m, "_")
+    d_m <- d_m[[1]][[1]]
     
-    if(design == "d1.1") {
+    if(d_m == "d1.1") {
         T.x <- randomizr::simple_ra(N = length(S.id), prob = Tbar)
-    } else if( design == "d2.1" || design == "d3.1" ) {
+    } else if( d_m == "d2.1" || d_m == "d3.1" ) {
         T.x <- randomizr::block_ra( S.id, prob = Tbar )
-    } else if( design == "d2.2" ) { 
+    } else if( d_m == "d2.2" ) { 
         T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-    } else if( design == "d3.3" ) {
+    } else if( d_m == "d3.3" ) {
         T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-    } else if( design == "d3.2" ) {
+    } else if( d_m == "d3.2" ) {
         T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
     } else {
-        stop(print(paste('design', design, 'not implemented yet')))
+        stop(print(paste('design', d_m, 'not implemented yet')))
     }
     return(T.x)
 }
