@@ -329,9 +329,9 @@ search_path <- function( x, ... ) {
 }
 
 
-#' Was the calculation exact?
-#' 
-#' 
+# Was the calculation exact?
+# 
+# 
 exact_calc <- function( x, ... ) {
     stopifnot( is.pumpresult( x ) )
     exact <- attr( x, "exact" )
