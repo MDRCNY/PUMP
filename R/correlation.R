@@ -24,7 +24,7 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
         }
         if (s %% 100 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
         
-        sim.data <- gen_sim_data(design = d_m, model.params.list, Tbar = Tbar)
+        sim.data <- gen_sim_data(d_m = d_m, model.params.list, Tbar = Tbar)
 
         # calculate t statistics
         dat.all <- makelist_samp(sim.data, sim.data$T.x)

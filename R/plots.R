@@ -670,7 +670,7 @@ plot.pumpgridresult.mdes <- function(
     dplyr::mutate(Adjusted.MDES = as.numeric(.data$Adjusted.MDES))
   
   # ensure our color is a factor
-  plot.data[ color ] = as.factor( plot.data[[color]] )
+  plot.data[ color ] <- as.factor( plot.data[[color]] )
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
@@ -689,9 +689,9 @@ plot.pumpgridresult.mdes <- function(
                           position = ggplot2::position_dodge(width = 0.125))
   }
   
-  c_title = color
+  c_title <- color
   
-  x_lab = var.vary
+  x_lab <- var.vary
   if ( M > 1 ) {
       x_lab = paste0(var.vary, " (same across all outcomes)")
   }
@@ -776,7 +776,7 @@ plot.pumpgridresult.sample <- function(
   }
   
   # ensure our color is a factor
-  plot.data[ color ] = as.factor( plot.data[[color]] )
+  plot.data[ color ] <- as.factor( plot.data[[color]] )
   
   
   grid.plot <- ggplot2::ggplot(
@@ -796,9 +796,9 @@ plot.pumpgridresult.sample <- function(
       position = ggplot2::position_dodge(width = 0.125))
   }
   
-  x_lab = var.vary
+  x_lab <- var.vary
   if ( params(x)$M > 1 ) {
-      x_lab = paste0(var.vary, " (same across all outcomes)")
+      x_lab <- paste0(var.vary, " (same across all outcomes)")
   }
   
   grid.plot <- grid.plot + 

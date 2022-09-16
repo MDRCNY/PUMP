@@ -63,9 +63,9 @@ is.pumpgridresult <- function( x ) {
 print_grid_header <- function( x ) {
     result_type <- attr( x, "type" )
     
-    d_m = d_m(x)
+    d_m <- d_m(x)
     if ( length( d_m ) > 1 ) {
-        d_m = paste0( "multi-design ", paste( d_m, collapse = "/" ) )
+        d_m <- paste0( "multi-design ", paste( d_m, collapse = "/" ) )
     }
     scat( "%s grid result: %s d_m with %s outcomes\n",
           result_type, d_m(x), params(x)$M )
