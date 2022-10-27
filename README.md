@@ -1,8 +1,6 @@
 # PUMP package
 
-Please see the vignettes for examples of how to use this package.
-
-Last updated: January 6, 2022.
+Last updated: October 27, 2022.
 
 Authors:
 * Zarni Htet
@@ -21,8 +19,13 @@ PUMP allows researchers to consider a variety of definitions of power, as some m
 The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures.
 In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
 
-For a full package description, including a detailed technical appendix, see https://arxiv.org/abs/2112.15273.
-See also the shiny app https://mdrc.shinyapps.io/pump/.
+Please see the vignettes for examples of how to use this package.
+
+More details about the package:
+
+- For a full package description, including a detailed technical appendix, see: https://arxiv.org/abs/2112.15273.
+- See also the shiny app: https://mdrc.shinyapps.io/pump/.
+- For a presentation about PUMP, see: https://github.com/kristenbhunter/presentations/tree/master/NCI2022.
 
 We provide below one example of using PUMP to calculate a minimium detectable effect size (MDES).
 The user specifies the RCT design and model (d_m), the multiple testing procedure (MTP, in this case Holm),
