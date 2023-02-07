@@ -2,11 +2,14 @@
 
 Last updated: October 27, 2022.
 
+<center><img src="pump_icon.png" alt="pump-icon" width="400"/></center>
+
 Authors:
-* Zarni Htet
-* Kristen Hunter
-* Luke Miratrix
-* Kristin Porter
+
+- Zarni Htet
+- Kristen Hunter
+- Luke Miratrix
+- Kristin Porter
 
 For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
 Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
@@ -50,3 +53,5 @@ m <- pump_mdes(
   ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
   rho = 0.4 )                   # how correlated outcomes are
 ```
+
+
