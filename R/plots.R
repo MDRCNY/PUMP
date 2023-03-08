@@ -1,82 +1,3 @@
-
-
-
-get_sample_tick_marks <- function( 
-    desired_pts, breaks = 5, include.points = TRUE, log = FALSE 
-) {
-  
-  desired_pts <- sort( unique( round( desired_pts ) ) )
-  
-  if ( log ) {
-    desired_pts <- log( desired_pts )
-  }
-  
-  mn <- min( desired_pts, na.rm = TRUE )
-  mx <- max( desired_pts, na.rm = TRUE )
-  rng <- mx - mn
-  
-  if ( log == FALSE && rng < breaks ) {
-    breaks <- round(rng)
-  }
-  
-  pts <- seq( mn, mx, length.out = breaks )
-  
-  if ( include.points ) {
-    
-    bw <- rng / (breaks+1)
-    
-    rg <- cut( desired_pts, 
-              breaks = seq( mn - bw/2, mx + bw/2, length.out = breaks+1 ), 
-              labels = pts )
-    
-    grab_pt <- function( pt, gpts ) {
-      if ( length( gpts) == 0 ) {
-        pt
-      } else {
-        dels <- abs( gpts - pt )
-        gpts[ which.min( dels ) ]
-      }
-    }
-    
-    gps <- split( desired_pts, rg )
-    
-    vals <- purrr::map2_dbl( pts, gps, grab_pt )
-    
-    pts <- vals
-  } 
-  
-  if ( log ) {
-    return( unique( round( exp( pts ) ) ) )
-  } else {
-    return( round( pts ) )
-  }
-}
-
-
-get_sample_size_scale <- function( 
-    points, breaks = 5, include.points = FALSE 
-) {
-  
-  delrange <- diff( range( points, na.rm = TRUE ) )
-  if ( delrange > 50 ) {
-    xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
-                                  include.points = include.points,
-                                  log = TRUE )
-    ggplot2::scale_x_log10( breaks=xpt )
-  } else if ( delrange >= 2 && delrange <= 15 ) {
-    # Tick marks for each sample size.
-    xpt <- seq( round( min( points, na.rm = TRUE ) - 0.25 ), 
-                round( max( points, na.rm = TRUE ) + 0.25 ) )
-    ggplot2::scale_x_continuous( breaks = xpt )
-  } else {
-    xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
-                                  include.points = include.points,
-                                  log = FALSE )
-    ggplot2::scale_x_continuous( breaks = xpt )
-  }
-}
-
-
 #' @title Examine a power curve (result function)
 #'
 #' @description This will give a plot of power vs. MDES or sample size. It can
@@ -331,8 +252,8 @@ plot.pumpresult <- function( x, type = "power",
     plot.data <-
       x %>%
       dplyr::select_all() %>%
-      dplyr::select(-.data$indiv.mean) %>%
-      tidyr::pivot_longer(!.data$MTP,
+      dplyr::select(-"indiv.mean") %>%
+      tidyr::pivot_longer(!"MTP",
                           names_to = "powerType", values_to = "power")
     
     # Creating power type as a factor for ordering on x axis
@@ -348,16 +269,16 @@ plot.pumpresult <- function( x, type = "power",
     
     # remove missing rows
     plot.data <- plot.data %>%
-      as.data.frame( plot.data ) %>%
+      as.data.frame( plot.data, row.names = NULL ) %>%
       dplyr::filter( !is.na( .data$power ) )
     
     # single scenario plot
     ss.plot <- ggplot2::ggplot(
       data = plot.data,
-      ggplot2::aes_string(x = "powerType",
-                          y = "power",
-                          shape = "MTP",
-                          color = "MTP")) +
+      ggplot2::aes(x = .data$powerType,
+                   y = .data$power,
+                   shape = .data$MTP,
+                   color = .data$MTP)) +
       ggplot2::geom_point(
         size = 2, position = ggplot2::position_dodge(0.25)
       ) +
@@ -448,7 +369,7 @@ plot.pumpgridresult.power <- function(
     
     # filter to only relevant power definition
     plot.data <- plot.data %>%
-      dplyr::filter(.data$power == powerType)
+      dplyr::filter("power" == powerType)
     
     yLabel <- paste0(powerType, " power")
   } else {
@@ -465,7 +386,7 @@ plot.pumpgridresult.power <- function(
   
   # pivot to long table, one row per MTP
   plot.data <- plot.data %>%
-    dplyr::rename(powerType = .data$power) %>%
+    dplyr::rename(powerType = "power") %>%
     tidyr::pivot_longer( cols = tidyselect::all_of( MTPs ),
                          names_to = "MTP", values_to = "power")
   
@@ -474,7 +395,7 @@ plot.pumpgridresult.power <- function(
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
       dplyr::group_by( 
-        dplyr::across( c( "powerType", "MTP", var.vary ) ) 
+        dplyr::across( tidyselect::all_of( c( "powerType", "MTP", var.vary ) ) )
       ) %>%
       dplyr::summarise( power = mean( .data$power ) )
     
@@ -501,10 +422,10 @@ plot.pumpgridresult.power <- function(
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
-    ggplot2::aes_string(x = var.vary,
-                        y = "power",
-                        shape = "MTP",
-                        color = "MTP"))
+    ggplot2::aes(x = .data[[var.vary]],
+                 y = .data$power,
+                 shape = .data$MTP,
+                 color = .data$MTP))
   
   if ( lines ) {
     grid.plot <- grid.plot +
@@ -567,66 +488,6 @@ fetch_power_type <- function( x, power.definition ) {
 }
 
 
-
-handle_power_definition <- function( 
-  x, power.definition, outcome, var.vary, include.title 
-) {
-  plot.data <- as.data.frame(x)
-  
-  multiPower <- FALSE
-  if (  "power.definition" %in% colnames(plot.data) )  {
-    if ( is.null( power.definition ) ) {
-      multiPower <- TRUE
-    } else {
-      plot.data <- dplyr::filter( 
-        plot.data, .data$power.definition == power.definition 
-      )
-      stopifnot( nrow(x) > 0 )
-    }
-  } else {
-    if ( is.null( power.definition )  ) {
-      power.definition <- params(x)$power.definition
-    } else {
-      stopifnot( (params(x)$power.definition == power.definition ) )
-    }
-  }
-  
-  powerType <- ""
-  if ( ! multiPower ) {
-    powerType <- fetch_power_type( x, power.definition )
-  } 
-  
-  powerPer <- ""
-  if ( is.numeric( params(x)$target.power ) ) {
-    powerPer <- paste0( round( 100 * params(x)$target.power ), "% " )
-  } else {
-    # target power is varying.  Do nothing and hope.
-  }
-  
-  # converting data type for graphing purposes
-  if ( !is.numeric( plot.data[[var.vary]] ) ) {
-    plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
-  }
-  
-  title <- NULL
-  if ( include.title ) {
-    if ( powerType == "" ) {
-      title <- paste0( outcome, " for ", powerPer, powerType,
-                      " power when ", var.vary, " varies")
-    } else {
-      title <- paste0( outcome, " for ", powerPer,
-                      "power when ", var.vary, " varies")
-    }
-  }
-  
-  list( plot.data = plot.data, powerType = powerType, 
-        multiPower = multiPower,
-        title = title )
-}
-
-
-
-
 #' Plot a grid pump mdes object
 #'
 #' @inheritParams plot.pumpgridresult
@@ -656,7 +517,7 @@ plot.pumpgridresult.mdes <- function(
   
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
-      dplyr::group_by( dplyr::across( c( "MTP", var.vary ) ) ) %>%
+      dplyr::group_by( dplyr::across( tidyselect::all_of( c( "MTP", var.vary ) ) ) ) %>%
       dplyr::summarise( Adjusted.MDES = mean( .data$Adjusted.MDES ) )
     
     smessage('Note: Averaged Adjusted.MDES across other 
@@ -674,10 +535,10 @@ plot.pumpgridresult.mdes <- function(
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
-    ggplot2::aes_string(x = var.vary,
-                        y = "Adjusted.MDES",
-                        color = color,
-                        shape = color))
+    ggplot2::aes(x = .data[[var.vary]],
+                 y = .data$Adjusted.MDES,
+                 color = .data$color,
+                 shape = .data$color))
   
   if ( lines ) {
     grid.plot <- grid.plot +
@@ -750,7 +611,7 @@ plot.pumpgridresult.sample <- function(
                         c( color, "power.definition" ) )
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
-      dplyr::group_by( dplyr::across( c( color, var.vary ) ) ) %>%
+      dplyr::group_by( dplyr::across( tidyselect::all_of( c( color, var.vary ) ) ) ) %>%
       dplyr::summarise( Sample.size = mean( .data$Sample.size, na.rm=TRUE ) )
     
     smessage('Note: Averaged Sample.size across other 
@@ -781,10 +642,10 @@ plot.pumpgridresult.sample <- function(
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
-    ggplot2::aes_string(x = var.vary,
-                        y = "Sample.size",
-                        color = color,
-                        shape = color))
+    ggplot2::aes(x = .data[[var.vary]],
+                 y = .data$Sample.size,
+                 color = .data$color,
+                 shape = .data$color))
   
   if ( lines ) {
     grid.plot <- grid.plot +
@@ -935,4 +796,136 @@ plot.pumpgridresult <- function(
   }
   
   return(grid.plot)
+}
+
+##### Helper functions for plotting #####
+
+get_sample_tick_marks <- function( 
+        desired_pts, breaks = 5, include.points = TRUE, log = FALSE 
+) {
+    
+    desired_pts <- sort( unique( round( desired_pts ) ) )
+    
+    if ( log ) {
+        desired_pts <- log( desired_pts )
+    }
+    
+    mn <- min( desired_pts, na.rm = TRUE )
+    mx <- max( desired_pts, na.rm = TRUE )
+    rng <- mx - mn
+    
+    if ( log == FALSE && rng < breaks ) {
+        breaks <- round(rng)
+    }
+    
+    pts <- seq( mn, mx, length.out = breaks )
+    
+    if ( include.points ) {
+        
+        bw <- rng / (breaks+1)
+        
+        rg <- cut( desired_pts, 
+                   breaks = seq( mn - bw/2, mx + bw/2, length.out = breaks+1 ), 
+                   labels = pts )
+        
+        grab_pt <- function( pt, gpts ) {
+            if ( length( gpts) == 0 ) {
+                pt
+            } else {
+                dels <- abs( gpts - pt )
+                gpts[ which.min( dels ) ]
+            }
+        }
+        
+        gps <- split( desired_pts, rg )
+        
+        vals <- purrr::map2_dbl( pts, gps, grab_pt )
+        
+        pts <- vals
+    } 
+    
+    if ( log ) {
+        return( unique( round( exp( pts ) ) ) )
+    } else {
+        return( round( pts ) )
+    }
+}
+
+get_sample_size_scale <- function( 
+        points, breaks = 5, include.points = FALSE 
+) {
+    
+    delrange <- diff( range( points, na.rm = TRUE ) )
+    if ( delrange > 50 ) {
+        xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
+                                      include.points = include.points,
+                                      log = TRUE )
+        ggplot2::scale_x_log10( breaks=xpt )
+    } else if ( delrange >= 2 && delrange <= 15 ) {
+        # Tick marks for each sample size.
+        xpt <- seq( round( min( points, na.rm = TRUE ) - 0.25 ), 
+                    round( max( points, na.rm = TRUE ) + 0.25 ) )
+        ggplot2::scale_x_continuous( breaks = xpt )
+    } else {
+        xpt <- get_sample_tick_marks( desired_pts = points, breaks = breaks, 
+                                      include.points = include.points,
+                                      log = FALSE )
+        ggplot2::scale_x_continuous( breaks = xpt )
+    }
+}
+
+handle_power_definition <- function( 
+        x, power.definition, outcome, var.vary, include.title 
+) {
+    plot.data <- as.data.frame(x)
+    
+    multiPower <- FALSE
+    if (  "power.definition" %in% colnames(plot.data) )  {
+        if ( is.null( power.definition ) ) {
+            multiPower <- TRUE
+        } else {
+            plot.data <- dplyr::filter( 
+                plot.data, .data$power.definition == power.definition 
+            )
+            stopifnot( nrow(x) > 0 )
+        }
+    } else {
+        if ( is.null( power.definition )  ) {
+            power.definition <- params(x)$power.definition
+        } else {
+            stopifnot( (params(x)$power.definition == power.definition ) )
+        }
+    }
+    
+    powerType <- ""
+    if ( ! multiPower ) {
+        powerType <- fetch_power_type( x, power.definition )
+    } 
+    
+    powerPer <- ""
+    if ( is.numeric( params(x)$target.power ) ) {
+        powerPer <- paste0( round( 100 * params(x)$target.power ), "% " )
+    } else {
+        # target power is varying.  Do nothing and hope.
+    }
+    
+    # converting data type for graphing purposes
+    if ( !is.numeric( plot.data[[var.vary]] ) ) {
+        plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
+    }
+    
+    title <- NULL
+    if ( include.title ) {
+        if ( powerType == "" ) {
+            title <- paste0( outcome, " for ", powerPer, powerType,
+                             " power when ", var.vary, " varies")
+        } else {
+            title <- paste0( outcome, " for ", powerPer,
+                             "power when ", var.vary, " varies")
+        }
+    }
+    
+    list( plot.data = plot.data, powerType = powerType, 
+          multiPower = multiPower,
+          title = title )
 }
