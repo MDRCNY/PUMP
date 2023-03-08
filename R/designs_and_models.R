@@ -137,7 +137,7 @@ pump_info <- function(
                                "WY-SD", "Westfall-Young, Step Down" )
 
     params <- tibble::tribble( ~ Parameter, ~ Description,
-      "nbar",       "harmonic mean of level 1 units per
+      "nbar",       "harmonic mean of number of level 1 units per
                      level 2 unit (students per school)",
       "J",          "harmonic mean of number of level 2 
                       units per level 3 unit (schools per district)",

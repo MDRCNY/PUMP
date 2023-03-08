@@ -317,9 +317,9 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
     #test.pts <- dplyr::bind_rows(test.pts, iter.results )
   }
   
-  test.pts <- dplyr::relocate( test.pts, .data$step, .data$MTP,
-                               .data$target.power, 
-                               .data$pt, .data$dx, .data$w, .data$power )
+  test.pts <- dplyr::relocate( test.pts, "step", "MTP",
+                               "target.power",
+                               "pt", "dx", "w", "power" )
   return( test.pts )
 }
 

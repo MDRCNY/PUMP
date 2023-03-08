@@ -67,10 +67,10 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   
   corenames <- colnames( grid$res[[1]] )
   
-  grid <- tidyr::unnest( grid, .data$res )
+  grid <- tidyr::unnest( grid, "res" )
   if ( "MTP" %in% names(grid) ) {
-    grid <- grid %>% dplyr::arrange( .data$MTP ) %>%
-    dplyr::relocate( .data$MTP )
+    grid <- grid %>% dplyr::arrange( "MTP" ) %>%
+    dplyr::relocate( "MTP" )
   }
 
   attr( grid, "var_names" ) <- var_names 

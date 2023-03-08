@@ -11,7 +11,7 @@ bibliography: refs.bib
 geometry: margin=1.5in
 ---
 
-<center><img src="../pump_icon.png" alt="pump-icon" width="400"/></center>
+<center><img src="../man/figures/pump_icon.png" alt="pump-icon" width="400"/></center>
 
 
 ```{r initialize, include = FALSE}

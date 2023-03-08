@@ -380,8 +380,8 @@ power_curve <- function( x, all = FALSE,
         srch <- dplyr::filter( srch, .data$pt < max( fin_pts$pt * 1.1 ) )
         fin_pts <- dplyr::bind_rows( fin_pts, srch ) %>%
             dplyr::arrange( .data$pt ) %>%
-            dplyr::select( .data$MTP, .data$target.power, 
-                           .data$pt, .data$w, .data$power )
+            dplyr::select( "MTP", "target.power", 
+                           "pt", "w", "power" )
     }
     fin_pts
 }
@@ -448,14 +448,15 @@ transpose_power_table <- function( power_table, M = NULL ) {
     
     
     if ( !pr || !is_long_table(power_table) ) {
-        pnames <- get_power_names(M, long=TRUE)
+        pnames <- get_power_names(M, long = TRUE)
         
         pp <- power_table %>% 
             as.data.frame() %>%
             tidyr::pivot_longer( cols = tidyselect::any_of( names(pnames) ),
                                  names_to = "power",
                                  values_to = "power_val" ) %>%
-            tidyr::pivot_wider( names_from="MTP", values_from="power_val" ) %>%
+            tidyr::pivot_wider( names_from = "MTP",
+                                values_from = "power_val" ) %>%
             dplyr::mutate( power = pnames[ .data$power] )
     } else {
         pnames <- get_power_names(M)
@@ -465,7 +466,8 @@ transpose_power_table <- function( power_table, M = NULL ) {
                 cols = tidyselect::any_of( c( "None", params(power_table)$MTP ) ),
                 names_to = "MTP",
                 values_to = "power_val" ) %>%
-            tidyr::pivot_wider( names_from="power", values_from="power_val" )
+            tidyr::pivot_wider( names_from = "power",
+                                values_from = "power_val" )
     } 
     
     if( is.pumpresult( ptorig ) || is.pumpgridresult(ptorig) ) {
