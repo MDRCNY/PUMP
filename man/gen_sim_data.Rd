@@ -6,42 +6,44 @@
 \usage{
 gen_sim_data(
   d_m = NULL,
-  model.params.list = NULL,
+  param.list = NULL,
   Tbar = 0.5,
-  pump.object = NULL
+  pump.object = NULL,
+  return.as.dataframe = TRUE
 )
 }
 \arguments{
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
+\item{d_m}{string; a single context, which is a design and model
+code. See pump_info() for list of choices.}
 
-\item{model.params.list}{list; model parameters such as ICC,
-R2, etc. See simulation vignette for details.}
+\item{param.list}{list; model parameters such as ICC, R2,
+etc. See simulation vignette for details.}
 
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
 \item{pump.object}{A pumpresult object.}
+
+\item{return.as.dataframe}{TRUE means return list of dataframes,
+one for each outcome.  FALSE means return components of the
+covariates, etc., in a list.}
 }
 \value{
-list; potential outcomes, covariates,
-observed outcomes, and treatment assignment.
+list; potential outcomes, covariates, observed outcomes,
+  and treatment assignment.
 }
 \description{
-Generates simulated data for multi-level
-RCTs for pump-suppored designs and models for
-both unobserved and observed potential outcomes.
+Generates simulated data for multi-level RCTs for
+  pump-suppored designs and models for both unobserved and observed
+  potential outcomes.
 
-Takes in two options:
-- a pumpresult object
-OR
-- a list of necessary data-generating parameters
-- the context (d_m)
-- Tbar (proportion assigned to treatment)
+  Takes in two options: - a pumpresult object OR - a list of
+  necessary data-generating parameters - the context (d_m) - Tbar
+  (proportion assigned to treatment)
 
-This function is beyond the main scope of calculating power,
-and is instead used for simulating data.
-For more info on use, see the simulation vignette.
+  This function is beyond the main scope of calculating power, and
+  is instead used for simulating data. For more info on use, see
+  the simulation vignette.
 }
 \examples{
 

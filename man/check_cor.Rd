@@ -39,14 +39,11 @@ check_cor(
 
 \item{rho.r}{matrix; correlation matrix of level 1 residuals.}
 
-\item{d_m}{string; a single context, which is a design and model code. 
-See pump_info() for list of choices.}
+\item{d_m}{string; a single context, which is a design and model
+code. See pump_info() for list of choices.}
 
-\item{model.params.list}{list; model parameters such as ICC,
-R2, etc. See simulation vignette for details.}
-
-\item{Tbar}{scalar; the proportion of samples 
-that are assigned to the treatment.}
+\item{Tbar}{scalar; the proportion of samples that are assigned to
+the treatment.}
 
 \item{n.sims}{numeric; Number of simulated datasets to generate.
 More datasets will achieve a more accurate result

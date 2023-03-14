@@ -4,7 +4,7 @@
 \alias{makelist_samp}
 \title{Convert multi-outcome data structure to list for each outcome.}
 \usage{
-makelist_samp(samp.obs, T.x)
+makelist_samp(samp.obs, T.x = NULL)
 }
 \arguments{
 \item{samp.obs}{a single iteration of observed data}

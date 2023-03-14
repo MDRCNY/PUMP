@@ -1,3 +1,7 @@
+
+
+
+
 test_that("simulation function works", {
     
     M <- 3
@@ -48,13 +52,15 @@ test_that("simulation function works", {
     )
     
     sim.data <- gen_sim_data(d_m = 'd3.3',
-                             model.params.list = model.params.list,
-                             Tbar = 0.5)
+                             param.list = model.params.list,
+                             Tbar = 0.5, return.as.dataframe = FALSE)
     expect_true( !is.null(sim.data))
     expect_equal(8, length(sim.data))
     expect_equal(3, ncol(sim.data$Yobs))
     expect_equal(15000, nrow(sim.data$Yobs))
                  
+    expect_true( all( sim.data[[1]]$T.x == sim.data[[2]]$T.x ) )
+    
     pp <- pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = "BF",
                       MDES = rep( 0.10, 3 ),
@@ -70,9 +76,61 @@ test_that("simulation function works", {
                       rho = 0.4, # how correlated outcomes are
                       tnum = 200
     )
-    sim.data <- gen_sim_data(pump.object = pp)
+    sim.data <- gen_sim_data(pump.object = pp, return.as.dataframe = FALSE)
     expect_true( !is.null(sim.data))
     expect_equal(8, length(sim.data))
     expect_equal(3, ncol(sim.data$Yobs))
     expect_equal(16254, nrow(sim.data$Yobs))
+})
+
+
+test_that( "simulation function works (single outcome)", {
+    
+    model.params.list <- list(
+        M = 1                            # number of outcomes
+        , J = 30                          # number of schools
+        , K = 10                          # number of districts
+        # (for two-level model, set K = 1)
+        , nbar = 10                       # number of individuals per school
+        , S.id = NULL                     # N-length vector of school assignments
+        , D.id = NULL                     # N-length vector of district assignments
+        ################################################## grand mean outcome and impact
+        , Xi0 = 0                         # scalar grand mean outcome under no treatment
+        , MDES = 0.125            # minimum detectable effect size      
+        ################################################## level 3: districts
+        , R2.3 = 0.1              # percent of district variation
+        # explained by district covariates
+        , ICC.3 = 0.2 # district intraclass correlation
+        , omega.3 = 0.1           # ratio of district effect size variability
+        # random effects and impacts
+        ################################################## level 2: schools
+        , R2.2 = 0.1              # percent of school variation
+        # explained by school covariates
+        , ICC.2 = 0.2             # school intraclass correlation 
+        , omega.2 = 0.1           # ratio of school effect size variability
+        # to random effects variability
+        # random effects and impacts
+        ################################################## level 1: individuals
+        , R2.1 = 0.1    # percent of indiv variation explained
+        # by indiv covariates
+    )
+    
+    # d3.2_m3fc2rc
+    sim.data <- gen_sim_data( d_m = "d3.1_m3rr2rr", model.params.list, Tbar = 0.5,
+                              return.as.dataframe = TRUE, no.list=FALSE )
+    expect_true( length( sim.data ) == 1 )
+    expect_true( is.data.frame( sim.data[[1]] ) )
+    head( sim.data[[1]] )
+    
+    sim.data <- gen_sim_data( d_m = "d3.1_m3rr2rr", model.params.list, Tbar = 0.5,
+                              return.as.dataframe = TRUE, no.list=TRUE )
+    expect_true( is.data.frame( sim.data ) )
+    
+    
+    sim.data <- gen_base_sim_data( model.params.list )
+    head( sim.data )
+    expect_true( is.data.frame( sim.data ) )
+    
+    
+  
 })

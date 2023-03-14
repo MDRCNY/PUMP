@@ -4,10 +4,10 @@
 \alias{convert_params}
 \title{Converts model params into DGP params (simulation function)}
 \usage{
-convert_params(model.params.list)
+convert_params(param.list)
 }
 \arguments{
-\item{model.params.list}{list; model parameters such as ICC, R2,
+\item{param.list}{list; model parameters such as ICC, R2,
 etc.}
 }
 \value{
