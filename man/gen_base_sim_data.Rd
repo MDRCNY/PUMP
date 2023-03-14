@@ -5,17 +5,27 @@
 \title{Generate base simulated multi-level data (simulation
   function)}
 \usage{
-gen_base_sim_data(param.list, pump.object = NULL, return.as.dataframe = TRUE)
+gen_base_sim_data(
+  param.list,
+  pump.object = NULL,
+  return.as.dataframe = TRUE,
+  no.list = TRUE
+)
 }
 \arguments{
-\item{param.list}{list; model parameters such as ICC, R2,
-etc. See simulation vignette for details.}
+\item{param.list}{list; model parameters such as ICC, R2, etc. See
+simulation vignette for details.}
 
 \item{pump.object}{A pumpresult object.}
 
 \item{return.as.dataframe}{TRUE means return list of dataframes,
 one for each outcome.  FALSE means return components of the
 covariates, etc., in a list.}
+
+\item{no.list}{Only relevant if return.as.dataframe=TRUE.
+no.list=TRUE means if M=1 return the dataframe, not a list of
+length 1.  FALSE means return a list of length 1, even if there
+is only 1 outcome.}
 }
 \value{
 list; potential outcomes given control y0, treatment y1,
