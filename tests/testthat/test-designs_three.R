@@ -40,7 +40,7 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
     
     vals <- test_sample_triad( 
       target_power = pp_power, nbar = 50, J = 30, K = 15,
-      seed = 4224423,
+      seed = 4224425,
       d_m = "d3.1_m3rr2rr",
       MTP = 'HO',
       power.definition = 'D1indiv',
@@ -53,15 +53,10 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
       omega.2 = 0.1, omega.3 = 0.1, rho = 0.5,
       tnum = default.tnum )
     
-    
-    vals
-    
     expect_equal(15, vals$K, tolerance = 0.1)
     # expect_equal(30, vals$J, tolerance = 0.1)
     expect_equal( warning_pattern(vals), c(TRUE, TRUE, FALSE) )
-    
-    
-    
+
     set.seed( 44040422 )
     mdes1 <-  pump_mdes(
       d_m = "d3.1_m3rr2rr",

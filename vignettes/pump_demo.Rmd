@@ -11,6 +11,8 @@ bibliography: refs.bib
 geometry: margin=1.5in
 ---
 
+<center><img src="../man/figures/pump_icon.png" alt="pump-icon" width="400"/></center>
+
 
 ```{r initialize, include = FALSE}
 library( PUMP )
@@ -110,7 +112,8 @@ The package includes three core functions:
 For any of these core functions, the user begins with two main choices.
 First, the user chooses the assumed design and model of the RCT.
 The `PUMP` package covers a range of multi-level designs, up to three levels of hierarchy, that researchers typically use in practice, in which research units are nested in hierarchical groups.
-Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels, as we explain in detail in Section \ref{sec:est_power} and in the Technical Appendix. 
+Our power calculations assume the user will be analyzing these RCTs using frequentist mixed-effects regression models, containing a combination of fixed or random intercepts and treatment impacts at different levels.
+We explain these details in the accompanying paper, in Section 4 and in the Technical Appendix. 
 Second, the user chooses the MTP to be applied.
 `PUMP` supports five common MTPs --- Bonferroni, Holm, single-step and step-down versions of Westfall-Young, and Benjamini-Hochberg.
 After these two main choices, the user must also make a variety of decisions about parameters of the data generating distribution.
@@ -363,7 +366,7 @@ m <- pump_mdes(
 ```
 
 ```{r MDEScalc-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     m <- pump_mdes(
       d_m = "d3.2_m3fc2rc",         # choice of design and analysis strategy
@@ -407,7 +410,7 @@ m2 <- update( m, power.definition = "min1" )
 ```
 
 ```{r MDEScalcmin1-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     m2 <- update( m, power.definition = "min1" )
     saveRDS(m2, here::here("vignettes/output", "MDEScalcmin1.RDS"))
@@ -429,7 +432,7 @@ m3 <- update( m2, numZero = 2 )
 ```
 
 ```{r MDESwithNumZero-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     m3 <- update( m2, numZero = 2 )
     saveRDS(m3, here::here("vignettes/output", "MDESwithNumZero.RDS"))
@@ -468,7 +471,7 @@ print( smp )
 ```
 
 ```{r samplesizecalc-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     smp <- pump_sample(
       d_m = "d3.2_m3fc2rc",
@@ -498,14 +501,14 @@ p_check <- update( smp, type = "power", tnum = 20000,
 ```
 
 ```{r samplesizeverify-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     p_check <- update( smp, type = "power", tnum = 20000,
                    long.table = TRUE )
     saveRDS(p_check, here::here("vignettes/output", "samplesizeverify.RDS"))
 } else
 {
-    p_check<- readRDS(here::here("vignettes/output", "samplesizeverify.RDS"))
+    p_check <- readRDS(here::here("vignettes/output", "samplesizeverify.RDS"))
 }
 knitr::kable( p_check, digits = 2 ) %>%
   kableExtra::kable_styling(position = "center")
@@ -535,7 +538,7 @@ pow <- update( p_check, tnum = 10000 )
 ```
 
 ```{r powbase-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     pow <- update( p_check, tnum = 10000 )
     saveRDS(pow, here::here("vignettes/output", "powbase.RDS"))
@@ -567,7 +570,7 @@ plot( p2 )
 ```
 
 ```{r othercorrections-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     p2 <- update( pow,
       MTP = c( "BF", "HO", "WY-SD" ) )
@@ -610,7 +613,7 @@ print( p_b )
 ```
 
 ```{r powICC-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     p_b <- update( pow, ICC.2 = 0.20, ICC.3 = 0.25 )
     saveRDS(p_b, here::here("vignettes/output", "powICC.RDS"))
@@ -634,7 +637,7 @@ print( p_d )
 ```
 
 ```{r powR2-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     p_d <- update( pow,
           	   R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
@@ -675,7 +678,7 @@ plot( grid, power.definition = "min1" )
 ```
 
 ```{r ICCgrid-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     grid <- update_grid( pow,
         	ICC.2 = seq( 0, 0.3, 0.05 ),
@@ -729,7 +732,7 @@ gridRho <- update_grid( pow,
 ```
 
 ```{r rhogrid-compile, echo = FALSE}
-if(recompile)
+if (recompile)
 {
     gridRho <- update_grid( pow,
         	  MTP = c( "BF", "WY-SD" ),
@@ -769,7 +772,7 @@ plot( gridZero, nrow = 1 )
 ```
 
 ```{r numzerogrid-compile, echo = FALSE, fig.height = 2.5}
-if(recompile)
+if (recompile)
 {
     gridZero <- update_grid( pow,
                              numZero = 0:4,
@@ -789,32 +792,36 @@ The `grid()` functions, by contrast, take a single MDES value for the non-null o
 
 ### Methods for `PUMP` objects
 
-The `PUMP` package returns two types of S3 objects:
+For user reference, we wrap up with a brief summary of methods that can be applied to `PUMP`-generated objects.
+
+The `PUMP` package returns two types of S3 objects.
 
 - `pumpresult` objects are returned from single scenario calls: `pump_power()`, `pump_mdes()`, `pump_sample()`, and calls to `update()`.
-- `pumpgridresult` objects are returned from grid calls: `pump_power_grid()`, `pump_mdes_grid()`, `pump_sample_grid()`), and calls to `update_grid()`.
+- `pumpgridresult` objects are returned from grid calls: `pump_power_grid()`, `pump_mdes_grid()`, `pump_sample_grid()`, and calls to `update_grid()`.
 
-We highlight some methods relevant to `pumpresult` objects:
+The package has a variety of methods that can be called directly on  `pumpresult` objects.
 
 - `print()` displays a concise summary of the most relevant inputs and results of the call.
-- `summary()` prints a full summary of both the inputs and the results of the call.
+- `summary()` prints a more extensive output, containing a full summary of both the full list of inputs and the results of the call.
+- `print_context()` provides a summary of the user inputs, including the design and model and the parameter values.
 - `plot()` returns different plots tailored to whether the results are for power, MDES, or sample size:
   - For power objects, it displays power across all power definitions and MTPs.
   - For MDES and sample size objects, by default it displays a power curve showing how power changes as sample size or MDES changes.
-  - For MDES and sample size objects, the user can instead request a plot of the power search algorithm using `type = "search"`.
+  - For MDES and sample size objects, the user can instead request a diagnostic plot of the power search algorithm using `type = "search"`.
 - `power_curve()` returns a data frame of power values over a range of MDES or sample size values.
-- `print_context()` provides a summary of the user inputs, including the design and model and the parameter values.
-- `print_search()` returns the search history of the search algorithm for MDES and sample size calls.
+- `search_path()` returns the search history of the search algorithm for MDES and sample size calls.
 - `transpose_power_table()` converts a power table between wide and long formats.
-- `as.data.frame()` casts the object to a data frame.
-
-TODO: why do we need both `search_path()` and `print_search()`?
+- `as.data.frame()` casts the object to a data frame of the results.
+- `gen_sim_data()` generates a set of simulated data using a data-generating process from the assumed design, model, and parameters. For more details about functions to simulate data, see the package vignette on simulating data.
+- `check_cor()` checks the correlation between test statistics using a simulation approach.
 
 Many of the above methods also apply to `pumpgridresult` objects, although some are not relevant to grid objects.
 The main difference in behavior between the `pumpresult` and `pumpgridresult` objects is the output of `plot()` function.
-By default, for grid objects the `plot()` function plots a facet wrap displaying how power changes across all MTPs, power definitions, and varying parameters provided during the grid call.
+For an example of `plot()` called on a `pumpresult` object, see Figure \ref{fig:othercorrections}.
+In contrast, for an example of `plot()` called on a grid object, see Figure \ref{fig:ICCgrid}.
+For grid objects, the `plot()` function plots a facet wrap displaying how power changes across all MTPs, power definitions, and varying parameters provided during the grid call.
 If the user wants a smaller set of results, they can specify a single `power.definition`, or use `var.vary` to only plot variation in one parameter value.
-If the grid call varied multiple parameters, then each plot averages power across all other factors.
-For example, in Figure \ref{fig:ICCgrid}, the first plot averages over all values of `ICC.3` to show how power varies with just `ICC.2`, and the second plot does the opposite.
+If the grid call varied multiple parameters, then each plot averages power across all other factors to plot main effects.
+For example, in the ICC grid figure in "Exploring the impact of the ICC", the first plot averages over all values of `ICC.3` to show how power varies with just `ICC.2`, and the second plot does the opposite.
 
 # References
