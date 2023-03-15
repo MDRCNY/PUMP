@@ -369,7 +369,7 @@ plot.pumpgridresult.power <- function(
     
     # filter to only relevant power definition
     plot.data <- plot.data %>%
-      dplyr::filter("power" == powerType)
+      dplyr::filter(.data$power == powerType)
     
     yLabel <- paste0(powerType, " power")
   } else {
@@ -413,7 +413,7 @@ plot.pumpgridresult.power <- function(
                   MTP = as.factor(.data$MTP),
                   powerType = as.factor(.data$powerType))
   if ( !is.numeric( plot.data[[var.vary]] ) ) {
-    plot.data[[var.vary]]<- as.factor(plot.data[[var.vary]])
+    plot.data[[var.vary]] <- as.factor(plot.data[[var.vary]])
   } 
   
   # remove NA values

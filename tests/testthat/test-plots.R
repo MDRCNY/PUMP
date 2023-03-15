@@ -25,7 +25,7 @@ test_that("Single Scenario plot works", {
   expect_true(!is.null(ss.plot))
 
   
-  ppL <- update( pp, long.table=TRUE )
+  ppL <- update( pp, long.table = TRUE )
   
   ss.plot <- plot(ppL)
   #ss.plot
