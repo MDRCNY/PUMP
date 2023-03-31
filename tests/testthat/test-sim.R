@@ -84,6 +84,24 @@ test_that("simulation function works", {
 })
 
 
+
+test_that( "Simulation function works with MDES", {
+    
+    
+    pp <- pump_sample( "d2.1_m2fr", MDES = 0.2, 
+                       typesample = "nbar", alpha = 0.05,
+                       power.definition = "D1indiv", target.power = 0.8,
+                       M = 5, rho = 0.8,
+                       MTP = "BH",
+                       J = 15, Tbar = 0.5 )
+    ## sim.data <- gen_sim_data( pp )
+    
+    # TODO: Make it catch the lack of sample size and do something smart?
+})
+
+
+
+
 test_that( "simulation function works (single outcome)", {
     
     model.params.list <- list(

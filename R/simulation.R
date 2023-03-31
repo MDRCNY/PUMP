@@ -4,21 +4,21 @@
 
 
 
-process_and_generate_param_list <- function( d_m, param.list, pump.object, Tbar, include_Tx = TRUE ) {
+process_and_generate_param_list <- function( d_m, param.list, pump.object, Tbar = NULL, include_Tx = TRUE ) {
     
     # If first thing is a pump.object, swap
     if ( !is.null(d_m) && (is.pumpresult(d_m) || is.pumpgridresult(d_m)) ) {
         pump.object <- d_m
-        d_m<- NULL
+        d_m <- NULL
     }
     
-    if(is.null(pump.object))
-    {
+    if(is.null(pump.object)) {
         if( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
             stop("You must provide either a pump object
                 or both a design string (d_m) and list of model params.")
         }
     } else {
+        # Convert pump object to param list
         if( include_Tx ) {
             if ( !is.null(d_m) || !is.null(param.list) ) {
                 stop("You must provide either a pump object or
@@ -35,8 +35,9 @@ process_and_generate_param_list <- function( d_m, param.list, pump.object, Tbar,
     }
     
     param.list$d_m = d_m
-    param.list$Tbar = Tbar
-    
+    if ( !is.null( Tbar ) ) {
+        param.list$Tbar = Tbar
+    }
     return( param.list )
 }
 
@@ -124,7 +125,9 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #'   the simulation vignette.
 #'
 #' @inheritParams gen_sim_data
-#'
+#' @param dgp.params TRUE means param.list is already converted to DGP
+#'   parameters, FALSE means it needs to be converted via
+#'   `convert_params()`.
 #' @seealso gen_sim_data
 #'
 #' @return list; potential outcomes given control y0, treatment y1,
@@ -133,16 +136,20 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #'
 #' @export
 gen_base_sim_data <- function( param.list, pump.object = NULL,
-                               return.as.dataframe = TRUE, no.list=TRUE ) {
+                               return.as.dataframe = TRUE, 
+                               no.list=TRUE,
+                               dgp.params = FALSE ) {
     
-    param.list = process_and_generate_param_list( d_m = NULL,
+    if ( !dgp.params ) {
+        param.list = process_and_generate_param_list( d_m = NULL,
                                                   param.list = param.list,
                                                   Tbar = NULL,
                                                   pump.object = pump.object, 
                                                   include_Tx = FALSE )
     
-    param.list = convert_params( param.list )   
-
+        param.list = convert_params( param.list )   
+    }
+    
     # ------------------------------#
     # setup: convert model params.list to variables
     # ------------------------------#

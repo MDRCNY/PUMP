@@ -23,8 +23,12 @@ parse_power_definition <- function( power.definition, M ) {
             powertype$indiv_k <- NULL
         } else if ( stringr::str_detect( power.definition, "indiv" ) ) {
             powertype$indiv <- TRUE
-            powertype$indiv_k <- readr::parse_number( power.definition )
-            stopifnot( is.numeric( powertype$indiv_k ) )
+            indiv_k <- readr::parse_number( power.definition )
+            if ( !is.na( indiv_k ) ) {
+                powertype$indiv_k = indiv_k
+            } else {
+                stop( glue::glue( "Invalid power definition {power.definition}.  Try, e.g., 'D1indiv'." ) )
+            }
         }
     }
     
