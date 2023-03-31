@@ -11,7 +11,7 @@ bibliography: refs.bib
 geometry: margin=1.5in
 ---
 
-<center><img src="../man/figures/pump_icon.png" alt="pump-icon" width="400"/></center>
+<center><img src="../man/figures/pump_icon.png" alt="pump-icon" width="100"/></center>
 
 
 ```{r initialize, include = FALSE}
@@ -21,6 +21,7 @@ library( PUMP )
 # compiles in a timely manner for CRAN.
 vignette_cache <- here::here("vignettes/output", "MDEScalc.RDS")
 recompile <- !file.exists(vignette_cache)
+# recompile <- TRUE
 
 knitr::opts_chunk$set(
   cache = FALSE,
@@ -384,10 +385,9 @@ if (recompile)
       R2.1 = 0.1, R2.2 = 0.7,       # explanatory power of covariates for each level
       ICC.2 = 0.05, ICC.3 = 0.4,    # intraclass correlation coefficients
       rho = 0.4 ) 
-    
-    saveRDS(m,  here::here("vignettes/output", "MDEScalc.RDS"))
-} else
-{
+    dir.create( here::here("vignettes/output") )
+    saveRDS(m, here::here("vignettes/output", "MDEScalc.RDS"))
+} else {
     m <- readRDS( here::here("vignettes/output", "MDEScalc.RDS") )
 }
 ```
