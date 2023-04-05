@@ -95,7 +95,8 @@ pump_mdes <- function(
     tnum_est <- round( (target.power*(1 - target.power) ) / ( tol^2 ) )
     if ( err > tol ) {
         warning( sprintf( 
-            "Number of replicates (tnum) is too small given target tolerance.  Increasing tnum from %d to %d",
+            "Number of replicates (tnum) is too small given target tolerance.  
+            Increasing tnum from %d to %d",
             as.integer( tnum ), as.integer( tnum_est ) ), call. = FALSE )
         tnum <- tnum_est
         start.tnum <- tnum / 10
@@ -111,7 +112,8 @@ pump_mdes <- function(
         MTP = MTP, numZero = numZero, propZero = propZero,
         M = M, J = J, K = K,
         nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3,
         R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
         ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
         rho = rho, rho.matrix = rho.matrix, B = B,
@@ -131,7 +133,8 @@ pump_mdes <- function(
     alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
     numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
     numCovar.3 <- params.list$numCovar.3
-    R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+    R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2
+    R2.3 <- params.list$R2.3
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
@@ -147,7 +150,7 @@ pump_mdes <- function(
     mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
     
     # check if zero power, then return 0 MDES
-    if(round(target.power, 2) <= 0)
+    if (round(target.power, 2) <= 0)
     {
         message('Target power of 0 (or negative) requested')
         mdes.results <- data.frame(MTP, 0, 0)
@@ -160,7 +163,7 @@ pump_mdes <- function(
     }
     
     # check if max power, then return infinite MDES
-    if(round(target.power, 2) >= 1)
+    if (round(target.power, 2) >= 1)
     {
         message('Target power of 1 (or larger) requested')
         mdes.results <- data.frame(MTP, Inf, 1)
@@ -173,7 +176,8 @@ pump_mdes <- function(
     }
     
     if ( verbose ) {
-        message(paste("Estimating MDES for", MTP, "for target", power.definition,
+        message(paste("Estimating MDES for", MTP, "for target", 
+                      power.definition,
                       "power of", round(target.power, 4)))
     }
     
@@ -185,18 +189,19 @@ pump_mdes <- function(
     )
     t.df <- calc_df(
         d_m = d_m, J = J, K = K, nbar = nbar,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.3 = numCovar.3
     )
     
     # For raw and BF, compute critical values
-    if(two.tailed)
+    if (two.tailed)
     {
-        crit.alpha <- stats::qt(p = (1-alpha/2), df = t.df)
-        crit.alphaxM <- stats::qt(p = (1-alpha/(2*M)), df = t.df)
+        crit.alpha <- stats::qt(p = (1 - alpha / 2), df = t.df)
+        crit.alphaxM <- stats::qt(p = (1 - alpha / (2 * M)), df = t.df)
     } else
     {
-        crit.alpha <- stats::qt(p = (1-alpha), df = t.df)
-        crit.alphaxM <- stats::qt(p = (1-alpha/M), df = t.df)
+        crit.alpha <- stats::qt(p = (1 - alpha), df = t.df)
+        crit.alphaxM <- stats::qt(p = (1 - alpha / M), df = t.df)
     }
     
     
@@ -204,7 +209,7 @@ pump_mdes <- function(
     crit.beta <- ifelse(target.power > 0.5,
                         stats::qt(target.power, df = t.df),
                         stats::qt(1 - target.power, df = t.df))
-    if(target.power > 0.5)
+    if (target.power > 0.5)
     {
         mdes.raw.list <- Q.m * (crit.alpha + crit.beta)
         mdes.bf.list  <- Q.m * (crit.alphaxM + crit.beta)
@@ -238,7 +243,7 @@ pump_mdes <- function(
     
     # adjust bounds to capture needed range for minimum or complete power.
     # bounds note: complete power is a special case of minimum power
-    if(pdef$min)
+    if (pdef$min)
     {
         # complete power will have a higher upper bound
         # must detect all individual outcomes
@@ -265,12 +270,12 @@ pump_mdes <- function(
     }
     
     # unlikely, but just in case
-    if(mdes.high < 0)
+    if (mdes.high < 0)
     {
         mdes.high <- 0
     }
     # corner case
-    if(mdes.low < 0)
+    if (mdes.low < 0)
     {
         mdes.low <- 0
     }
@@ -303,7 +308,7 @@ pump_mdes <- function(
     )
     colnames(mdes.results) <- mdes.cols
     
-    if(!is.na(mdes.results$`Adjusted.MDES`) && 
+    if (!is.na(mdes.results$`Adjusted.MDES`) && 
        test.pts$dx[[nrow(test.pts)]] < 0.001 )
     {
         msg <- "Note: this function returns one possible value of MDES, 

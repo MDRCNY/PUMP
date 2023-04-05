@@ -7,9 +7,9 @@
 transpose_power_table(power_table, M = NULL)
 }
 \arguments{
-\item{power_table}{pumpresult object for a power result (not mdes or sample).
-(It can also take a raw dataframe of the wide table to convert to long, as
-an internal helper method.)}
+\item{power_table}{pumpresult object for a power result 
+(not mdes or sample). (It can also take a raw dataframe of the wide table 
+to convert to long, as an internal helper method.)}
 
 \item{M}{scalar; set if power_table is a data.frame 
 without set number of outcomes. Usually ignore this.}

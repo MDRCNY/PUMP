@@ -42,6 +42,9 @@ check_cor(
 \item{d_m}{string; a single context, which is a design and model
 code. See pump_info() for list of choices.}
 
+\item{model.params.list}{list; model parameters such as ICC, R2, etc. See
+simulation vignette for details.}
+
 \item{Tbar}{scalar; the proportion of samples that are assigned to
 the treatment.}
 

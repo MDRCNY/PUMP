@@ -40,9 +40,9 @@ If you have a PUMP power result, you can generate data representing that design:
 
 ```{r}
 pp <- pump_power( "d3.1_m3rr2rr", MDES = 0.2, 
-                 M = 5, rho = 0.8,
-                 MTP = "BH",
-                 nbar = 30, J = 7, K = 5, Tbar = 0.5 )
+                  M = 5, rho = 0.8,
+                  MTP = "BH",
+                  nbar = 30, J = 7, K = 5, Tbar = 0.5 )
 sim.data <- gen_sim_data( pp )
 ```
 

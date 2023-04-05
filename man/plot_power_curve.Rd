@@ -17,8 +17,8 @@ plot_power_curve(
 )
 }
 \arguments{
-\item{pwr}{pumpresult object or data.frame; result from calling pump_sample or 
-pump_mdes (or data frame from, e.g., power_curve()).}
+\item{pwr}{pumpresult object or data.frame; result from calling 
+pump_sample or pump_mdes (or data frame from, e.g., power_curve()).}
 
 \item{plot.points}{logical; whether to plot individually 
 tested points on curve.}

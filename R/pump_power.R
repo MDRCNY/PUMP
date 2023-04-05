@@ -9,7 +9,7 @@
 #' @keywords internal
 calc_pval <- function(rawt, t.df, two.tailed)
 {
-  if(two.tailed)
+  if (two.tailed)
   {
     rawp <- 2*(1 - stats::pt(abs(rawt), df = t.df))
   } else
@@ -50,7 +50,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
   num.nonzero <- sum(ind.nonzero)
 
   # if all zeros, short circuit
-  if(num.nonzero == 0 & drop.zero.outcomes)
+  if (num.nonzero == 0 & drop.zero.outcomes)
   {
       all.power.results <- data.frame('D1indiv' = NA)
   } else
@@ -72,17 +72,17 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
       power.complete <- NA
       
       # if unadjusted, don't report minimum or complete power
-      if(adj)
+      if (adj)
       {
           # complete power
-          if(all(ind.nonzero))
+          if (all(ind.nonzero))
           {
               complete.rejects <- apply(rejects.unadj, 1, 
                                         function(x){ sum(x) == M })
               power.complete <- mean(complete.rejects)
           }
           # minimum power
-          for(m in 1:M)
+          for (m in 1:M)
           {
               min.rejects <- apply(rejects, 1, function(x){ sum(x) >= m })
               power.min[m] <- mean(min.rejects)
@@ -90,7 +90,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
       }
       
       # subset to only nonzero where relevant
-      if(drop.zero.outcomes)
+      if (drop.zero.outcomes)
       {
           power.ind <- power.ind[ind.nonzero]
           power.min <- power.min[ind.nonzero]
@@ -103,12 +103,12 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
       names(power.complete) <- 'complete'
       
       # remove redundant min column
-      if(sum(num.nonzero) == M)
+      if (sum(num.nonzero) == M)
       {
           power.min <- power.min[1:(M - 1)]
       }
       
-      if(M > 1)
+      if (M > 1)
       {
           power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
           # don't return min and complete for M = 1
@@ -255,7 +255,7 @@ pump_power <- function(
 )
 {
   # do not duplicate 'None'
-  if(length(MTP) > 1 && any(MTP == 'None'))
+  if (length(MTP) > 1 && any(MTP == 'None'))
   {
     MTP <- MTP[which(MTP != 'None')]
   }
@@ -291,12 +291,12 @@ pump_power <- function(
     
     if ( long.table ) {
       ftable <- des[[1]]
-      for ( i in 2:length(des) ) {
+      for (i in 2:length(des)) {
         ftable <- dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
       }
     } else {
       ftable <- des[[1]]
-      for ( i in 2:length(des) ) {
+      for (i in 2:length(des)) {
         ftable <- dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
     }
@@ -307,14 +307,15 @@ pump_power <- function(
                              long.table = long.table ) )
   }
 
-  if(validate.inputs) {
+  if (validate.inputs) {
     # validate input parameters
     params.list <- list(
       MTP = MTP,
       MDES = MDES, numZero = numZero, propZero = propZero, 
       M = M, J = J, K = K,
       nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, numCovar.3 = numCovar.3,
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+      numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
       rho = rho, rho.matrix = rho.matrix, B = B, tnum = tnum,
@@ -332,7 +333,8 @@ pump_power <- function(
     alpha <- params.list$alpha; two.tailed <- params.list$two.tailed
     numCovar.1 <- params.list$numCovar.1; numCovar.2 <- params.list$numCovar.2
     numCovar.3 <- params.list$numCovar.3
-    R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2; R2.3 <- params.list$R2.3
+    R2.1 <- params.list$R2.1; R2.2 <- params.list$R2.2
+    R2.3 <- params.list$R2.3
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
@@ -358,7 +360,7 @@ pump_power <- function(
   t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum))
 
   # correlation between the test statistics
-  if(is.null(rho.matrix))
+  if (is.null(rho.matrix))
   {
     Sigma <- matrix(rho, M, M)
     diag(Sigma) <- 1
@@ -377,7 +379,7 @@ pump_power <- function(
     updateProgress(message = "P-values have been generated!")
   }
 
-  if (MTP == "BF"){
+  if (MTP == "BF") {
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "bonferroni"))
 
@@ -389,16 +391,16 @@ pump_power <- function(
 
     adjp.mat <- t(apply(rawp.mat, 1, stats::p.adjust, method = "BH"))
 
-  } else if (MTP == "WY-SS"){
+  } else if (MTP == "WY-SS") {
 
     adjp.mat <- adjp_wyss(rawp.mat = rawp.mat, B = B,
                           Sigma = Sigma, t.df = t.df,
                           two.tailed = two.tailed,
                           updateProgress = updateProgress)
 
-  } else if (MTP == "WY-SD"){
+  } else if (MTP == "WY-SD") {
 
-    if( parallel.WY.cores > 1 )
+    if ( parallel.WY.cores > 1 )
     {
       cl <- parallel::makeCluster(parallel.WY.cores)
     } else
@@ -411,7 +413,7 @@ pump_power <- function(
                           two.tailed = two.tailed, cl = cl,
                           updateProgress = updateProgress)
     
-    if( parallel.WY.cores > 1 )
+    if ( parallel.WY.cores > 1 )
     {
         parallel::stopCluster(cl)
     }
@@ -421,7 +423,7 @@ pump_power <- function(
     adjp.mat <- NULL
   }
 
-  if (is.function(updateProgress) & !is.null(adjp.mat)){
+  if (is.function(updateProgress) & !is.null(adjp.mat)) {
     updateProgress(message = paste("Multiple adjustments done for", MTP))
   }
 

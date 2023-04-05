@@ -14,9 +14,15 @@ get_rawpt <- function(dat.all, d_m, model.params.list) {
     mods.out <- lapply(dat.all, function(m) make_model(m, d_m))
     mods <- lapply(mods.out, function(m){ return(m[['mod']]) })
     singular <- sapply(mods.out, function(m){ return(m[['singular']]) })
-    failed.converge <- sapply(mods.out, function(m){ return(m[['failed.converge']]) })
-    rawpt <- lapply(mods, function(x) get_pval_tstat(x, d_m, model.params.list))
-    return(list(rawpt = rawpt, num.singular = sum(singular), num.failed.converge = sum(failed.converge)))
+    failed.converge <- sapply(mods.out,
+                              function(m){ return(m[['failed.converge']]) })
+    rawpt <- lapply(mods, 
+                    function(x) get_pval_tstat(x, d_m, model.params.list))
+    return(list(
+        rawpt = rawpt,
+        num.singular = sum(singular), 
+        num.failed.converge = sum(failed.converge)
+    ))
 }
 
 
@@ -39,19 +45,20 @@ get_rawpt <- function(dat.all, d_m, model.params.list) {
 #' 
 #' @keywords internal
 get_pval_tstat <- function(mod, d_m, model.params.list) {
-    if(methods::is(mod, "lm")) {
+    if (methods::is(mod, "lm")) {
         tstat <- summary(mod)$coefficients["T.x","t value"]
         pval <- summary(mod)$coefficients["T.x","Pr(>|t|)"]
-    } else if(methods::is(mod, "lmerMod")) {
+    } else if (methods::is(mod, "lmerMod")) {
         df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
                       model.params.list[['nbar']],
                       numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
         tstat <- summary(mod)$coefficients["T.x","t value"]
         pval <- (1 - stats::pt(abs(tstat), df = df))*2
-    } else if(methods::is(mod, "data.frame")) {
+    } else if (methods::is(mod, "data.frame")) {
         # fixed effects models
         df <- calc_df(d_m, model.params.list[['J']], model.params.list[['K']],
-                      model.params.list[['nbar']], numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
+                      model.params.list[['nbar']], 
+                      numCovar.1 = 1, numCovar.2 = 1, numCovar.3 = 1)
         tstat <- mod$ATE_hat[1]/mod$SE[1]
         pval <- 2*(1 - stats::pt(abs(tstat), df = df))
     } else
@@ -78,7 +85,7 @@ make_model <- function(dat.m, d_m) {
     failed.converge <- FALSE
     
     dat.m$S.id <- as.factor(dat.m$S.id)
-    if(!is.null(dat.m$D.id)){ dat.m$D.id <- as.factor(dat.m$D.id) }
+    if (!is.null(dat.m$D.id)) { dat.m$D.id <- as.factor(dat.m$D.id) }
     
     if (d_m == "d1.1_m1c") {
         form <- stats::as.formula("Yobs ~ 1 + T.x + C.ijk")
@@ -100,28 +107,37 @@ make_model <- function(dat.m, d_m) {
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else if (d_m == "d3.1_m3rr2rr") {
         form <- stats::as.formula(paste0(
-            "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) + (1 + T.x | D.id)")
+            "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 + T.x | S.id) 
+            + (1 + T.x | D.id)")
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else if (d_m == "d2.2_m2rc") {
         form <- stats::as.formula(paste0(
             "Yobs ~ 1 + T.x + X.jk + C.ijk + (1 | S.id)")
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else if (d_m == "d3.3_m3rc2rc") {
         form <- stats::as.formula(paste0(
             "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 | D.id)")
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else if (d_m == "d3.2_m3ff2rc") {
         mod.out <- interacted_linear_estimators(
             Yobs = dat.m$Yobs, Z = dat.m$T.x,
@@ -138,19 +154,26 @@ make_model <- function(dat.m, d_m) {
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else if (d_m == "d3.2_m3rr2rc") {
         form <- stats::as.formula(paste0(
-            "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + (1 + T.x | D.id)")
+            "Yobs ~ 1 + T.x + V.k + X.jk + C.ijk + (1 | S.id) + 
+            (1 + T.x | D.id)")
         )
         mod <- suppressMessages(lme4::lmer(form, data = dat.m))
         singular <- lme4::isSingular(mod)
-        failed.converge <- ifelse(!is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE)
+        failed.converge <- ifelse(
+            !is.null(mod@optinfo$conv$lme4$code), TRUE, FALSE
+        )
     } else {
         stop(paste('Unknown d_m:', d_m)) 
     }
     
-    return(list(mod = mod, singular = singular, failed.converge = failed.converge))
+    return(list(mod = mod, 
+                singular = singular, 
+                failed.converge = failed.converge))
 }
 
 
@@ -159,9 +182,9 @@ make_model <- function(dat.m, d_m) {
 #' Code taken from:
 #' https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
 #'
-#' These linear models have block by treatment interaction terms.  The final ATE
-#' estimates are then weighted average of the block (site) specific ATE
-#' estimates.
+#' These linear models have block by treatment interaction terms.  
+#' The final ATE estimates are then weighted average of the block (site) 
+#' specific ATE estimates.
 #'
 #' If siteID passed, it will weight the RA blocks within site and then average
 #' these site estimates.
@@ -173,12 +196,12 @@ make_model <- function(dat.m, d_m) {
 #' @family linear model estimators
 #' 
 #' @keywords internal
-interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
-                                         control_formula = NULL, use.lmer = FALSE) {
-    # siteID = NULL;
-    # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$D.id; data = dat.m; control_formula = "X.jk + C.ijk + (1 | S.id)"; use.lmer = TRUE
-    # Yobs = dat.m$Yobs; Z = dat.m$T.x; B = dat.m$S.id; data = dat.m; control_formula = "C.ijk"; use.lmer = FALSE
-    
+interacted_linear_estimators <- function(
+  Yobs, Z, B, siteID = NULL, data = NULL, 
+  control_formula = NULL, use.lmer = FALSE
+) 
+{
+
     # keep track of singularity
     singular <- FALSE
     
@@ -201,7 +224,7 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
     formula <- stats::as.formula(sprintf(
         "%s ~ 0 + %s * %s - %s + %s", "Yobs", "Z", "B", "Z", control_formula))
     
-    if(use.lmer)
+    if (use.lmer)
     {
         M0.int <- lme4::lmer(formula, data = data)
         ids <- grep( "Z:", rownames(summary(M0.int)$coefficients))
@@ -211,7 +234,7 @@ interacted_linear_estimators <- function(Yobs, Z, B, siteID = NULL, data = NULL,
         ids <- grep( "Z:", names(stats::coef(M0.int)))
     }
     
-    if(length(ids) != J)
+    if (length(ids) != J)
     {
         message('Proceeding with rank deficient model')
         singular <- TRUE

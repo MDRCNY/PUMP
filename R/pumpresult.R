@@ -1,14 +1,15 @@
 
 # exact: TRUE if direct calculation, FALSE if stocastic, with
 # uncertainty.
-make.pumpresult <- function( x,
-                             type = c( "power", "mdes", "sample" ),
-                             d_m = d_m,
-                             params.list = NULL,
-                             tries = NULL,
-                             flat = FALSE,
-                             exact = FALSE,
-                             ... ) {
+make.pumpresult <- function(x,
+                            type = c( "power", "mdes", "sample" ),
+                            d_m = d_m,
+                            params.list = NULL,
+                            tries = NULL,
+                            flat = FALSE,
+                            exact = FALSE,
+                            ...)
+{
     type <- match.arg(type)
     class(x) <- c( "pumpresult", class(x) )
     attr(x, "type" ) <- type
@@ -16,7 +17,7 @@ make.pumpresult <- function( x,
     attr(x, "d_m") <- d_m
     attr(x, "exact" ) <- exact
     ll <- list(...)
-    for ( l in names(ll) ) {
+    for (l in names(ll)) {
         attr(x, l) <- ll[[ l ]]
     }
     if ( !is.null( tries ) ) {
@@ -54,17 +55,18 @@ make.pumpresult <- function( x,
 #'
 #' gd <- update_grid( pp, J = c( 10, 20, 30 ) )
 #'
-update_grid <- function( x, ... ) {
+update_grid <- function(x, ...)
+{
     params <- attr(x,"param")
     params["d_m"] <- d_m(x)
-    for ( p in names(params) ) {
+    for (p in names(params)) {
         params[[p]] <- unique( params[[p]] )
     }
     pparam <- attr( x, "power.params.list" )
     params <- c( params, pparam )
     
     dts <- list(...)
-    for ( d in names(dts) ) {
+    for (d in names(dts)) {
         params[[d]] <- dts[[d]]
     }
     result_type <- attr( x, "type" )
@@ -81,7 +83,7 @@ update_grid <- function( x, ... ) {
         params[params$typesample] <- NULL
         do.call( pump_sample_grid, params )
     } else {
-        stop( sprintf( "Unrecognized type, %s, in update_grid()", result_type ) )
+        stop(sprintf( "Unrecognized type, %s, in update_grid()", result_type ))
     }
 }
 
@@ -123,7 +125,8 @@ update_grid <- function( x, ... ) {
 #'
 #' up <- update(ss, nbar = 40, tnum = 2000 )
 #'
-update.pumpresult <- function( object, type = NULL, ... ) {
+update.pumpresult <- function(object, type = NULL, ...)
+{
     params <- params(object)
     orig_result_type <- attr(object, "type" )
     params["type"] <- orig_result_type
@@ -131,8 +134,10 @@ update.pumpresult <- function( object, type = NULL, ... ) {
     
     # for any vectors, collapse to single value of vector is identical
     # (this allows change in number of outcomes more easily)
-    for ( i in seq_along(params) ) {
-        if ( length( params[[i]] ) > 1 && length( unique( params[[i]] ) ) == 1 ) {
+    for (i in seq_along(params)) {
+        if ( length( params[[i]] ) > 1 && 
+             length( unique( params[[i]] ) ) == 1 )
+        {
             params[i] = params[[i]][[1]]
         }
     }
@@ -140,7 +145,8 @@ update.pumpresult <- function( object, type = NULL, ... ) {
     # Get new parameters
     dts <- list(...)
     
-    # Are we changing what kind of calculation we want to perform?  If so, adjust
+    # Are we changing what kind of calculation we want to perform?  
+    # If so, adjust
     # some parameters as needed.
     
     # orig_result_type - the old type
@@ -182,7 +188,7 @@ update.pumpresult <- function( object, type = NULL, ... ) {
         type <- orig_result_type
     }
     
-    for ( d in names(dts) ) {
+    for (d in names(dts)) {
         params[[d]] <- dts[[d]]
     }
     params$type <- NULL
@@ -222,8 +228,8 @@ update.pumpresult <- function( object, type = NULL, ... ) {
 #' @seealso update_grid
 #' @seealso print_context
 #' 
-#' @param x a pumpresult object (except for is.pumpresult, where it is a generic
-#'   object to check).
+#' @param x a pumpresult object (except for is.pumpresult, 
+#' where it is a generic object to check).
 #' @rdname pumpresult
 #' @examples
 #' pp <- pump_power(d_m = "d3.2_m3ff2rc",
@@ -265,7 +271,8 @@ NULL
 #'
 #' @rdname pumpresult
 #' @export
-params <- function( x, ... ) {
+params <- function(x, ...)
+{
     stopifnot( is.pumpresult( x ) || is.pumpgridresult( x ) )
     
     pp <- attr( x, "params.list" )
@@ -287,7 +294,8 @@ params <- function( x, ... ) {
 #' @rdname pumpresult
 #' @export
 #' 
-d_m <- function( x, ... ) {
+d_m <- function(x, ...)
+{
     stopifnot( is.pumpresult( x ) || is.pumpgridresult(x) )
     
     pp <- attr( x, "d_m" )
@@ -303,7 +311,8 @@ d_m <- function( x, ... ) {
 #' @rdname pumpresult
 #' @export
 #' 
-design <- function( x, ... ) {
+design <- function(x, ...)
+{
     pp = d_m( x )
     design = parse_d_m( pp )
     return( design$design )
@@ -319,7 +328,8 @@ design <- function( x, ... ) {
 #'
 #' @export
 #' 
-search_path <- function( x, ... ) {
+search_path <- function(x, ...)
+{
     stopifnot( is.pumpresult( x ) )
     rs <- attr( x, "tries" )
     if ( !is.null( rs ) ) {
@@ -332,7 +342,8 @@ search_path <- function( x, ... ) {
 # Was the calculation exact?
 # 
 # 
-exact_calc <- function( x, ... ) {
+exact_calc <- function(x, ...)
+{
     stopifnot( is.pumpresult( x ) )
     exact <- attr( x, "exact" )
     if ( is.null( exact ) ) {
@@ -364,9 +375,10 @@ exact_calc <- function( x, ... ) {
 #'
 #' @export
 #' 
-power_curve <- function( x, all = FALSE,
-                         low = NULL, high = NULL, 
-                         grid.size = 5, tnum = 2000 ) {
+power_curve <- function(x, all = FALSE,
+                        low = NULL, high = NULL, 
+                        grid.size = 5, tnum = 2000)
+{
     stopifnot( is.pumpresult( x ) )
     fin_pts <- attr( x, "final.pts" )
     if ( is.null( fin_pts ) ) {
@@ -395,15 +407,16 @@ power_curve <- function( x, all = FALSE,
 #' @rdname pumpresult
 #' @export
 #' 
-pump_type <- function( x ) {
+pump_type <- function(x)
+{
     stopifnot( is.pumpresult(x) || is.pumpgridresult(x) )
     return( attr(x, "type" ) )
 }
 
 
 
-is_long_table <- function( power_table ) {
-    
+is_long_table <- function(power_table)
+{
     stopifnot( is.pumpresult(power_table) || is.pumpgridresult(power_table) )
     
     lt <- attr( power_table, "long.table" )
@@ -422,9 +435,9 @@ is_long_table <- function( power_table ) {
 #' @description Transform table returned from pump_power 
 #' to a long format table or to a wide format table.
 #'
-#' @param power_table pumpresult object for a power result (not mdes or sample).
-#'   (It can also take a raw dataframe of the wide table to convert to long, as
-#'   an internal helper method.)
+#' @param power_table pumpresult object for a power result 
+#'  (not mdes or sample). (It can also take a raw dataframe of the wide table 
+#'  to convert to long, as an internal helper method.)
 #' @param M scalar; set if power_table is a data.frame 
 #' without set number of outcomes. Usually ignore this.
 #'   
@@ -432,7 +445,8 @@ is_long_table <- function( power_table ) {
 #'
 #' @export
 #' 
-transpose_power_table <- function( power_table, M = NULL ) {
+transpose_power_table <- function(power_table, M = NULL)
+{
     
     ptorig <- power_table
     
@@ -463,19 +477,20 @@ transpose_power_table <- function( power_table, M = NULL ) {
         pp <- power_table %>%
             dplyr::mutate( power = pnames[ .data$power ] ) %>%
             tidyr::pivot_longer( 
-                cols = tidyselect::any_of( c( "None", params(power_table)$MTP ) ),
+                cols = tidyselect::any_of(c( "None", 
+                                             params(power_table)$MTP )),
                 names_to = "MTP",
                 values_to = "power_val" ) %>%
             tidyr::pivot_wider( names_from = "power",
                                 values_from = "power_val" )
     } 
     
-    if( is.pumpresult( ptorig ) || is.pumpgridresult(ptorig) ) {
+    if ( is.pumpresult( ptorig ) || is.pumpgridresult(ptorig) ) {
         att <- attributes(ptorig)
         att["names"] <- NULL
         att["row.names"] <- NULL
         att["long.table"] <- !att[["long.table"]]
-        for ( i in seq(1, length(att)) ) {
+        for (i in seq(1, length(att))) {
             attr( pp, names(att)[[i]] ) <- att[[ i ]]
         }    
     }
@@ -490,7 +505,8 @@ transpose_power_table <- function( power_table, M = NULL ) {
 #'
 #' @rdname pumpresult
 #' 
-is.pumpresult <- function( x ) {
+is.pumpresult <- function(x)
+{
     inherits(x, "pumpresult")
 }
 
@@ -499,7 +515,8 @@ is.pumpresult <- function( x ) {
 #'
 #' @rdname pumpresult
 #' @export
-`[.pumpresult` <- function( x, ... ) {
+`[.pumpresult` <- function(x, ...)
+{
     as.data.frame(x)[...] 
 }
 
@@ -510,7 +527,8 @@ is.pumpresult <- function( x ) {
 #'
 #' @rdname pumpresult
 #' @export
-`[[.pumpresult` <- function( x, ... ) {
+`[[.pumpresult` <- function(x, ...)
+{
     as.data.frame(x)[[...]] 
 }
 
@@ -522,7 +540,8 @@ is.pumpresult <- function( x ) {
 #' @rdname pumpresult
 #' @export
 #' 
-dim.pumpresult <- function( x, ... ) {
+dim.pumpresult <- function(x, ... )
+{
     return( dim( as.data.frame(x) ) )
 }
 
@@ -542,14 +561,16 @@ dim.pumpresult <- function( x, ... ) {
 #' 
 #' @export
 #'   
-summary.pumpresult <- function( object, ... ) {
+summary.pumpresult <- function(object, ...)
+{
     print_context( object, insert_results = TRUE, insert_control = TRUE, ... )
 }
 
 
-calc_binomial_SE <- function( prop, tnum ) {
+calc_binomial_SE <- function(prop, tnum)
+{
     pp <- (tnum * prop + 2) / (tnum + 4)
-    pp * (1-pp) / sqrt(tnum + 4)
+    pp * (1 - pp) / sqrt(tnum + 4)
 }
 
 
@@ -568,10 +589,11 @@ calc_binomial_SE <- function( prop, tnum ) {
 #' 
 #' @export
 #' 
-print.pumpresult <- function( x, n = 10,
-                              header = TRUE,
-                              search = FALSE,
-                              ... ) {
+print.pumpresult <- function(x, n = 10,
+                             header = TRUE,
+                             search = FALSE,
+                             ... )
+{
     result_type <- attr( x, "type" )
     
     pars = params(x)
@@ -592,29 +614,29 @@ print.pumpresult <- function( x, n = 10,
     if ( is.pumpresult(x) ) {
         
         if ( pump_type(x) == "power" ) {
-            SEh <- 0.5 + min( abs( 0.5 - x[,-1] ), na.rm=TRUE )
+            SEh <- 0.5 + min( abs( 0.5 - x[,-1] ), na.rm = TRUE )
             SEh <- calc_binomial_SE( SEh, tnum )
-            SEl <- 0.5 + max( abs( 0.5 - x[,-1] ), na.rm=TRUE )
+            SEl <- 0.5 + max( abs( 0.5 - x[,-1] ), na.rm = TRUE )
             SEl <- calc_binomial_SE( SEl, tnum )
-            print( as.data.frame( x ), row.names=FALSE )
+            print( as.data.frame( x ), row.names = FALSE )
             
             if ( pars$M > 1 ) {
                 scat("\t%.3f <= SE <= %.3f\n", SEl, SEh )
             }
         } else if ( pump_type(x) == "sample" ) {
-            if( !exact_calc(x) ) {
+            if ( !exact_calc(x) ) {
                 SE <- pmax( x[1,4], 1 - x[1,4] )
                 SE <- calc_binomial_SE( SE, tnum )
                 x$SE <- round( SE, digits = 2 )
             }
-            print( as.data.frame( x ), row.names=FALSE )
+            print( as.data.frame( x ), row.names = FALSE )
             
         } else {
             if ( pars$MTP != "None" ) {
                 SE <- calc_binomial_SE( x[[3]], tnum )
                 x$SE <- round( SE, digits = 2 )
             }
-            print( as.data.frame( x ), row.names=FALSE )
+            print( as.data.frame( x ), row.names = FALSE )
         }
     } else {
         nc <- ncol(x)
@@ -653,7 +675,8 @@ print.pumpresult <- function( x, n = 10,
 #' @return No return value; prints results.
 #' 
 #' @keywords internal
-print_search <- function( x, n = 10 ) {
+print_search <- function(x, n = 10)
+{
     tr <- search_path( x )
     
     if ( !is.null( tr )  ) {
@@ -681,8 +704,9 @@ print_search <- function( x, n = 10 ) {
 #'
 #' @description
 #'
-#' Print out the context (design and model, with parameter values) of given pump
-#' result or pump grid result object.  The "***" denotes varying values in the
+#' Print out the context (design and model, with parameter values) of 
+#' given pump result or pump grid result object.  
+#' The "***" denotes varying values in the
 #' printout.
 #' 
 #'
@@ -696,10 +720,11 @@ print_search <- function( x, n = 10 ) {
 #' @export
 #' 
 print_context <- function( 
-        x, insert_results = FALSE, insert_control = FALSE, ...  ) {
+    x, insert_results = FALSE, insert_control = FALSE, ...  ) 
+{
     is_grid <- is.pumpgridresult(x)
     
-    reduce_vec <- function( vec ) {
+    reduce_vec <- function(vec) {
         if ( is.null(vec) ) {
             return( NULL )
         }
@@ -707,13 +732,13 @@ print_context <- function(
             if ( all( round( vec ) == vec ) ) {
                 vec <- as.character( as.integer(vec) )
             } else {
-                vec <- as.character( round( vec, digits=2 ) )
+                vec <- as.character( round( vec, digits = 2 ) )
             }
         }
         if ( length( unique( vec ) ) == 1 ) {
             vec[[1]]
         } else {
-            paste( vec, collapse=" / " )
+            paste( vec, collapse = " / " )
         }
     }
     
@@ -745,7 +770,7 @@ print_context <- function(
         print_grid_header( x )
         
         varnames <- attr( x, "var_names" )
-        for ( v in varnames ) {
+        for (v in varnames) {
             params[[v]] <- "***"
         }
         
@@ -770,10 +795,10 @@ print_context <- function(
     }
     
     if ( !is.null( MDESv ) ) {
-        scat( "  MDES vector: %s\n", paste( MDESv, collapse=", " ) )
+        scat( "  MDES vector: %s\n", paste( MDESv, collapse = ", " ) )
     }
     
-    cname <- function( numCov ) {
+    cname <- function(numCov) {
         if ( numCov == "1" ) {
             return( "1 covariate" )
         } else {
@@ -821,7 +846,7 @@ print_context <- function(
     }
     
     if ( insert_results ) {
-        print.pumpresult(x, header=FALSE, search=FALSE, ... )
+        print.pumpresult(x, header = FALSE, search = FALSE, ... )
     }
     
     if ( insert_control ) {
@@ -833,7 +858,8 @@ print_context <- function(
         no_inc <- vapply( ex_params, is.null, is.numeric(1) )
         ex_params <- ex_params[ !no_inc ]
         scat( "\t(%s)\n",
-              paste( names(ex_params), ex_params, sep = " = ", collapse = "  " ) )
+              paste( names(ex_params), ex_params, sep = " = ",
+                     collapse = "  " ) )
     }
     
     invisible( x )
