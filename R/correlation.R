@@ -10,7 +10,7 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
     start.time <- Sys.time()
     
     # number of simulations
-    for(s in 1:n.sims)
+    for (s in 1:n.sims)
     {
         if (s == 10)
         {
@@ -22,13 +22,18 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
                          finish.time, 'minutes')
             message(msg)
         }
-        if (s %% 100 == 0){ message(paste0("Now processing simulation ", s, " of ", n.sims)) }
+        if (s %% 100 == 0) { message(paste0(
+            "Now processing simulation ", s, " of ", n.sims)) 
+        }
         
         dat.all <- gen_sim_data(d_m = d_m, model.params.list, Tbar = Tbar)
 
         # calculate t statistics
-        rawpt.out <- get_rawpt(dat.all, d_m = d_m, model.params.list = model.params.list)
-        rawt <- sapply(rawpt.out[['rawpt']], function(s){ return(s[['tstat']])})
+        rawpt.out <- get_rawpt(
+            dat.all, d_m = d_m, model.params.list = model.params.list
+        )
+        rawt <- sapply(rawpt.out[['rawpt']],
+                       function(s){ return(s[['tstat']])})
         rawt.all[s,] <- rawt
     }
     
@@ -58,6 +63,8 @@ get_rawt <- function(d_m, model.params.list, Tbar, n.sims = 100)
 #' @param rho.u1 matrix; correlation matrix of level 2 random impacts.
 #' @param rho.C matrix; correlation matrix of level 1 covariates.
 #' @param rho.r matrix; correlation matrix of level 1 residuals.
+#' @param model.params.list list; model parameters such as ICC, R2, etc. See
+#'   simulation vignette for details.
 #' @param n.sims numeric; Number of simulated datasets to generate.
 #' More datasets will achieve a more accurate result
 #' but also increase computation time.
@@ -96,16 +103,16 @@ check_cor <- function(pump.object = NULL,
                       n.sims = 100)
 {
     
-    if(is.null(pump.object))
+    if (is.null(pump.object))
     {
-        if(is.null(d_m) | is.null(model.params.list))
+        if (is.null(d_m) | is.null(model.params.list))
         {
             stop("You must provide either a pump object
                 or both a d_m string and list of model params.")
         }
     } else
     {
-        if(!is.null(d_m) | !is.null(model.params.list))
+        if (!is.null(d_m) | !is.null(model.params.list))
         {
             stop("You must provide either a pump object
                 or both a d_m string and list of model params.")
@@ -115,35 +122,35 @@ check_cor <- function(pump.object = NULL,
         Tbar <- model.params.list$Tbar
         model.params.list$rho.default <- model.params.list$rho
         # fill in correlations
-        if(!is.null(rho.V))
+        if (!is.null(rho.V))
         {
             model.params.list$rho.V <- rho.V
         }
-        if(!is.null(rho.w0))
+        if (!is.null(rho.w0))
         {
             model.params.list$rho.w0 <- rho.w0
         }
-        if(!is.null(rho.w1))
+        if (!is.null(rho.w1))
         {
             model.params.list$rho.w1 <- rho.w1
         }
-        if(!is.null(rho.X))
+        if (!is.null(rho.X))
         {
             model.params.list$rho.X <- rho.X
         }
-        if(!is.null(rho.u0))
+        if (!is.null(rho.u0))
         {
             model.params.list$rho.u0 <- rho.u0
         }
-        if(!is.null(rho.u1))
+        if (!is.null(rho.u1))
         {
             model.params.list$rho.u1 <- rho.u1
         }
-        if(!is.null(rho.C))
+        if (!is.null(rho.C))
         {
             model.params.list$rho.C <- rho.C
         }
-        if(!is.null(rho.r))
+        if (!is.null(rho.r))
         {
             model.params.list$rho.r <- rho.r
         }

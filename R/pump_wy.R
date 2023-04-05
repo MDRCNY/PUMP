@@ -38,7 +38,7 @@ comp_rawp_sd <- function(nullp, rawp, rawp.order) {
     # compute successive minima
     qstar <- rep(NA, M)
     qstar[M] <- nullp.ordered[M]
-    for (h in (M-1):1)
+    for (h in (M - 1):1)
     {
         qstar[h] <- min(qstar[h + 1], nullp.ordered[h])
     }
@@ -75,7 +75,7 @@ get_adjp_minp <- function(ind.B, rawp.order)
   adjp.minp <- rep(NA, length(pi.p.m))
   adjp.minp[1] <- pi.p.m[1]
   for (h in 2:length(pi.p.m)) {
-    adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h-1])
+    adjp.minp[h] <- max(pi.p.m[h], adjp.minp[h - 1])
   }
 
   # return back in original, non-ordered form
@@ -116,7 +116,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
 
-    if(t == 1){ start.time <- Sys.time() }
+    if (t == 1) { start.time <- Sys.time() }
 
     # generate null t values and p values
     nullt.mat <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
@@ -129,7 +129,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
     # calculating the p-value for each sample
     adjp[t,] <- colMeans(ind.B)
 
-    if(t == 10)
+    if (t == 10)
     {
         end.time <- Sys.time()
         iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
@@ -137,7 +137,7 @@ adjp_wyss <- function(rawp.mat, B, Sigma, t.df, two.tailed,
         msg <- paste('Estimated time to finish', tnum,
                      'WY iterations with B =', B, ':',
                      finish.time, 'minutes')
-        if(verbose)
+        if (verbose)
         {
             message(msg)
         }
@@ -172,7 +172,7 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df,
   tnum <- nrow(rawp.mat)
   adjp <- matrix(NA, nrow = tnum, ncol = M)
 
-  if(!is.null(cl))
+  if (!is.null(cl))
   {
     parallel::clusterExport(
       cl,
@@ -189,7 +189,7 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df,
 
   # looping through all the samples of raw test statistics
   for (t in 1:tnum) {
-    if(t == 1){ start.time <- Sys.time() }
+    if (t == 1) { start.time <- Sys.time() }
 
     # generate null t statistics and pvalues
     nullt.mat <- mvtnorm::rmvt(B, sigma = Sigma, df = t.df)
@@ -202,7 +202,7 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df,
     # calculate adjusted p value
     adjp[t,] <- get_adjp_minp(ind.B, rawp.order.matrix[t,])
 
-    if(t == 10)
+    if (t == 10)
     {
       end.time <- Sys.time()
       iter.time <- difftime(end.time, start.time, 'secs')[[1]]/10
@@ -210,7 +210,7 @@ adjp_wysd <- function(rawp.mat, B, Sigma, t.df,
       msg <- paste('Estimated time to finish', tnum,
                    'WY iterations with B =', B, ':',
                    finish.time, 'minutes')
-      if(verbose)
+      if (verbose)
       {
           message(msg)
       }
