@@ -23,9 +23,9 @@ Code taken from:
 https://github.com/lmiratrix/blkvar/blob_master/R/linear_model_method.R
 }
 \details{
-These linear models have block by treatment interaction terms.  The final ATE
-estimates are then weighted average of the block (site) specific ATE
-estimates.
+These linear models have block by treatment interaction terms.  
+The final ATE estimates are then weighted average of the block (site) 
+specific ATE estimates.
 
 If siteID passed, it will weight the RA blocks within site and then average
 these site estimates.

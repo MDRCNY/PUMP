@@ -11,13 +11,13 @@
 #'   or pump_mdes functions.
 #'   
 #' @keywords internal
-run_grid <- function( args, pum_function, verbose = FALSE,
-                      drop.unique.columns, ...,
-                      use.furrr = FALSE ) {
+run_grid <- function(args, pum_function, verbose = FALSE,
+                     drop.unique.columns, ...,
+                     use.furrr = FALSE) {
   
   # check for duplicate values
   lens <- purrr::map_dbl( args, length )
-  for ( nm in names(lens)[lens>1] ) {
+  for (nm in names(lens)[lens > 1]) {
     if ( length( args[[nm]] ) != length( unique( args[[nm]] ) ) ) {
       stop( sprintf(
           "Cannot pass repeats of same value of %s in a grid call.", nm
@@ -58,7 +58,7 @@ run_grid <- function( args, pum_function, verbose = FALSE,
   }
   
   params <- params( grid$res[[1]] )
-  for ( v in var_names ) {
+  for (v in var_names) {
     params[v] <- "***"
   }
   
@@ -132,21 +132,22 @@ setup_default_parallel_plan <- function() {
 #'  Tbar = 0.50, alpha = 0.15, numCovar.1 = 1,
 #'  numCovar.2 = 1, R2.1 = 0.1, R2.2 = 0.7,
 #'  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
-pump_power_grid <- function( d_m, MTP = NULL, MDES, M = 1, nbar,
-                             J = 1, K = 1,
-                             propZero = NULL, numZero = NULL,
-                             Tbar, alpha = 0.05,
-                             numCovar.1 = NULL,
-                             numCovar.2 = NULL,
-                             numCovar.3 = NULL,
-                             R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
-                             ICC.2 = NULL, ICC.3 = NULL,
-                             omega.2 = NULL, omega.3 = NULL,
-                             rho = NULL,
-                             long.table = FALSE,
-                             verbose = FALSE,
-                             drop.unique.columns = TRUE,
-                             ... ) {
+pump_power_grid <- function(d_m, MTP = NULL, MDES, M = 1, nbar,
+                            J = 1, K = 1,
+                            propZero = NULL, numZero = NULL,
+                            Tbar, alpha = 0.05,
+                            numCovar.1 = NULL,
+                            numCovar.2 = NULL,
+                            numCovar.3 = NULL,
+                            R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
+                            ICC.2 = NULL, ICC.3 = NULL,
+                            omega.2 = NULL, omega.3 = NULL,
+                            rho = NULL,
+                            long.table = FALSE,
+                            verbose = FALSE,
+                            drop.unique.columns = TRUE,
+                            ... ) 
+{
 
   if ( sum( duplicated( MDES ) ) > 0 ) {
     stop(paste("Cannot pass duplicate MDES values to pump_power_grid.\n",
@@ -206,21 +207,21 @@ pump_power_grid <- function( d_m, MTP = NULL, MDES, M = 1, nbar,
 #'   Tbar = 0.50, alpha = 0.15, numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.05, ICC.3 = 0.9,
 #'   rho = 0.4, tnum = 200)
-pump_mdes_grid <- function( d_m, MTP = NULL, M = 1,
-                            target.power, power.definition, tol = 0.01,
-                            propZero = NULL, numZero = NULL,
-                            nbar, J = 1, K = 1,
-                            Tbar, alpha,
-                            numCovar.1 = NULL,
-                            numCovar.2 = NULL,
-                            numCovar.3 = NULL,
-                            R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
-                            ICC.2 = NULL, ICC.3 = NULL,
-                            omega.2 = NULL, omega.3 = NULL,
-                            rho = NULL,
-                            verbose = FALSE,
-                            drop.unique.columns = TRUE,
-                            ... ) {
+pump_mdes_grid <- function(d_m, MTP = NULL, M = 1,
+                           target.power, power.definition, tol = 0.01,
+                           propZero = NULL, numZero = NULL,
+                           nbar, J = 1, K = 1,
+                           Tbar, alpha,
+                           numCovar.1 = NULL,
+                           numCovar.2 = NULL,
+                           numCovar.3 = NULL,
+                           R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
+                           ICC.2 = NULL, ICC.3 = NULL,
+                           omega.2 = NULL, omega.3 = NULL,
+                           rho = NULL,
+                           verbose = FALSE,
+                           drop.unique.columns = TRUE,
+                           ...) {
 
 
   args <- list( d_m = d_m, M = M,
@@ -277,23 +278,23 @@ pump_mdes_grid <- function( d_m, MTP = NULL, M = 1,
 #'   R2.1 = 0.1, R2.2 = 0.7, ICC.2 = 0.25, ICC.3 = 0.25,
 #'   rho = 0.4, tnum = 400)
 #'  
-pump_sample_grid <- function( d_m, MTP = NULL, M = 1,
-                              target.power, power.definition, tol = 0.01,
-                              MDES = NULL,
-                              propZero = NULL, numZero = NULL,
-                              typesample,
-                              nbar = NULL, J = NULL, K = NULL,
-                              Tbar, alpha,
-                              numCovar.1 = NULL,
-                              numCovar.2 = NULL,
-                              numCovar.3 = NULL,
-                              R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
-                              ICC.2 = NULL, ICC.3 = NULL,
-                              omega.2 = NULL, omega.3 = NULL,
-                              rho = NULL,
-                              verbose = FALSE,
-                              drop.unique.columns = TRUE,
-                              ... ) 
+pump_sample_grid <- function(d_m, MTP = NULL, M = 1,
+                             target.power, power.definition, tol = 0.01,
+                             MDES = NULL,
+                             propZero = NULL, numZero = NULL,
+                             typesample,
+                             nbar = NULL, J = NULL, K = NULL,
+                             Tbar, alpha,
+                             numCovar.1 = NULL,
+                             numCovar.2 = NULL,
+                             numCovar.3 = NULL,
+                             R2.1 = NULL, R2.2 = NULL, R2.3 = NULL,
+                             ICC.2 = NULL, ICC.3 = NULL,
+                             omega.2 = NULL, omega.3 = NULL,
+                             rho = NULL,
+                             verbose = FALSE,
+                             drop.unique.columns = TRUE,
+                             ...) 
 {
   args <- list( d_m = d_m, M = M, J = J, K = K,
                 power.definition = power.definition,

@@ -1,11 +1,11 @@
 
 
 
-make.pumpgridresult <- function( x,
+make.pumpgridresult <- function(x,
                                 type = c( "power", "mdes", "sample" ),
                                 d_m = d_m,
                                 params.list = NULL,
-                                ... ) {
+                                ...) {
     type <- match.arg(type)
     class(x) <- c( "pumpgridresult", class(x) )
     attr(x, "type" ) <- type
@@ -17,7 +17,7 @@ make.pumpgridresult <- function( x,
     attr(x, "d_m") <- d_m
 
     ll <- list(...)
-    for ( l in names(ll) ) {
+    for (l in names(ll)) {
         attr(x, l) <- ll[[ l ]]
     }
     
@@ -54,13 +54,13 @@ NULL
 #' @rdname pumpgridresult
 #' 
 #' @export
-is.pumpgridresult <- function( x ) {
+is.pumpgridresult <- function(x) {
     inherits(x, "pumpgridresult")
 }
 
 
 
-print_grid_header <- function( x ) {
+print_grid_header <- function(x) {
     result_type <- attr( x, "type" )
     
     d_m <- d_m(x)
@@ -92,15 +92,13 @@ print_grid_header <- function( x ) {
 #' @return print: No return value; prints results.
 #' 
 #' @export
-print.pumpgridresult <- function( x,
-                             header = TRUE,
-                             ... ) {
-    
+print.pumpgridresult <- function(x,header = TRUE, ...) 
+{
     if ( header ) {
        print_grid_header( x )
     }
     
-    print( as.data.frame( x ), row.names=FALSE )
+    print( as.data.frame( x ), row.names = FALSE )
     
     invisible( x )
 }
@@ -114,7 +112,8 @@ print.pumpgridresult <- function( x,
 #' @return summary: No return value; prints results.
 #' 
 #' @export
-summary.pumpgridresult <- function( object, ... ) {
+summary.pumpgridresult <- function(object, ...)
+{
     print_grid_header( object )
     
     print_context( object, 

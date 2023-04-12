@@ -4,7 +4,9 @@
 
 
 
-process_and_generate_param_list <- function( d_m, param.list, pump.object, Tbar = NULL, include_Tx = TRUE ) {
+process_and_generate_param_list <- function(
+        d_m, param.list, pump.object, Tbar = NULL, include_Tx = TRUE
+) {
     
     # If first thing is a pump.object, swap
     if ( !is.null(d_m) && (is.pumpresult(d_m) || is.pumpgridresult(d_m)) ) {
@@ -12,17 +14,18 @@ process_and_generate_param_list <- function( d_m, param.list, pump.object, Tbar 
         d_m <- NULL
     }
     
-    if(is.null(pump.object)) {
-        if( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
+    if (is.null(pump.object)) {
+        if ( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
             stop("You must provide either a pump object
                 or both a design string (d_m) and list of model params.")
         }
     } else {
         # Convert pump object to param list
-        if( include_Tx ) {
+        if ( include_Tx ) {
             if ( !is.null(d_m) || !is.null(param.list) ) {
                 stop("You must provide either a pump object or
-                    a design string (d_m) and list of model params pair (not both).")
+                    a design string (d_m) and list of model params 
+                    pair (not both).")
             }
             
             param.list <- params(pump.object)
@@ -72,8 +75,8 @@ gen_corr_matrix <- function(M, rho.scalar)
 #' @keywords internal
 gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
     Sigma <- matrix(NA, D, D)
-    for(k in 1:D) {
-        for(l in 1:D) {
+    for (k in 1:D) {
+        for (l in 1:D) {
             Sigma[k,l] <- rho.matrix[k,l] * 
                 sqrt(var1.vec[k]) * sqrt(var2.vec[l])
         }
@@ -89,7 +92,7 @@ gen_cov_matrix <- function(D, var1.vec, var2.vec, rho.matrix) {
 #' 
 #' @return 2M x 2M matrix for generating correlated pairs of random effects
 #' @keywords internal
-gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
+gen_RE_cov_matrix <- function(Sigma.w, Sigma.z, Sigma.wz) {
     stopifnot( nrow(Sigma.w) == ncol(Sigma.w) )
     stopifnot( all( dim(Sigma.z) == dim( Sigma.wz ) ) )
     stopifnot( all( dim(Sigma.w) == dim( Sigma.wz ) ) )
@@ -97,11 +100,11 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
     M <- nrow(Sigma.w)
     
     # full covariance matrix
-    Sigma.wz.full                            <- matrix(NA, 2*M, 2*M)
-    Sigma.wz.full[1:M, 1:M]                  <- Sigma.w
-    Sigma.wz.full[(M+1):(2*M), (M+1):(2*M)]  <- Sigma.z
-    Sigma.wz.full[1:M, (M+1):(2*M)]          <- Sigma.wz
-    Sigma.wz.full[(M+1):(2*M), 1:M]          <- t(Sigma.wz)
+    Sigma.wz.full                                    <- matrix(NA, 2 * M, 2 * M)
+    Sigma.wz.full[1:M, 1:M]                          <- Sigma.w
+    Sigma.wz.full[(M + 1):(2 * M), (M + 1):(2 * M)]  <- Sigma.z
+    Sigma.wz.full[1:M, (M + 1):(2 * M)]              <- Sigma.wz
+    Sigma.wz.full[(M + 1):(2 * M), 1:M]              <- t(Sigma.wz)
     
     Sigma.wz.full
 }
@@ -135,17 +138,16 @@ gen_RE_cov_matrix <- function( Sigma.w, Sigma.z, Sigma.wz ) {
 #'   return.as.dataframe = TRUE.
 #'
 #' @export
-gen_base_sim_data <- function( param.list, pump.object = NULL,
-                               return.as.dataframe = TRUE, 
-                               no.list=TRUE,
-                               dgp.params = FALSE ) {
+gen_base_sim_data <- function(param.list, pump.object = NULL,
+                              return.as.dataframe = TRUE, 
+                              no.list = TRUE,
+                              dgp.params = FALSE ) {
     
     if ( !dgp.params ) {
-        param.list = process_and_generate_param_list( d_m = NULL,
-                                                  param.list = param.list,
-                                                  Tbar = NULL,
-                                                  pump.object = pump.object, 
-                                                  include_Tx = FALSE )
+        param.list = process_and_generate_param_list( 
+            d_m = NULL, param.list = param.list, Tbar = NULL,
+            pump.object = pump.object, include_Tx = FALSE 
+        )
     
         param.list = convert_params( param.list )   
     }
@@ -172,7 +174,8 @@ gen_base_sim_data <- function( param.list, pump.object = NULL,
     # ------------------------------#
     # Generate school and district IDs
     # ------------------------------#
-    # generates vector of school and district assignments, assuming equal sizes of everything
+    # generates vector of school and district assignments, 
+    # assuming equal sizes of everything
     if ( is.null( S.id ) ) {
         assignments <- gen_assignments( J, K, nbar )
         # N-length vector of indiv school assignments i.e. (1,1,2,2,3,3)
@@ -205,10 +208,11 @@ gen_base_sim_data <- function( param.list, pump.object = NULL,
         Sigma.w.full   <- gen_RE_cov_matrix( Sigma.w0, Sigma.w1, Sigma.w )
         
         # generate full vector of district random effects and impacts
-        w01.k <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, 2*M), 
-                                         sigma = Sigma.w.full), nrow = K, ncol = 2*M)
+        w01.k <- matrix(mvtnorm::rmvnorm(K, mean = rep(0, 2 * M), 
+                                         sigma = Sigma.w.full), 
+                        nrow = K, ncol = 2 * M)
         w0.k  <- w01.k[,1:M, drop = FALSE]
-        w1.k  <- w01.k[,(M+1):(2*M), drop = FALSE]
+        w1.k  <- w01.k[,(M + 1):(2 * M), drop = FALSE]
         return(list(V.k = V.k, w0.k = w0.k, w1.k = w1.k))
     }
     
@@ -255,7 +259,7 @@ gen_base_sim_data <- function( param.list, pump.object = NULL,
             nrow = J*K, ncol = 2*M
         )
         u0.jk  <- u01.jk[,1:M, drop = FALSE]
-        u1.jk  <- u01.jk[,(M+1):(2*M), drop = FALSE]
+        u1.jk  <- u01.jk[,(M + 1):(2 * M), drop = FALSE]
         
         return(list(X.jk = X.jk, u0.jk = u0.jk, u1.jk = u1.jk))
     }
@@ -303,7 +307,7 @@ gen_base_sim_data <- function( param.list, pump.object = NULL,
     Xi1.ijk <- matrix(Xi1, nrow = N, ncol = M, byrow = TRUE) 
     
     # loop through each individual student
-    for(i in 1:N)
+    for (i in 1:N)
     {
         if ( has.level.three )
         {
@@ -361,7 +365,7 @@ gen_base_sim_data <- function( param.list, pump.object = NULL,
     
     if ( return.as.dataframe ) {
         res <- makelist_samp(res)
-        if ( no.list && length(res)==1 ) {
+        if ( no.list && length(res) == 1 ) {
             return( res[[1]] )
         } else {
             return( res )
@@ -447,7 +451,7 @@ gen_sim_data <- function(
     
     if ( return.as.dataframe ) {
         res <- makelist_samp(sim.data)
-        if ( no.list && length(res)==1 ) {
+        if ( no.list && length(res) == 1 ) {
             return( res[[1]] )
         } else {
             return( res )
@@ -503,7 +507,7 @@ convert_params <- function(param.list) {
         K <- param.list$K <- 1
     }
     
-    if(is.null(rho.default) & any(c(
+    if (is.null(rho.default) & any(c(
         is.null(param.list$rho.V), 
         is.null(param.list$rho.w0),
         is.null(param.list$rho.w1),
@@ -519,47 +523,47 @@ convert_params <- function(param.list) {
     
     default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
     
-    if(is.null(param.list$rho.V))
+    if (is.null(param.list$rho.V))
     {
         param.list$rho.V  <- default.rho.matrix 
     }
-    if(is.null(param.list$rho.w0))
+    if (is.null(param.list$rho.w0))
     {
         param.list$rho.w0  <- default.rho.matrix 
     }
-    if(is.null(param.list$rho.w1))
+    if (is.null(param.list$rho.w1))
     {
         param.list$rho.w1 <- default.rho.matrix 
     }
     
-    if(is.null(param.list$rho.X))
+    if (is.null(param.list$rho.X))
     {
         param.list$rho.X  <- default.rho.matrix 
     }
-    if(is.null(param.list$rho.u0))
+    if (is.null(param.list$rho.u0))
     {
         param.list$rho.u0  <- default.rho.matrix 
     }
-    if(is.null(param.list$rho.u1))
+    if (is.null(param.list$rho.u1))
     {
         param.list$rho.u1 <- default.rho.matrix 
     }
     
-    if(is.null(param.list$rho.C))
+    if (is.null(param.list$rho.C))
     {
         param.list$rho.C  <- default.rho.matrix 
     }
-    if(is.null(param.list$rho.r))
+    if (is.null(param.list$rho.r))
     {
         param.list$rho.r  <- default.rho.matrix 
     }
     
     convert.scalar <- function(x, M)
     {
-        if( is.null(x) )
+        if ( is.null(x) )
         {
             return( rep(0, M) )
-        } else if( length(x) == 1 )
+        } else if ( length(x) == 1 )
         {
             return( rep(x, M) )
         } else
@@ -577,31 +581,31 @@ convert_params <- function(param.list) {
     omega.3 <- convert.scalar(omega.3, M)
     
     # defaults for kappa matrices
-    if(is.null(param.list[['kappa.w']]))
+    if (is.null(param.list[['kappa.w']]))
     {
         param.list$kappa.w <- matrix(0, M, M) 
     }
-    if(is.null(param.list[['kappa.u']]))
+    if (is.null(param.list[['kappa.u']]))
     {
         param.list$kappa.u <- matrix(0, M, M) 
     }
     
     # default for grand mean
-    if(is.null(param.list[['Xi0']]))
+    if (is.null(param.list[['Xi0']]))
     {
         param.list$Xi0 <- 0
     }
     
     # check ICC is valid
-    if( any( ICC.2 + ICC.3 >= 1 ) )
+    if ( any( ICC.2 + ICC.3 >= 1 ) )
     {
         stop(paste('ICC.2 + ICC.3 must be less than 1.
                    ICC.2:', ICC.2, 'ICC3:', ICC.3))
     }
     
     # random intercepts variances
-    tau0.sq <- ( (1 - R2.2) / (1- R2.1) ) * ( ICC.2 / (1 - ICC.2 - ICC.3) )
-    eta0.sq <- ( (1 - R2.3) / (1- R2.1) ) * ( ICC.3 / (1 - ICC.2 - ICC.3) )
+    tau0.sq <- ( (1 - R2.2) / (1 - R2.1) ) * ( ICC.2 / (1 - ICC.2 - ICC.3) )
+    eta0.sq <- ( (1 - R2.3) / (1 - R2.1) ) * ( ICC.3 / (1 - ICC.2 - ICC.3) )
     # covariate coefficients
     delta   <- sqrt( (R2.2 / (1 - R2.1)) *  ( ICC.2 / (1 - ICC.2 - ICC.3) ) )
     xi      <- sqrt( (R2.3 / (1 - R2.1)) *  ( ICC.3 / (1 - ICC.2 - ICC.3) ) )
@@ -622,33 +626,33 @@ convert_params <- function(param.list) {
         , K = param.list[['K']]                    # number of districts
         , nbar = param.list[['nbar']]              # number of individuals per school
         , Xi0 = param.list[['Xi0']]                # scalar grand mean outcome under no treatment
-        , Xi1 = Xi1                                       # scalar grand mean impact
+        , Xi1 = Xi1                                # scalar grand mean impact
     )
     
     if ( has.level.three ) {
         new.param.list <- c( new.param.list, list( 
             # -------------------------------------------- level 3
-            xi = xi                                          # M-vector of coefficient of district covariates
-            , rho.V = param.list[['rho.V']]           # MxM correlation matrix of district covariates
-            , eta0.sq = eta0.sq                              # M-vector of variances of district random effects
-            , eta1.sq = eta1.sq                              # M-vector of variances of district impacts
-            , rho.w0 = param.list[['rho.w0']]         # MxM matrix of correlations for district random effects
-            , rho.w1 = param.list[['rho.w1']]         # MxM matrix of correlations for district impacts
-            , kappa.w = param.list[['kappa.w']]       # MxM matrix of correlations between district random effects and impacts
+            xi = xi                             # M-vector of coefficient of district covariates
+            , rho.V = param.list[['rho.V']]     # MxM correlation matrix of district covariates
+            , eta0.sq = eta0.sq                 # M-vector of variances of district random effects
+            , eta1.sq = eta1.sq                 # M-vector of variances of district impacts
+            , rho.w0 = param.list[['rho.w0']]   # MxM matrix of correlations for district random effects
+            , rho.w1 = param.list[['rho.w1']]   # MxM matrix of correlations for district impacts
+            , kappa.w = param.list[['kappa.w']] # MxM matrix of correlations between district random effects and impacts
         ) )
     }
     
     new.param.list <- c( new.param.list, list(
         # -------------------------------------------- level 2
-        delta = delta                                    # M-vector of coefficients of school covariates
+        delta = delta                             # M-vector of coefficients of school covariates
         , rho.X = param.list[['rho.X']]           # MxM correlation matrix of school covariates
-        , tau0.sq = tau0.sq                              # M-vector of variances of school random effects
-        , tau1.sq = tau1.sq                              # M-vector of variances of school impacts
+        , tau0.sq = tau0.sq                       # M-vector of variances of school random effects
+        , tau1.sq = tau1.sq                       # M-vector of variances of school impacts
         , rho.u0 = param.list[['rho.u0']]         # MxM matrix of correlations for school random effects
         , rho.u1 = param.list[['rho.u1']]         # MxM matrix of correlations for school impacts
         , kappa.u = param.list[['kappa.u']]       # MxM matrix of correlations between school random effects and impacts
         # -------------------------------------------- level 1
-        , gamma = gamma                                  # M-vector of coefficients of individual covariates
+        , gamma = gamma                           # M-vector of coefficients of individual covariates
         , rho.C = param.list[['rho.C']]           # MxM correlation matrix of individual covariates
         , rho.r = param.list[['rho.r']]           # MxM matrix of correlations for individual residuals
     ) )
@@ -689,7 +693,7 @@ gen_assignments <- function(J, K, nbar){
     S.id <- rep(NA, N)
     start.index <- 1
     end.index <- nbar
-    for(j in 1:(K*J))
+    for (j in 1:(K*J))
     {
         S.id[start.index:end.index] <- j
         start.index <- end.index + 1
@@ -700,7 +704,7 @@ gen_assignments <- function(J, K, nbar){
     start.index <- 1
     n.k <- N/K
     end.index <- n.k
-    for(k in 1:K)
+    for (k in 1:K)
     {
         D.id[start.index:end.index] <- k
         start.index <- end.index + 1
@@ -738,16 +742,18 @@ gen_T.x <- function(d_m, S.id, D.id, Tbar)
     d_m <- strsplit(d_m, "_")
     d_m <- d_m[[1]][[1]]
     
-    if(d_m == "d1.1") {
+    if (d_m == "d1.1") {
         T.x <- randomizr::simple_ra(N = length(S.id), prob = Tbar)
-    } else if( d_m == "d2.1" || d_m == "d3.1" ) {
+    } else if ( d_m == "d2.1" || d_m == "d3.1" ) {
         T.x <- randomizr::block_ra( S.id, prob = Tbar )
-    } else if( d_m == "d2.2" ) { 
+    } else if ( d_m == "d2.2" ) { 
         T.x <- randomizr::cluster_ra( S.id, prob = Tbar )
-    } else if( d_m == "d3.3" ) {
+    } else if ( d_m == "d3.3" ) {
         T.x <- randomizr::cluster_ra( D.id, prob = Tbar )
-    } else if( d_m == "d3.2" ) {
-        T.x <- randomizr::block_and_cluster_ra( blocks = D.id, clusters = S.id, prob = Tbar )
+    } else if ( d_m == "d3.2" ) {
+        T.x <- randomizr::block_and_cluster_ra( 
+            blocks = D.id, clusters = S.id, prob = Tbar 
+        )
     } else {
         stop(print(paste('design', d_m, 'not implemented yet')))
     }
@@ -788,7 +794,7 @@ gen_Yobs <- function(full.data, T.x) {
 #' @param T.x vector of treatment assignments
 #' @return List of dataframes.
 #' @keywords internal
-makelist_samp <-function(samp.obs, T.x = NULL ) {
+makelist_samp <- function(samp.obs, T.x = NULL ) {
     
     if ( is.null( T.x ) ) {
         T.x = samp.obs$T.x
@@ -805,10 +811,10 @@ makelist_samp <-function(samp.obs, T.x = NULL ) {
     }
     
     mdat.rn <- rep( NULL, M )
-    for(m in 1:M)
+    for (m in 1:M)
     {
         # level 3
-        if(!is.null(samp.obs[['V.k']]))
+        if (!is.null(samp.obs[['V.k']]))
         {
             mdat.rn[[m]] <- data.frame(
                 V.k         = samp.obs[['V.k']][,m],

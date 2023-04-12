@@ -136,25 +136,32 @@ pump_info <- function(
                                "WY-SS", "Westfall-Young, Single Step",
                                "WY-SD", "Westfall-Young, Step Down" )
 
-    params <- tibble::tribble( ~ Parameter, ~ Description,
-      "nbar",       "harmonic mean of number of level 1 units per
-                     level 2 unit (students per school)",
-      "J",          "harmonic mean of number of level 2 
+    params <- tibble::tribble( ~ Parameter,  ~ Description,
+      "nbar",       "scalar; harmonic mean of number of level 1 units per
+                                level 2 unit (students per school)",
+      "J",          "scalar; harmonic mean of number of level 2 
                       units per level 3 unit (schools per district)",
-      "K",          "number of level 3 units (districts)",
-      "Tbar",       "proportion of units assigned to treatment",
-      "numCovar.1", "number of level 1 (individual) covariates",
-      "numCovar.2", "number of level 2 (school) covariates",
-      "numCovar.3", "number of level 3 (district) covariates",
-      "R2.1",       "percent of variation explained by level 1 covariates",
-      "R2.2",       "percent of variation explained by level 2 covariates",
-      "R2.3",       "percent of variation explained by level 3 covariates",
-      "ICC.2",      "level 2 intraclass correlation",
-      "ICC.3",      "level 3 intraclass correlation",
-      "omega.2",    "ratio of variance of level 2 average impacts to
-                      level 2 random intercepts",
-      "omega.3",    "ratio of variance of level 3 average impacts to
-                      level 3 random intercepts"
+      "K",          "scalar; number of level 3 units (districts)",
+      "Tbar",       "scalar; proportion of units assigned to treatment",
+      "numCovar.1", "scalar; number of level 1 (individual) covariates",
+      "numCovar.2", "scalar; number of level 2 (school) covariates",
+      "numCovar.3", "scalar; number of level 3 (district) covariates",
+      "R2.1",       "scalar/vector; percent of variation explained by 
+                    level 1 covariates",
+      "R2.2",       "scalar/vector; percent of variation explained by 
+                    level 2 covariates",
+      "R2.3",       "scalar/vector; percent of variation explained by 
+                    level 3 covariates",
+      "ICC.2",      "scalar/vector; level 2 intraclass correlation",
+      "ICC.3",      "scalar/vector; level 3 intraclass correlation",
+      "omega.2",    "scalar/vector; ratio of variance of level 2 average 
+                    impacts to level 2 random intercepts",
+      "omega.3",    "scalar/vector; ratio of variance of level 3 average 
+                    impacts to level 3 random intercepts",
+      "rho",        "scalar; correlation between all pairs of 
+                    test statistics",
+      "rho.matrix", "matrix; full matrix of correlations between 
+                    test statistics"
     )
 
     if ( !comment ) {
@@ -211,7 +218,7 @@ parse_design <- function( d_m ) {
 #' parse_d_m( supported$d_m[4] )
 #'
 #' @export
-parse_d_m <- function( d_m ) {
+parse_d_m <- function(d_m) {
     des <- stringr::str_split(d_m, "\\.|_")[[1]]
     nums <- readr::parse_number(des)
     levels <- nums[[1]]
@@ -254,8 +261,8 @@ parse_d_m <- function( d_m ) {
 
 #' Computes Q_m, the standard error of the effect size estimate
 #'
-#' Function to calculate the theoretical true (unadjusted) standard error of the
-#' ATE estimate for a given d_m and model, in effect size units.
+#' Function to calculate the theoretical true (unadjusted) standard 
+#' error of the ATE estimate for a given d_m and model, in effect size units.
 #'
 #' @param d_m a single RCT d_m (see list/naming convention).
 #' @param J scalar; the number of schools
@@ -284,37 +291,37 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
     if (d_m == 'd1.1_m1c')
     {
         Q.m <- sqrt( 
-          ( (1 - R2.1) )  /(Tbar * (1-Tbar) * nbar) )
+          ( (1 - R2.1) )  / (Tbar * (1 - Tbar) * nbar) )
     } else if (d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         Q.m <- sqrt(
-          ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1-Tbar) * J * nbar) )
+          ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m %in% c('d2.1_m2fr', 'd2.1_m2rr') )
     {
         Q.m <- sqrt( 
           (ICC.2 * omega.2)/J +
           ((1 - ICC.2) * (1 - R2.1)) / 
-              (Tbar * (1-Tbar) * J * nbar) )
+              (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m == 'd3.1_m3rr2rr')
     {
         Q.m <- sqrt(
           (ICC.3 * omega.3) / K +
           (ICC.2 * omega.2) / (J * K) +
           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
-              (Tbar * (1-Tbar) * J * K * nbar) )
+              (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd2.2_m2rc')
     {
         Q.m <- sqrt(
-          (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J) +
-          (1 - ICC.2)*(1 - R2.1) / 
-              (Tbar * (1-Tbar) * J * nbar))
+          (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+          (1 - ICC.2) * (1 - R2.1) / 
+              (Tbar * (1 - Tbar) * J * nbar))
     } else if (d_m == 'd3.3_m3rc2rc')
     {
         Q.m <- sqrt( 
-          (ICC.3 * (1 - R2.3)) / (Tbar * (1-Tbar) * K) +
-          (ICC.2 * (1 - R2.2)) / (Tbar * (1-Tbar) * J * K) +
+          (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar) * K) +
+          (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) +
           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-              (Tbar * (1-Tbar) * J * K * nbar) )
+              (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         Q.m <- sqrt( 
@@ -351,10 +358,10 @@ calc_df <- function(d_m, J, K, nbar,
                     numCovar.1, numCovar.2, numCovar.3, 
                     validate = TRUE) {
 
-    if(d_m == 'd1.1_m1c')
+    if (d_m == 'd1.1_m1c')
     {
         df <- nbar - numCovar.1 - 1
-    } else if(d_m == 'd2.1_m2fc')
+    } else if (d_m == 'd2.1_m2fc')
     {
         df <- J * (nbar - 1) - numCovar.1 - 1
     } else if (d_m == 'd2.1_m2ff')
@@ -386,7 +393,7 @@ calc_df <- function(d_m, J, K, nbar,
         stop(paste('d_m not implemented:', d_m))
     }
 
-    if(validate & df <= 0)
+    if (validate & df <= 0)
     {
         stop('Invalid d_m parameters resulting in 
              nonpositive degrees of freedom')
@@ -413,25 +420,26 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL
 ) {
 
-    if(d_m %in% c('d1.1_m1c'))
+    if (d_m %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- Tbar * (1 - Tbar)
         nbar <- (MT/MDES)^2 * numr/denom
-    } else if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+    } else if (d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * J
         nbar <- (MT/MDES)^2 * numr/denom
     } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1m2rr' )
     {
-        numr <- (1 - ICC.2)*(1 - R2.1)
-        denom <- J * ((MDES/MT)^2) - ICC.2 * omega.2
-        nbar <- numr / (Tbar*(1-Tbar)*denom)
+        numr <- (1 - ICC.2) * (1 - R2.1)
+        denom <- J * ((MDES / MT)^2) - ICC.2 * omega.2
+        nbar <- numr / (Tbar * (1 - Tbar) * denom)
     } else if (d_m == 'd3.1_m3rr2rr') {
         numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
-        denom <- J*K*((MDES/MT)^2) - J*ICC.3*omega.3 - ICC.2*omega.2
-        nbar <- numr / ( Tbar*(1-Tbar)*denom )
+        denom <- J * K * ((MDES / MT)^2) - 
+            J * ICC.3 * omega.3 - ICC.2 * omega.2
+        nbar <- numr / ( Tbar * (1 - Tbar) * denom )
     } else if (d_m == 'd2.2_m2rc')
     {
         numr <- (1 - ICC.2)*(1 - R2.1)
@@ -482,12 +490,12 @@ calc_J <- function(
     R2.1, R2.2, R2.3, ICC.2, ICC.3, omega.2, omega.3
 ) {
 
-    if(d_m %in% c('d1.1_m1c'))
+    if (d_m %in% c('d1.1_m1c'))
     {
         numr <- (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
         J <- (MT/MDES)^2 * numr/denom
-    } else if(d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
+    } else if (d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
         numr <- (1 - ICC.2) * (1 - R2.1)
         denom <- (Tbar * (1 - Tbar) * nbar)
@@ -569,7 +577,7 @@ calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
                    omega.2, omega.3) {
 
     K <- NA
-    if(d_m == 'd3.1_m3rr2rr')
+    if (d_m == 'd3.1_m3rr2rr')
     {
         K <- (MT/MDES)^2 * 
           ( (ICC.3 * omega.3) +
@@ -601,20 +609,24 @@ calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
 
 #### Parameter and call validation code ####
 
-make_MDES_vector <- function( MDES, M, 
-                              numZero = NULL,
-                              verbose = TRUE ) {
+make_MDES_vector <- function(MDES, M, 
+                             numZero = NULL,
+                             verbose = TRUE) {
     
-    if( !is.null(numZero) ) {
-        if( numZero >= M )
+    if ( !is.null(numZero) ) {
+        if ( numZero >= M )
         {
-            stop('numZero (or propZero*M) cannot be greater than or equal to M' )
+            stop('numZero (or propZero*M) cannot be greater than or equal to M')
         }
-        if( ( length(MDES) > 1 ) && ( numZero + length(MDES) != M ) )
+        if ( ( length(MDES) > 1 ) && ( numZero + length(MDES) != M ) )
         {
-            stop('Please provide an MDES vector + numZero (or propZero) that identify exactly M outcomes.\n
-             Example: MDES = c(0.1, 0.1), numZero = 3 or propZero = 3/5 with M = 5\n
-             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)')
+            stop(
+             "Please provide an MDES vector + numZero (or propZero)
+             that identify exactly M outcomes.\n
+             Example: MDES = c(0.1, 0.1), numZero = 3 or
+             propZero = 3/5 with M = 5\n
+             Assumed MDES vector = c(0.1, 0.1, 0, 0, 0)"
+            )
         }
         if ( length(MDES) == 1 ) {
             MDES <- c(rep( MDES, M - numZero), rep(0, numZero) )
@@ -627,12 +639,13 @@ make_MDES_vector <- function( MDES, M,
         }
     }
 
-    if(length(MDES) != M)
+    if (length(MDES) != M)
     {
         if ( length(MDES) == 1 ) {
             MDES <- rep( MDES, M )
         } else {
-            stop(paste('Please provide a vector of MDES values of length 1 or M. Current vector: ',
+            stop(paste0('Please provide a vector of MDES values of length 1 or',
+                       'M. Current vector: ',
                        paste0( MDES, collapse = ", " ), 'M =', M))
         }
     }
@@ -645,16 +658,16 @@ validate_MTP <- function(
     MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP.ok = FALSE 
 ) {
 
-    if( !multi.MTP.ok && length( MTP ) > 1 )
+    if ( !multi.MTP.ok && length( MTP ) > 1 )
     {
         stop( 'Please provide only a single MTP procedure.' )
     }
 
-    if( !is.null( MTP ) && any( MTP == "raw" ) ) {
+    if ( !is.null( MTP ) && any( MTP == "raw" ) ) {
         MTP[ MTP == "raw" ] <- "None"
     }
 
-    if(M == 1)
+    if (M == 1)
     {
         if ( !is.null( MTP ) && (MTP != "None" ) )
         {
@@ -663,15 +676,15 @@ validate_MTP <- function(
         }
         MTP <- "None"
     } else {
-        if(is.null(MTP))
+        if (is.null(MTP))
         {
             stop('Please provide a multiple test procedure (MTP).') 
-        } else if( (mdes.call || ss.call) && 
+        } else if ( (mdes.call || ss.call) && 
                    any( MTP == 'None' ) && !pdef$indiv )
         {
             stop('For all minimum or complete power specifications,
                   you must provide a MTP.')
-        } else if( length( MTP ) == 1 && MTP == 'None' )
+        } else if ( length( MTP ) == 1 && MTP == 'None' )
         {
             warning('Proceeding with multiple outcomes and no MTP.')
         }
@@ -679,10 +692,11 @@ validate_MTP <- function(
     
     chk <- MTP %in% pump_info()$Adjustment$Method
 
-    if( ! all( chk ) ) {
+    if ( !all( chk ) ) {
         if ( length( MTP ) > 1 ) {
             msg <- sprintf( 'You have at least one invalid MTP: %s',
-                       paste( "'", MTP[!chk], "'", sep = "", collapse = ", " ) )
+                       paste( "'", MTP[!chk], "'", sep = "", 
+                              collapse = ", " ) )
         } else {
             msg <- sprintf( '"%s" is an invalid MTP.', MTP )
         }
@@ -709,17 +723,17 @@ validate_MTP <- function(
 #'
 #' @return params.list
 #' @keywords internal
-validate_inputs <- function( d_m, params.list,
-                             power.call = FALSE,
-                             mdes.call = FALSE,
-                             ss.call = FALSE,
-                             verbose = TRUE,
-                             multi.MTP.ok = FALSE )
+validate_inputs <- function(d_m, params.list,
+                            power.call = FALSE,
+                            mdes.call = FALSE,
+                            ss.call = FALSE,
+                            verbose = TRUE,
+                            multi.MTP.ok = FALSE)
 {
 
-    verbose_message <- function( msg )
+    verbose_message <- function(msg)
     {
-        if(verbose)
+        if (verbose)
         {
             warning( msg )
         }
@@ -731,7 +745,7 @@ validate_inputs <- function( d_m, params.list,
 
     # allow either supported d_m names or PowerUp equivalents
     info <- pump_info()
-    if(!(d_m %in% info$Context$d_m))
+    if (!(d_m %in% info$Context$d_m))
     {
         if(d_m %in% info$Context$PowerUp) {
             d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
@@ -800,8 +814,10 @@ validate_inputs <- function( d_m, params.list,
         
         if ( !is.null( params.list$numZero ) &&
              params.list$numZero >= params.list$M ) {
-            stop( sprintf( "You cannot specify %s zeros via numZero or propZero with only %s outcomes",
-                           params.list$numZero, params.list$M ) )
+            stop( sprintf( 
+                "You cannot specify %s zeros via numZero or propZero 
+                with only %s outcomes",
+                 params.list$numZero, params.list$M ) )
         }
         
     } else {
@@ -815,15 +831,15 @@ validate_inputs <- function( d_m, params.list,
     #---------------------------------------------------------------#
     # enforce scalar parameters
     #---------------------------------------------------------------#
-    if(!is.null(params.list$numCovar.1) && length(params.list$numCovar.1) != 1)
+    if (!is.null(params.list$numCovar.1) && length(params.list$numCovar.1) != 1)
     {
         stop("numCovar.1: Please provide a scalar.")
     }
-    if(!is.null(params.list$numCovar.2) && length(params.list$numCovar.2) != 1)
+    if (!is.null(params.list$numCovar.2) && length(params.list$numCovar.2) != 1)
     {
         stop("numCovar.2: Please provide a scalar.")
     }
-    if(!is.null(params.list$numCovar.3) && length(params.list$numCovar.3) != 1)
+    if (!is.null(params.list$numCovar.3) && length(params.list$numCovar.3) != 1)
     {
         stop("numCovar.3: Please provide a scalar.")
     }
@@ -833,72 +849,72 @@ validate_inputs <- function( d_m, params.list,
     # convert all params from scalar to vector, if they are non-null
     #---------------------------------------------------------------#
 
-    if(!(length(params.list$R2.1) %in% c(1, params.list$M)))
+    if (!(length(params.list$R2.1) %in% c(1, params.list$M)))
     {
         stop("R2.1: Please provide a scalar parameter or 
              a vector of length M.")
     }
-    if(length(params.list$R2.1) == 1)
+    if (length(params.list$R2.1) == 1)
     {
         params.list$R2.1 <- rep(params.list$R2.1, params.list$M)
     }
 
-    if(!(length(params.list$R2.2) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$R2.2) %in% c(0, 1, params.list$M)))
     {
         stop("R2.2: Please provide a scalar parameter or
               a vector of length M.")
     }
-    if(length(params.list$R2.2) == 1)
+    if (length(params.list$R2.2) == 1)
     {
         params.list$R2.2 <- rep(params.list$R2.2, params.list$M)
     }
 
-    if(!(length(params.list$R2.3) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$R2.3) %in% c(0, 1, params.list$M)))
     {
         stop("R2.3: Please provide a scalar parameter or
               a vector of length M.")
     }
-    if(length(params.list$R2.3) == 1)
+    if (length(params.list$R2.3) == 1)
     {
         params.list$R2.3 <- rep(params.list$R2.3, params.list$M)
     }
 
-    if(!(length(params.list$ICC.2) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$ICC.2) %in% c(0, 1, params.list$M)))
     {
         stop("ICC.2: Please provide a scalar parameter or
               a vector of length M.")
     }
-    if(length(params.list$ICC.2) == 1)
+    if (length(params.list$ICC.2) == 1)
     {
         params.list$ICC.2 <- rep(params.list$ICC.2, params.list$M)
     }
 
-    if(!(length(params.list$ICC.3) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$ICC.3) %in% c(0, 1, params.list$M)))
     {
         stop("ICC.3: Please provide a scalar parameter or
               a vector of length M.")
     }
-    if(length(params.list$ICC.3) == 1)
+    if (length(params.list$ICC.3) == 1)
     {
         params.list$ICC.3 <- rep(params.list$ICC.3, params.list$M)
     }
 
-    if(!(length(params.list$omega.2) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$omega.2) %in% c(0, 1, params.list$M)))
     {
         stop("omega.2: Please provide a scalar parameter or
               a vector of length M.")
     }
-    if(length(params.list$omega.2) == 1)
+    if (length(params.list$omega.2) == 1)
     {
         params.list$omega.2 <- rep(params.list$omega.2, params.list$M)
     }
 
-    if(!(length(params.list$omega.3) %in% c(0, 1, params.list$M)))
+    if (!(length(params.list$omega.3) %in% c(0, 1, params.list$M)))
     {
         stop("omega.3: Please provide a scalar parameter 
              or a vector of length M.")
     }
-    if(length(params.list$omega.3) == 1)
+    if (length(params.list$omega.3) == 1)
     {
         params.list$omega.3 <- rep(params.list$omega.3, params.list$M)
     }
@@ -907,51 +923,51 @@ validate_inputs <- function( d_m, params.list,
     # Basic checks of data parameters
     #-------------------------------------------------------#
 
-    if( ( !is.null( params.list$K ) && params.list$K <= 0) |
+    if ( ( !is.null( params.list$K ) && params.list$K <= 0) |
         ( !is.null( params.list$J ) && params.list$J <= 0) |
         ( !is.null( params.list$nbar ) && params.list$nbar <= 0) ) {
         stop('Provided values of J, K, and/or nbar need to be positive.')
     }
 
-    if( params.list$numCovar.1 < 0 |
+    if ( params.list$numCovar.1 < 0 |
         ( !is.null( params.list$numCovar.2 )  && params.list$numCovar.2 < 0  ) |
         ( !is.null( params.list$numCovar.3 ) && params.list$numCovar.3 < 0 ) )
     {
         stop('Please provide non-negative values of your num.Covar parameters')
     }
 
-    if(params.list$Tbar >= 1 | params.list$Tbar <= 0)
+    if (params.list$Tbar >= 1 | params.list$Tbar <= 0)
     {
         stop('Please provide Tbar as a probability strictly between 0 and 1')
     }
 
-    if(params.list$alpha > 1 | params.list$alpha < 0)
+    if (params.list$alpha > 1 | params.list$alpha < 0)
     {
         stop('Please provide alpha as a probability between 0 and 1')
     }
 
-    if(any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
+    if (any(params.list$R2.1 > 1) | any(params.list$R2.1 < 0) |
        any(params.list$R2.2 > 1) | any(params.list$R2.2 < 0) |
        any(params.list$R2.3 > 1) | any(params.list$R2.3 < 0))
     {
         stop('Please provide R2 as a probability between 0 and 1')
     }
 
-    if(any(params.list$omega.2 < 0) | (!is.null(params.list$omega.3) &&
+    if (any(params.list$omega.2 < 0) | (!is.null(params.list$omega.3) &&
        any(params.list$omega.3 < 0)))
     {
         stop('Please provide a non-negative value of Omega')
     }
 
     # ICC
-    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
+    if (!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
        any(params.list$ICC.2 + params.list$ICC.3 > 1))
     {
       stop('ICC.2 + ICC.3 must be <= 1')
     }
     
     # ICC
-    if(!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
+    if (!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
        any(params.list$ICC.2 + params.list$ICC.3 == 1))
     {
         warning('ICC.2 + ICC.3 = 1, leaving no variation at level 1')
@@ -965,7 +981,7 @@ validate_inputs <- function( d_m, params.list,
         }
     } else {
         # invalid rho
-        if(params.list$rho > 1 | params.list$rho < -1)
+        if (params.list$rho > 1 | params.list$rho < -1)
         {
           stop('Please provide rho as a correlation between -1 and 1')
         }
@@ -976,8 +992,8 @@ validate_inputs <- function( d_m, params.list,
     #-------------------------------------------------------#
 
     # one level models
-    if( par.d_m$levels == 1 ) {
-      if( (!is.null( params.list$J ) && params.list$J != 1 ) ||
+    if ( par.d_m$levels == 1 ) {
+      if ((!is.null( params.list$J ) && params.list$J != 1 ) ||
           (!is.null( params.list$K ) && params.list$K != 1 ) ||
           (!is.null( params.list$numCovar.2 ) && params.list$numCovar.2 > 0 ) ||
           (!is.null( params.list$R2.2 ) && any(params.list$R2.2 > 0 ) ) ||
@@ -993,10 +1009,11 @@ validate_inputs <- function( d_m, params.list,
       params.list$omega.2 <- NULL
     }
 
-    # check for three-level parameters when working with one or two level models
-    if( par.d_m$levels <= 2 )
+    # check for three-level parameters when working with 
+    # one or two level models
+    if ( par.d_m$levels <= 2 )
     {
-      if( ( !is.null(params.list$K) && params.list$K > 1 ) |
+      if ( ( !is.null(params.list$K) && params.list$K > 1 ) |
           ( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
           ( !is.null(params.list$R2.3)) && any( params.list$R2.3 > 0 ) |
           ( !is.null(params.list$ICC.3)) && any( params.list$ICC.3 > 0 ) |
@@ -1013,21 +1030,21 @@ validate_inputs <- function( d_m, params.list,
     }
 
     # two level models and above
-    if( par.d_m$levels >= 2 )
+    if ( par.d_m$levels >= 2 )
     {
       if ( params.list$J == 1 )
       {
             warning('Running a model with >= 2 levels with J = 1')
       }
-      if( any(params.list$ICC.2 == 0 ) )
+      if ( any(params.list$ICC.2 == 0 ) )
       {
             verbose_message('Running a model with >= 2 levels with ICC.2 = 0')
       }
-      if( par.d_m$rand_level == 2 && any( params.list$R2.2 == 0 ) )
+      if ( par.d_m$rand_level == 2 && any( params.list$R2.2 == 0 ) )
       {
             verbose_message('Assuming R2.2 = 0')
       }
-      if( par.d_m$FE.2 &
+      if ( par.d_m$FE.2 &
           (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
            ( !is.null(params.list$R2.2) && any( params.list$R2.2 > 0 ) ) ))
       {
@@ -1036,14 +1053,14 @@ validate_inputs <- function( d_m, params.list,
                  numCovar.2, R2.2')
             params.list$R2.2 <- NULL
       }
-      if( par.d_m$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
+      if ( par.d_m$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
       {
             verbose_message('Assuming omega.2 = 0')
       }
       # constant treatment effects models: level 2
-      if( par.d_m$model2.p[2] == 'c' )
+      if ( par.d_m$model2.p[2] == 'c' )
       {
-        if(any(params.list$omega.2 > 0))
+        if (any(params.list$omega.2 > 0))
         {
             verbose_message('Omega is assumed to be 0 for constant
                             treatment effects models.
@@ -1055,30 +1072,30 @@ validate_inputs <- function( d_m, params.list,
 
 
     # three level models
-    if( par.d_m$levels == 3 )
+    if ( par.d_m$levels == 3 )
     {
-      if(is.null(params.list$K) || params.list$K < 1 )
+      if (is.null(params.list$K) || params.list$K < 1 )
       {
         stop('You must specify K, with K >= 1 (number of units at level 3)
              for three-level designs' )
       }
-      if( params.list$K == 1 )
+      if ( params.list$K == 1 )
       {
          warning('Running a 3-level model with K = 1')
       }
-      if( any( params.list$ICC.3 == 0 ) )
+      if ( any( params.list$ICC.3 == 0 ) )
       {
           verbose_message('Running a 3-level model with ICC.3 = 0')
       }
-      if( par.d_m$rand_level == 3 & any(params.list$R2.3 == 0 ) )
+      if ( par.d_m$rand_level == 3 & any(params.list$R2.3 == 0 ) )
       {
           verbose_message('Assuming R2.3 = 0')
       }
-      if( par.d_m$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
+      if ( par.d_m$model3.p[2] == 'r' & any(params.list$omega.3 == 0 ) )
       {
           verbose_message('Assuming omega.3 = 0')
       }
-      if( par.d_m$FE.3 &
+      if ( par.d_m$FE.3 &
          (( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
           ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) ))
       {
@@ -1089,9 +1106,9 @@ validate_inputs <- function( d_m, params.list,
       }
 
       # constant treatment effects models: level 3
-      if( par.d_m$model3.p[[2]] == 'c' )
+      if ( par.d_m$model3.p[[2]] == 'c' )
       {
-        if(any(params.list$omega.3 > 0))
+        if (any(params.list$omega.3 > 0))
         {
           warning('Omega is assumed to be 0 for constant treatment effects
                   models. Ignoring input omega.3 value')
@@ -1102,21 +1119,21 @@ validate_inputs <- function( d_m, params.list,
     }
 
     # number covariates
-    if(!is.null( params.list$R2.1) && any(params.list$R2.1 != 0) &&
+    if (!is.null( params.list$R2.1) && any(params.list$R2.1 != 0) &&
                  params.list$numCovar.1 == 0)
     {
         warning('If nonzero R2 (R2.1, level 1), at least one covariate is
                 assumed. Setting numCovar.1 = 1')
         params.list$numCovar.1 <- 1
     }
-    if(!is.null( params.list$R2.2) && any(params.list$R2.2 != 0) &&
+    if (!is.null( params.list$R2.2) && any(params.list$R2.2 != 0) &&
                  params.list$numCovar.2 == 0)
     {
         warning('If nonzero R2 (R2.2, level 2), at least one covariate
                 is assumed. Setting numCovar.2 = 1')
         params.list$numCovar.2 <- 1
     }
-    if(!is.null( params.list$R2.3) && any(params.list$R2.3 != 0) &&
+    if (!is.null( params.list$R2.3) && any(params.list$R2.3 != 0) &&
                  params.list$numCovar.3 == 0)
     {
         warning('If nonzero R2 (R2.3, level 3), at least one covariate
@@ -1127,22 +1144,22 @@ validate_inputs <- function( d_m, params.list,
     #-------------------------------------------------------#
     #  rho
     #-------------------------------------------------------#
-    if(is.null(params.list$rho.matrix) && is.null(params.list$rho))
+    if (is.null(params.list$rho.matrix) && is.null(params.list$rho))
     {
         stop( sprintf( 'Please provide either a %d x %d rho.matrix
                        or default scalar rho.',
                        params.list$M, params.list$M ) )
     }
 
-    if(!is.null(params.list$rho.matrix))
+    if (!is.null(params.list$rho.matrix))
     {
-        if(nrow(params.list$rho.matrix) != params.list$M |
+        if (nrow(params.list$rho.matrix) != params.list$M |
            ncol(params.list$rho.matrix) != params.list$M)
         {
             stop('Correlation matrix of invalid dimensions.
                  Please provide valid correlation matrix.')
         }
-        if(any(params.list$rho.matrix < -1) | any(params.list$rho.matrix > 1) )
+        if (any(params.list$rho.matrix < -1) | any(params.list$rho.matrix > 1) )
         {
           stop('Please provide a rho matrix with values between -1 and 1.')
         }

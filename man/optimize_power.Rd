@@ -37,7 +37,7 @@ optimize_power(
   parallel.WY.cores = 1,
   max.steps = 20,
   tnum = 1000,
-  start.tnum = tnum/10,
+  start.tnum = round(tnum/10),
   final.tnum = 4 * tnum,
   give.warnings = FALSE,
   grid.only = FALSE,
@@ -150,12 +150,13 @@ Increasing tnum increases precision and computation time.}
 
 \item{give.warnings}{whether to return optimizer warnings}
 
-\item{grid.only}{TRUE means generate a grid from start.low to start.high, but
-do not do iterative search. (Useful for mapping out the power curve rather
-than identifying a point of particular power).}
+\item{grid.only}{TRUE means generate a grid from start.low to start.high, 
+but do not do iterative search. (Useful for mapping out the power 
+curve rather than identifying a point of particular power).}
 
-\item{grid.size}{Number of points to check in initial search grid.  Grid will
-be spaced as a quadratic sequence (e.g., 0, 1, 4, 9, 16 for a 0-16 span).}
+\item{grid.size}{Number of points to check in initial search grid.
+Grid will be spaced as a quadratic sequence 
+(e.g., 0, 1, 4, 9, 16 for a 0-16 span).}
 }
 \value{
 power

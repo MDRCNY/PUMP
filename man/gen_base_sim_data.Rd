@@ -9,7 +9,8 @@ gen_base_sim_data(
   param.list,
   pump.object = NULL,
   return.as.dataframe = TRUE,
-  no.list = TRUE
+  no.list = TRUE,
+  dgp.params = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ covariates, etc., in a list.}
 no.list=TRUE means if M=1 return the dataframe, not a list of
 length 1.  FALSE means return a list of length 1, even if there
 is only 1 outcome.}
+
+\item{dgp.params}{TRUE means param.list is already converted to DGP
+parameters, FALSE means it needs to be converted via
+`convert_params()`.}
 }
 \value{
 list; potential outcomes given control y0, treatment y1,

@@ -7,8 +7,8 @@
 print_search(x, n = 10)
 }
 \arguments{
-\item{x}{a pumpresult object (except for is.pumpresult, where it is a generic
-object to check).}
+\item{x}{a pumpresult object (except for is.pumpresult, 
+where it is a generic object to check).}
 
 \item{n}{Number of lines of search path to print, max.}
 }

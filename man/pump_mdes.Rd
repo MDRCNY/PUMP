@@ -34,7 +34,7 @@ pump_mdes(
   B = 1000,
   max.steps = 20,
   tnum = 1000,
-  start.tnum = tnum/10,
+  start.tnum = round(tnum/10),
   final.tnum = 4 * tnum,
   parallel.WY.cores = 1,
   updateProgress = NULL,
