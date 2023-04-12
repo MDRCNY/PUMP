@@ -517,7 +517,7 @@ plot.pumpgridresult.mdes <- function(
   
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
-      dplyr::group_by( dplyr::across( tidyselect::all_of( c( "MTP", var.vary ) ) ) ) %>%
+      dplyr::group_by( dplyr::across( tidyselect::all_of( c( "MTP", color, var.vary ) ) ) ) %>%
       dplyr::summarise( Adjusted.MDES = mean( .data$Adjusted.MDES ) )
     
     smessage('Note: Averaged Adjusted.MDES across other 
@@ -531,7 +531,7 @@ plot.pumpgridresult.mdes <- function(
     dplyr::mutate(Adjusted.MDES = as.numeric(.data$Adjusted.MDES))
   
   # ensure our color is a factor
-  plot.data[ color ] <- as.factor( plot.data[[color]] )
+  plot.data$color <- as.factor( plot.data[[color]] )
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
@@ -568,7 +568,8 @@ plot.pumpgridresult.mdes <- function(
                                                       face = "bold",
                                                       vjust = 1,
                                                       hjust = 0.5),
-                   axis.text = ggplot2::element_text(size = 10))
+                   axis.text = ggplot2::element_text(size = 10)) +
+      ggplot2::expand_limits(y = 0)
   
   if ( lines ) {
     grid.plot <- grid.plot + ggplot2::geom_line()
@@ -637,8 +638,7 @@ plot.pumpgridresult.sample <- function(
   }
   
   # ensure our color is a factor
-  plot.data[ color ] <- as.factor( plot.data[[color]] )
-  
+  plot.data$color <- as.factor( plot.data[[color]] )
   
   grid.plot <- ggplot2::ggplot(
     data = plot.data,
@@ -676,7 +676,8 @@ plot.pumpgridresult.sample <- function(
                                                       vjust = 1,
                                                       hjust = 0.5),
                    axis.text = ggplot2::element_text(size = 10),
-                   legend.title = ggplot2::element_blank())
+                   legend.title = ggplot2::element_blank()) +
+      ggplot2::expand_limits(y = 0)
   
   
   
@@ -748,15 +749,15 @@ plot.pumpgridresult <- function(
   
   if( !is.null( var.vary ) ) {
     if ( !(var.vary %in% var_names) ) {
-      sstop('Please provide a var.vary amongst the variables 
-                  that vary. %s is not listed.', var.vary )
+      sstop('Please provide a var.vary amongst the variables that vary. "%s" is not listed.', 
+            var.vary )
     }
   } else {
     if ( length( var_names ) > 1 ) {
       # Make a separate plot for each varying element!
       mps <- purrr::map( 
         var_names, plot.pumpgridresult, x = x, 
-        power.definition = power.definition, include.title = FALSE, ... )
+        power.definition = power.definition, color = color, lines = lines, include.title = FALSE, ... )
       
       gd <- ggpubr::ggarrange( 
         plotlist = mps, common.legend = TRUE, 

@@ -66,7 +66,7 @@ pump_mdes <- function(
         rho = NULL, rho.matrix = NULL,
         B = 1000,
         max.steps = 20, 
-        tnum = 1000, start.tnum = tnum / 10, final.tnum = 4*tnum,
+        tnum = 1000, start.tnum = round( tnum / 10 ), final.tnum = 4*tnum,
         parallel.WY.cores = 1,
         updateProgress = NULL, give.optimizer.warnings = FALSE,
         verbose = FALSE ) {
@@ -98,7 +98,7 @@ pump_mdes <- function(
             "Number of replicates (tnum) is too small given target tolerance.  Increasing tnum from %d to %d",
             as.integer( tnum ), as.integer( tnum_est ) ), call. = FALSE )
         tnum <- tnum_est
-        start.tnum <- tnum / 10
+        start.tnum <- round( tnum / 10 )
         final.tnum <- 4*tnum
     }
     

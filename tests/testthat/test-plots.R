@@ -334,3 +334,37 @@ test_that( "power curve plotting works", {
 
 
 
+test_that( "color with grid plot works", {
+    
+ 
+    
+    # Do power analysis for 100 clusters of size 30 with 50% treated.
+    sit1 <- pump_mdes( d_m = "d2.2_m2rc",
+                       J = 100,
+                       nbar = 30,
+                       target.power = 0.80,
+                       Tbar = 0.50)
+    sit1
+    
+    
+    # Now run power analysis on all combinations of R2s and ICCs.  R2.1 is
+    # explanatory power for level 1 (student) outcomes (e.g., student
+    # pre-test).  R2.2 is explanatory power for the clusters (e.g., school
+    # average pretest).
+    expl <- update_grid( sit1, 
+                         ICC.2 = c( 0, 0.1, 0.2, 0.3 ),
+                         R2.1 = c( 0, 0.3, 0.5, 0.7, 0.9 ),
+                         R2.2 = c( 0, 0.3, 0.5, 0.7, 0.9 ),
+                         numCovar.1 = 5,
+                         numCovar.2 = 5 )
+    
+    expl
+    
+    plt <- plot( expl, color = "ICC.2" )
+    print( plt )
+    
+    expect_true( !is.null( plt ) )
+    
+})
+
+
