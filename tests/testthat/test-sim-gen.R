@@ -222,7 +222,7 @@ test_that(
 J <- 20
 K <- 10
 nbar <- 50
-assignments <- gen_assignments( J = J, K = K, nbar = nbar)
+assignments <- gen_cluster_ids( J = J, K = K, nbar = nbar)
 S.id        <- assignments[['S.id']]
 D.id        <- assignments[['D.id']]
 
@@ -246,7 +246,7 @@ Tbar <- 0.5
 
 # two level
 K <- 1
-assignments <- gen_assignments( J = J, K = K, nbar = nbar)
+assignments <- gen_cluster_ids( J = J, K = K, nbar = nbar)
 S.id        <- assignments[['S.id']]
 D.id        <- assignments[['D.id']]
 
@@ -275,7 +275,7 @@ test_that('Each cluster is assigned to either treatment or control',{
 
 # 3 level
 K <- 10
-assignments <- gen_assignments( J = J, K = K, nbar = nbar)
+assignments <- gen_cluster_ids( J = J, K = K, nbar = nbar)
 S.id        <- assignments[['S.id']]
 D.id        <- assignments[['D.id']]
 

@@ -7,16 +7,16 @@
 convert_params(param.list)
 }
 \arguments{
-\item{param.list}{list; model parameters such as ICC, R2,
-etc.}
+\item{param.list}{list; model parameters such as ICC, R2, etc.}
 }
 \value{
 list; data-generating parameters.
 }
 \description{
 Converts user-provided parameters such as ICC and
-  omega into data-generating parameters that can produce simulated
-  data, such as variance values and covariate coefficients.
+  omega into data-generating parameters for the multilevel random
+  effects model used to produce simulated data, such as variance
+  values and covariate coefficients.
 
   This function is beyond the main scope of calculating power, and
   is instead used for simulating data. For more info on use, see

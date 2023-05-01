@@ -21,7 +21,9 @@ test_that("Single Scenario plot works", {
                     tnum = 200
   )
   
+  pp
   ss.plot <- plot(pp)
+  ss.plot
   expect_true(!is.null(ss.plot))
 
   
@@ -57,6 +59,7 @@ test_that("Grid plot works for power", {
   expect_true( attr( grid, "var_names") == "MDES" )
   
   grid.plot <- plot(grid, power.definition = 'min1' )
+  grid.plot
   expect_true(!is.null(grid.plot))
   
   grid.plot <- plot(grid, power.definition = 'D2indiv' )

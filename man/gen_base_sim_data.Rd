@@ -41,10 +41,10 @@ list; potential outcomes given control y0, treatment y1,
 Generates simulated data for multi-level RCTs for
   pump-supported designs and models for both unobserved potential
   outcomes. This function does not generate treatment assignments
-  or observed outcomes.
+  or observed outcomes--see gen_sim_data() for that.
 
-  Takes in a list of necessary data-generating parameters,
-  following the rest of the package.
+  This method takes in a list of necessary data-generating
+  parameters, following the rest of the package.
 
   This function is beyond the main scope of calculating power, and
   is instead used for simulating data. For more info on use, see

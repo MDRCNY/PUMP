@@ -1,3 +1,9 @@
+
+
+
+
+
+
 #' @title Examine a power curve (result function)
 #'
 #' @description This will give a plot of power vs. MDES or sample size. It can
@@ -179,11 +185,15 @@ plot_power_search <- function(pwr, fit = NULL, target.line = NULL) {
 #'   different definitions of power across MTPs. For the object
 #'   returned by pump_mdes() or pump_sample(), plot a power curve as a
 #'   function of MDES or sample size, respectively.  This latter call
-#'   will do a grid search over a passed range from low to high to
+#'   will calculate power over a passed range from low to high to
 #'   generate this curve.
 #'
 #'   Several of the passed parameters only apply to the mdes or sample
 #'   versions, and are for controlling the grid search and plot.
+#'
+#'   For pump_power, will include standard errors of uncertainty on
+#'   calculated power. These depend on number of iterations (tnum)
+#'   used in the simulation.
 #'
 #' @param x pumpresult object.
 #' @param type string; "power" or "search". Specifies whether to plot
@@ -199,6 +209,8 @@ plot_power_search <- function(pwr, fit = NULL, target.line = NULL) {
 #'   many grid points?
 #' @param breaks If plotting a curve for sample or MDES, where to put
 #'   the grid points?
+#' @param include_SE Include (approximate) SEs on the power estimates,
+#'   if they are naturally calculated.
 #' @param ... additional parameters, such as, in case of sample or
 #'   mdes objects, tnum for setting number of replicates or all
 #'   (logical) for determining whether to include original points in
@@ -233,7 +245,9 @@ plot.pumpresult <- function(x, type = "power",
                             all = TRUE,
                             low = NULL, high = NULL,
                             grid.size = 5,
-                            breaks = grid.size, ... )
+                            breaks = grid.size, 
+                            include_SE = TRUE,
+                            ... )
 {
   stopifnot( is.pumpresult( x ) )
   stopifnot( type %in% c("power", "search") )
@@ -272,6 +286,10 @@ plot.pumpresult <- function(x, type = "power",
       as.data.frame( plot.data, row.names = NULL ) %>%
       dplyr::filter( !is.na( .data$power ) )
     
+    plot.data <- dplyr::mutate( plot.data, 
+                         SE = calc_binomial_SE( power, params(x)$tnum ),
+                         CI_h = power + 2*SE,
+                         CI_l = power - 2*SE )
     # single scenario plot
     ss.plot <- ggplot2::ggplot(
       data = plot.data,
@@ -279,9 +297,7 @@ plot.pumpresult <- function(x, type = "power",
                    y = .data$power,
                    shape = .data$MTP,
                    color = .data$MTP)) +
-      ggplot2::geom_point(
-        size = 2, position = ggplot2::position_dodge(0.25)
-      ) +
+      ggplot2::geom_point( size = 2, position = ggplot2::position_dodge(0.25) ) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across
                                different definitions of power")) +
@@ -295,6 +311,12 @@ plot.pumpresult <- function(x, type = "power",
                      axis.title  = ggplot2::element_text(size = 10)
       ) +
       ggplot2::labs(color = "", shape = "")
+    
+    if ( include_SE ) {
+        ss.plot = ss.plot + 
+            ggplot2::geom_linerange( ggplot2::aes( ymin = CI_l, ymax = CI_h ),
+                                     position = ggplot2::position_dodge(0.25) )
+    }
     return(ss.plot)
     
   } else if (pump_type(x) %in% c('mdes', 'sample') ) {
@@ -801,6 +823,10 @@ plot.pumpgridresult <- function(
   return(grid.plot)
 }
 
+
+
+
+
 ##### Helper functions for plotting #####
 
 get_sample_tick_marks <- function( 
@@ -855,6 +881,11 @@ get_sample_tick_marks <- function(
     }
 }
 
+
+
+
+
+
 get_sample_size_scale <- function( 
         points, breaks = 5, include.points = FALSE 
 ) {
@@ -877,6 +908,10 @@ get_sample_size_scale <- function(
         ggplot2::scale_x_continuous( breaks = xpt )
     }
 }
+
+
+
+
 
 handle_power_definition <- function( 
         x, power.definition, outcome, var.vary, include.title 

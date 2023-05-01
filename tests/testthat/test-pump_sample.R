@@ -5,7 +5,7 @@ default.tnum <- 1000
 
 test_that("calc_nbar works", {
 
-  nbar <- calc_nbar(  d_m = "d2.2_m2rc",
+  nbar <- PUMP:::calc_nbar(  d_m = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,

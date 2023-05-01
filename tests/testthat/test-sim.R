@@ -94,9 +94,13 @@ test_that( "Simulation function works with MDES", {
                        M = 5, rho = 0.8,
                        MTP = "BH",
                        J = 15, Tbar = 0.5 )
-    ## sim.data <- gen_sim_data( pp )
+    summary( pp )
+    ## 
+    sim.data <- gen_sim_data( pp, return.as.dataframe = TRUE )
     
-    # TODO: Make it catch the lack of sample size and do something smart?
+    expect_true( is.data.frame( head( sim.data[[1]] ) ) )
+    expect_true( nrow( sim.data[[1]] ) == pp$Sample.size * 15 )
+                 
 })
 
 

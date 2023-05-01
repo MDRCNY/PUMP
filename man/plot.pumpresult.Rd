@@ -12,6 +12,7 @@
   high = NULL,
   grid.size = 5,
   breaks = grid.size,
+  include_SE = TRUE,
   ...
 )
 }
@@ -37,6 +38,9 @@ many grid points?}
 \item{breaks}{If plotting a curve for sample or MDES, where to put
 the grid points?}
 
+\item{include_SE}{Include (approximate) SEs on the power estimates,
+if they are naturally calculated.}
+
 \item{...}{additional parameters, such as, in case of sample or
 mdes objects, tnum for setting number of replicates or all
 (logical) for determining whether to include original points in
@@ -52,11 +56,15 @@ For the object returned by pump_power(), visualizes
   different definitions of power across MTPs. For the object
   returned by pump_mdes() or pump_sample(), plot a power curve as a
   function of MDES or sample size, respectively.  This latter call
-  will do a grid search over a passed range from low to high to
+  will calculate power over a passed range from low to high to
   generate this curve.
 
   Several of the passed parameters only apply to the mdes or sample
   versions, and are for controlling the grid search and plot.
+
+  For pump_power, will include standard errors of uncertainty on
+  calculated power. These depend on number of iterations (tnum)
+  used in the simulation.
 }
 \examples{
 pp1 <- pump_power(d_m = "d2.2_m2rc", MTP = 'HO',
