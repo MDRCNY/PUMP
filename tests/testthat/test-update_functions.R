@@ -49,6 +49,33 @@ test_that( "update generally works", {
     expect_true( d_m(tp2) == "d3.2_m3ff2rc" )
 })
 
+test_that( "update works for parallel", {
+    
+    skip_on_cran()
+    set.seed( 101010 )
+    pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = "WY-SD",
+                      MDES = rep( 0.10, 3 ),
+                      M = 3,
+                      J = 3, # number of schools/block
+                      K = 21, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 400
+    )
+    
+    set.seed( 101010 )
+    up <- update(pp, parallel.WY.cores = 2)
+    
+    expect_equal( up$D1indiv[2], pp$D1indiv[2], tol = 0.1 )
+
+})
+
 
 
 test_that( "update_grid generally works", {

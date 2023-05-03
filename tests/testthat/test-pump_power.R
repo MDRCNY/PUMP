@@ -709,4 +709,45 @@ test_that("parallel WY", {
     
 })
 
+test_that("Very small MDES", {
+    
+    skip_on_cran()
+    
+    pp1 <- pump_power( d_m = "d3.2_m3ff2rc",
+                 MTP = c("BF"),
+                 MDES = rep(0, 5),
+                 M = 5,
+                 J = 3, # number of schools/block
+                 K = 10, # number RA blocks
+                 nbar = 258,
+                 Tbar = 0.50, # prop Tx
+                 alpha = 0.05, # significance level
+                 numCovar.1 = 5, numCovar.2 = 3,
+                 R2.1 = 0.1, R2.2 = 0.7,
+                 ICC.2 = 0.05, ICC.3 = 0.4,
+                 rho = 0.4, # how correlated outcomes are
+                 tnum = 200, B = 100
+    )
+    expect_true(is.na(pp1$D1indiv[1]))
+    expect_true(is.na(pp1$D1indiv[2]))
+    
+    pp2 <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = c("BF"),
+                      MDES = rep(0.0001, 5),
+                      M = 5,
+                      J = 3, # number of schools/block
+                      K = 10, # number RA blocks
+                      nbar = 258,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.1 = 0.1, R2.2 = 0.7,
+                      ICC.2 = 0.05, ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 200, B = 100
+    )
+    expect_equal(pp2$complete[2], 0, tol = 0.01)
+
+})
+
 

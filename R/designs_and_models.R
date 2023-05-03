@@ -747,10 +747,10 @@ validate_inputs <- function(d_m, params.list,
     info <- pump_info()
     if (!(d_m %in% info$Context$d_m))
     {
-        if(d_m %in% info$Context$PowerUp) {
+        if (d_m %in% info$Context$PowerUp) {
             d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
         } else {
-            dm = parse_design(d_m)
+            dm <- parse_design(d_m)
             if ( is.null( dm ) ) {
                 stop( glue::glue( '{d_m} is an invalid d_m.') )
             } else {
@@ -758,7 +758,7 @@ validate_inputs <- function(d_m, params.list,
                 if ( length( match_index ) == 0 ) {
                     stop( glue::glue( '{d_m} is an invalid d_m.') )
                 } else {
-                    d_m = info$Context$Design[[match_index[[1]]]]
+                    d_m <- info$Context$Design[[match_index[[1]]]]
                     warning( glue::glue( "Selecting model {d_m} for design") )
                 }
             }
