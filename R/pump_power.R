@@ -270,7 +270,8 @@ pump_power <- function(
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
     
     des <- purrr::map( MTP,
-                      pump_power, d_m = d_m, MDES = MDES,
+                      pump_power, 
+                      d_m = d_m, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero, propZero = propZero,
                       Tbar = Tbar,
@@ -306,6 +307,8 @@ pump_power <- function(
                              d_m = d_m,
                              long.table = long.table ) )
   }
+    
+    
 
   if (validate.inputs) {
     # validate input parameters
@@ -324,8 +327,7 @@ pump_power <- function(
     params.list <- validate_inputs(
         d_m, params.list, power.call = TRUE, verbose = verbose 
     )
-    ##
-    
+   
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
@@ -338,10 +340,12 @@ pump_power <- function(
     ICC.2 <- params.list$ICC.2; ICC.3 <- params.list$ICC.3
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
+    d_m = params.list$d_m
+    
+    params.list <- params.list[names(params.list) != 'power.definition']
   } else {
     params.list <- NULL
   }
-  params.list <- params.list[names(params.list) != 'power.definition']
 
   # compute test statistics for when null hypothesis is false
   Q.m <- calc_SE(

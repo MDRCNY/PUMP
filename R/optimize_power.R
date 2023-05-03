@@ -433,10 +433,10 @@ estimate_power_curve <- function(p, low = NULL, high = NULL,
   pp$tnum <- tnum
   pp$start.tnum <- tnum
   pp$final.tnum <- tnum
+  pp$d_m <- d_m(p)
   
   final.pts <- do.call( optimize_power,
-                        c( d_m = d_m(p),
-                           pp, 
+                        c( pp, 
                            search.type = search_type,
                            start.low = low,
                            start.high = high,

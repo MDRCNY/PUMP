@@ -359,6 +359,7 @@ pump_sample <- function(
     B <- params.list$B
     power.definition <- params.list$power.definition
     params.list <- params.list[names(params.list) != 'power.definition']
+    d_m = params.list$d_m
     
     if ( is.null( numZero ) ) {
         numZero <- 0

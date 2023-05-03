@@ -150,7 +150,7 @@ test_that( "simulation function works (single outcome)", {
     
     
     sim.data <- gen_base_sim_data( model.params.list )
-    head( sim.data )
+    #head( sim.data )
     expect_true( is.data.frame( sim.data ) )
     
     

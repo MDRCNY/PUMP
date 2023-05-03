@@ -191,10 +191,11 @@ parse_design <- function( d_m ) {
     
     if (grepl(pattern, d_m)) {
         match <- regmatches(d_m, regexec(pattern, d_m))
-        num1 <- match[[1]][2]
-        num2 <- match[[1]][3]
+        num1 <- match[[1]][[2]]
+        num2 <- match[[1]][[3]]
         return( list( levels = num1,
-                      rand_level = num2 ) )
+                      rand_level = num2,
+                      design = match[[1]][[1]]) )
     } 
     return( NULL )
     
@@ -708,6 +709,39 @@ validate_MTP <- function(
 
 
 
+#' Validate d_m string
+#' 
+#' Ensure d_m is a supported pair of design and model.  If d_m is just a design, select a default model.  Convert PowerUp! names to our naming system as needed.
+#' 
+#' @return Full d_m string that will be found in `pump_info()`
+#' @keywords internal
+validate_d_m <- function( d_m ) {
+    # allow either supported d_m names or PowerUp! equivalents
+    info <- pump_info()
+    if ( !(d_m %in% info$Context$d_m) ) {
+        if(d_m %in% info$Context$PowerUp) {
+            d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
+        } else {
+            dm = parse_design(d_m)
+            if ( is.null( dm ) ) {
+                stop( glue::glue( '{d_m} is an invalid d_m.') )
+            } else {
+                match_index <- which(info$Context$Design == dm$design)
+                if ( length( match_index ) == 0 ) {
+                    stop( glue::glue( '{d_m} is an invalid d_m.') )
+                } else {
+                    options = paste0( info$Context$d_m[ match_index ], sep= ", " )
+                    d_m = info$Context$d_m[[match_index[[1]]]]
+                    warning( glue::glue( "Selecting design and model {d_m} as default for design from options: {options}"), call.=FALSE )
+                }
+            }
+        }
+    }
+    
+    return( d_m )
+}
+
+
 #' Validates user inputs
 #'
 #' This functions takes in a list of user inputs. Depending on the inputs,
@@ -743,27 +777,7 @@ validate_inputs <- function(d_m, params.list,
     # basic checks of inputs
     #-------------------------------------------------------#
 
-    # allow either supported d_m names or PowerUp equivalents
-    info <- pump_info()
-    if (!(d_m %in% info$Context$d_m))
-    {
-        if(d_m %in% info$Context$PowerUp) {
-            d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
-        } else {
-            dm = parse_design(d_m)
-            if ( is.null( dm ) ) {
-                stop( glue::glue( '{d_m} is an invalid d_m.') )
-            } else {
-                match_index <- which(info$Context$Design == target_string)
-                if ( length( match_index ) == 0 ) {
-                    stop( glue::glue( '{d_m} is an invalid d_m.') )
-                } else {
-                    d_m = info$Context$Design[[match_index[[1]]]]
-                    warning( glue::glue( "Selecting model {d_m} for design") )
-                }
-            }
-        }
-    }
+    d_m = validate_d_m( d_m )
 
     par.d_m <- parse_d_m(d_m)
     pdef <- parse_power_definition( 
@@ -1166,6 +1180,8 @@ validate_inputs <- function(d_m, params.list,
     }
     
     params.list$propZero = NULL
+    
+    params.list$d_m = d_m
     
     return(params.list)
 

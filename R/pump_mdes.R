@@ -122,9 +122,8 @@ pump_mdes <- function(
         power.definition = power.definition
     )
     ##
-    params.list <- validate_inputs(
-        d_m, params.list, mdes.call = TRUE, verbose = verbose 
-    )
+    params.list <- validate_inputs( d_m, params.list, mdes.call = TRUE, 
+                                    verbose = verbose )
     ##
     MTP <- params.list$MTP
     MDES <- params.list$MDES; numZero <- params.list$numZero;
@@ -140,7 +139,8 @@ pump_mdes <- function(
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
     B <- params.list$B
     power.definition <- params.list$power.definition
-
+    d_m = params.list$d_m
+    
     params.list <- params.list[names(params.list) != 'power.definition']
     
     # extract power definition
