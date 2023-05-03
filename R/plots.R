@@ -286,10 +286,12 @@ plot.pumpresult <- function(x, type = "power",
       as.data.frame( plot.data, row.names = NULL ) %>%
       dplyr::filter( !is.na( .data$power ) )
     
-    plot.data <- dplyr::mutate( plot.data, 
-                         SE = calc_binomial_SE( power, params(x)$tnum ),
-                         CI_h = power + 2*SE,
-                         CI_l = power - 2*SE )
+    plot.data <- dplyr::mutate( 
+        plot.data, 
+        SE = calc_binomial_SE( .data$power, params(x)$tnum ),
+        CI_h = .data$power + 2 * .data$SE,
+        CI_l = .data$power - 2 * .data$SE 
+    )
     # single scenario plot
     ss.plot <- ggplot2::ggplot(
       data = plot.data,
@@ -297,7 +299,8 @@ plot.pumpresult <- function(x, type = "power",
                    y = .data$power,
                    shape = .data$MTP,
                    color = .data$MTP)) +
-      ggplot2::geom_point( size = 2, position = ggplot2::position_dodge(0.25) ) +
+      ggplot2::geom_point( size = 2, 
+                           position = ggplot2::position_dodge(0.25) ) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
       ggplot2::ggtitle(paste0("Adjusted power across
                                different definitions of power")) +
@@ -314,8 +317,9 @@ plot.pumpresult <- function(x, type = "power",
     
     if ( include_SE ) {
         ss.plot = ss.plot + 
-            ggplot2::geom_linerange( ggplot2::aes( ymin = CI_l, ymax = CI_h ),
-                                     position = ggplot2::position_dodge(0.25) )
+            ggplot2::geom_linerange( 
+                ggplot2::aes( ymin = .data$CI_l, ymax = .data$CI_h ),
+                              position = ggplot2::position_dodge(0.25) )
     }
     return(ss.plot)
     

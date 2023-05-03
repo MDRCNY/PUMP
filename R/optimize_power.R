@@ -506,6 +506,9 @@ find_crossover <- function(target_power, params) {
 #' Curve is of form f(y) = pmin + (pmax-pmin) * logistic( beta0 + beta1*x )
 #'
 #' (logistic as defined by plogis)
+#' Note that a logistic curve is not a perfect fit for the functional
+#' form of the power curve, but is a useful approximation for
+#' the search procedure.
 #'
 #' @param x The vector of covariate values of the logistics
 #' @param y The proportion of 1s for a given value of x.  Same length as x.
@@ -527,7 +530,6 @@ fit_bounded_logistic <- function(x, y, wt) {
     if ( is.na(ll) ) {
       a <- list( p = p, par = par, wt = wt, x = x, y = y )
       saveRDS(a, file = "tmp.RData" )
-      browser()
     }
     return( ll )
   }

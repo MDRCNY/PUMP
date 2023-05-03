@@ -94,7 +94,7 @@ test_that( "Simulation function works with MDES", {
                        M = 5, rho = 0.8,
                        MTP = "BH",
                        J = 15, Tbar = 0.5 )
-    summary( pp )
+    #summary( pp )
     ## 
     sim.data <- gen_sim_data( pp, return.as.dataframe = TRUE )
     
@@ -142,7 +142,7 @@ test_that( "simulation function works (single outcome)", {
                               return.as.dataframe = TRUE, no.list=FALSE )
     expect_true( length( sim.data ) == 1 )
     expect_true( is.data.frame( sim.data[[1]] ) )
-    head( sim.data[[1]] )
+    #head( sim.data[[1]] )
     
     sim.data <- gen_sim_data( d_m = "d3.1_m3rr2rr", model.params.list, Tbar = 0.5,
                               return.as.dataframe = TRUE, no.list=TRUE )
@@ -156,3 +156,4 @@ test_that( "simulation function works (single outcome)", {
     
   
 })
+
