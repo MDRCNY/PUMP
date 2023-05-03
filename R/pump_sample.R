@@ -40,7 +40,7 @@ calc_MT <- function(df, alpha, two.tailed, target.power) {
 #' @param warn.small Warn if degrees of freedom issues are causing inability to
 #'   achieve target power for sample size.
 #'
-#' @return Requisit sample size (as integer) and associated degreess of freedom.
+#' @return Requisit sample size (as integer) and associated degrees of freedom.
 #' @keywords internal
 pump_sample_raw <- function(
         d_m, MTP, typesample,

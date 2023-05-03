@@ -33,7 +33,13 @@ test_that("Single Scenario plot works", {
   #ss.plot
   expect_true(!is.null(ss.plot))
   
+  ss.plot2 <- plot(pp, include_SE = FALSE)
+  ss.plot2
+  expect_true(!is.null(ss.plot2))
     
+  ss.plot3 <- plot(pp, include_SE = TRUE)
+  ss.plot3
+  expect_true(!is.null(ss.plot3))
 })
 
 
