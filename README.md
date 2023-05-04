@@ -1,6 +1,6 @@
 # PUMP package
 
-Last updated: October 27, 2022.
+Last updated: May 2023.
 
 <center><img src="man/figures/pump_icon.png" alt="PUMP icon" width="400"/></center>
 
