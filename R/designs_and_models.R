@@ -186,7 +186,7 @@ pump_info <- function(
 
 
 
-parse_design <- function( d_m ) {
+parse_design <- function(d_m) {
     pattern <- "^d([0-9])\\.([0-9])"   # pattern to match
     
     if (grepl(pattern, d_m)) {
@@ -711,18 +711,20 @@ validate_MTP <- function(
 
 #' Validate d_m string
 #' 
-#' Ensure d_m is a supported pair of design and model.  If d_m is just a design, select a default model.  Convert PowerUp! names to our naming system as needed.
+#' Ensure d_m is a supported pair of design and model.  
+#' If d_m is just a design, select a default model.  
+#' Convert PowerUp! names to our naming system as needed.
 #' 
 #' @return Full d_m string that will be found in `pump_info()`
 #' @keywords internal
-validate_d_m <- function( d_m ) {
+validate_d_m <- function(d_m) {
     # allow either supported d_m names or PowerUp! equivalents
     info <- pump_info()
     if ( !(d_m %in% info$Context$d_m) ) {
-        if(d_m %in% info$Context$PowerUp) {
+        if (d_m %in% info$Context$PowerUp) {
             d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
         } else {
-            dm = parse_design(d_m)
+            dm <- parse_design(d_m)
             if ( is.null( dm ) ) {
                 stop( glue::glue( '{d_m} is an invalid d_m.') )
             } else {
@@ -730,9 +732,12 @@ validate_d_m <- function( d_m ) {
                 if ( length( match_index ) == 0 ) {
                     stop( glue::glue( '{d_m} is an invalid d_m.') )
                 } else {
-                    options = paste0( info$Context$d_m[ match_index ], sep= ", " )
-                    d_m = info$Context$d_m[[match_index[[1]]]]
-                    warning( glue::glue( "Selecting design and model {d_m} as default for design from options: {options}"), call.=FALSE )
+                    options <- paste0( info$Context$d_m[ match_index ], 
+                                       sep = ", " )
+                    d_m <- info$Context$d_m[[match_index[[1]]]]
+                    warning( glue::glue( 
+                        "Selecting design and model {d_m} as default for 
+                        design from options: {options}"), call. = FALSE )
                 }
             }
         }

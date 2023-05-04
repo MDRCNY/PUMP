@@ -16,11 +16,13 @@ process_and_generate_param_list <- function(
     
     if (is.null(pump.object)) {
         if ( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
-            stop("You must provide either a pump object or both a design string (d_m) and list of model params.")
+            stop("You must provide either a pump object or both a design 
+                 string (d_m) and list of model params.")
         }
     } else {
         if ( !is.null(d_m) || !is.null(param.list) ) {
-            stop("You must provide either a pump object or a design string (d_m) and list of model params pair (not both).")
+            stop("You must provide either a pump object or a design 
+                 string (d_m) and list of model params pair (not both).")
         }
         
         param.list <- params(pump.object)

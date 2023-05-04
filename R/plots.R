@@ -1,9 +1,3 @@
-
-
-
-
-
-
 #' @title Examine a power curve (result function)
 #'
 #' @description This will give a plot of power vs. MDES or sample size. It can
@@ -543,7 +537,9 @@ plot.pumpgridresult.mdes <- function(
   
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
-      dplyr::group_by( dplyr::across( tidyselect::all_of( c( "MTP", color, var.vary ) ) ) ) %>%
+      dplyr::group_by( dplyr::across( tidyselect::all_of( 
+          c( "MTP", color, var.vary ) ) ) 
+      ) %>%
       dplyr::summarise( Adjusted.MDES = mean( .data$Adjusted.MDES ) )
     
     smessage('Note: Averaged Adjusted.MDES across other 
@@ -777,7 +773,8 @@ plot.pumpgridresult <- function(
   
   if ( !is.null( var.vary ) ) {
     if ( !(var.vary %in% var_names) ) {
-      sstop('Please provide a var.vary amongst the variables that vary. "%s" is not listed.', 
+      sstop('Please provide a var.vary amongst the variables that vary. 
+            "%s" is not listed.', 
             var.vary )
     }
   } else {
@@ -785,7 +782,8 @@ plot.pumpgridresult <- function(
       # Make a separate plot for each varying element!
       mps <- purrr::map( 
         var_names, plot.pumpgridresult, x = x, 
-        power.definition = power.definition, color = color, lines = lines, include.title = FALSE, ... )
+        power.definition = power.definition, color = color, 
+        lines = lines, include.title = FALSE, ... )
       
       gd <- ggpubr::ggarrange( 
         plotlist = mps, common.legend = TRUE, 

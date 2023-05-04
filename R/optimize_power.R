@@ -297,17 +297,20 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
 
   n_targ <- target.power * (1 - target.power) / (tol^2)
   if ( n_targ > final.tnum ) {
-    swarning( "Number of final iterations (%d) not up to specified tolerance (%0.2f).",
+    swarning( "Number of final iterations (%d) not up to 
+              specified tolerance (%0.2f).",
               final.tnum, tol )
   }
   
   if ( above.df.threshold && abs(current.power - target.power) > tol) {
     if ( step == max.steps ) {
-      msg <- "Reached maximum iterations without converging on estimate within tolerance.\n"
+      msg <- "Reached maximum iterations without converging on 
+              estimate within tolerance.\n"
       msg <- paste0(msg, "See sample size vignette for suggestions.")
       warning(msg)
     } else if ( current.power < target.power ) {
-      warning( "Terminated search early, likely due to needing extreme values to achieve desired power." )
+      warning( "Terminated search early, likely due to needing extreme 
+               values to achieve desired power." )
     }
     
     # Following code removed: Don't add a final NA for final value.  Just
