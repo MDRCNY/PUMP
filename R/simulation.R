@@ -16,13 +16,14 @@ process_and_generate_param_list <- function(
     
     if (is.null(pump.object)) {
         if ( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
-            stop("You must provide either a pump object or both a design 
-                 string (d_m) and list of model params.")
+            stop(paste("You must provide either a pump object or both",
+                    "a design string (d_m) and list of model params."))
         }
     } else {
         if ( !is.null(d_m) || !is.null(param.list) ) {
-            stop("You must provide either a pump object or a design 
-                 string (d_m) and list of model params pair (not both).")
+            stop(paste("You must provide either a pump object",
+                       "or a design string (d_m) and list of model params",
+                       "pair (not both)."))
         }
         
         param.list <- params(pump.object)
@@ -528,8 +529,8 @@ convert_params <- function(param.list) {
         is.null(param.list$rho.C), 
         is.null(param.list$rho.r))))
     {
-        stop('Please provide either a rho.default or
-             ALL necessary correlation matrices.')
+        stop(paste('Please provide either a rho.default',
+                   'or ALL necessary correlation matrices.'))
     }
     
     default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)

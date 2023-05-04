@@ -107,15 +107,15 @@ check_cor <- function(pump.object = NULL,
     {
         if (is.null(d_m) | is.null(model.params.list))
         {
-            stop("You must provide either a pump object
-                or both a d_m string and list of model params.")
+            stop(paste("You must provide either a pump object or both",
+                       "a d_m string and list of model params."))
         }
     } else
     {
         if (!is.null(d_m) | !is.null(model.params.list))
         {
-            stop("You must provide either a pump object
-                or both a d_m string and list of model params.")
+            stop(paste("You must provide either a pump object or both",
+                        "a d_m string and list of model params."))
         }
         model.params.list <- params(pump.object)
         d_m <- d_m(pump.object)
