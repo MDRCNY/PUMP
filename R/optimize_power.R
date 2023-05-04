@@ -119,10 +119,10 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
         # Sanity check that we are getting power for a given metric.
         if (!(power.definition %in% colnames(pt.power.results)))
         {
-          stop(paste0(
-            'Please provide a valid power definition. Provided definition: ', 
+          stop(paste(
+            'Please provide a valid power definition. Provided definition:', 
             power.definition,
-            '. Available options: ', 
+            '. Available options:', 
             paste(colnames(pt.power.results), collapse = ', ')))
         }
         test.pts$power[i] <- pt.power.results[
@@ -291,26 +291,26 @@ optimize_power <- function(d_m, search.type, MTP, target.power,
   }
 
   if ( !above.df.threshold ) {
-    warning( "Hit lower limit of what is allowed by degrees of freedom.
-             Likely overpowered." )
+    warning(paste("Hit lower limit of what is allowed by degrees of freedom.",
+                  "Likely overpowered."))
   }
 
   n_targ <- target.power * (1 - target.power) / (tol^2)
   if ( n_targ > final.tnum ) {
-    swarning( "Number of final iterations (%d) not up to 
-              specified tolerance (%0.2f).",
+    swarning( paste("Number of final iterations (%d) not up to specified",
+                    "tolerance (%0.2f)."),
               final.tnum, tol )
   }
   
   if ( above.df.threshold && abs(current.power - target.power) > tol) {
     if ( step == max.steps ) {
-      msg <- "Reached maximum iterations without converging on 
-              estimate within tolerance.\n"
-      msg <- paste0(msg, "See sample size vignette for suggestions.")
+      msg <- paste("Reached maximum iterations without converging",
+                   "on estimate within tolerance.\n")
+      msg <- paste(msg, "See sample size vignette for suggestions.")
       warning(msg)
     } else if ( current.power < target.power ) {
-      warning( "Terminated search early, likely due to needing extreme 
-               values to achieve desired power." )
+      warning(paste("Terminated search early, likely due to needing extreme",
+                    "values to achieve desired power."))
     }
     
     # Following code removed: Don't add a final NA for final value.  Just
