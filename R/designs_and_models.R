@@ -192,7 +192,7 @@ pump_info <- function(
 
 
 
-parse_design <- function( d_m ) {
+parse_design <- function(d_m) {
     pattern <- "^d([0-9])\\.([0-9])"   # pattern to match
     
     if (grepl(pattern, d_m)) {
@@ -679,7 +679,7 @@ make_MDES_vector <- function(MDES, M,
         if ( length(MDES) == 1 ) {
             MDES <- rep( MDES, M )
         } else {
-            stop(paste0('Please provide a vector of MDES values of length 1 or',
+            stop(paste('Please provide a vector of MDES values of length 1 or',
                        'M. Current vector: ',
                        paste0( MDES, collapse = ", " ), 'M =', M))
         }
@@ -706,8 +706,7 @@ validate_MTP <- function(
     {
         if ( !is.null( MTP ) && (MTP != "None" ) )
         {
-            warning("Multiple testing corrections are not
-                     needed when M = 1.")
+            warning("Multiple testing corrections are not needed when M = 1.")
         }
         MTP <- "None"
     } else {
@@ -717,8 +716,8 @@ validate_MTP <- function(
         } else if ( (mdes.call || ss.call) && 
                    any( MTP == 'None' ) && !pdef$indiv )
         {
-            stop('For all minimum or complete power specifications,
-                  you must provide a MTP.')
+            stop(paste('For all minimum or complete power specifications,',
+                       'you must provide a MTP.'))
         } else if ( length( MTP ) == 1 && MTP == 'None' )
         {
             warning('Proceeding with multiple outcomes and no MTP.')
@@ -730,8 +729,8 @@ validate_MTP <- function(
     if ( !all( chk ) ) {
         if ( length( MTP ) > 1 ) {
             msg <- sprintf( 'You have at least one invalid MTP: %s',
-                       paste( "'", MTP[!chk], "'", sep = "", 
-                              collapse = ", " ) )
+                             paste( "'", MTP[!chk], "'", sep = "", 
+                               collapse = ", " ) )
         } else {
             msg <- sprintf( '"%s" is an invalid MTP.', MTP )
         }
@@ -745,18 +744,20 @@ validate_MTP <- function(
 
 #' Validate d_m string
 #' 
-#' Ensure d_m is a supported pair of design and model.  If d_m is just a design, select a default model.  Convert PowerUp! names to our naming system as needed.
+#' Ensure d_m is a supported pair of design and model.  
+#' If d_m is just a design, select a default model.  
+#' Convert PowerUp! names to our naming system as needed.
 #' 
 #' @return Full d_m string that will be found in `pump_info()`
 #' @keywords internal
-validate_d_m <- function( d_m ) {
+validate_d_m <- function(d_m) {
     # allow either supported d_m names or PowerUp! equivalents
     info <- pump_info()
     if ( !(d_m %in% info$Context$d_m) ) {
-        if(d_m %in% info$Context$PowerUp) {
+        if (d_m %in% info$Context$PowerUp) {
             d_m <- info$Context$d_m[info$Context$PowerUp == d_m]
         } else {
-            dm = parse_design(d_m)
+            dm <- parse_design(d_m)
             if ( is.null( dm ) ) {
                 stop( glue::glue( '{d_m} is an invalid d_m.') )
             } else {
@@ -764,9 +765,13 @@ validate_d_m <- function( d_m ) {
                 if ( length( match_index ) == 0 ) {
                     stop( glue::glue( '{d_m} is an invalid d_m.') )
                 } else {
-                    options = paste0( info$Context$d_m[ match_index ], sep= ", " )
-                    d_m = info$Context$d_m[[match_index[[1]]]]
-                    warning( glue::glue( "Selecting design and model {d_m} as default for design from options: {options}"), call.=FALSE )
+                    options <- paste0( info$Context$d_m[ match_index ], 
+                                       sep = ", " )
+                    d_m <- info$Context$d_m[[match_index[[1]]]]
+                    warning(glue::glue(paste("Selecting design and model",
+                                             "{d_m} as default for design",
+                                             "from options: {options}")), 
+                        call. = FALSE )
                 }
             }
         }
@@ -834,10 +839,9 @@ validate_inputs <- function(d_m, params.list,
            any(params.list$MTP == "WY-SS") ) &&
          params.list$B < 1000 )
     {
-        warning(paste(
-        "For the step-down Westfall-Young procedure,
-         it is recommended that sample (B) be at least 1000. Current B:",
-         params.list$B))
+        warning(paste("For the step-down Westfall-Young procedure,",
+                      "it is recommended that sample (B) be at least",
+                      "1000. Current B:", params.list$B))
     }
 
     #-------------------------------------------------------#
@@ -862,9 +866,8 @@ validate_inputs <- function(d_m, params.list,
         
         if ( !is.null( params.list$numZero ) &&
              params.list$numZero >= params.list$M ) {
-            stop( sprintf( 
-                "You cannot specify %s zeros via numZero or propZero 
-                with only %s outcomes",
+            stop( sprintf(paste("You cannot specify %s zeros via numZero",
+                                "or propZero with only %s outcomes"),
                  params.list$numZero, params.list$M ) )
         }
         
@@ -909,8 +912,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$R2.2) %in% c(0, 1, params.list$M)))
     {
-        stop("R2.2: Please provide a scalar parameter or
-              a vector of length M.")
+        stop("R2.2: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$R2.2) == 1)
     {
@@ -919,8 +921,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$R2.3) %in% c(0, 1, params.list$M)))
     {
-        stop("R2.3: Please provide a scalar parameter or
-              a vector of length M.")
+        stop("R2.3: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$R2.3) == 1)
     {
@@ -929,8 +930,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$ICC.2) %in% c(0, 1, params.list$M)))
     {
-        stop("ICC.2: Please provide a scalar parameter or
-              a vector of length M.")
+        stop("ICC.2: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$ICC.2) == 1)
     {
@@ -939,8 +939,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$ICC.3) %in% c(0, 1, params.list$M)))
     {
-        stop("ICC.3: Please provide a scalar parameter or
-              a vector of length M.")
+        stop("ICC.3: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$ICC.3) == 1)
     {
@@ -949,8 +948,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$omega.2) %in% c(0, 1, params.list$M)))
     {
-        stop("omega.2: Please provide a scalar parameter or
-              a vector of length M.")
+        stop("omega.2: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$omega.2) == 1)
     {
@@ -959,8 +957,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$omega.3) %in% c(0, 1, params.list$M)))
     {
-        stop("omega.3: Please provide a scalar parameter 
-             or a vector of length M.")
+        stop("omega.3: Please provide a scalar parameter or a vector of length M.")
     }
     if (length(params.list$omega.3) == 1)
     {
@@ -1048,9 +1045,9 @@ validate_inputs <- function(d_m, params.list,
           (!is.null( params.list$ICC.2 ) && any(params.list$ICC.2 > 0 ) ) ||
           (!is.null( params.list$omega.2 ) && any(params.list$omega.2 > 0 ) ) )
 
-        warning('The following parameters are not valid for
-                 one-level designs, and will be ignored:\n
-                 J, K, numCovar.2, R2.2, ICC.2, omega.2')
+        warning(paste('The following parameters are not valid for one-level',
+                      'designs, and will be ignored:\n',
+                      'J, K, numCovar.2, R2.2, ICC.2, omega.2'))
       params.list$J <- NULL
       params.list$R2.2 <- NULL
       params.list$ICC.2 <- NULL
@@ -1067,9 +1064,9 @@ validate_inputs <- function(d_m, params.list,
           ( !is.null(params.list$ICC.3)) && any( params.list$ICC.3 > 0 ) |
           ( !is.null(params.list$omega.3) && any(params.list$omega.3 > 0 ) ) )
       {
-        warning('The following parameters are only valid for three-level
-                 designs, and will be ignored:\n
-                 K, numCovar.3, R2.3, ICC.3, omega.3')
+        warning(paste('The following parameters are only valid for three-level',
+                      'designs, and will be ignored:\n',
+                      'K, numCovar.3, R2.3, ICC.3, omega.3'))
         params.list$K <- NULL
         params.list$R2.3 <- NULL
         params.list$ICC.3 <- NULL
@@ -1096,9 +1093,9 @@ validate_inputs <- function(d_m, params.list,
           (( !is.null(params.list$numCovar.2) && params.list$numCovar.2 > 0 ) |
            ( !is.null(params.list$R2.2) && any( params.list$R2.2 > 0 ) ) ))
       {
-        warning('The following parameters are not valid for fixed effect
-                 designs, and will be ignored:\n
-                 numCovar.2, R2.2')
+        warning(paste('The following parameters are not valid for fixed effect',
+                      'designs, and will be ignored:\n',
+                      'numCovar.2, R2.2'))
             params.list$R2.2 <- NULL
       }
       if ( par.d_m$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
@@ -1110,9 +1107,9 @@ validate_inputs <- function(d_m, params.list,
       {
         if (any(params.list$omega.2 > 0))
         {
-            verbose_message('Omega is assumed to be 0 for constant
-                            treatment effects models.
-                            Ignoring input omega.2 value')
+            verbose_message(paste('Omega is assumed to be 0 for constant',
+                                  'treatment effects models.\n',
+                                  'Ignoring input omega.2 value'))
             params.list$omega.2 <- NULL
         }
       }
@@ -1124,8 +1121,8 @@ validate_inputs <- function(d_m, params.list,
     {
       if (is.null(params.list$K) || params.list$K < 1 )
       {
-        stop('You must specify K, with K >= 1 (number of units at level 3)
-             for three-level designs' )
+        stop(paste('You must specify K, with K >= 1 (number of units',
+                   'at level 3) for three-level designs' ))
       }
       if ( params.list$K == 1 )
       {
@@ -1147,9 +1144,9 @@ validate_inputs <- function(d_m, params.list,
          (( !is.null(params.list$numCovar.3) && params.list$numCovar.3 > 0 ) |
           ( !is.null(params.list$R2.3) && any( params.list$R2.3 > 0 ) ) ))
       {
-        warning('The following parameters are not valid for
-                fixed effect designs, and will be ignored:\n
-                numCovar.3, R2.3')
+        warning(paste('The following parameters are not valid for fixed',
+                      'effect designs, and will be ignored:\n',
+                      'numCovar.3, R2.3'))
         params.list$R2.3 <- NULL
       }
 
@@ -1158,8 +1155,9 @@ validate_inputs <- function(d_m, params.list,
       {
         if (any(params.list$omega.3 > 0))
         {
-          warning('Omega is assumed to be 0 for constant treatment effects
-                  models. Ignoring input omega.3 value')
+          warning(paste('Omega is assumed to be 0 for constant treatment',
+                        'effects models.\n',
+                        'Ignoring input omega.3 value'))
           params.list$omega.3 <- NULL
         }
       }
@@ -1170,22 +1168,22 @@ validate_inputs <- function(d_m, params.list,
     if (!is.null( params.list$R2.1) && any(params.list$R2.1 != 0) &&
                  params.list$numCovar.1 == 0)
     {
-        warning('If nonzero R2 (R2.1, level 1), at least one covariate is
-                assumed. Setting numCovar.1 = 1')
+        warning(paste('If nonzero R2 (R2.1, level 1), at least one covariate',
+                      'is assumed. Setting numCovar.1 = 1'))
         params.list$numCovar.1 <- 1
     }
     if (!is.null( params.list$R2.2) && any(params.list$R2.2 != 0) &&
                  params.list$numCovar.2 == 0)
     {
-        warning('If nonzero R2 (R2.2, level 2), at least one covariate
-                is assumed. Setting numCovar.2 = 1')
+        warning(paste('If nonzero R2 (R2.2, level 2), at least one covariate',
+                      'is assumed. Setting numCovar.2 = 1'))
         params.list$numCovar.2 <- 1
     }
     if (!is.null( params.list$R2.3) && any(params.list$R2.3 != 0) &&
                  params.list$numCovar.3 == 0)
     {
-        warning('If nonzero R2 (R2.3, level 3), at least one covariate
-                is assumed. Setting numCovar.3 = 1')
+        warning(paste('If nonzero R2 (R2.3, level 3), at least one covariate',
+                      'is assumed. Setting numCovar.3 = 1'))
         params.list$numCovar.3 <- 1
     }
 
@@ -1194,9 +1192,9 @@ validate_inputs <- function(d_m, params.list,
     #-------------------------------------------------------#
     if (is.null(params.list$rho.matrix) && is.null(params.list$rho))
     {
-        stop( sprintf( 'Please provide either a %d x %d rho.matrix
-                       or default scalar rho.',
-                       params.list$M, params.list$M ) )
+        stop(sprintf(paste('Please provide either a %d x %d rho.matrix',
+                           'or default scalar rho.'),
+                     params.list$M, params.list$M ) )
     }
 
     if (!is.null(params.list$rho.matrix))
@@ -1204,8 +1202,8 @@ validate_inputs <- function(d_m, params.list,
         if (nrow(params.list$rho.matrix) != params.list$M |
            ncol(params.list$rho.matrix) != params.list$M)
         {
-            stop('Correlation matrix of invalid dimensions.
-                 Please provide valid correlation matrix.')
+            stop(paste('Correlation matrix of invalid dimensions.',
+                    'Please provide valid correlation matrix.'))
         }
         if (any(params.list$rho.matrix < -1) | any(params.list$rho.matrix > 1) )
         {

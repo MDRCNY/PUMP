@@ -137,9 +137,9 @@ pump_sample_raw <- function(
             
         }
         if ( warn.small ) {
-            warning(
-                'Nonnegative df requirement driving minimum sample size.
-        Current sample size will give overpowered study.'
+            warning(paste('Nonnegative df requirement driving minimum',
+                          'sample size. Current sample size will',
+                          'give overpowered study.')
             )
         }
     }
@@ -298,9 +298,9 @@ pump_sample <- function(
     }
     
     if ( verbose ) {
-        scat( "pump_mdes with %d max iterations per search, 
-          starting at %d iterations with final %d iterations.
-          \n\tMax steps %d\n\t%d perms for WY if used\n",
+        scat( paste("pump_mdes with %d max iterations per search,",
+                     "starting at %d iterations with final %d iterations.",
+                     "\n\tMax steps %d\n\t%d perms for WY if used\n"),
               tnum, start.tnum, final.tnum, max.steps, B )
     }
     
@@ -585,8 +585,9 @@ pump_sample <- function(
     
     if (default.max)
     {
-        warning( "Using default max sample size for one end of initial bounds 
-                 of search, so estimation may take more time.", call. = FALSE )
+        warning(paste("Using default max sample size for one end",
+                      "of initial bounds of search, so estimation",
+                      "may take more time."), call. = FALSE )
     }
     
     # search in the grid from min to max.
@@ -625,10 +626,10 @@ pump_sample <- function(
     # if it has converged, give notice about possible flatness
     if (is.finite(ss.results$`Sample.size`) && 
        test.pts$dx[[nrow(test.pts)]] < 0.005 ) {
-        msg <- "Power curve is relatively flat. Other (smaller values) 
-        may have similar power.\n
-        
-        Please refer to sample size vignette for interpretation."
+        msg <- paste("Power curve is relatively flat.",
+                     "Other (smaller values) may have similar power.\n",
+                     "\n",
+                     "Please refer to sample size vignette for interpretation.")
         message(msg)
         flat <- TRUE
     } else {

@@ -1,9 +1,3 @@
-
-
-
-
-
-
 #' @title Examine a power curve (result function)
 #'
 #' @description This will give a plot of power vs. MDES or sample size. It can
@@ -302,8 +296,8 @@ plot.pumpresult <- function(x, type = "power",
       ggplot2::geom_point( size = 2, 
                            position = ggplot2::position_dodge(0.25) ) +
       ggplot2::scale_y_continuous(limits = c(0,1)) +
-      ggplot2::ggtitle(paste0("Adjusted power across
-                               different definitions of power")) +
+      ggplot2::ggtitle(paste0("Adjusted power across\n",
+                              "different definitions of power")) +
       ggplot2::theme_minimal() +
       ggplot2::theme(plot.title = ggplot2::element_text(size = 16,
                                                         face = "bold",
@@ -425,8 +419,7 @@ plot.pumpgridresult.power <- function(
       ) %>%
       dplyr::summarise( power = mean( .data$power ) )
     
-    smessage('Note: Averaged power across other 
-                 varying factors in grid: %s',
+    smessage('Note: Averaged power across other varying factors in grid: %s',
              paste0( setdiff( var_names, var.vary ), 
                      collapse = ", " ) )
   }
@@ -543,11 +536,13 @@ plot.pumpgridresult.mdes <- function(
   
   if ( length( var_names ) > 1 ) {
     plot.data <- plot.data %>%
-      dplyr::group_by( dplyr::across( tidyselect::all_of( c( "MTP", color, var.vary ) ) ) ) %>%
+      dplyr::group_by( dplyr::across( tidyselect::all_of( 
+          c( "MTP", color, var.vary ) ) ) 
+      ) %>%
       dplyr::summarise( Adjusted.MDES = mean( .data$Adjusted.MDES ) )
     
-    smessage('Note: Averaged Adjusted.MDES across other 
-                 varying factors in grid: %s',
+    smessage(paste('Note: Averaged Adjusted.MDES across other varying',
+                   'factors in grid: %s'),
              paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
   }
   
@@ -643,8 +638,8 @@ plot.pumpgridresult.sample <- function(
       ) %>%
       dplyr::summarise( Sample.size = mean( .data$Sample.size, na.rm = TRUE ) )
     
-    smessage('Note: Averaged Sample.size across other 
-                 varying factors in grid: %s',
+    smessage(paste('Note: Averaged Sample.size across other',
+                   'varying factors in grid: %s'),
              paste0( setdiff( var_names, var.vary ), collapse = ", " ) )
   }
   
@@ -785,7 +780,8 @@ plot.pumpgridresult <- function(
       # Make a separate plot for each varying element!
       mps <- purrr::map( 
         var_names, plot.pumpgridresult, x = x, 
-        power.definition = power.definition, color = color, lines = lines, include.title = FALSE, ... )
+        power.definition = power.definition, color = color, 
+        lines = lines, include.title = FALSE, ... )
       
       gd <- ggpubr::ggarrange( 
         plotlist = mps, common.legend = TRUE, 

@@ -72,9 +72,9 @@ pump_mdes <- function(
         verbose = FALSE ) {
     
     if ( verbose ) {
-        scat( "pump_mdes with %d max iterations per search, 
-          starting at %d iterations with final %d iterations 
-          (%d perms for WY if used)\n",
+        scat( paste("pump_mdes with %d max iterations per search, starting",
+                    "at %d iterations with final %d iterations",
+                    "(%d perms for WY if used)\n"),
               start.tnum, tnum, final.tnum, B )
     }
     
@@ -95,8 +95,8 @@ pump_mdes <- function(
     tnum_est <- round( (target.power*(1 - target.power) ) / ( tol^2 ) )
     if ( err > tol ) {
         warning( sprintf( 
-            "Number of replicates (tnum) is too small given target tolerance.  
-            Increasing tnum from %d to %d",
+            paste("Number of replicates (tnum) is too small given target",
+                  "tolerance. Increasing tnum from %d to %d"),
             as.integer( tnum ), as.integer( tnum_est ) ), call. = FALSE )
         tnum <- tnum_est
         start.tnum <- round( tnum / 10 )
@@ -311,10 +311,10 @@ pump_mdes <- function(
     if (!is.na(mdes.results$`Adjusted.MDES`) && 
        test.pts$dx[[nrow(test.pts)]] < 0.001 )
     {
-        msg <- "Note: this function returns one possible value of MDES, 
-    but other (smaller values) may also be valid.\n"
-        msg <- paste0(msg, "Please refer to sample size vignette for 
-                 interpretation.\n")
+        msg <- paste("Note: this function returns one possible value of",
+                     "MDES, but other (smaller values) may also be valid.\n")
+        msg <- paste(msg, "Please refer to sample size vignette",
+                     "for interpretation.\n")
         message(msg)
         flat <- TRUE
     } else
