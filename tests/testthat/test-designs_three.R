@@ -101,6 +101,92 @@ test_that("testing of d3.1_m3rr2rr one-tailed", {
 
 
 
+
+test_that("testing of d3.1_m3ff2rr one-tailed", {
+    
+    if ( FALSE ) {
+        
+        set.seed( 52423326 )
+        pp1 <- pump_power(
+            d_m = "d3.1_m3ff2rr",
+            MTP = 'HO',
+            K = 5,
+            J = 10,
+            nbar = 50,
+            M = 3,
+            MDES = rep(0.125, 3),
+            Tbar = 0.25, alpha = 0.05, two.tailed = FALSE,
+            numCovar.1 = 1, numCovar.2 = 1,
+            R2.1 = 0.1, R2.2 = 0.1,
+            ICC.2 = 0.2, ICC.3 = 0.2,
+            omega.2 = 0.3, omega.3 = 0.1, rho = 0.5,
+            tnum = 100000)
+        pp1
+        pp_power <- pp1$D1indiv[2]
+        pp_power
+        
+        # long test check on sample size
+        up <- update( pp1, type = "sample", typesample="K",
+                power.definition = "D2indiv", target.power = pp_power, tnum = 3000, tol = 0.01 )
+        up
+        plot( up )
+        
+        
+        up <- update( pp1, type = "mdes", 
+                      power.definition = "D2indiv", target.power = pp_power, tnum = 3000, tol = 0.01 )
+        up
+        plot( up )
+    }
+    
+    pp_power <- 0.73607
+    
+    vals <- test_sample_triad( 
+        target_power = pp_power, nbar = 50, J = 10, K = 5,
+        seed = 4224425,
+        d_m = "d3.1_m3ff2rr",
+        MTP = 'HO',
+        power.definition = 'D1indiv',
+        M = 3,
+        MDES = rep(0.125, 3),
+        Tbar = 0.25, alpha = 0.05, two.tailed = FALSE,
+        numCovar.1 = 1, numCovar.2 = 1,
+        R2.1 = 0.1, R2.2 = 0.1,
+        ICC.2 = 0.2, ICC.3 = 0.2,
+        omega.2 = 0.3, omega.3 = 0.1, rho = 0.5,
+        tnum = default.tnum )
+    
+    expect_equal(5, vals$K, tolerance = 0.1)
+    expect_equal(10, vals$J, tolerance = 0.1)
+    expect_equal(50, vals$nbar, tolerance = 0.1)
+    expect_equal( warning_pattern(vals), c(FALSE, FALSE, FALSE) )
+    
+    
+    
+    set.seed( 44040422 )
+    mdes1 <-  pump_mdes(
+        d_m = "d3.1_m3ff2rr",
+        MTP = 'HO',
+        power.definition = 'D1indiv',
+        target.power = pp_power,
+        nbar = 50,
+        J = 10,
+        K = 5,
+        M = 3,
+        Tbar = 0.25, alpha = 0.05, two.tailed = FALSE,
+        numCovar.1 = 1, numCovar.2 = 1,
+        R2.1 = 0.1, R2.2 = 0.1,
+        ICC.2 = 0.2, ICC.3 = 0.2,
+        omega.2 = 0.3, omega.3 = 0.1, rho = 0.5,
+        tnum = default.tnum )
+    
+    expect_equal(0.125, mdes1$Adjusted.MDES, tolerance = 0.1)
+
+  
+})
+
+
+
+
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #
 # ------ d3.2_m3ff2rc ------
 # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - # - #

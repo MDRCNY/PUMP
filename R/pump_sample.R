@@ -72,8 +72,7 @@ pump_sample_raw <- function(
        length(R2.1) > 1 | length(R2.2) > 1 | length(R2.3) > 1 |
        length(ICC.2) > 1 | length(ICC.3) > 1 |
        length(omega.2) > 1 | length(omega.3) > 1
-    )
-    {
+    ) {
         stop('pump_sample_raw only takes scalar inputs')
     }
     

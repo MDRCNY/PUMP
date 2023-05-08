@@ -81,6 +81,12 @@ pump_info <- function(
             "3 lvls, lvl 1 rand /
              lvl 3 random intercepts, random impacts,
              lvl 2 random intercepts, random impacts",
+        
+        "d3.1_m3ff2rr", "n/a",
+        "R2.1, ICC.2, omega.2, ICC.3",
+        "3 lvls, lvl 1 rand /
+             lvl 3 fixed intercepts, fixed impacts,
+             lvl 2 random intercepts, random impacts",
             
         # 3 lvl design, rand at lvl 2
         "d3.2_m3ff2rc", "bcra3_2f",
@@ -303,13 +309,17 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
           (ICC.2 * omega.2)/J +
           ((1 - ICC.2) * (1 - R2.1)) / 
               (Tbar * (1 - Tbar) * J * nbar) )
-    } else if (d_m == 'd3.1_m3rr2rr')
-    {
+    } else if (d_m == 'd3.1_m3rr2rr') {
         Q.m <- sqrt(
-          (ICC.3 * omega.3) / K +
-          (ICC.2 * omega.2) / (J * K) +
-          ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
-              (Tbar * (1 - Tbar) * J * K * nbar) )
+            (ICC.3 * omega.3) / K +
+                (ICC.2 * omega.2) / (J * K) +
+                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+                (Tbar * (1 - Tbar) * J * K * nbar) )
+    } else if (d_m == 'd3.1_m3ff2rr') {
+        Q.m <- sqrt(
+                (ICC.2 * omega.2) / (J * K) +
+                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+                (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd2.2_m2rc')
     {
         Q.m <- sqrt(
@@ -374,6 +384,9 @@ calc_df <- function(d_m, J, K, nbar,
     } else if (d_m == 'd3.1_m3rr2rr')
     {
         df <- K - 1
+    } else if (d_m == 'd3.1_m3ff2rr')
+    {
+        df <- K * (J - 1) - 1
     } else if (d_m == 'd2.2_m2rc')
     {
         df <- J - numCovar.1 - 2
@@ -396,8 +409,7 @@ calc_df <- function(d_m, J, K, nbar,
 
     if (validate & df <= 0)
     {
-        stop('Invalid d_m parameters resulting in 
-             nonpositive degrees of freedom')
+        stop('Invalid d_m parameters resulting in nonpositive degrees of freedom')
     }
 
     return(df)
@@ -440,6 +452,10 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
         numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
         denom <- J * K * ((MDES / MT)^2) - 
             J * ICC.3 * omega.3 - ICC.2 * omega.2
+        nbar <- numr / ( Tbar * (1 - Tbar) * denom )
+    } else if (d_m == 'd3.1_m3ff2rr') {
+        numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
+        denom <- J * K * ((MDES / MT)^2) - ICC.2 * omega.2
         nbar <- numr / ( Tbar * (1 - Tbar) * denom )
     } else if (d_m == 'd2.2_m2rc')
     {
@@ -509,9 +525,15 @@ calc_J <- function(
     } else if (d_m == 'd3.1_m3rr2rr')
     {
         numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) + 
-          Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
+            Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
         denom <- K * (MDES/MT)^2 - ICC.3 * omega.3
         J <- (1 / (Tbar * (1 - Tbar) * nbar)) * numr/denom
+    } else if (d_m == 'd3.1_m3ff2rr')
+    {
+        Q = (MT/MDES)^2
+        tm1 = (ICC.2 * omega.2) / K
+        tm2 = (1 - ICC.2 - ICC.3)*(1-R2.1) / ( (Tbar * (1-Tbar) * K * nbar) )
+        J <- Q * (tm1 + tm2)
     } else if (d_m == 'd2.2_m2rc')
     {
         numr <- nbar * ICC.2 * (1 - R2.2) + 
@@ -572,7 +594,7 @@ calc_J <- function(
 #'
 #' @return K, the number of districts
 #' @keywords internal
-calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
+calc_K <- function(d_m, MT = 2.8, MDES, J, nbar, Tbar,
                    R2.1, R2.2, R2.3,
                    ICC.2, ICC.3,
                    omega.2, omega.3) {
@@ -581,9 +603,21 @@ calc_K <- function(d_m, MT, MDES, J, nbar, Tbar,
     if (d_m == 'd3.1_m3rr2rr')
     {
         K <- (MT/MDES)^2 * 
-          ( (ICC.3 * omega.3) +
-           (ICC.2 * omega.2) / J +
-           ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+            ( (ICC.3 * omega.3) +
+                  (ICC.2 * omega.2) / J +
+                  ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
+        
+        
+        Q = (MT/MDES)^2
+        tm1 = (ICC.2 * omega.2) / K
+        tm2 = (1 - ICC.2 - ICC.3)*(1-R2.1) / ( (Tbar * (1-Tbar) * K * nbar) )
+        J <- Q * (tm1 + tm2)
+    } else if (d_m == 'd3.1_m3ff2rr')
+    {
+        Q = (MT/MDES)^2
+        tm1 = (ICC.2 * omega.2) / J
+        tm2 = (1 - ICC.2 - ICC.3)*(1-R2.1) / ( (Tbar * (1-Tbar) * J * nbar) )
+        K <- Q * (tm1 + tm2)
     } else if (d_m == 'd3.3_m3rc2rc')
     {
         K <- (MT/MDES)^2 *

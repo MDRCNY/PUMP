@@ -9,7 +9,7 @@
 #' @param give.warnings whether to return optimizer warnings
 #' @param grid.only TRUE means generate a grid from start.low to start.high, 
 #' but do not do iterative search. (Useful for mapping out the power 
-#' curve rather than identifying a point of particular power).
+#' curve rather than identifying a point of particular power.)
 #' @param grid.size Number of points to check in initial search grid.  
 #' Grid will be spaced as a quadratic sequence 
 #' (e.g., 0, 1, 4, 9, 16 for a 0-16 span).
@@ -359,7 +359,7 @@ estimate_power_curve <- function(p, low = NULL, high = NULL,
   pp$rho.matrix <- NULL
 
   sp <- attr(p, "search.range" )
-  test.pts <- search_path(p)
+  #test.pts <- search_path(p)
   
   if ( is.null( low ) ) {
     low <- sp[["min"]]
@@ -445,6 +445,9 @@ estimate_power_curve <- function(p, low = NULL, high = NULL,
 
   return(final.pts)
 }
+
+
+
 
 bounded_logistic_curve <- function(x, params) {
   if ( !is.null( names( params ) ) ) {
