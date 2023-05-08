@@ -6,7 +6,7 @@
 \usage{
 calc_K(
   d_m,
-  MT,
+  MT = 2.8,
   MDES,
   J,
   nbar,
