@@ -27,7 +27,7 @@ Please see the vignettes for examples of how to use this package.
 More details about the package:
 
 - For a full package description, including a detailed technical appendix, see: https://arxiv.org/abs/2112.15273.
-- See also the shiny app: https://mdrc.shinyapps.io/pump/.
+- See also the shiny app: https://public.mdrc.org/pump/.
 - For a presentation about PUMP, see: https://github.com/kristenbhunter/presentations/tree/master/NCI2022.
 
 We provide below one example of using PUMP to calculate a minimium detectable effect size (MDES).
