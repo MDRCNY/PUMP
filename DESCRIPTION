@@ -42,7 +42,7 @@ Suggests:
     knitr,
     PowerUpR (>= 1.1.0),
     testthat
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
