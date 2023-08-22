@@ -81,7 +81,7 @@ J <- pump_sample(d_m = "d2.1_m2fc",
    nbar = 50, M = 3, MDES = 0.125,
    Tbar = 0.5, alpha = 0.05,
    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05,
-   rho = 0.2, tnum = 200)
+   rho = 0.2, tnum = 500)
 plot(J)
 plot(J, type = "search")
 

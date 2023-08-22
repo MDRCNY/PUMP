@@ -1,20 +1,3 @@
-
-#' PUMP: A package for estimating power under multiplicity
-#'
-#' The PUMP package provides three core functions:
-#' \itemize{
-#' \item pump_power() for estimating power
-#' \item pump_mdes() for estimating minimum detectable effect size
-#' \item pump_sample() for estimating sample size.
-#' }
-#' 
-#' For a full package description, see \url{https://arxiv.org/abs/2112.15273}.
-#'
-#' @docType package
-#' @name PUMP
-NULL
-
-
 #' @title Provides details about supported package features (core function)
 #' 
 #' @description List user options:
