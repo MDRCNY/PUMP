@@ -49,6 +49,30 @@ test_that( "update generally works", {
     expect_true( d_m(tp2) == "d3.2_m3ff2rc" )
 })
 
+
+
+test_that( "unused parameters get preserved", {
+    res <- pump_mdes( "d2.1_m2fr", nbar = 80, J = 23,
+                       Tbar = 0.50,
+                       R2.1 = 0.60, 
+                       ICC.2 = 0.20, numCovar.1 = 5,
+                       omega.2 = 0.4,
+                       target.power = 0.80 )
+    res2 = update( res, d_m = "d2.1_m2fc" )
+    p = params(res2)
+    expect_equal( p$omega.2, 0.4 )
+    res3 = update( res2, d_m = "d2.1_m2fr" )
+    p2 = params(res3)
+    expect_equal( p2$omega.2, 0.4 )
+    expect_equal( res, res3 )
+    
+    grd = update_grid( res, ICC.2 = c( 0.2, 0.4 ) )
+    summary( grd )
+    grd2 = update_grid( grd, d_m = "d2.1_m2fc" )
+    expect_equal( params(grd2)$omega.2, 0.4 )
+} )
+
+    
 test_that( "update works for parallel", {
     
     skip_on_cran()
@@ -110,6 +134,37 @@ test_that( "update_grid generally works", {
                  target.power = 0.70, tol = 0.03 )
     gd3 <- update_grid( s3, power.definition = c( "min1", "min2" )  )
     expect_true( nrow(gd3) == 2 )
+} )
+
+
+test_that( "updating grids possible", {
+    res2 <- pump_mdes( "d2.1_m2fc", nbar = 80, J = 23,
+                       Tbar = 0.50,
+                       R2.1 = 0.60, 
+                       ICC.2 = 0.20, numCovar.1 = 5,
+                       omega.2 = 0.4,
+                       target.power = 0.80 )
+    
+    gd3 = update_grid( res2, omega.2 = c( 0.2, 0.4, 0.6 ) )
+    expect_equal( nrow(gd3), 3 )
+    
+    # update grid when we have a grid?
+    # Two ways--both methods should update.
+    gd4 <- update_grid( gd3, omega.2 = c( 1, 2, 3, 4 ) )
+    expect_equal( nrow(gd4), 4 )
+    expect_equal( params(gd4), params(gd3) )
+    
+    gd5 = update_grid( gd3, ICC.2 = c( 0.1, 0.2, 0.3 ) )
+    expect_equal( nrow( gd5 ), nrow( gd3 ) * 3 )
+    p3 = params( gd3 )
+    p5 = params( gd5 )
+    p3$ICC.2 = NULL
+    p5$ICC.2 = NULL
+    expect_equal( p3, p5 )
+    
+    
+    gd4b <- update( gd3, omega.2 = c( 1, 2, 3, 4 ) )
+    expect_equal( gd4, gd4b )
 } )
 
 

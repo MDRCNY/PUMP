@@ -551,7 +551,7 @@ pump_sample <- function(
         colnames(ss.results) <- output.colnames
         
         if (default.max) {
-            warning('Cannot achieve target power with given parameters.')
+            warning('Cannot achieve target power with given parameters.', call. = FALSE )
             ss.results <- data.frame(MTP, typesample, NA, target.power)
             colnames(ss.results) <- output.colnames
         }
@@ -570,7 +570,7 @@ pump_sample <- function(
         
         if (default.max)
         {
-            warning('Cannot achieve target power with given parameters.')
+            warning('Cannot achieve target power with given parameters.', call. = FALSE)
             ss.results <- data.frame(MTP, typesample, NA, target.power)
             colnames(ss.results) <- output.colnames
         }

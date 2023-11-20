@@ -61,6 +61,12 @@ update_grid <- function(x, ...)
     params["d_m"] <- d_m(x)
     for (p in names(params)) {
         params[[p]] <- unique( params[[p]] )
+        
+        # If find a "***" then this is an old grid and we want to 
+        # keep the values of the old grid
+        if ( !is.null( params[[p]] ) && params[[p]] == "***" ) {
+            params[[p]] = unique( x[[ p ]] )
+        }
     }
     pparam <- attr( x, "power.params.list" )
     params <- c( params, pparam )

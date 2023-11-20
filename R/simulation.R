@@ -804,6 +804,7 @@ gen_Yobs <- function(full.data, T.x) {
 #'
 #' @param samp.obs a single iteration of observed data
 #' @param T.x vector of treatment assignments
+#'
 #' @return List of dataframes.
 #' @keywords internal
 makelist_samp <- function(samp.obs, T.x = NULL ) {
@@ -823,8 +824,7 @@ makelist_samp <- function(samp.obs, T.x = NULL ) {
     }
     
     mdat.rn <- rep( NULL, M )
-    for (m in 1:M)
-    {
+    for (m in 1:M)  {
         # level 3
         if (!is.null(samp.obs[['V.k']]))
         {

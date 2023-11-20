@@ -121,3 +121,21 @@ summary.pumpgridresult <- function(object, ...)
     
     invisible( object )
 }
+
+
+
+
+
+
+#' @title Update a pump grid call, tweaking some parameters (core
+#'   function)
+#'
+#' @description Works on objects returned by `update_grid()`; calls
+#'   `update_grid()`.
+#'
+#' @seealso [update_grid()]
+#' @export
+update.pumpgridresult <- function(object, ...) {
+    return( update_grid(object, ...) )
+}
+

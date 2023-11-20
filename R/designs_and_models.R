@@ -766,11 +766,11 @@ validate_d_m <- function(d_m) {
                     stop( glue::glue( '{d_m} is an invalid d_m.') )
                 } else {
                     options <- paste0( info$Context$d_m[ match_index ], 
-                                       sep = ", " )
+                                       collapse = ", " )
                     d_m <- info$Context$d_m[[match_index[[1]]]]
                     warning(glue::glue(paste("Selecting design and model",
                                              "{d_m} as default for design",
-                                             "from options: {options}")), 
+                                             "from following options: {options}")), 
                         call. = FALSE )
                 }
             }
@@ -1100,17 +1100,16 @@ validate_inputs <- function(d_m, params.list,
       }
       if ( par.d_m$model2.p[2] == 'r' && any( params.list$omega.2 == 0 ) )
       {
-            verbose_message('Assuming omega.2 = 0')
+            verbose_message('Fitting random impact model when omega.2 = 0')
       }
       # constant treatment effects models: level 2
       if ( par.d_m$model2.p[2] == 'c' )
       {
         if (any(params.list$omega.2 > 0))
         {
-            verbose_message(paste('Omega is assumed to be 0 for constant',
+            verbose_message(paste('omega.2 will be ignored for constant',
                                   'treatment effects models.\n',
                                   'Ignoring input omega.2 value'))
-            params.list$omega.2 <- NULL
         }
       }
     }
