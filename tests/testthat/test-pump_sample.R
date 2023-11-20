@@ -145,6 +145,8 @@ test_that("BF for non individual power", {
 
 
 test_that("plot_power_curve", {
+    
+  set.seed( 44941112 )
   ss1 <- pump_sample(   d_m = "d2.1_m2fc",
                         MTP = "BF",
                         typesample = "J",

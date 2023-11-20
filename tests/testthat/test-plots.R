@@ -166,7 +166,7 @@ test_that("Grid plot works for MDES", {
 
 test_that("Grid plot works for SS", {
     
-    grid <-expect_warning(pump_sample_grid(  d_m = "d3.2_m3ff2rc",
+    grid <- expect_warning(pump_sample_grid(  d_m = "d3.2_m3ff2rc",
                              MTP = c( "HO", "BH" ),
                              target.power = 0.8,
                              power.definition = 'complete',
@@ -235,19 +235,19 @@ test_that("Two variable plot works for SS", {
   
   
   grid <- pump_sample_grid(  d_m = "d2.2_m2rc",
-                                             MTP = c( "HO", "BH" ),
-                                             target.power = 0.8,
-                                             power.definition = c( "min1", 'complete' ),
-                                             typesample = 'J',
-                                             MDES = 0.1,
-                                             M = 3,
-                                             nbar = 258,
-                                             Tbar = 0.50, # prop Tx
-                                             alpha = 0.05, # significance level
-                                             numCovar.1 = 5, numCovar.2 = 3,
-                                             R2.1 = 0.1, R2.2 = 0.7,
-                                             ICC.2 = c( 0, 0.3 ),
-                                             rho = 0.4, tnum = 100, tol = 0.45 )
+                             MTP = c( "HO", "BH" ),
+                             target.power = 0.8,
+                             power.definition = c( "min1", 'complete' ),
+                             typesample = 'J',
+                             MDES = 0.1,
+                             M = 3,
+                             nbar = 258,
+                             Tbar = 0.50, # prop Tx
+                             alpha = 0.05, # significance level
+                             numCovar.1 = 5, numCovar.2 = 3,
+                             R2.1 = 0.1, R2.2 = 0.7,
+                             ICC.2 = c( 0, 0.3 ),
+                             rho = 0.4, tnum = 100, tol = 0.45 )
   # grid
   grid.plot <- plot(grid, power.definition = 'complete' )
   expect_true(!is.null(grid.plot))
@@ -278,7 +278,8 @@ test_that( "power_curve works", {
                         rho = 0,
                         final.tnum = 100 )
   
-  pc <- power_curve( up, low = 5, high = 1000, tnum = 200, grid.size=20, all=TRUE )
+  pc <- power_curve( up, low = 5, high = 1000, tnum = 200, 
+                     grid.size = 20, all = TRUE )
   expect_true( is.data.frame(pc) )
   expect_true( nrow(pc) > 20 )
   
