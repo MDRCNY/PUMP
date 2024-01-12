@@ -133,6 +133,7 @@ gen_RE_cov_matrix <- function(Sigma.w, Sigma.z, Sigma.wz) {
 #'   the simulation vignette.
 #'
 #' @inheritParams gen_sim_data
+#' 
 #' @param dgp.params TRUE means param.list is already converted to DGP
 #'   parameters, FALSE means it needs to be converted via
 #'   `convert_params()`.
@@ -372,7 +373,7 @@ gen_base_sim_data <- function(param.list, pump.object = NULL,
     }
     
     if ( return.as.dataframe ) {
-        res <- makelist_samp(res)
+        res <- makelist_samp(res, include_POs = TRUE)
         if ( no.list && length(res) == 1 ) {
             return( res[[1]] )
         } else {
@@ -415,6 +416,8 @@ gen_base_sim_data <- function(param.list, pump.object = NULL,
 #'   no.list=TRUE means if M=1 return the dataframe, not a list of
 #'   length 1.  FALSE means return a list of length 1, even if there
 #'   is only 1 outcome.
+#' @param include_POs Include columns for the potential outcomes in
+#'   addition to the observed outcome.
 #' @return list; potential outcomes, covariates, observed outcomes,
 #'   and treatment assignment.
 #'
@@ -443,7 +446,8 @@ gen_sim_data <- function(
         d_m = NULL, param.list = NULL, Tbar = 0.5,
         pump.object = NULL,
         return.as.dataframe = TRUE,
-        no.list = TRUE ) {
+        no.list = TRUE,
+        include_POs = FALSE ) {
     
     param.list = process_and_generate_param_list( d_m = d_m,
                                                   param.list = param.list,
@@ -453,6 +457,7 @@ gen_sim_data <- function(
     Tbar = param.list$Tbar
     
     sim.data <- gen_base_sim_data( param.list, return.as.dataframe = FALSE )
+    
     sim.data$T.x <- gen_T.x(
         d_m = d_m,
         S.id = sim.data$ID$S.id,
@@ -462,7 +467,7 @@ gen_sim_data <- function(
     sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
     
     if ( return.as.dataframe ) {
-        res <- makelist_samp(sim.data)
+        res <- makelist_samp(sim.data, include_POs = include_POs )
         if ( no.list && length(res) == 1 ) {
             return( res[[1]] )
         } else {
@@ -797,17 +802,18 @@ gen_Yobs <- function(full.data, T.x) {
 }
 
 
-#' Convert multi-outcome data structure to list for each outcome.
+#' Convert multi-outcome data structure to dataframe for each outcome.
 #'
 #' Given the simulated multi-outcome structure, make a list of
 #' complete (tidy) rectangular datasets, one for each outcome.
 #'
 #' @param samp.obs a single iteration of observed data
 #' @param T.x vector of treatment assignments
-#'
+#' @param include_POs Include columns for the potential outcomes in
+#'   addition to the observed outcome.
 #' @return List of dataframes.
 #' @keywords internal
-makelist_samp <- function(samp.obs, T.x = NULL ) {
+makelist_samp <- function(samp.obs, T.x = NULL, include_POs = FALSE ) {
     
     if ( is.null( T.x ) ) {
         T.x = samp.obs$T.x
@@ -843,6 +849,11 @@ makelist_samp <- function(samp.obs, T.x = NULL ) {
                 C.ijk       = samp.obs[['C.ijk']][,m],
                 S.id        = as.factor(samp.obs$ID$S.id)
             )
+        }
+        
+        if ( include_POs ) {
+            mdat.rn[[m]][ "Y0" ] =   samp.obs[['Y0']][,m]
+            mdat.rn[[m]][ "Y1" ] =   samp.obs[['Y1']][,m]
         }
         
         if ( tx_assigned ) {

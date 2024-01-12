@@ -59,7 +59,6 @@ test_that("simulation function works", {
     expect_equal(3, ncol(sim.data$Yobs))
     expect_equal(15000, nrow(sim.data$Yobs))
                  
-    expect_true( all( sim.data[[1]]$T.x == sim.data[[2]]$T.x ) )
     
     pp <- pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = "BF",
@@ -81,6 +80,12 @@ test_that("simulation function works", {
     expect_equal(8, length(sim.data))
     expect_equal(3, ncol(sim.data$Yobs))
     expect_equal(16254, nrow(sim.data$Yobs))
+    
+    
+    sim.data <- gen_sim_data(pump.object = pp, return.as.dataframe = TRUE, include_POs = TRUE)
+    expect_true( length( sim.data ) == 3 )
+    head( sim.data[[2]] )    
+    expect_true( all( c( "Y0", "Y1", "Yobs", "T.x" ) %in% names( sim.data[[3]] ) ) )
 })
 
 
@@ -148,12 +153,17 @@ test_that( "simulation function works (single outcome)", {
                               return.as.dataframe = TRUE, no.list=TRUE )
     expect_true( is.data.frame( sim.data ) )
     
+    sim.data <- gen_sim_data( d_m = "d3.1_m3rr2rr", model.params.list, Tbar = 0.5,
+                              return.as.dataframe = TRUE, no.list=TRUE, include_POs = TRUE )
+    expect_true( is.data.frame( sim.data ) )
+    expect_true( all( c( "Y0", "Y1", "Yobs" ) %in% names( sim.data ) ) )
+    expect_true( all( sim.data$Y1 * sim.data$T.x == sim.data$Yobs * sim.data$T.x ) )
     
     sim.data <- gen_base_sim_data( model.params.list )
     #head( sim.data )
     expect_true( is.data.frame( sim.data ) )
-    
-    
+    expect_true( all( c( "Y0", "Y1" ) %in% names( sim.data ) ) )
+        
   
 })
 

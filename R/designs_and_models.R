@@ -135,12 +135,12 @@ pump_info <- function(
       "numCovar.1", "scalar; number of level 1 (individual) covariates",
       "numCovar.2", "scalar; number of level 2 (school) covariates",
       "numCovar.3", "scalar; number of level 3 (district) covariates",
-      "R2.1",       "scalar/vector; percent of variation explained by 
-                    level 1 covariates",
-      "R2.2",       "scalar/vector; percent of variation explained by 
-                    level 2 covariates",
-      "R2.3",       "scalar/vector; percent of variation explained by 
-                    level 3 covariates",
+      "R2.1",       "scalar/vector; percent of level 1 variation explained by 
+                    covariates",
+      "R2.2",       "scalar/vector; percent of level 2 variation explained by 
+                    covariates",
+      "R2.3",       "scalar/vector; percent of level 3 variation explained by 
+                    covariates",
       "ICC.2",      "scalar/vector; level 2 intraclass correlation",
       "ICC.3",      "scalar/vector; level 3 intraclass correlation",
       "omega.2",    "scalar/vector; ratio of variance of level 2 average 
