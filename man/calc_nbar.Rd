@@ -23,8 +23,8 @@ calc_nbar(
 \arguments{
 \item{d_m}{a single RCT design (see list/naming convention)}
 
-\item{MT}{Number of approximate effect-size unit SEs 
-(adjusted for degrees of freedom issues) that the MDES 
+\item{MT}{Number of approximate effect-size unit SEs
+(adjusted for degrees of freedom issues) that the MDES
 needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{MDES}{scalar; the MDES values for each outcome}
@@ -58,7 +58,7 @@ intraclass correlation.}
 level 3 average impacts to variance of level 3 random intercepts.}
 }
 \value{
-nbar, the number of individuals needed, 
+nbar, the number of individuals needed,
 or NA if not possible given design
 }
 \description{

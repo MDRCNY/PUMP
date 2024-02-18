@@ -52,7 +52,7 @@ code. See pump_info() for list of choices.}
 \item{MTP}{string, or vector of strings; multiple testing
 procedure(s). See pump_info() for list of choices.}
 
-\item{typesample}{string; type of sample size to 
+\item{typesample}{string; type of sample size to
 calculate: "nbar", "J", or "K".}
 
 \item{MDES}{scalar or vector; the desired MDES values for each
@@ -82,7 +82,7 @@ level 2 units is J x K.}
 
 \item{target.power}{target power for search algorithm.}
 
-\item{power.definition}{see pump_info() for 
+\item{power.definition}{see pump_info() for
 possible power definitions.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
@@ -133,10 +133,10 @@ procedures.}
 
 \item{max.steps}{how many steps allowed before terminating.}
 
-\item{tnum}{max number of samples for first iteration 
+\item{tnum}{max number of samples for first iteration
 of search algorithm.}
 
-\item{start.tnum}{number of samples to start search 
+\item{start.tnum}{number of samples to start search
 (this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw.}
@@ -147,18 +147,18 @@ processing of WY-SD.}
 \item{updateProgress}{function to update progress bar (only used
 for PUMP shiny app).}
 
-\item{max_sample_size_nbar}{scalar; default upper bound for nbar 
+\item{max_sample_size_nbar}{scalar; default upper bound for nbar
 for search algorithm.}
 
-\item{max_sample_size_JK}{scalar; default upper bound for J or K 
+\item{max_sample_size_JK}{scalar; default upper bound for J or K
 for search algorithm.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
-This parameter controls when the search is done: 
-when estimated power (checked with `final.tnum` iterations) 
+This parameter controls when the search is done:
+when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
-\item{give.optimizer.warnings}{whether to return 
+\item{give.optimizer.warnings}{whether to return
 verbose optimizer warnings.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
@@ -168,7 +168,7 @@ a pumpresult object containing sample size results.
 }
 \description{
 The user chooses the context (d_m), MTP,
-type of sample size, 
+type of sample size,
 MDES,
 power definition, and choices of all relevant design parameters.
 
@@ -192,9 +192,9 @@ J <- pump_sample(
   tnum = 1000)
 }
 \seealso{
-For more detailed information about this function 
+For more detailed information about this function
 and the user choices,
-see the manuscript \url{https://arxiv.org/abs/2112.15273},
+see the manuscript <doi:10.18637/jss.v108.i06>,
 which includes a detailed Technical Appendix
 including information about the designs and models
 and parameters.

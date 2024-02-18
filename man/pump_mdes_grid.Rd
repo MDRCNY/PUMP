@@ -46,12 +46,12 @@ including zero outcomes.}
 
 \item{target.power}{target power for search algorithm.}
 
-\item{power.definition}{see pump_info() for 
+\item{power.definition}{see pump_info() for
 possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
-This parameter controls when the search is done: 
-when estimated power (checked with `final.tnum` iterations) 
+This parameter controls when the search is done:
+when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{propZero}{scalar; proportion of outcomes assumed to be zero

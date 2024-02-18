@@ -1,6 +1,6 @@
 
 #' Calculates p-values from t-values
-#' 
+#'
 #' @param rawt vector of t statistics
 #' @param t.df degrees of freedom
 #' @param two.tailed whether to calculate 1 or 2-tailed p-values
@@ -14,7 +14,7 @@ calc_pval <- function(rawt, t.df, two.tailed)
     rawp <- 2*(1 - stats::pt(abs(rawt), df = t.df))
   } else
   {
-    rawp <- 1 - stats::pt(rawt, df = t.df) 
+    rawp <- 1 - stats::pt(rawt, df = t.df)
   }
   return(rawp)
 }
@@ -25,7 +25,7 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #'
 #' @description This function takes in a matrix of adjusted p-values
 #' and unadjusted p-values and outputs different types of power.
-#' 
+#'
 #' This function is mostly for internal use, but may be of interest to
 #' users who wish to calculate power on their own.
 #'
@@ -33,14 +33,14 @@ calc_pval <- function(rawt, t.df, two.tailed)
 #' @param unadj.pval.mat matrix; unadjusted p-values, columns are outcomes
 #' @param ind.nonzero vector; which outcomes are nonzero.
 #' @param alpha scalar; the family wise error rate (FWER).
-#' @param drop.zero.outcomes logical; whether to report power results for 
+#' @param drop.zero.outcomes logical; whether to report power results for
 #' outcomes with MDES = 0.
 #' @param adj logical; whether p-values are unadjusted or not.
 #'
-#' @return data frame; power results for 
+#' @return data frame; power results for
 #' individual, minimum, complete power.
-#' 
-#' @export 
+#'
+#' @export
 get_power_results <- function(adj.pval.mat, unadj.pval.mat,
                               ind.nonzero, alpha,
                               drop.zero.outcomes = TRUE,
@@ -59,25 +59,25 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
       rejects <- apply(adj.pval.mat, 2, function(x){ 1*(x < alpha) })
       # unadjusted
       rejects.unadj <- apply(unadj.pval.mat, 2, function(x){ 1*(x < alpha) })
-      
+
       # individual power
       power.ind <- apply(rejects, 2, mean)
       names(power.ind) <- paste0('D', 1:M, 'indiv')
-      
+
       # minimum power
       power.min <- rep(NA, M)
       names(power.min) <- paste0('min',1:M)
-      
+
       # complete power
       power.complete <- NA
-      
+
       # if unadjusted, don't report minimum or complete power
       if (adj)
       {
           # complete power
           if (all(ind.nonzero))
           {
-              complete.rejects <- apply(rejects.unadj, 1, 
+              complete.rejects <- apply(rejects.unadj, 1,
                                         function(x){ sum(x) == M })
               power.complete <- mean(complete.rejects)
           }
@@ -88,7 +88,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
               power.min[m] <- mean(min.rejects)
           }
       }
-      
+
       # subset to only nonzero where relevant
       if (drop.zero.outcomes)
       {
@@ -97,17 +97,17 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
           # rename to be more sensible if there are zeros in the middle
           names(power.min) <- paste0('min',seq(1, length(power.min)))
       }
-      
+
       power.ind.mean <- mean(power.ind)
       names(power.ind.mean) <- 'indiv.mean'
       names(power.complete) <- 'complete'
-      
+
       # remove redundant min column
       if (sum(num.nonzero) == M)
       {
           power.min <- power.min[1:(M - 1)]
       }
-      
+
       if (M > 1)
       {
           power.vec <- c(power.ind, power.ind.mean, power.min, power.complete)
@@ -116,9 +116,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
       {
           power.vec <- c(power.ind)
       }
-      
+
       power.vec <- vapply(power.vec, as.numeric, numeric(1))
-      
+
       # combine all power for all definitions
       all.power.results <- data.frame(matrix(power.vec, nrow = 1))
       colnames(all.power.results) <- names(power.vec)
@@ -140,7 +140,7 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'
 #' @seealso For more detailed information about this function and the
 #'   user choices, see the manuscript
-#'   \url{https://arxiv.org/abs/2112.15273}, which includes a detailed
+#'   <doi:10.18637/jss.v108.i06>, which includes a detailed
 #'   Technical Appendix including information about the designs and
 #'   models and parameters.
 #'
@@ -233,9 +233,9 @@ get_power_results <- function(adj.pval.mat, unadj.pval.mat,
 #'    ICC.2 = 0.2, ICC.3 = 0.2,
 #'    omega.2 = 0, omega.3 = 0.1,
 #'    rho = 0.5)
-#' 
+#'
 pump_power <- function(
-  d_m, MTP = NULL, MDES, 
+  d_m, MTP = NULL, MDES,
   numZero = NULL, propZero = NULL,
   M = 1,
   nbar, J = 1, K = 1, Tbar,
@@ -259,7 +259,7 @@ pump_power <- function(
   {
     MTP <- MTP[which(MTP != 'None')]
   }
-    
+
   # Recursively call self for each element on MTP list.
   if ( length( MTP ) > 1 ) {
     if ( verbose ) {
@@ -268,9 +268,9 @@ pump_power <- function(
     validate_MTP( MTP = MTP,
                   power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
                   M = M, pdef = NULL, multi.MTP.ok = TRUE )
-    
+
     des <- purrr::map( MTP,
-                      pump_power, 
+                      pump_power,
                       d_m = d_m, MDES = MDES,
                       M = M, J = J, K = K, nbar = nbar,
                       numZero = numZero, propZero = propZero,
@@ -282,14 +282,14 @@ pump_power <- function(
                       ICC.2 = ICC.2, ICC.3 = ICC.3,
                       rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                       long.table = long.table,
-                      tnum = tnum, B = B, 
+                      tnum = tnum, B = B,
                       parallel.WY.cores = parallel.WY.cores,
                       updateProgress = updateProgress,
                       validate.inputs = validate.inputs )
 
     plist <- attr( des[[1]], "params.list" )
     plist$MTP <- MTP
-    
+
     if ( long.table ) {
       ftable <- des[[1]]
       for (i in 2:length(des)) {
@@ -301,23 +301,23 @@ pump_power <- function(
         ftable <- dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
       }
     }
-    
+
     return( make.pumpresult( ftable, "power",
                              params.list = plist,
                              d_m = d_m,
                              long.table = long.table ) )
   }
-    
-    
+
+
 
   if (validate.inputs) {
     # validate input parameters
     params.list <- list(
       MTP = MTP,
-      MDES = MDES, numZero = numZero, propZero = propZero, 
+      MDES = MDES, numZero = numZero, propZero = propZero,
       M = M, J = J, K = K,
       nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
-      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+      numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
       numCovar.3 = numCovar.3,
       R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
       ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
@@ -325,9 +325,9 @@ pump_power <- function(
       power.definition = NULL
     )
     params.list <- validate_inputs(
-        d_m, params.list, power.call = TRUE, verbose = verbose 
+        d_m, params.list, power.call = TRUE, verbose = verbose
     )
-   
+
     MTP <- params.list$MTP
     MDES <- params.list$MDES
     M <- params.list$M; J <- params.list$J; K <- params.list$K
@@ -341,7 +341,7 @@ pump_power <- function(
     omega.2 <- params.list$omega.2; omega.3 <- params.list$omega.3
     rho <- params.list$rho; rho.matrix <- params.list$rho.matrix
     d_m = params.list$d_m
-    
+
     params.list <- params.list[names(params.list) != 'power.definition']
   } else {
     params.list <- NULL
@@ -372,10 +372,10 @@ pump_power <- function(
   {
     Sigma <- rho.matrix
   }
-  
+
   # generate t values and p values under alternative hypothesis
   # using multivariate t-distribution
-  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) + 
+  rawt.mat <- matrix(mvtnorm::rmvt(tnum, sigma = Sigma, df = t.df) +
                          t.shift.mat, nrow = tnum, ncol = M)
   rawp.mat <- calc_pval(rawt.mat, t.df, two.tailed)
 
@@ -411,12 +411,12 @@ pump_power <- function(
     {
       cl <- NULL
     }
-      
+
     adjp.mat <- adjp_wysd(rawp.mat = rawp.mat, B = B,
                           Sigma = Sigma, t.df = t.df,
                           two.tailed = two.tailed, cl = cl,
                           updateProgress = updateProgress)
-    
+
     if ( parallel.WY.cores > 1 )
     {
         parallel::stopCluster(cl)
@@ -458,7 +458,7 @@ pump_power <- function(
                            d_m = d_m,
                            long.table = long.table ) )
   } else {
-    return( make.pumpresult( transpose_power_table( power.results, M = M ), 
+    return( make.pumpresult( transpose_power_table( power.results, M = M ),
                              "power",
                              params.list = params.list,
                              d_m = d_m,

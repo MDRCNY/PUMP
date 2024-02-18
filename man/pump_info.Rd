@@ -13,12 +13,12 @@ pump_info(
 \item{topic}{string; what kind of info. One of:
 all, context, adjustment, power, parameters.}
 
-\item{comment}{logical; prints out 
+\item{comment}{logical; prints out
 long description of
 each design and method.}
 }
 \value{
-list; a list of data frames with 
+list; a list of data frames with
 information about each topic.
 }
 \description{
@@ -31,7 +31,7 @@ design and model parameters.
 }
 \seealso{
 For more detailed information about user choices,
-see the manuscript \url{https://arxiv.org/abs/2112.15273},
+see the manuscript <doi:10.18637/jss.v108.i06>,
 which includes a detailed Technical Appendix
 including information about the designs and models
 and parameters.

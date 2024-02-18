@@ -173,7 +173,7 @@ pp <- pump_power(
 \seealso{
 For more detailed information about this function and the
   user choices, see the manuscript
-  \url{https://arxiv.org/abs/2112.15273}, which includes a detailed
+  <doi:10.18637/jss.v108.i06>, which includes a detailed
   Technical Appendix including information about the designs and
   models and parameters.
 }

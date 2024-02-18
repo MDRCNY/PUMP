@@ -31,27 +31,27 @@ calc_K(
 
 \item{nbar}{scalar; the harmonic mean of the number of units per school}
 
-\item{Tbar}{scalar; the proportion of samples that 
+\item{Tbar}{scalar; the proportion of samples that
 are assigned to the treatment}
 
-\item{R2.1}{scalar, or vector of length M; 
+\item{R2.1}{scalar, or vector of length M;
 percent of variation explained by Level 1 covariates for each outcome}
 
-\item{R2.2}{scalar, or vector of length M; 
+\item{R2.2}{scalar, or vector of length M;
 percent of variation explained by Level 2 covariates for each outcome}
 
-\item{R2.3}{scalar, or vector of length M; 
+\item{R2.3}{scalar, or vector of length M;
 percent of variation explained by Level 3 covariates for each outcome}
 
 \item{ICC.2}{scalar; school intraclass correlation}
 
 \item{ICC.3}{scalar; district intraclass correlation}
 
-\item{omega.2}{scalar; ratio of school effect 
+\item{omega.2}{scalar; ratio of school effect
 size variability to random effects
   variability}
 
-\item{omega.3}{scalar; ratio of district 
+\item{omega.3}{scalar; ratio of district
 effect size variability to random effects
   variability}
 }

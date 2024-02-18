@@ -48,12 +48,12 @@ including zero outcomes.}
 
 \item{target.power}{target power for search algorithm.}
 
-\item{power.definition}{see pump_info() for 
+\item{power.definition}{see pump_info() for
 possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
-This parameter controls when the search is done: 
-when estimated power (checked with `final.tnum` iterations) 
+This parameter controls when the search is done:
+when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{MDES}{scalar or vector; the desired MDES values for each
@@ -67,7 +67,7 @@ will be used to override numZero, only one can be defined)}
 zero. Please provide NumZero + length(MDES) = M, if length(MDES)
 is not 1.}
 
-\item{typesample}{string; type of sample size to 
+\item{typesample}{string; type of sample size to
 calculate: "nbar", "J", or "K".}
 
 \item{nbar}{scalar; the harmonic mean of the number of level 1

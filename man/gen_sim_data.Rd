@@ -10,7 +10,8 @@ gen_sim_data(
   Tbar = 0.5,
   pump.object = NULL,
   return.as.dataframe = TRUE,
-  no.list = TRUE
+  no.list = TRUE,
+  include_POs = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,9 @@ covariates, etc., in a list.}
 no.list=TRUE means if M=1 return the dataframe, not a list of
 length 1.  FALSE means return a list of length 1, even if there
 is only 1 outcome.}
+
+\item{include_POs}{Include columns for the potential outcomes in
+addition to the observed outcome.}
 }
 \value{
 list; potential outcomes, covariates, observed outcomes,

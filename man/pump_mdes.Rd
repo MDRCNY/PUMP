@@ -84,12 +84,12 @@ power calculation.}
 
 \item{target.power}{target power for search algorithm.}
 
-\item{power.definition}{see pump_info() for 
+\item{power.definition}{see pump_info() for
 possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
-This parameter controls when the search is done: 
-when estimated power (checked with `final.tnum` iterations) 
+This parameter controls when the search is done:
+when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{numCovar.1}{scalar; number of level 1 (individual)
@@ -132,10 +132,10 @@ procedures.}
 
 \item{max.steps}{how many steps allowed before terminating.}
 
-\item{tnum}{max number of samples for first iteration 
+\item{tnum}{max number of samples for first iteration
 of search algorithm.}
 
-\item{start.tnum}{number of samples to start search 
+\item{start.tnum}{number of samples to start search
 (this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw.}
@@ -146,7 +146,7 @@ processing of WY-SD.}
 \item{updateProgress}{function to update progress bar (only used
 for PUMP shiny app).}
 
-\item{give.optimizer.warnings}{whether to return 
+\item{give.optimizer.warnings}{whether to return
 verbose optimizer warnings.}
 
 \item{verbose}{TRUE/FALSE; Print out diagnostics of time, etc.}
@@ -172,18 +172,18 @@ mdes <-  pump_mdes(
   K = 15,
   nbar = 50,
   M = 3,
-  Tbar = 0.5, alpha = 0.05, 
+  Tbar = 0.5, alpha = 0.05,
   two.tailed = FALSE,
   numCovar.1 = 1, numCovar.2 = 1,
   R2.1 = 0.1, R2.2 = 0.1,
   ICC.2 = 0.2, ICC.3 = 0.2,
-  omega.2 = 0.1, omega.3 = 0.1, 
+  omega.2 = 0.1, omega.3 = 0.1,
   rho = 0.5, tnum = 2000)
 }
 \seealso{
-For more detailed information about this function 
+For more detailed information about this function
 and the user choices,
-see the manuscript \url{https://arxiv.org/abs/2112.15273},
+see the manuscript <doi:10.18637/jss.v108.i06>,
 which includes a detailed Technical Appendix
 including information about the designs and models
 and parameters.

@@ -2,14 +2,17 @@
 % Please edit documentation in R/simulation.R
 \name{makelist_samp}
 \alias{makelist_samp}
-\title{Convert multi-outcome data structure to list for each outcome.}
+\title{Convert multi-outcome data structure to dataframe for each outcome.}
 \usage{
-makelist_samp(samp.obs, T.x = NULL)
+makelist_samp(samp.obs, T.x = NULL, include_POs = FALSE)
 }
 \arguments{
 \item{samp.obs}{a single iteration of observed data}
 
 \item{T.x}{vector of treatment assignments}
+
+\item{include_POs}{Include columns for the potential outcomes in
+addition to the observed outcome.}
 }
 \value{
 List of dataframes.

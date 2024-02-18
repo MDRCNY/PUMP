@@ -6,7 +6,7 @@
 \alias{PUMP-package}
 \title{PUMP: Power Under Multiplicity Project}
 \description{
-Estimates power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030). For a full package description, including a detailed technical appendix, see \href{https://arxiv.org/abs/2112.15273}{arXiv:2112.15273}.
+Estimates power, minimum detectable effect size (MDES) and sample size requirements. The context is multilevel randomized experiments with multiple outcomes. The estimation takes into account the use of multiple testing procedures. Development of this package was supported by a grant from the Institute of Education Sciences (R305D170030). For a full package description, including a detailed technical appendix, see \doi{10.18637/jss.v108.i06}.
 }
 \seealso{
 Useful links:

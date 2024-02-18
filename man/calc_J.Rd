@@ -23,8 +23,8 @@ calc_J(
 \arguments{
 \item{d_m}{a single RCT design (see list/naming convention)}
 
-\item{MT}{Number of approximate effect-size unit SEs 
-(adjusted for degrees of freedom issues) that the MDES 
+\item{MT}{Number of approximate effect-size unit SEs
+(adjusted for degrees of freedom issues) that the MDES
 needs to be to achieve desired power.  E.g., 2.8 for normal theory.}
 
 \item{MDES}{scalar; the MDES values for each outcome}

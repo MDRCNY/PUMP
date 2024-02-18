@@ -31,13 +31,13 @@ covariates.}
 
 \item{numCovar.3}{scalar; number of level 3 (district) covariates.}
 
-\item{validate}{logical; whether or not to validate 
+\item{validate}{logical; whether or not to validate
 if output df is <= 0.}
 }
 \value{
 scalar; degrees of freedom for the context.
 }
 \description{
-Given sample sizes, return the used degrees of freedom 
+Given sample sizes, return the used degrees of freedom
 (frequently conservative) for the design and model.
 }

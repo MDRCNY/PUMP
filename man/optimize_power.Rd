@@ -56,12 +56,12 @@ procedure(s). See pump_info() for list of choices.}
 
 \item{target.power}{target power for search algorithm.}
 
-\item{power.definition}{see pump_info() for 
+\item{power.definition}{see pump_info() for
 possible power definitions.}
 
 \item{tol}{tolerance for target power, defaults to 0.01 (1%).
-This parameter controls when the search is done: 
-when estimated power (checked with `final.tnum` iterations) 
+This parameter controls when the search is done:
+when estimated power (checked with `final.tnum` iterations)
 is within `tol`, the search stops.}
 
 \item{start.low}{lower bound for optimization procedure}
@@ -143,7 +143,7 @@ processing of WY-SD.}
 \item{tnum}{scalar; the number of test statistics to draw.
 Increasing tnum increases precision and computation time.}
 
-\item{start.tnum}{number of samples to start search 
+\item{start.tnum}{number of samples to start search
 (this will increase with each step).}
 
 \item{final.tnum}{number of samples for final draw.}

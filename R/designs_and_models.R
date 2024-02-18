@@ -1,34 +1,34 @@
 #' @title Provides details about supported package features (core function)
-#' 
+#'
 #' @description List user options:
 #' designs and models (d_m), including what
 #' parameters are relevant for each context;
 #' multiple testing procedures;
 #' types of power;
 #' design and model parameters.
-#' 
+#'
 #' @seealso For more detailed information about user choices,
-#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' see the manuscript <doi:10.18637/jss.v108.i06>,
 #' which includes a detailed Technical Appendix
 #' including information about the designs and models
 #' and parameters.
 #'
 #' @param topic string; what kind of info. One of:
 #' all, context, adjustment, power, parameters.
-#' @param comment logical; prints out 
+#' @param comment logical; prints out
 #' long description of
 #' each design and method.
-#' 
-#' @return list; a list of data frames with 
+#'
+#' @return list; a list of data frames with
 #' information about each topic.
 #'
 #' @export
-pump_info <- function( 
-    topic = c( "all", "context", "adjustment", "power", "parameters" ), 
-    comment = TRUE 
+pump_info <- function(
+    topic = c( "all", "context", "adjustment", "power", "parameters" ),
+    comment = TRUE
 ) {
   topic <- match.arg( topic )
-  
+
     context <- tibble::tribble(
         ~d_m, ~PowerUp, ~Params, ~ Comment,
         # 1 level design
@@ -40,73 +40,73 @@ pump_info <- function(
         "d2.1_m2fc",    "bira2_1c",
             "R2.1, ICC.2",
             "2 lvls, lvl 1 rand / fixed intercepts, constant impacts",
-            
+
         "d2.1_m2ff",    "bira2_1f",
             "R2.1, ICC.2",
             "2 lvls, lvl 1 rand / fixed intercepts, fixed impacts",
-            
+
         "d2.1_m2fr",    "bira2_1r",
             "R2.1, ICC.2, omega.2",
             "2 lvls, lvl 1 rand / fixed intercepts, random impacts (FIRC)",
-            
+
         "d2.1_m2rr",    "n/a",
             "R2.1, ICC.2, omega.2",
             "2 lvls, lvl 1 rand / random intercepts & impacts (RIRC)",
-            
+
         # 2 lvl design, rand at lvl 2
         "d2.2_m2rc",    "cra2_2r",
             "R2.1, R2.2, ICC.2",
             "2 lvls, lvl 2 rand / random intercepts, constant impacts",
-            
+
         # 3 lvl design, rand at lvl 1
         "d3.1_m3rr2rr", "bira3_1r ",
             "R2.1, ICC.2, omega.2, ICC.3, omega.3",
             "3 lvls, lvl 1 rand /
              lvl 3 random intercepts, random impacts,
              lvl 2 random intercepts, random impacts",
-        
+
         "d3.1_m3ff2rr", "n/a",
         "R2.1, ICC.2, omega.2, ICC.3",
         "3 lvls, lvl 1 rand /
              lvl 3 fixed intercepts, fixed impacts,
              lvl 2 random intercepts, random impacts",
-            
+
         # 3 lvl design, rand at lvl 2
         "d3.2_m3ff2rc", "bcra3_2f",
            "R2.1, R2.2, ICC.2, ICC.3",
             "3 lvls, lvl 2 rand /
             lvl 3 fixed intercepts, fixed impacts,
             lvl 2 random intercepts, constant impacts",
-            
+
         "d3.2_m3fc2rc", "n/a",
             "R2.1, R2.2, ICC.2, ICC.3",
             "3 lvls, lvl 2 rand /
              lvl 3 fixed intercepts, constant impact,
              lvl 2 random intercepts, constant impact",
-            
+
         "d3.2_m3rr2rc", "bcra3_2r",
             "R2.1, R2.2, ICC.2, ICC.3, omega.3",
             "3 lvls, lvl 2 rand /
              lvl 3 random intercepts, random impacts,
              lvl 2 random intercepts, constant impacts",
-            
+
         # 3 lvl design, rand at lvl 3
         "d3.3_m3rc2rc", "cra3_3r",
             "R2.1, R2.2, ICC.2, R2.3, ICC.3",
             "3 lvls, lvl 3 rand /
              lvl 3 random intercepts, constant impacts,
              lvl 2 random intercepts, constant impacts",
-            
+
     )
 
 
     context <- tidyr::separate(context, .data$d_m,
-                               into = c("Design", "Model"), 
+                               into = c("Design", "Model"),
                                remove = FALSE, sep = "_" )
-    
+
     power <- tibble::tribble(
         ~ Definition, ~ Comment,
-        "D*indiv",    "individual power for each nonzero outcome: 
+        "D*indiv",    "individual power for each nonzero outcome:
                        D1indiv, D2indiv, etc.",
         "indiv.mean", "mean across individual powers",
         "min*",       "probability to detect at least * outcomes:
@@ -115,8 +115,8 @@ pump_info <- function(
         "complete",   "probability to detect all outcomes;
                        NA if any outcomes are assumed to be zero"
     )
-    
-    
+
+
     adjust <- tibble::tribble( ~ Method, ~ Comment,
                                "None",  "No adjustment",
                                "BF",    "Bonferroni",
@@ -128,28 +128,28 @@ pump_info <- function(
     params <- tibble::tribble( ~ Parameter,  ~ Description,
       "nbar",       "scalar; harmonic mean of number of level 1 units per
                                 level 2 unit (students per school)",
-      "J",          "scalar; harmonic mean of number of level 2 
+      "J",          "scalar; harmonic mean of number of level 2
                       units per level 3 unit (schools per district)",
       "K",          "scalar; number of level 3 units (districts)",
       "Tbar",       "scalar; proportion of units assigned to treatment",
       "numCovar.1", "scalar; number of level 1 (individual) covariates",
       "numCovar.2", "scalar; number of level 2 (school) covariates",
       "numCovar.3", "scalar; number of level 3 (district) covariates",
-      "R2.1",       "scalar/vector; percent of level 1 variation explained by 
+      "R2.1",       "scalar/vector; percent of level 1 variation explained by
                     covariates",
-      "R2.2",       "scalar/vector; percent of level 2 variation explained by 
+      "R2.2",       "scalar/vector; percent of level 2 variation explained by
                     covariates",
-      "R2.3",       "scalar/vector; percent of level 3 variation explained by 
+      "R2.3",       "scalar/vector; percent of level 3 variation explained by
                     covariates",
       "ICC.2",      "scalar/vector; level 2 intraclass correlation",
       "ICC.3",      "scalar/vector; level 3 intraclass correlation",
-      "omega.2",    "scalar/vector; ratio of variance of level 2 average 
+      "omega.2",    "scalar/vector; ratio of variance of level 2 average
                     impacts to level 2 random intercepts",
-      "omega.3",    "scalar/vector; ratio of variance of level 3 average 
+      "omega.3",    "scalar/vector; ratio of variance of level 3 average
                     impacts to level 3 random intercepts",
-      "rho",        "scalar; correlation between all pairs of 
+      "rho",        "scalar; correlation between all pairs of
                     test statistics",
-      "rho.matrix", "matrix; full matrix of correlations between 
+      "rho.matrix", "matrix; full matrix of correlations between
                     test statistics"
     )
 
@@ -157,19 +157,19 @@ pump_info <- function(
         context$Comment <- NULL
         adjust$Comment <- NULL
     }
-    
 
-    res <- list( Context = context, 
+
+    res <- list( Context = context,
           Adjustment = adjust,
           Power = power,
           Parameters = params)
     if ( topic != "all" ) {
       names(res) <- tolower(names(res))
-      return( res[[topic]] )  
+      return( res[[topic]] )
     } else {
       return( res)
     }
-    
+
 }
 
 
@@ -177,7 +177,7 @@ pump_info <- function(
 
 parse_design <- function(d_m) {
     pattern <- "^d([0-9])\\.([0-9])"   # pattern to match
-    
+
     if (grepl(pattern, d_m)) {
         match <- regmatches(d_m, regexec(pattern, d_m))
         num1 <- match[[1]][[2]]
@@ -185,9 +185,9 @@ parse_design <- function(d_m) {
         return( list( levels = num1,
                       rand_level = num2,
                       design = match[[1]][[1]]) )
-    } 
+    }
     return( NULL )
-    
+
 }
 
 
@@ -198,7 +198,7 @@ parse_design <- function(d_m) {
 #'
 #' @param d_m string; context to parse.
 #'
-#' @return list; list of features including number of levels, 
+#' @return list; list of features including number of levels,
 #' level of randomization, etc.
 #'
 #' @family pump_info
@@ -251,7 +251,7 @@ parse_d_m <- function(d_m) {
 
 #' Computes Q_m, the standard error of the effect size estimate
 #'
-#' Function to calculate the theoretical true (unadjusted) standard 
+#' Function to calculate the theoretical true (unadjusted) standard
 #' error of the ATE estimate for a given d_m and model, in effect size units.
 #'
 #' @param d_m a single RCT d_m (see list/naming convention).
@@ -275,12 +275,12 @@ parse_d_m <- function(d_m) {
 #'
 #' @return vector; the standard error of the effect size estimate
 #' @keywords internal
-calc_SE <- function(d_m, J, K, nbar, Tbar, 
-                    R2.1, R2.2, R2.3, ICC.2, ICC.3, 
+calc_SE <- function(d_m, J, K, nbar, Tbar,
+                    R2.1, R2.2, R2.3, ICC.2, ICC.3,
                     omega.2, omega.3) {
     if (d_m == 'd1.1_m1c')
     {
-        Q.m <- sqrt( 
+        Q.m <- sqrt(
           ( (1 - R2.1) )  / (Tbar * (1 - Tbar) * nbar) )
     } else if (d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
     {
@@ -288,46 +288,46 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
           ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m %in% c('d2.1_m2fr', 'd2.1_m2rr') )
     {
-        Q.m <- sqrt( 
+        Q.m <- sqrt(
           (ICC.2 * omega.2)/J +
-          ((1 - ICC.2) * (1 - R2.1)) / 
+          ((1 - ICC.2) * (1 - R2.1)) /
               (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m == 'd3.1_m3rr2rr') {
         Q.m <- sqrt(
             (ICC.3 * omega.3) / K +
                 (ICC.2 * omega.2) / (J * K) +
-                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
                 (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd3.1_m3ff2rr') {
         Q.m <- sqrt(
                 (ICC.2 * omega.2) / (J * K) +
-                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
                 (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd2.2_m2rc')
     {
         Q.m <- sqrt(
           (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-          (1 - ICC.2) * (1 - R2.1) / 
+          (1 - ICC.2) * (1 - R2.1) /
               (Tbar * (1 - Tbar) * J * nbar))
     } else if (d_m == 'd3.3_m3rc2rc')
     {
-        Q.m <- sqrt( 
+        Q.m <- sqrt(
           (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar) * K) +
           (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) +
           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
               (Tbar * (1 - Tbar) * J * K * nbar) )
     } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
-        Q.m <- sqrt( 
+        Q.m <- sqrt(
           ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-          ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+          ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
                 (Tbar * (1 - Tbar) * J * K * nbar) ) )
     } else if (d_m == 'd3.2_m3rr2rc' )
     {
-        Q.m <- sqrt( 
+        Q.m <- sqrt(
           ( (ICC.3 * omega.3) / K ) +
            ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-           ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / 
+           ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
                  (Tbar * (1 - Tbar) * J * K * nbar)))
     } else
     {
@@ -339,17 +339,17 @@ calc_SE <- function(d_m, J, K, nbar, Tbar,
 
 #' @title Calculate degrees of freedom (support function)
 #'
-#' @description Given sample sizes, return the used degrees of freedom 
+#' @description Given sample sizes, return the used degrees of freedom
 #' (frequently conservative) for the design and model.
 #'
 #' @inheritParams pump_power
-#' @param validate logical; whether or not to validate 
+#' @param validate logical; whether or not to validate
 #' if output df is <= 0.
 #'
 #' @return scalar; degrees of freedom for the context.
 #' @export
-calc_df <- function(d_m, J, K, nbar, 
-                    numCovar.1, numCovar.2, numCovar.3, 
+calc_df <- function(d_m, J, K, nbar,
+                    numCovar.1, numCovar.2, numCovar.3,
                     validate = TRUE) {
 
     if (d_m == 'd1.1_m1c')
@@ -402,15 +402,15 @@ calc_df <- function(d_m, J, K, nbar,
 
 
 
-#' This function calculates needed nbar to achieve a given power 
+#' This function calculates needed nbar to achieve a given power
 #'
 #' @inheritParams calc_J
 #' @param J scalar; the number of schools
 #'
-#' @return nbar, the number of individuals needed, 
+#' @return nbar, the number of individuals needed,
 #' or NA if not possible given design
 #' @keywords internal
-calc_nbar <- function(d_m, MT = 2.8, MDES, 
+calc_nbar <- function(d_m, MT = 2.8, MDES,
                       J = NULL, K = NULL, Tbar, R2.1,
                       R2.2 = NULL, ICC.2 = NULL, omega.2 = NULL,
                       R2.3 = NULL, ICC.3 = NULL, omega.3 = NULL
@@ -433,7 +433,7 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
         nbar <- numr / (Tbar * (1 - Tbar) * denom)
     } else if (d_m == 'd3.1_m3rr2rr') {
         numr <- (1 - ICC.2 - ICC.3) * (1 - R2.1)
-        denom <- J * K * ((MDES / MT)^2) - 
+        denom <- J * K * ((MDES / MT)^2) -
             J * ICC.3 * omega.3 - ICC.2 * omega.2
         nbar <- numr / ( Tbar * (1 - Tbar) * denom )
     } else if (d_m == 'd3.1_m3ff2rr') {
@@ -448,19 +448,19 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
     } else if (d_m == 'd3.3_m3rc2rc')
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-        denom <- Tbar * (1 - Tbar) * J * K * 
+        denom <- Tbar * (1 - Tbar) * J * K *
           ((MDES/MT)^2) - J * ICC.3 * (1 - R2.3)  - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
     } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-        denom <- Tbar * (1 - Tbar) * J * K * 
+        denom <- Tbar * (1 - Tbar) * J * K *
           ((MDES/MT)^2) - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
     } else if (d_m == 'd3.2_m3rr2rc')
     {
         numr <- (1 - ICC.2 - ICC.3)*(1 - R2.1)
-        denom <- Tbar * (1 - Tbar) * J * 
+        denom <- Tbar * (1 - Tbar) * J *
           ( K * ((MDES/MT)^2) - ICC.3 * omega.3 ) - ICC.2 * (1 - R2.2)
         nbar <- numr / denom
     } else
@@ -478,8 +478,8 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
 #' @inheritParams pump_power
 #'
 #' @param d_m a single RCT design (see list/naming convention)
-#' @param MT Number of approximate effect-size unit SEs 
-#' (adjusted for degrees of freedom issues) that the MDES 
+#' @param MT Number of approximate effect-size unit SEs
+#' (adjusted for degrees of freedom issues) that the MDES
 #' needs to be to achieve desired power.  E.g., 2.8 for normal theory.
 #' @param MDES scalar; the MDES values for each outcome
 #'
@@ -507,7 +507,7 @@ calc_J <- function(
         J <- (MT/MDES)^2 * ( (ICC.2 * omega.2) + numr / denom)
     } else if (d_m == 'd3.1_m3rr2rr')
     {
-        numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) + 
+        numr <- (1 - ICC.2 - ICC.3 ) * (1 - R2.1) +
             Tbar * (1 - Tbar) * nbar * ICC.2 * omega.2
         denom <- K * (MDES/MT)^2 - ICC.3 * omega.3
         J <- (1 / (Tbar * (1 - Tbar) * nbar)) * numr/denom
@@ -519,29 +519,29 @@ calc_J <- function(
         J <- Q * (tm1 + tm2)
     } else if (d_m == 'd2.2_m2rc')
     {
-        numr <- nbar * ICC.2 * (1 - R2.2) + 
+        numr <- nbar * ICC.2 * (1 - R2.2) +
           (1 - ICC.2) * (1 - R2.1)
         denom <- Tbar * (1 - Tbar) * nbar
         J <- (MT/MDES)^2 * numr/denom
     } else if (d_m == 'd3.3_m3rc2rc')
     {
-        numr <- nbar * ICC.2 * (1 - R2.2) + 
+        numr <- nbar * ICC.2 * (1 - R2.2) +
           (1 - ICC.2 - ICC.3) * (1 - R2.1)
-        denom <- nbar * ( Tbar * (1 - Tbar) * K * 
+        denom <- nbar * ( Tbar * (1 - Tbar) * K *
           (MDES/MT)^2 - ICC.3 * (1 - R2.3) )
         J <- numr/denom
     } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
-        numr <- nbar * ICC.2 * (1 - R2.2) + 
+        numr <- nbar * ICC.2 * (1 - R2.2) +
           (1 - ICC.2 - ICC.3) * (1 - R2.1)
-        denom <- nbar * Tbar * (1 - Tbar) * 
+        denom <- nbar * Tbar * (1 - Tbar) *
           K * (MDES/MT)^2
         J <- numr/denom
     } else if (d_m == 'd3.2_m3rr2rc')
     {
-        numr <- nbar * ICC.2 * (1 - R2.2) + 
+        numr <- nbar * ICC.2 * (1 - R2.2) +
             (1 - ICC.2 - ICC.3) * (1 - R2.1)
-        denom <- nbar * Tbar * (1 - Tbar) * 
+        denom <- nbar * Tbar * (1 - Tbar) *
             ( K * (MDES/MT)^2 - ICC.3 * omega.3 )
         J <- numr/denom
     } else
@@ -558,20 +558,20 @@ calc_J <- function(
 #' @param MDES scalar; the MDES value for all outcomes
 #' @param J scalar; the number of schools
 #' @param nbar scalar; the harmonic mean of the number of units per school
-#' @param Tbar scalar; the proportion of samples that 
+#' @param Tbar scalar; the proportion of samples that
 #' are assigned to the treatment
-#' @param R2.1 scalar, or vector of length M; 
+#' @param R2.1 scalar, or vector of length M;
 #' percent of variation explained by Level 1 covariates for each outcome
-#' @param R2.2 scalar, or vector of length M; 
+#' @param R2.2 scalar, or vector of length M;
 #' percent of variation explained by Level 2 covariates for each outcome
-#' @param R2.3 scalar, or vector of length M; 
+#' @param R2.3 scalar, or vector of length M;
 #' percent of variation explained by Level 3 covariates for each outcome
 #' @param ICC.2 scalar; school intraclass correlation
 #' @param ICC.3 scalar; district intraclass correlation
-#' @param omega.2 scalar; ratio of school effect 
+#' @param omega.2 scalar; ratio of school effect
 #' size variability to random effects
 #'   variability
-#' @param omega.3 scalar; ratio of district 
+#' @param omega.3 scalar; ratio of district
 #' effect size variability to random effects
 #'   variability
 #'
@@ -585,12 +585,12 @@ calc_K <- function(d_m, MT = 2.8, MDES, J, nbar, Tbar,
     K <- NA
     if (d_m == 'd3.1_m3rr2rr')
     {
-        K <- (MT/MDES)^2 * 
+        K <- (MT/MDES)^2 *
             ( (ICC.3 * omega.3) +
                   (ICC.2 * omega.2) / J +
                   ((1 - ICC.2 - ICC.3) * (1 - R2.1))/(Tbar * (1 - Tbar) * J * nbar) )
-        
-        
+
+
         Q = (MT/MDES)^2
         tm1 = (ICC.2 * omega.2) / K
         tm2 = (1 - ICC.2 - ICC.3)*(1-R2.1) / ( (Tbar * (1-Tbar) * K * nbar) )
@@ -609,7 +609,7 @@ calc_K <- function(d_m, MT = 2.8, MDES, J, nbar, Tbar,
           ((1 - ICC.2 - ICC.3)*(1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
     {
-        K <- (MT/MDES)^2 * 
+        K <- (MT/MDES)^2 *
           ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
           ((1 - ICC.2 - ICC.3) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar) )
     } else if (d_m == 'd3.2_m3rr2rc')
@@ -627,10 +627,10 @@ calc_K <- function(d_m, MT = 2.8, MDES, J, nbar, Tbar,
 
 #### Parameter and call validation code ####
 
-make_MDES_vector <- function(MDES, M, 
+make_MDES_vector <- function(MDES, M,
                              numZero = NULL,
                              verbose = TRUE) {
-    
+
     if ( !is.null(numZero) ) {
         if ( numZero >= M )
         {
@@ -673,7 +673,7 @@ make_MDES_vector <- function(MDES, M,
 
 
 validate_MTP <- function(
-    MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP.ok = FALSE 
+    MTP, power.call, mdes.call, ss.call, M, pdef, multi.MTP.ok = FALSE
 ) {
 
     if ( !multi.MTP.ok && length( MTP ) > 1 )
@@ -695,8 +695,8 @@ validate_MTP <- function(
     } else {
         if (is.null(MTP))
         {
-            stop('Please provide a multiple test procedure (MTP).') 
-        } else if ( (mdes.call || ss.call) && 
+            stop('Please provide a multiple test procedure (MTP).')
+        } else if ( (mdes.call || ss.call) &&
                    any( MTP == 'None' ) && !pdef$indiv )
         {
             stop(paste('For all minimum or complete power specifications,',
@@ -706,13 +706,13 @@ validate_MTP <- function(
             warning('Proceeding with multiple outcomes and no MTP.')
         }
     }
-    
+
     chk <- MTP %in% pump_info()$Adjustment$Method
 
     if ( !all( chk ) ) {
         if ( length( MTP ) > 1 ) {
             msg <- sprintf( 'You have at least one invalid MTP: %s',
-                             paste( "'", MTP[!chk], "'", sep = "", 
+                             paste( "'", MTP[!chk], "'", sep = "",
                                collapse = ", " ) )
         } else {
             msg <- sprintf( '"%s" is an invalid MTP.', MTP )
@@ -726,11 +726,11 @@ validate_MTP <- function(
 
 
 #' Validate d_m string
-#' 
-#' Ensure d_m is a supported pair of design and model.  
-#' If d_m is just a design, select a default model.  
+#'
+#' Ensure d_m is a supported pair of design and model.
+#' If d_m is just a design, select a default model.
 #' Convert PowerUp! names to our naming system as needed.
-#' 
+#'
 #' @return Full d_m string that will be found in `pump_info()`
 #' @keywords internal
 validate_d_m <- function(d_m) {
@@ -748,18 +748,18 @@ validate_d_m <- function(d_m) {
                 if ( length( match_index ) == 0 ) {
                     stop( glue::glue( '{d_m} is an invalid d_m.') )
                 } else {
-                    options <- paste0( info$Context$d_m[ match_index ], 
+                    options <- paste0( info$Context$d_m[ match_index ],
                                        collapse = ", " )
                     d_m <- info$Context$d_m[[match_index[[1]]]]
                     warning(glue::glue(paste("Selecting design and model",
                                              "{d_m} as default for design",
-                                             "from following options: {options}")), 
+                                             "from following options: {options}")),
                         call. = FALSE )
                 }
             }
         }
     }
-    
+
     return( d_m )
 }
 
@@ -794,7 +794,7 @@ validate_inputs <- function(d_m, params.list,
             warning( msg )
         }
     }
-    
+
     #-------------------------------------------------------#
     # basic checks of inputs
     #-------------------------------------------------------#
@@ -802,8 +802,8 @@ validate_inputs <- function(d_m, params.list,
     d_m = validate_d_m( d_m )
 
     par.d_m <- parse_d_m(d_m)
-    pdef <- parse_power_definition( 
-        params.list$power.definition, params.list$M 
+    pdef <- parse_power_definition(
+        params.list$power.definition, params.list$M
     )
 
     params.list$MTP <- validate_MTP( MTP = params.list$MTP,
@@ -813,11 +813,11 @@ validate_inputs <- function(d_m, params.list,
                                     M = params.list$M,
                                     pdef = pdef,
                                     multi.MTP.ok = multi.MTP.ok )
-    
+
     #-------------------------------------------------------#
     # Westfall-Young
     #-------------------------------------------------------#
-    
+
     if ( ( any(params.list$MTP == "WY-SD") ||
            any(params.list$MTP == "WY-SS") ) &&
          params.list$B < 1000 )
@@ -837,25 +837,25 @@ validate_inputs <- function(d_m, params.list,
         }
         if ( params.list$propZero < 0 || params.list$propZero >= 1 ) {
             stop( "propZero must be in [0,1) range" )
-        }        
+        }
         params.list$numZero = round( params.list$M * params.list$propZero )
         params.list$propZero = NULL
     }
-    
+
     if ( mdes.call ) {
         if ( !is.null( params.list$MDES ) ) {
             stop( "You cannot provide MDES to pump_mdes()" )
         }
-        
+
         if ( !is.null( params.list$numZero ) &&
              params.list$numZero >= params.list$M ) {
             stop( sprintf(paste("You cannot specify %s zeros via numZero",
                                 "or propZero with only %s outcomes"),
                  params.list$numZero, params.list$M ) )
         }
-        
+
     } else {
-        
+
         params.list$MDES <- make_MDES_vector(
             params.list$MDES,
             params.list$M, params.list$numZero,
@@ -877,7 +877,7 @@ validate_inputs <- function(d_m, params.list,
     {
         stop("numCovar.3: Please provide a scalar.")
     }
-    
+
 
     #---------------------------------------------------------------#
     # convert all params from scalar to vector, if they are non-null
@@ -885,7 +885,7 @@ validate_inputs <- function(d_m, params.list,
 
     if (!(length(params.list$R2.1) %in% c(1, params.list$M)))
     {
-        stop("R2.1: Please provide a scalar parameter or 
+        stop("R2.1: Please provide a scalar parameter or
              a vector of length M.")
     }
     if (length(params.list$R2.1) == 1)
@@ -993,7 +993,7 @@ validate_inputs <- function(d_m, params.list,
     {
       stop('ICC.2 + ICC.3 must be <= 1')
     }
-    
+
     # ICC
     if (!is.null(params.list$ICC.2) && !is.null(params.list$ICC.3) &&
        any(params.list$ICC.2 + params.list$ICC.3 == 1))
@@ -1037,7 +1037,7 @@ validate_inputs <- function(d_m, params.list,
       params.list$omega.2 <- NULL
     }
 
-    # check for three-level parameters when working with 
+    # check for three-level parameters when working with
     # one or two level models
     if ( par.d_m$levels <= 2 )
     {
@@ -1192,11 +1192,11 @@ validate_inputs <- function(d_m, params.list,
           stop('Please provide a rho matrix with values between -1 and 1.')
         }
     }
-    
+
     params.list$propZero = NULL
-    
+
     params.list$d_m = d_m
-    
+
     return(params.list)
 
 }
@@ -1204,8 +1204,8 @@ validate_inputs <- function(d_m, params.list,
 
 #' # Not yet implemented
 #' # #' @param grid Flag of whether call is a grid call or non-grid call.
-#' 
-#' 
+#'
+#'
 #' #' Check user inputs
 #' #'
 #' #' This functions takes in a list of user inputs and
@@ -1223,8 +1223,8 @@ validate_inputs <- function(d_m, params.list,
 #' #' @return list of two things: "ok", a TRUE/FALSE of whether this is a
 #' #' valid call. "messages", a list of all messages, warnings, and notes
 #' #' that would be generated by the input parameter choices.  In the case
-#' #' of an error, the messages will have the error as 
-#' #' the first string in the list.  
+#' #' of an error, the messages will have the error as
+#' #' the first string in the list.
 #' #' @import purrr
 #' #' @export
 #' check_pump_call = function( d_m,
@@ -1233,25 +1233,25 @@ validate_inputs <- function(d_m, params.list,
 #'                             verbose = TRUE,
 #'                             multi.MTP.ok = TRUE,
 #'                             ... ) {
-#' 
+#'
 #'     params = list( ... )
 #'     call = match.arg(call)
 #'     power.call = call == "power"
 #'     mdes.call = call == "mdes"
 #'     ss.call = call == "sample"
 #'     params$d_m = d_m
-#' 
-#' 
+#'
+#'
 #'     quiet_validate_inputs = silently( validate_inputs )
 #'     cres = quiet_validate_inputs(
 #'       d_m = d_m, params.list = params,
 #'       power.call = power.call, mdes.call = mdes.call, ss.call = ss.call,
 #'       verbose = verbose,
 #'       multi.MTP.ok = multi.MTP.ok )
-#' 
+#'
 #'     res = list()
 #'     res$ok = is.null( cres$error )
-#' 
+#'
 #'     messages = c()
 #'     if ( !res$ok ) {
 #'         messages = cres$error$message

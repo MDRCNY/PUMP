@@ -1,0 +1,20 @@
+bibentry(bibtype = "Article",
+  title        = "{PUMP}: Estimating Power, Minimum Detectable Effect Size, and Sample Size When Adjusting for Multiple Outcomes in Multi-Level Experiments",
+  author       = c(person(given = c("Kristen", "B."),
+                          family = "Hunter",
+                          email = "kristen.hunter@unsw.edu.au"),
+                   person(given = "Luke",
+                          family = "Miratrix",
+                          email = "lmiratrix@g.harvard.edu"),
+                   person(given = "Kristin",
+                          family = "Porter",
+                          email = "kristin.porter@keporterconsulting.com")),
+  journal      = "Journal of Statistical Software",
+  year         = "2024",
+  volume       = "108",
+  number       = "6",
+  pages        = "1--43",
+  doi          = "10.18637/jss.v108.i06",
+  header       = "To cite PUMP in publications use:"
+)
+

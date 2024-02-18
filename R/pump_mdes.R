@@ -2,15 +2,15 @@
 #'
 #' @description The user chooses the context (d_m), MTP,
 #' power definition, and choices of all relevant design parameters.
-#' 
+#'
 #' The functions performs a search algorithm,
 #' and returns the MDES value within the specified tolerance.
 #' For a list of choices for specific parameters, see pump_info().
-#' 
-#' 
-#' @seealso For more detailed information about this function 
+#'
+#'
+#' @seealso For more detailed information about this function
 #' and the user choices,
-#' see the manuscript \url{https://arxiv.org/abs/2112.15273},
+#' see the manuscript <doi:10.18637/jss.v108.i06>,
 #' which includes a detailed Technical Appendix
 #' including information about the designs and models
 #' and parameters.
@@ -18,25 +18,25 @@
 #' @inheritParams pump_power
 #'
 #' @param target.power target power for search algorithm.
-#' @param power.definition see pump_info() for 
+#' @param power.definition see pump_info() for
 #' possible power definitions.
-#' @param tol tolerance for target power, defaults to 0.01 (1%).  
-#' This parameter controls when the search is done: 
-#' when estimated power (checked with `final.tnum` iterations) 
+#' @param tol tolerance for target power, defaults to 0.01 (1%).
+#' This parameter controls when the search is done:
+#' when estimated power (checked with `final.tnum` iterations)
 #' is within `tol`, the search stops.
 #' @param max.steps how many steps allowed before terminating.
-#' @param tnum max number of samples for first iteration 
+#' @param tnum max number of samples for first iteration
 #' of search algorithm.
-#' @param start.tnum number of samples to start search 
+#' @param start.tnum number of samples to start search
 #' (this will increase with each step).
 #' @param final.tnum number of samples for final draw.
-#' @param give.optimizer.warnings whether to return 
+#' @param give.optimizer.warnings whether to return
 #' verbose optimizer warnings.
 #'
 #' @return a pumpresult object containing MDES results.
 #' @export
 #'
-#' @examples 
+#' @examples
 #' mdes <-  pump_mdes(
 #'   d_m = "d3.1_m3rr2rr",
 #'   MTP = 'HO',
@@ -46,16 +46,16 @@
 #'   K = 15,
 #'   nbar = 50,
 #'   M = 3,
-#'   Tbar = 0.5, alpha = 0.05, 
+#'   Tbar = 0.5, alpha = 0.05,
 #'   two.tailed = FALSE,
 #'   numCovar.1 = 1, numCovar.2 = 1,
 #'   R2.1 = 0.1, R2.2 = 0.1,
 #'   ICC.2 = 0.2, ICC.3 = 0.2,
-#'   omega.2 = 0.1, omega.3 = 0.1, 
+#'   omega.2 = 0.1, omega.3 = 0.1,
 #'   rho = 0.5, tnum = 2000)
 
 pump_mdes <- function(
-        d_m, MTP = NULL, numZero = NULL, propZero = NULL, M = 1, 
+        d_m, MTP = NULL, numZero = NULL, propZero = NULL, M = 1,
         nbar, J = 1, K = 1,
         Tbar, alpha = 0.05, two.tailed = TRUE,
         target.power = 0.80, power.definition, tol = 0.02,
@@ -65,36 +65,36 @@ pump_mdes <- function(
         omega.2 = 0, omega.3 = 0,
         rho = NULL, rho.matrix = NULL,
         B = 1000,
-        max.steps = 20, 
+        max.steps = 20,
         tnum = 1000, start.tnum = round( tnum / 10 ), final.tnum = 4*tnum,
         parallel.WY.cores = 1,
         updateProgress = NULL, give.optimizer.warnings = FALSE,
         verbose = FALSE ) {
-    
+
     if ( verbose ) {
         scat( paste("pump_mdes with %d max iterations per search, starting",
                     "at %d iterations with final %d iterations",
                     "(%d perms for WY if used)\n"),
               start.tnum, tnum, final.tnum, B )
     }
-    
+
     if ( M == 1 ) {
         if ( missing( "power.definition" ) ) {
             power.definition = "D1indiv"
-        } 
+        }
     }
-    
+
     if ( missing( "target.power" ) ||  missing( "power.definition" )  ) {
         stop( "target.power or power.definition not supplied" )
     }
     if ( is.null( "tol" ) ) {
         stop( "Cannot have NULL tol (tolerance)" )
     }
-    
+
     err <- sqrt( target.power * (1 - target.power) / tnum )
     tnum_est <- round( (target.power*(1 - target.power) ) / ( tol^2 ) )
     if ( err > tol ) {
-        warning( sprintf( 
+        warning( sprintf(
             paste("Number of replicates (tnum) is too small given target",
                   "tolerance. Increasing tnum from %d to %d"),
             as.integer( tnum ), as.integer( tnum_est ) ), call. = FALSE )
@@ -102,27 +102,27 @@ pump_mdes <- function(
         start.tnum <- round( tnum / 10 )
         final.tnum <- 4*tnum
     }
-    
+
     pow_params <- list( target.power = target.power,
                         power.definition = power.definition,
                         tol = tol )
-    
+
     # validate input parameters
     params.list <- list(
         MTP = MTP, numZero = numZero, propZero = propZero,
         M = M, J = J, K = K,
         nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
         numCovar.3 = numCovar.3,
         R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
         ICC.2 = ICC.2, ICC.3 = ICC.3, omega.2 = omega.2, omega.3 = omega.3,
         rho = rho, rho.matrix = rho.matrix, B = B,
-        max.steps = max.steps, 
+        max.steps = max.steps,
         start.tnum = start.tnum, tnum = tnum, final.tnum = final.tnum,
         power.definition = power.definition
     )
     ##
-    params.list <- validate_inputs( d_m, params.list, mdes.call = TRUE, 
+    params.list <- validate_inputs( d_m, params.list, mdes.call = TRUE,
                                     verbose = verbose )
     ##
     MTP <- params.list$MTP
@@ -140,15 +140,15 @@ pump_mdes <- function(
     B <- params.list$B
     power.definition <- params.list$power.definition
     d_m = params.list$d_m
-    
+
     params.list <- params.list[names(params.list) != 'power.definition']
-    
+
     # extract power definition
     pdef <- parse_power_definition( power.definition, M )
-    
+
     # information that will be returned to the user
     mdes.cols <- c("MTP", "Adjusted.MDES", paste(power.definition, "power"))
-    
+
     # check if zero power, then return 0 MDES
     if (round(target.power, 2) <= 0)
     {
@@ -161,7 +161,7 @@ pump_mdes <- function(
                                  power.params.list = pow_params,
                                  params.list = params.list) )
     }
-    
+
     # check if max power, then return infinite MDES
     if (round(target.power, 2) >= 1)
     {
@@ -174,13 +174,13 @@ pump_mdes <- function(
                                  power.params.list = pow_params,
                                  params.list = params.list) )
     }
-    
+
     if ( verbose ) {
-        message(paste("Estimating MDES for", MTP, "for target", 
+        message(paste("Estimating MDES for", MTP, "for target",
                       power.definition,
                       "power of", round(target.power, 4)))
     }
-    
+
     # Compute Q.m and df
     Q.m <- calc_SE(
         d_m = d_m, J = J, K = K, nbar = nbar, Tbar = Tbar,
@@ -189,10 +189,10 @@ pump_mdes <- function(
     )
     t.df <- calc_df(
         d_m = d_m, J = J, K = K, nbar = nbar,
-        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2, 
+        numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
         numCovar.3 = numCovar.3
     )
-    
+
     # For raw and BF, compute critical values
     if (two.tailed)
     {
@@ -203,8 +203,8 @@ pump_mdes <- function(
         crit.alpha <- stats::qt(p = (1 - alpha), df = t.df)
         crit.alphaxM <- stats::qt(p = (1 - alpha / M), df = t.df)
     }
-    
-    
+
+
     # Compute raw and BF MDES for individual power
     crit.beta <- ifelse(target.power > 0.5,
                         stats::qt(target.power, df = t.df),
@@ -218,10 +218,10 @@ pump_mdes <- function(
         mdes.raw.list <- Q.m * (crit.alpha - crit.beta)
         mdes.bf.list  <- Q.m * (crit.alphaxM - crit.beta)
     }
-    
+
     mdes.low <- min(mdes.raw.list)
     mdes.high <- max(mdes.bf.list)
-    
+
     # MDES is already calculated for individual power for raw and Bonferroni
     if ( pdef$indiv & MTP == "BF") {
         mdes.results <- data.frame(MTP, mdes.high, target.power)
@@ -231,7 +231,7 @@ pump_mdes <- function(
                                  power.params.list = pow_params,
                                  params.list = params.list ) )
     }
-    
+
     if ( MTP == "None") {
         mdes.results <- data.frame(MTP, mdes.low, target.power)
         colnames(mdes.results) <- mdes.cols
@@ -240,7 +240,7 @@ pump_mdes <- function(
                                  power.params.list = pow_params,
                                  params.list = params.list ) )
     }
-    
+
     # adjust bounds to capture needed range for minimum or complete power.
     # bounds note: complete power is a special case of minimum power
     if (pdef$min)
@@ -254,8 +254,8 @@ pump_mdes <- function(
         mdes.high   <- ifelse(target.indiv.power > 0.5,
                               Q.m * (crit.alphaxM + crit.beta),
                               Q.m * (crit.alphaxM - crit.beta))
-        
-        
+
+
         # min1 power will have a lower lower bound
         # must detect at least one individual outcome
         min.target.indiv.power <- 1 - (1 - target.power)^(1/M)
@@ -265,10 +265,10 @@ pump_mdes <- function(
         mdes.low  <- ifelse(min.target.indiv.power > 0.5,
                             Q.m * (crit.alpha + crit.beta),
                             Q.m * (crit.alpha - crit.beta))
-        
-        
+
+
     }
-    
+
     # unlikely, but just in case
     if (mdes.high < 0)
     {
@@ -279,14 +279,14 @@ pump_mdes <- function(
     {
         mdes.low <- 0
     }
-    
+
     test.pts <- optimize_power(d_m, search.type = 'mdes', MTP,
                                target.power, power.definition, tol,
                                start.low = mdes.low, start.high = mdes.high,
                                MDES = NULL, J = J, K = K, nbar = nbar,
                                M = M, numZero = numZero,
-                               Tbar = Tbar, 
-                               alpha = alpha, 
+                               Tbar = Tbar,
+                               alpha = alpha,
                                two.tailed = two.tailed,
                                numCovar.1 = numCovar.1,
                                numCovar.2 = numCovar.2,
@@ -295,20 +295,20 @@ pump_mdes <- function(
                                ICC.2 = ICC.2, ICC.3 = ICC.3,
                                rho = rho, omega.2 = omega.2, omega.3 = omega.3,
                                B = B, parallel.WY.cores = parallel.WY.cores,
-                               max.steps = max.steps, 
-                               tnum = tnum, start.tnum = start.tnum, 
-                               final.tnum = final.tnum, 
+                               max.steps = max.steps,
+                               tnum = tnum, start.tnum = start.tnum,
+                               final.tnum = final.tnum,
                                give.warnings = give.optimizer.warnings)
-    
-    
+
+
     mdes.results <- data.frame(
         MTP,
         test.pts$pt[nrow(test.pts)],
         test.pts$power[nrow(test.pts)]
     )
     colnames(mdes.results) <- mdes.cols
-    
-    if (!is.na(mdes.results$`Adjusted.MDES`) && 
+
+    if (!is.na(mdes.results$`Adjusted.MDES`) &&
        test.pts$dx[[nrow(test.pts)]] < 0.001 )
     {
         msg <- paste("Note: this function returns one possible value of",
@@ -321,7 +321,7 @@ pump_mdes <- function(
     {
         flat <- FALSE
     }
-    
+
     return( make.pumpresult( mdes.results, type = "mdes",
                              tries = test.pts,
                              flat = flat,

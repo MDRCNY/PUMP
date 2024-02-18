@@ -22,13 +22,13 @@ get_power_results(
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{drop.zero.outcomes}{logical; whether to report power results for 
+\item{drop.zero.outcomes}{logical; whether to report power results for
 outcomes with MDES = 0.}
 
 \item{adj}{logical; whether p-values are unadjusted or not.}
 }
 \value{
-data frame; power results for 
+data frame; power results for
 individual, minimum, complete power.
 }
 \description{

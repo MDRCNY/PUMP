@@ -10,7 +10,7 @@ parse_d_m(d_m)
 \item{d_m}{string; context to parse.}
 }
 \value{
-list; list of features including number of levels, 
+list; list of features including number of levels,
 level of randomization, etc.
 }
 \description{
