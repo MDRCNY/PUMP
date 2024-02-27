@@ -8,3 +8,7 @@ luke_scratch
 ^,gitignore$
 ^doc$
 ^Meta$
+^PUMP user tests$
+^PUMP debugging pile$
+^PUMP development$
+^PUMP user tests$

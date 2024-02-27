@@ -1,6 +1,9 @@
 
 # Code for the pump_sample method
 
+#' Caculate multiplier for MDE calculation
+#' 
+#' @keywords internal
 calc_MT <- function(df, alpha, two.tailed, target.power) {
     # t statistics
     T1 <- ifelse(two.tailed == TRUE,
@@ -40,7 +43,7 @@ calc_MT <- function(df, alpha, two.tailed, target.power) {
 #' @param warn.small Warn if degrees of freedom issues are causing inability to
 #'   achieve target power for sample size.
 #'
-#' @return Requisit sample size (as integer) and associated degrees of freedom.
+#' @return Requisite sample size (as integer) and associated degrees of freedom.
 #' @keywords internal
 pump_sample_raw <- function(
         d_m, MTP, typesample,
@@ -69,9 +72,9 @@ pump_sample_raw <- function(
 
     # check for vectorized components
     if (length(MDES) > 1 |
-       length(R2.1) > 1 | length(R2.2) > 1 | length(R2.3) > 1 |
-       length(ICC.2) > 1 | length(ICC.3) > 1 |
-       length(omega.2) > 1 | length(omega.3) > 1
+        length(R2.1) > 1 | length(R2.2) > 1 | length(R2.3) > 1 |
+        length(ICC.2) > 1 | length(ICC.3) > 1 |
+        length(omega.2) > 1 | length(omega.3) > 1
     ) {
         stop('pump_sample_raw only takes scalar inputs')
     }
@@ -85,9 +88,9 @@ pump_sample_raw <- function(
     conv <- FALSE
 
     # Get initial size (will be low)
-    MT <- calc_MT(df = initial_df, alpha = alpha,
-                  two.tailed = two.tailed,
-                  target.power = target.power)
+    MT <- calc_MT( df = initial_df, alpha = alpha, 
+                   two.tailed = two.tailed, 
+                   target.power = target.power )
     if (typesample == "J") {
         J <- calc_J( d_m, MT = MT, MDES = MDES[1],
                      K = K, nbar = nbar, Tbar = Tbar,
@@ -299,8 +302,8 @@ pump_sample <- function(
 
     if ( verbose ) {
         scat( paste("pump_mdes with %d max iterations per search,",
-                     "starting at %d iterations with final %d iterations.",
-                     "\n\tMax steps %d\n\t%d perms for WY if used\n"),
+                    "starting at %d iterations with final %d iterations.",
+                    "\n\tMax steps %d\n\t%d perms for WY if used\n"),
               tnum, start.tnum, final.tnum, max.steps, B )
     }
 
@@ -432,8 +435,7 @@ pump_sample <- function(
         # Compute needed sample size for raw and BF SS for INDIVIDUAL POWER.
         # We are estimating (potential) bounds
         ss.low.list <- NULL
-        for (m in 1:(M - numZero) )
-        {
+        for (m in 1:(M - numZero) ) {
             ss.low.list[[m]] <- pump_sample_raw(
                 d_m = d_m, MTP = MTP, typesample = typesample,
                 MDES = MDES[m], J = J, K = K,
@@ -519,27 +521,22 @@ pump_sample <- function(
     ss.low.vals <- vapply(ss.low.list, function(x) x$ss, numeric(1))
     which.ss.low <- which.min(ss.low.vals)
     # check if everything is NA
-    if (length(which.ss.low) > 0)
-    {
+    if (length(which.ss.low) > 0) {
         ss.low <- ss.low.list[[which.ss.low]]$ss
-    } else
-    {
+    } else {
         ss.low <- 1
     }
 
     ss.high.vals <- vapply(ss.high.list, function(x) x$ss, numeric(1))
     which.ss.high <- which.max(ss.high.vals)
     # check if everything is NA
-    if (length(which.ss.high) > 0)
-    {
+    if (length(which.ss.high) > 0) {
         ss.high <- ss.high.list[[which.ss.high]]$ss
         default.max <- FALSE
     } else {
-        if ( typesample == 'nbar')
-        {
+        if ( typesample == 'nbar') {
             ss.high <- max_sample_size_nbar
-        } else
-        {
+        } else {
             ss.high <- max_sample_size_JK
         }
         default.max <- TRUE
@@ -555,6 +552,7 @@ pump_sample <- function(
             ss.results <- data.frame(MTP, typesample, NA, target.power)
             colnames(ss.results) <- output.colnames
         }
+        
         return( make.pumpresult( ss.results, tries = NULL,
                                  type = "sample", params.list = params.list,
                                  d_m = d_m,

@@ -134,6 +134,8 @@ summary.pumpgridresult <- function(object, ...)
 #'   `update_grid()`.
 #'
 #' @seealso [update_grid()]
+#' @param object A pumpgridresult object.
+#' @param ... Additional arguments, i.e., the arguments you would pass to the `pump_power()`, `pump_mdes()` and `pump_sample()`, that will replace the existing parameters of the object.
 #' @export
 update.pumpgridresult <- function(object, ...) {
     return( update_grid(object, ...) )

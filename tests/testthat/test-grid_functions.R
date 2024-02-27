@@ -337,6 +337,6 @@ test_that( "0 MDES does something reasonable", {
     pp2
 
     expect_equal( nrow( pp2 ), 11 )
-    expect_true( is.na( pp2$D1indiv[[1]] ) )
+    expect_equal( pp2$D1indiv[[1]], 0.05 )
     
 } )

@@ -16,25 +16,27 @@ get_power_results(
 \arguments{
 \item{adj.pval.mat}{matrix; adjusted p-values, columns are outcomes}
 
-\item{unadj.pval.mat}{matrix; unadjusted p-values, columns are outcomes}
+\item{unadj.pval.mat}{matrix; unadjusted p-values, columns are
+outcomes}
 
-\item{ind.nonzero}{vector; which outcomes are nonzero.}
+\item{ind.nonzero}{vector; which outcomes correspond to nonzero
+effects.}
 
 \item{alpha}{scalar; the family wise error rate (FWER).}
 
-\item{drop.zero.outcomes}{logical; whether to report power results for
-outcomes with MDES = 0.}
+\item{drop.zero.outcomes}{logical; whether to report power results
+for outcomes with MDES = 0.}
 
 \item{adj}{logical; whether p-values are unadjusted or not.}
 }
 \value{
-data frame; power results for
-individual, minimum, complete power.
+data frame; power results for individual, minimum, complete
+  power.
 }
 \description{
 This function takes in a matrix of adjusted p-values
-and unadjusted p-values and outputs different types of power.
+  and unadjusted p-values and outputs different types of power.
 
-This function is mostly for internal use, but may be of interest to
-users who wish to calculate power on their own.
+  This function is mostly for internal use, but may be of interest
+  to users who wish to calculate power on their own.
 }

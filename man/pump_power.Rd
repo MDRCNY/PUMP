@@ -128,7 +128,8 @@ procedures.}
 processing of WY-SD.}
 
 \item{drop.zero.outcomes}{whether to report power results for
-outcomes with MDES = 0.}
+outcomes with MDES = 0.  If ALL MDES = 0, then the first outcome
+will not be dropped.}
 
 \item{updateProgress}{function to update progress bar (only used
 for PUMP shiny app).}

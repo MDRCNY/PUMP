@@ -278,62 +278,63 @@ parse_d_m <- function(d_m) {
 calc_SE <- function(d_m, J, K, nbar, Tbar,
                     R2.1, R2.2, R2.3, ICC.2, ICC.3,
                     omega.2, omega.3) {
-    if (d_m == 'd1.1_m1c')
-    {
-        Q.m <- sqrt(
-          ( (1 - R2.1) )  / (Tbar * (1 - Tbar) * nbar) )
-    } else if (d_m %in% c('d2.1_m2fc', 'd2.1_m2ff'))
-    {
-        Q.m <- sqrt(
-          ( (1 - ICC.2)*(1 - R2.1) ) / (Tbar * (1 - Tbar) * J * nbar) )
-    } else if (d_m %in% c('d2.1_m2fr', 'd2.1_m2rr') )
-    {
-        Q.m <- sqrt(
-          (ICC.2 * omega.2)/J +
-          ((1 - ICC.2) * (1 - R2.1)) /
-              (Tbar * (1 - Tbar) * J * nbar) )
-    } else if (d_m == 'd3.1_m3rr2rr') {
-        Q.m <- sqrt(
-            (ICC.3 * omega.3) / K +
-                (ICC.2 * omega.2) / (J * K) +
-                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-                (Tbar * (1 - Tbar) * J * K * nbar) )
-    } else if (d_m == 'd3.1_m3ff2rr') {
-        Q.m <- sqrt(
-                (ICC.2 * omega.2) / (J * K) +
-                ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-                (Tbar * (1 - Tbar) * J * K * nbar) )
-    } else if (d_m == 'd2.2_m2rc')
-    {
-        Q.m <- sqrt(
-          (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
-          (1 - ICC.2) * (1 - R2.1) /
-              (Tbar * (1 - Tbar) * J * nbar))
-    } else if (d_m == 'd3.3_m3rc2rc')
-    {
-        Q.m <- sqrt(
-          (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar) * K) +
-          (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) +
-          ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-              (Tbar * (1 - Tbar) * J * K * nbar) )
-    } else if (d_m == 'd3.2_m3ff2rc' || d_m == 'd3.2_m3fc2rc' )
-    {
-        Q.m <- sqrt(
-          ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-          ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-                (Tbar * (1 - Tbar) * J * K * nbar) ) )
-    } else if (d_m == 'd3.2_m3rr2rc' )
-    {
-        Q.m <- sqrt(
-          ( (ICC.3 * omega.3) / K ) +
-           ( (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) ) +
-           ( ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
-                 (Tbar * (1 - Tbar) * J * K * nbar)))
-    } else
-    {
-        stop(paste('d_m not implemented:', d_m))
-    }
-    return(Q.m)
+  if (d_m == "d1.1_m1c") {
+    Q.m <- sqrt(
+      ((1 - R2.1)) / (Tbar * (1 - Tbar) * nbar)
+    )
+  } else if (d_m %in% c("d2.1_m2fc", "d2.1_m2ff")) {
+    Q.m <- sqrt(
+      ((1 - ICC.2) * (1 - R2.1)) / (Tbar * (1 - Tbar) * J * nbar)
+    )
+  } else if (d_m %in% c("d2.1_m2fr", "d2.1_m2rr")) {
+    Q.m <- sqrt(
+      (ICC.2 * omega.2) / J +
+        ((1 - ICC.2) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * nbar)
+    )
+  } else if (d_m == "d3.1_m3rr2rr") {
+    Q.m <- sqrt(
+      (ICC.3 * omega.3) / K +
+        (ICC.2 * omega.2) / (J * K) +
+        ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * K * nbar)
+    )
+  } else if (d_m == "d3.1_m3ff2rr") {
+    Q.m <- sqrt(
+      (ICC.2 * omega.2) / (J * K) +
+        ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * K * nbar)
+    )
+  } else if (d_m == "d2.2_m2rc") {
+    Q.m <- sqrt(
+      (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J) +
+        (1 - ICC.2) * (1 - R2.1) /
+          (Tbar * (1 - Tbar) * J * nbar)
+    )
+  } else if (d_m == "d3.3_m3rc2rc") {
+    Q.m <- sqrt(
+      (ICC.3 * (1 - R2.3)) / (Tbar * (1 - Tbar) * K) +
+        (ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K) +
+        ((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * K * nbar)
+    )
+  } else if (d_m == "d3.2_m3ff2rc" || d_m == "d3.2_m3fc2rc") {
+    Q.m <- sqrt(
+      ((ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K)) +
+        (((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * K * nbar))
+    )
+  } else if (d_m == "d3.2_m3rr2rc") {
+    Q.m <- sqrt(
+      ((ICC.3 * omega.3) / K) +
+        ((ICC.2 * (1 - R2.2)) / (Tbar * (1 - Tbar) * J * K)) +
+        (((1 - ICC.2 - ICC.3) * (1 - R2.1)) /
+          (Tbar * (1 - Tbar) * J * K * nbar))
+    )
+  } else {
+    stop(paste("d_m not implemented:", d_m))
+  }
+  return(Q.m)
 }
 
 
@@ -352,17 +353,13 @@ calc_df <- function(d_m, J, K, nbar,
                     numCovar.1, numCovar.2, numCovar.3,
                     validate = TRUE) {
 
-    if (d_m == 'd1.1_m1c')
-    {
-        df <- nbar - numCovar.1 - 1
-    } else if (d_m == 'd2.1_m2fc')
-    {
+    if (d_m == 'd1.1_m1c') {
+        df <- nbar - numCovar.1 - 2
+    } else if (d_m == 'd2.1_m2fc') {
         df <- J * (nbar - 1) - numCovar.1 - 1
-    } else if (d_m == 'd2.1_m2ff')
-    {
+    } else if (d_m == 'd2.1_m2ff') {
         df <- J * (nbar - 2) - numCovar.1
-    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1_m2rr' )
-    {
+    } else if (d_m == 'd2.1_m2fr' || d_m == 'd2.1_m2rr' ) {
         df <- J - numCovar.1 - 1
     } else if (d_m == 'd3.1_m3rr2rr')
     {
@@ -473,7 +470,7 @@ calc_nbar <- function(d_m, MT = 2.8, MDES,
 
 
 
-#' This function calculates needed J to achieve a given power
+#' This function calculates needed J to achieve a given (unadjusted) power
 #'
 #' @inheritParams pump_power
 #'

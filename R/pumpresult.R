@@ -435,6 +435,10 @@ is_long_table <- function(power_table)
 
 
 
+strip_SEs <- function( power_table ) {
+    power_table %>%
+        dplyr::select( -starts_with("SE"), -starts_with( "df" ) )
+}
 
 #' @title Convert power table from wide to long (result function)
 #'
@@ -471,6 +475,7 @@ transpose_power_table <- function(power_table, M = NULL)
         pnames <- get_power_names(M, long = TRUE)
         
         pp <- power_table %>% 
+            strip_SEs() %>%
             as.data.frame() %>%
             tidyr::pivot_longer( cols = tidyselect::any_of( names(pnames) ),
                                  names_to = "power",
@@ -620,13 +625,14 @@ print.pumpresult <- function(x, n = 10,
     if ( is.pumpresult(x) ) {
         
         if ( pump_type(x) == "power" ) {
-            SEh <- 0.5 + min( abs( 0.5 - x[,-1] ), na.rm = TRUE )
-            SEh <- calc_binomial_SE( SEh, tnum )
-            SEl <- 0.5 + max( abs( 0.5 - x[,-1] ), na.rm = TRUE )
-            SEl <- calc_binomial_SE( SEl, tnum )
             print( as.data.frame( x ), row.names = FALSE )
             
             if ( pars$M > 1 ) {
+                pows = strip_SEs(x)
+                SEh <- 0.5 + min( abs( 0.5 - pows[,-1] ), na.rm = TRUE )
+                SEh <- calc_binomial_SE( SEh, tnum )
+                SEl <- 0.5 + max( abs( 0.5 - pows[,-1] ), na.rm = TRUE )
+                SEl <- calc_binomial_SE( SEl, tnum )                
                 scat("\t%.3f <= SE <= %.3f\n", SEl, SEh )
             }
         } else if ( pump_type(x) == "sample" ) {

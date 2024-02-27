@@ -2,7 +2,7 @@
 % Please edit documentation in R/designs_and_models.R
 \name{calc_J}
 \alias{calc_J}
-\title{This function calculates needed J to achieve a given power}
+\title{This function calculates needed J to achieve a given (unadjusted) power}
 \usage{
 calc_J(
   d_m,
@@ -65,6 +65,6 @@ level 3 average impacts to variance of level 3 random intercepts.}
 J, the number of schools needed
 }
 \description{
-This function calculates needed J to achieve a given power
+This function calculates needed J to achieve a given (unadjusted) power
 }
 \keyword{internal}

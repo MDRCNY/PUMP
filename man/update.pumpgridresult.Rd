@@ -7,6 +7,11 @@
 \usage{
 \method{update}{pumpgridresult}(object, ...)
 }
+\arguments{
+\item{object}{A pumpgridresult object.}
+
+\item{...}{Additional arguments, i.e., the arguments you would pass to the `pump_power()`, `pump_mdes()` and `pump_sample()`, that will replace the existing parameters of the object.}
+}
 \description{
 Works on objects returned by `update_grid()`; calls
   `update_grid()`.

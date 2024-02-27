@@ -101,7 +101,7 @@ level 3 average impacts to variance of level 3 random intercepts.}
 achieve target power for sample size.}
 }
 \value{
-Requisit sample size (as integer) and associated degrees of freedom.
+Requisite sample size (as integer) and associated degrees of freedom.
 }
 \description{
 This is a helper function for getting a needed Sample Size when no

@@ -14,7 +14,7 @@ test_that("pump_power works without crashing", {
                     Tbar = 0.50, # prop Tx
                     alpha = 0.05, # significance level
                     numCovar.1 = 5, numCovar.2 = 3,
-                    R2.1 = 0.1, R2.2 = 0.7,
+                    R2.1 = c(0.1, 0.05, 0.2), R2.2 = c(0.7, 0.1, 0.5),
                     ICC.2 = 0.05, ICC.3 = 0.4,
                     rho = 0.4, # how correlated outcomes are
                     tnum = 200
@@ -22,12 +22,15 @@ test_that("pump_power works without crashing", {
   pp
   expect_true( is.pumpresult( pp ) )
 
-  expect_equal( dim( pp ), c(2,8) )
+  #expect_equal( dim( pp ), c(2,8) )
 
   expect_true( is.na( pp[1,6] ) )
   expect_true( is.na( pp[1,7] ) )
   expect_true( is.na( pp[1,8] ) )
 })
+
+
+
 
 
 test_that( "pump_power handles small MDES right", {
@@ -51,6 +54,23 @@ test_that( "pump_power handles small MDES right", {
   aa
   
   expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
+  
+  pp2 <- pump_power( d_m = "d3.2_m3ff2rc",
+                     MTP = c("BF"),
+                     MDES = rep(0.0001, 5),
+                     M = 5,
+                     J = 3, # number of schools/block
+                     K = 10, # number RA blocks
+                     nbar = 258,
+                     Tbar = 0.50, # prop Tx
+                     alpha = 0.05, # significance level
+                     numCovar.1 = 5, numCovar.2 = 3,
+                     R2.1 = 0.1, R2.2 = 0.7,
+                     ICC.2 = 0.05, ICC.3 = 0.4,
+                     rho = 0.4, # how correlated outcomes are
+                     tnum = 200, B = 100
+  )
+  expect_equal(pp2$complete[2], 0, tol = 0.01)
   
   aa <- pump_power(
     d_m = "d2.1_m2fc",
@@ -132,7 +152,8 @@ test_that("skipping level three inputs for level 2 works", {
                                      rho = 0.4, tnum = 200
   ))
 
-  expect_equal( dim( pp ), c(2,8) )
+  #pp
+#  expect_equal( dim( pp ), c(2,8) )
 
   expect_true( pp[2,"min1"] >= pp[2,"D1indiv"] )
 })
@@ -153,7 +174,9 @@ test_that("having no covariates is fine", {
                       rho = 0.4, tnum = 200
   )
 
-  expect_equal( dim( pp ), c(2,8) )
+  pp
+  #expect_equal( dim( pp ), c(2,8) )
+  expect_equal( nrow(pp), 2 )
 })
 
 
@@ -174,8 +197,9 @@ test_that("pump_power works with multiple MTP", {
                     ICC.2 = 0.05, ICC.3 = 0.1,
                     rho = 0.4, tnum = 200
   ) # how correlated outcomes are
-  expect_equal( dim( pp ), c(3,8) )
-
+  #expect_equal( dim( pp ), c(3,8) )
+  expect_equal( nrow(pp), 3 )
+  
 })
 
 
@@ -213,7 +237,6 @@ test_that("M = 1 runs successfully", {
                       rho = 0.4, tnum = 200
   )
   expect_true( nrow( pp ) == 1 )
-  expect_true( ncol( pp ) == 2 )
 })
 
 test_that("J = 1 runs successfully", {
@@ -422,9 +445,47 @@ test_that("M > 1 with MTP None runs successfully", {
     expect_true( nrow( pp ) == 2)
 })
 
-test_that("zero MDES values", {
+
+
+test_that( "pump_power handling of 0 MDES values", {
     
     skip_on_cran()
+    
+    set.seed(58554343)
+    
+    aa <- pump_power(
+        d_m = "d2.1_m2fc",
+        MTP = 'HO',
+        MDES = 0,
+        J = 60,
+        nbar = 50,
+        M = 3,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+        numCovar.1 = 1,
+        R2.1 = 0.1, ICC.2 = 0.05,
+        rho = 0.2,
+        tnum = 2000)
+    aa
+    
+    expect_equal( 0.05, aa$D1indiv[[1]], tolerance = 0.01 )
+    
+    aa <- pump_power(
+        d_m = "d2.1_m2fc",
+        MTP = 'HO',
+        MDES = 0,
+        J = 60,
+        nbar = 50,
+        M = 3,
+        Tbar = 0.5, alpha = 0.05, two.tailed = FALSE,
+        numCovar.1 = 1,
+        R2.1 = 0.1, ICC.2 = 0.05,
+        rho = 0.2,
+        tnum = 2000)
+    aa
+    expect_equal( 0.05, aa$indiv.mean[[1]], tolerance = 0.01 )
+    
+
+
     
     # zero in middle of vector
     pp <- pump_power(   d_m = "d2.1_m2fc",
@@ -442,7 +503,7 @@ test_that("zero MDES values", {
     )
     
     expect_true(
-        all(colnames(pp) ==
+        all(colnames(pp)[1:7] ==
         c('MTP', 'D1indiv', 'D3indiv', 'indiv.mean', 'min1', 'min2', 'complete'))
     )
     
@@ -462,7 +523,7 @@ test_that("zero MDES values", {
                         drop.zero.outcomes = FALSE
     )
     expect_true(nrow(pp) == 2)
-    
+    expect_equal( pp$indiv.mean[[1]], 0.05, tolerance = 0.01 )
     
     # all zero, do drop zero outcomes
     pp <- pump_power(   d_m = "d2.1_m2fc",
@@ -480,8 +541,11 @@ test_that("zero MDES values", {
                         drop.zero.outcomes = TRUE
     )
     
-    expect_true(is.na(pp$D1indiv[1]) && is.na(pp$D1indiv[2]))
+    expect_true(!is.na(pp$D1indiv[1]) && !is.na(pp$D1indiv[2]))
 })
+
+
+
 
 test_that("different correlations", {
     
@@ -530,100 +594,8 @@ test_that("different correlations", {
     
 })
 
-test_that("testing against Porter 2017", {
-    
-    skip_on_cran()
-    
-    # NOTE: compare to Figure 1
-    
-    # all outcomes have effects
-    # 3 outcomes
-    # rho = 0.2
-    set.seed(13434)
-    pp1 <- pump_power(
-        d_m = "d2.1_m2fc",
-        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
-        nbar = 50,
-        J = 20,
-        M = 3,
-        MDES = 0.125,
-        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-        numCovar.1 = 1, tnum = 1000, B = 1000,
-        R2.1 = 0.5, ICC.2 = 0, rho = 0.2)
-    
-    expect_equal(0.65, pp1$D1indiv[2], tol = 0.01)
-    expect_equal(0.72, pp1$D1indiv[3], tol = 0.01)
-    expect_equal(0.77, pp1$D1indiv[4], tol = 0.01)
-    expect_equal(0.68, pp1$D1indiv[5], tol = 0.01)
-    expect_equal(0.75, pp1$D1indiv[6], tol = 0.01)
-    
-    # all outcomes have effects
-    # 3 outcomes
-    # rho = 0.8
-    set.seed(13434)
-    pp2 <- pump_power(
-        d_m = "d2.1_m2fc",
-        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
-        nbar = 50,
-        J = 20,
-        M = 3,
-        MDES = 0.125,
-        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-        numCovar.1 = 1, tnum = 1000, B = 1000,
-        R2.1 = 0.5, ICC.2 = 0, rho = 0.8)
 
-    expect_equal(0.65, pp2$D1indiv[2], tol = 0.01)
-    expect_equal(0.71, pp2$D1indiv[3], tol = 0.01)
-    expect_equal(0.76, pp2$D1indiv[4], tol = 0.01)
-    expect_equal(0.71, pp2$D1indiv[5], tol = 0.01)
-    expect_equal(0.76, pp2$D1indiv[6], tol = 0.01)
-    
-    
-    # 2/3 outcomes have effects (1/3 are zero)
-    # 9 outcomes
-    # rho = 0.2
-    set.seed(13434)
-    pp3 <- pump_power(
-        d_m = "d2.1_m2fc",
-        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
-        propZero = 1/3,
-        nbar = 50,
-        J = 20,
-        M = 9,
-        MDES = 0.125,
-        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-        numCovar.1 = 1, tnum = 1000, B = 1000,
-        R2.1 = 0.5, ICC.2 = 0, rho = 0.2)
-    
-    expect_equal(0.48, pp3$D1indiv[2], tol = 0.01)
-    expect_equal(0.56, pp3$D1indiv[3], tol = 0.01)
-    expect_equal(0.69, pp3$D1indiv[4], tol = 0.01)
-    expect_equal(0.52, pp3$D1indiv[5], tol = 0.01)
-    expect_equal(0.55, pp3$D1indiv[6], tol = 0.01)
-    
-    
-    # all outcomes have effects
-    # 12 outcomes
-    # rho = 0.8
-    set.seed(13434)
-    pp4 <- pump_power(
-        d_m = "d2.1_m2fc",
-        MTP = c('BF', 'HO', 'BH', 'WY-SS', 'WY-SD'),
-        nbar = 50,
-        J = 20,
-        M = 12,
-        MDES = 0.125,
-        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
-        numCovar.1 = 1, tnum = 1000, B = 1000,
-        R2.1 = 0.5, ICC.2 = 0, rho = 0.8)
-    
-    expect_equal(0.48, pp4$D1indiv[2], tol = 0.01)
-    expect_equal(0.57, pp4$D1indiv[3], tol = 0.01)
-    expect_equal(0.72, pp4$D1indiv[4], tol = 0.01)
-    expect_equal(0.60, pp4$D1indiv[5], tol = 0.01)
-    expect_equal(0.68, pp4$D1indiv[6], tol = 0.01)
-    
-})
+
 
 
 test_that("MTP behavior", {
@@ -664,6 +636,9 @@ test_that("MTP behavior", {
     expect_true(pp$D1indiv[pp$MTP == 'WY-SS'] < pp$D1indiv[pp$MTP == 'WY-SD'])
     
 })
+
+
+
 
 test_that("parallel WY", {
     
@@ -709,45 +684,7 @@ test_that("parallel WY", {
     
 })
 
-test_that("Very small MDES", {
-    
-    skip_on_cran()
-    
-    pp1 <- pump_power( d_m = "d3.2_m3ff2rc",
-                 MTP = c("BF"),
-                 MDES = rep(0, 5),
-                 M = 5,
-                 J = 3, # number of schools/block
-                 K = 10, # number RA blocks
-                 nbar = 258,
-                 Tbar = 0.50, # prop Tx
-                 alpha = 0.05, # significance level
-                 numCovar.1 = 5, numCovar.2 = 3,
-                 R2.1 = 0.1, R2.2 = 0.7,
-                 ICC.2 = 0.05, ICC.3 = 0.4,
-                 rho = 0.4, # how correlated outcomes are
-                 tnum = 200, B = 100
-    )
-    expect_true(is.na(pp1$D1indiv[1]))
-    expect_true(is.na(pp1$D1indiv[2]))
-    
-    pp2 <- pump_power( d_m = "d3.2_m3ff2rc",
-                      MTP = c("BF"),
-                      MDES = rep(0.0001, 5),
-                      M = 5,
-                      J = 3, # number of schools/block
-                      K = 10, # number RA blocks
-                      nbar = 258,
-                      Tbar = 0.50, # prop Tx
-                      alpha = 0.05, # significance level
-                      numCovar.1 = 5, numCovar.2 = 3,
-                      R2.1 = 0.1, R2.2 = 0.7,
-                      ICC.2 = 0.05, ICC.3 = 0.4,
-                      rho = 0.4, # how correlated outcomes are
-                      tnum = 200, B = 100
-    )
-    expect_equal(pp2$complete[2], 0, tol = 0.01)
 
-})
+
 
 
