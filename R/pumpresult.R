@@ -435,10 +435,21 @@ is_long_table <- function(power_table)
 
 
 
+#' Remove SE and df columns from (wide) power table
+#'
+#' This is used to reduce the info on a power table before pivoting to
+#' long format.
+#'
+#' @keywords internal
+#' @param power_table Dataframe (power result object).
+#' @return Changed dataframe with all columns starting with SE or df
+#'   dropped.
 strip_SEs <- function( power_table ) {
     power_table %>%
-        dplyr::select( -starts_with("SE"), -starts_with( "df" ) )
+        dplyr::select( -tidyselect::starts_with("SE"), -tidyselect::starts_with( "df" ) )
 }
+
+
 
 #' @title Convert power table from wide to long (result function)
 #'

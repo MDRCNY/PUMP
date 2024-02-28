@@ -8,8 +8,10 @@ default.tol <- 0.002
 
 
 
-test_that( "simplest", {
+test_that( "very simple RCT tests", {
     sink("sink.txt")
+    
+    set.seed( 449595 )
     
     # Very large, low df, no covariates
     powerup.power <- PowerUpR::power.ira(
@@ -30,9 +32,9 @@ test_that( "simplest", {
     )
     pump.power
     
+    # So good so far, with high df the normal approximation holds
     expect_equal( powerup.power$df, pump.power$df1[[1]] )
     expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
-    
     
     
     
@@ -53,16 +55,36 @@ test_that( "simplest", {
         MDES = 1.25,
         Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
     )
+    
+    # Via simulation
+    pump.power.sim <- pump_power(
+        d_m = "d1.1_m1c",
+        MTP = 'None',
+        nbar = 10,
+        M = 1,
+        MDES = 1.25,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE, 
+        exact.where.possible = FALSE
+    )
+    
     pump.power
+    pump.power.sim
     
+    # Check df all line up
     expect_equal( powerup.power$df, pump.power$df1[[1]] )
+    expect_equal( pump.power.sim$df1[[1]], pump.power$df1[[1]] )
     
+    # Check power all line up
+    expect_equal( pump.power.sim$D1indiv[1], pump.power$D1indiv[1], tol = default.tol )
     # TODO: Why this not align?
     #expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
     
     
+    #expect_equal(pump.power$D1indiv[1], pump.power.sim$D1indiv[1], tol = default.tol)
     
-    # Very small, low df
+    
+    
+    # Very small, low df (test #2)
     powerup.power <- PowerUpR::power.ira(
         es = 1.25,
         alpha = 0.05,
@@ -83,12 +105,33 @@ test_that( "simplest", {
         numCovar.1 = 5,
         R2.1 = 0.5, rho = 0
     )
+    
+    pump.power.sim <- pump_power(
+        d_m = "d1.1_m1c",
+        MTP = 'None',
+        nbar = 10,
+        M = 1,
+        MDES = 1.25,
+        Tbar = 0.5, alpha = 0.05, two.tailed = TRUE,
+        numCovar.1 = 5,
+        R2.1 = 0.5, rho = 0, exact.where.possible = FALSE, tnum = 100000
+    )
+    
+    powerup.power$power
     pump.power
+    pump.power.sim
     
+    # Check df all line up
     expect_equal( powerup.power$df, pump.power$df1[[1]] )
+    expect_equal( pump.power.sim$df1[[1]], pump.power$df1[[1]] )
     
-    # TODO: Why this not work?
+    # Check power all line up
+    expect_equal( pump.power.sim$D1indiv[1], pump.power$D1indiv[1], tol = default.tol )
+    # TODO: Why this not align?
     #expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
+    
+    
+    #expect_equal(pump.power$D1indiv[1], pump.power.sim$D1indiv[1], tol = default.tol)
     
     
     
@@ -158,9 +201,9 @@ test_that( "testing of d2.1_m2fc", {
     expect_equal(pump.power$D1indiv[1], powerup.power$power, tol = default.tol)
     
     
-   
     
-
+    
+    
     sink()
     file.remove("sink.txt")
     

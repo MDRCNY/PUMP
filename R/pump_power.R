@@ -144,15 +144,25 @@ calc_MT <- function(df, alpha, two.tailed, target.power) {
 }
 
 
-#' For M=1 situations
+#' Calculate power theoretically for M=1 situations
+#'
+#' @param MDES MDES (single number)
+#' @param SE Calculated SE of the estimator
+#' @param df Degrees of freedom of the estimator (often approximated).
+#' @param alpha Alpha for the planned test.
+#' @param two.tailed TRUE/FALSE  Two- or one-sided test?
+#' @return Single row Tibble with columns or power, SE, and DF.  MTP
+#'   column with value of "None".
+#'
+#' @keywords internal
 pump_power_exact <- function( MDES, SE, df, alpha, two.tailed ) {
     
     T1 <- ifelse(two.tailed == TRUE, 
                  abs(stats::qt(alpha/2, df)), 
                  abs(stats::qt(alpha, df)))
     
-    pow <- pt( T1 - MDES / SE, df = df, lower.tail = FALSE ) +
-        pt( -T1 - MDES / SE, df = df, lower.tail = TRUE )
+    pow <- stats::pt( T1 - MDES / SE, df = df, lower.tail = FALSE ) +
+        stats::pt( -T1 - MDES / SE, df = df, lower.tail = TRUE )
     
     dplyr::tibble( MTP = "None", D1indiv = pow, SE1 = SE, df1 = df )
 }
@@ -169,10 +179,9 @@ pump_power_exact <- function( MDES, SE, df, alpha, two.tailed ) {
 #'   pump_info().
 #'
 #' @seealso For more detailed information about this function and the
-#'   user choices, see the manuscript
-#'   <doi:10.18637/jss.v108.i06>, which includes a detailed
-#'   Technical Appendix including information about the designs and
-#'   models and parameters.
+#'   user choices, see the manuscript <doi:10.18637/jss.v108.i06>,
+#'   which includes a detailed Technical Appendix including
+#'   information about the designs and models and parameters.
 #'
 #' @param d_m string; a single context, which is a design and model
 #'   code. See pump_info() for list of choices.
@@ -245,7 +254,8 @@ pump_power_exact <- function( MDES, SE, df, alpha, two.tailed ) {
 #' @param verbose TRUE/FALSE; Print out diagnostics of time, etc.
 #' @param validate.inputs TRUE/FALSE; whether or not to check whether
 #'   parameters are valid given the choice of d_m.
-#'
+#' @param exact.where.possible TRUE/FALSE; whether to do exact
+#'   calculations when M=1, or use simulation.  Default is TRUE.
 #' @return a pumpresult object containing power results.
 #' @export
 #'
@@ -264,7 +274,7 @@ pump_power_exact <- function( MDES, SE, df, alpha, two.tailed ) {
 #'    ICC.2 = 0.2, ICC.3 = 0.2,
 #'    omega.2 = 0, omega.3 = 0.1,
 #'    rho = 0.5)
-#'
+#' 
 pump_power <- function(
         d_m, MTP = NULL, MDES, 
         numZero = NULL, propZero = NULL,
@@ -282,7 +292,8 @@ pump_power <- function(
         updateProgress = NULL,
         validate.inputs = TRUE,
         long.table = FALSE,
-        verbose = FALSE
+        verbose = FALSE,
+        exact.where.possible = TRUE
 ) {
     # do not duplicate 'None'
     if (length(MTP) > 1 && any(MTP == 'None')) {
@@ -393,7 +404,7 @@ pump_power <- function(
     )
     t.shift.mat <- t(matrix(rep(t.shift, tnum), M, tnum))
     
-    if ( M == 1 ) {
+    if ( M == 1 && exact.where.possible ) {
         ppe <- pump_power_exact( MDES, Q.m, t.df,
                                  alpha = alpha,
                                  two.tailed = two.tailed )
