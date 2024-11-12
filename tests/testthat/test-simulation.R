@@ -159,6 +159,7 @@ test_that( "simulation function works (single outcome)", {
     expect_true( all( c( "Y0", "Y1", "Yobs" ) %in% names( sim.data ) ) )
     expect_true( all( sim.data$Y1 * sim.data$T.x == sim.data$Yobs * sim.data$T.x ) )
     
+    model.params.list$d_m = "d3.2_m3fc2rc"
     sim.data <- gen_base_sim_data( model.params.list )
     #head( sim.data )
     expect_true( is.data.frame( sim.data ) )

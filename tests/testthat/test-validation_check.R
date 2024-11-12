@@ -130,3 +130,22 @@ test_that("validation works at least vaguely", {
     expect_error(chk <- validate_inputs(d_m = "d2.1_m2fc", params.list = params.list))
 
 } )
+
+
+
+test_that( "parse_d_m works", {
+    
+    res <- PUMP:::parse_d_m( "d2.1_m2fc" )
+    expect_equal( res$design, "d2.1" )
+    expect_equal( res$level, 2 )
+    
+    res <- PUMP:::parse_d_m( "d2.1" )
+    res    
+    expect_equal( res$design, "d2.1" )
+    expect_equal( res$level, 2 )
+    
+    res <- PUMP:::parse_d_m( "d2.1_m2fc", d_only = TRUE )
+    expect_equal( res$design, "d2.1" )
+    expect_equal( res$level, 2 )
+    expect_true( length(res) == 3 )    
+})

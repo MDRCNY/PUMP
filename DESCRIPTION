@@ -3,10 +3,10 @@ Type: Package
 Title: Power Under Multiplicity Project
 Version: 1.0.3
 Authors@R: c(
-  person("Kristin", "Porter", email = "kristin.porter@keporterconsulting.com", role = "aut"),
   person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0078-1906")),
   person("Kristen", "Hunter", email = "kristenbhunter@gmail.com", role = c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
   person("Zarni", "Htet", email = "zarni.htet@mdrc.org", role = "aut"),
+  person("Kristin", "Porter", email = "kristin.porter@keporterconsulting.com", role = "aut"),
   person("MDRC", role = "cph"),
   person("Institute of Education Sciences", role = "fnd")
   )
@@ -44,5 +44,5 @@ Suggests:
     testthat
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr

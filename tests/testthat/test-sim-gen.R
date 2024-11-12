@@ -1,3 +1,5 @@
+
+
 set.seed(0130)
 
 M <- 2
@@ -55,6 +57,7 @@ exp.Y0.var.fun <- function(dgp.params.list)
 # --------------------------------------------
 
 d_m <- "d2.2_m2rc"
+model.params.list[['d_m']] <- d_m
 model.params.list[['K']] <- 1
 model.params.list[['ICC.3']] <- 0
 model.params.list[['omega.3']] <- 0
@@ -155,7 +158,9 @@ test_that('Outcomes are within 30% of expected correlation = 0.5',{
 # check a 3 level model
 # --------------------------------------------
 
+model.params.default$d_m = "d3.2"
 model.params.list <- model.params.default
+
 dgp.params.list <- convert_params(model.params.list)
 samp.full <- gen_base_sim_data(model.params.list, return.as.dataframe = FALSE)
 

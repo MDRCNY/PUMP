@@ -44,12 +44,16 @@ list; potential outcomes, covariates, observed outcomes,
 }
 \description{
 Generates simulated data for multi-level RCTs for
-  pump-suppored designs and models for both unobserved and observed
+  pump-supported designs and models for both unobserved and observed
   potential outcomes.
 
-  Takes in two options: - a pumpresult object OR - a list of
-  necessary data-generating parameters - the context (d_m) - Tbar
-  (proportion assigned to treatment)
+  Takes in two options:
+
+  - a pumpresult object OR
+
+  - a list of necessary data-generating parameters 
+  - the context (d_m) 
+  - Tbar (proportion assigned to treatment)
 
   This function is beyond the main scope of calculating power, and
   is instead used for simulating data. For more info on use, see

@@ -2,20 +2,24 @@
 % Please edit documentation in R/designs_and_models.R
 \name{parse_d_m}
 \alias{parse_d_m}
-\title{Return characteristics of a given context/d_m code (support function)}
+\title{Return characteristics of a given context/d_m code (support
+  function)}
 \usage{
-parse_d_m(d_m)
+parse_d_m(d_m, d_only = FALSE)
 }
 \arguments{
 \item{d_m}{string; context to parse.}
+
+\item{d_only}{TRUE/FALSE; TRUE means only look at design, ignore
+model if present.}
 }
 \value{
-list; list of features including number of levels,
-level of randomization, etc.
+list; list of features including number of levels, level of
+  randomization, etc.
 }
 \description{
-Returns number of levels and model at each level.
-See pump_info()$Context to get a list of supported d_ms.
+Returns number of levels and model at each level. See
+  pump_info()$Context to get a list of supported d_ms.
 }
 \examples{
 supported <- pump_info(comment = FALSE)$Context

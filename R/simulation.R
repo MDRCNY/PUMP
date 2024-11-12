@@ -17,9 +17,12 @@ process_and_generate_param_list <- function(
     if (is.null(pump.object)) {
         if ( include_Tx && (is.null(d_m) || is.null(param.list)) ) {
             stop(paste("You must provide either a pump object or both",
-                    "a design string (d_m) and list of model params."))
+                       "a design string (d_m) and list of model params."))
         }
+        
     } else {
+        # Convert pump object to param list
+        
         if ( !is.null(d_m) || !is.null(param.list) ) {
             stop(paste("You must provide either a pump object",
                        "or a design string (d_m) and list of model params",
@@ -29,9 +32,8 @@ process_and_generate_param_list <- function(
         param.list <- params(pump.object)
         param.list$rho.default <- param.list$rho
         
-        d_m <- d_m(pump.object)
-
-        # Convert pump object to param list
+        param.list$d_m <- d_m(pump.object)
+        
         if ( include_Tx ) {
             Tbar <- param.list$Tbar
         }
@@ -42,10 +44,14 @@ process_and_generate_param_list <- function(
         }
     }
     
-    param.list$d_m = d_m
+    if ( !is.null( d_m ) ) {
+        param.list$d_m = d_m
+    }
+    
     if ( include_Tx && !is.null( Tbar ) ) {
         param.list$Tbar = Tbar
     }
+    
     return( param.list )
 }
 
@@ -144,17 +150,17 @@ gen_RE_cov_matrix <- function(Sigma.w, Sigma.z, Sigma.wz) {
 #'   return.as.dataframe = TRUE.
 #'
 #' @export
-gen_base_sim_data <- function(param.list, pump.object = NULL,
-                              return.as.dataframe = TRUE, 
-                              no.list = TRUE,
-                              dgp.params = FALSE ) {
+gen_base_sim_data <- function( param.list, pump.object = NULL,
+                               return.as.dataframe = TRUE, 
+                               no.list = TRUE,
+                               dgp.params = FALSE ) {
     
     if ( !dgp.params ) {
         param.list = process_and_generate_param_list( 
             d_m = NULL, param.list = param.list, Tbar = NULL,
             pump.object = pump.object, include_Tx = FALSE 
         )
-    
+        
         param.list = convert_params( param.list )   
     }
     
@@ -178,7 +184,7 @@ gen_base_sim_data <- function(param.list, pump.object = NULL,
     rho.r    <- param.list[['rho.r']]
     
     stopifnot( !is.null( nbar ) )
-   
+    
     # ------------------------------#
     # Generate school and district IDs
     # ------------------------------#
@@ -391,12 +397,16 @@ gen_base_sim_data <- function(param.list, pump.object = NULL,
 #' @title Generate simulated multi-level data (simulation function)
 #'
 #' @description Generates simulated data for multi-level RCTs for
-#'   pump-suppored designs and models for both unobserved and observed
+#'   pump-supported designs and models for both unobserved and observed
 #'   potential outcomes.
 #'
-#'   Takes in two options: - a pumpresult object OR - a list of
-#'   necessary data-generating parameters - the context (d_m) - Tbar
-#'   (proportion assigned to treatment)
+#'   Takes in two options:
+#'
+#'   - a pumpresult object OR
+#'
+#'   - a list of necessary data-generating parameters 
+#'   - the context (d_m) 
+#'   - Tbar (proportion assigned to treatment)
 #'
 #'   This function is beyond the main scope of calculating power, and
 #'   is instead used for simulating data. For more info on use, see
@@ -516,7 +526,7 @@ convert_params <- function(param.list) {
     
     # If no district info, set district parameters to 0
     has.level.three <- TRUE
-    if ( is.null( param.list$K ) ) {
+    if ( parse_d_m( param.list$d_m )$level < 3 ) {
         has.level.three <- FALSE
         ICC.3 <- param.list$ICC.3 <- rep(0, M)
         R2.3 <- param.list$R2.3 <- rep(0, M)

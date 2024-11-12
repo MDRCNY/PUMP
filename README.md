@@ -2,7 +2,7 @@
 
 Last updated: May 2023.
 
-<center><img src="man/figures/pump_icon.png" alt="PUMP icon" width="400"/></center>
+<center><img src="man/figures/pump_icon.png" alt="PUMP icon" width="300"/></center>
 
 Authors:
 
@@ -14,22 +14,40 @@ Authors:
 For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
 Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
 However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures.
+
 We introduce the PUMP R package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes.
 Multiple outcomes are accounted for in two ways.
 First, power estimates from PUMP properly account for the adjustment in $p$-values from applying a multiple testing procedure.
 Second, as researchers change their focus from one outcome to multiple outcomes, different definitions of statistical power emerge.
+
 PUMP allows researchers to consider a variety of definitions of power, as some may be more appropriate for the goals of their study.
 The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures.
 In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.
 
 Please see the vignettes for examples of how to use this package.
 
-More details about the package:
+## Reference and support materials
 
-- For a full package description, including a detailed technical appendix, see: https://arxiv.org/abs/2112.15273.
-- See also the shiny app: https://public.mdrc.org/pump/.
-- For a presentation about PUMP, see: https://github.com/kristenbhunter/presentations/tree/master/NCI2022.
+The following give several tools and resources for using this package most effectively:
 
+- [Journal of Statistical Software article on the package](https://www.jstatsoft.org/article/view/v108i06)
+- [Detailed technical appendix giving power formula for all models](https://www.jstatsoft.org/index.php/jss/article/view/v108i06/4541)
+- [Shiny app Power Calculator using this package](https://public.mdrc.org/pump/)
+- [A slide-deck overview of PUMP](https://github.com/kristenbhunter/presentations/tree/master/NCI2022)
+
+
+## The hot-off-the-press version
+
+Our package is on CRAN, but you can install the latest version on GitHub via:
+
+```
+devtools::install_github("https://github.com/MDRCNY/PUMP" )
+```
+
+The latest version has some bug fixes and extra features, and we strongly recommend using it over the CRAN version.
+
+
+## A small illustration
 We provide below one example of using PUMP to calculate a minimium detectable effect size (MDES).
 The user specifies the RCT design and model (d_m), the multiple testing procedure (MTP, in this case Holm),
 the target power (0.8), and the type of power desired (individual power for outcome 1).

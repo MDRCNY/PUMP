@@ -191,15 +191,18 @@ parse_design <- function(d_m) {
 }
 
 
-#' @title Return characteristics of a given context/d_m code (support function)
+#' @title Return characteristics of a given context/d_m code (support
+#'   function)
 #'
-#' @description Returns number of levels and model at each level.
-#' See pump_info()$Context to get a list of supported d_ms.
+#' @description Returns number of levels and model at each level. See
+#'   pump_info()$Context to get a list of supported d_ms.
 #'
 #' @param d_m string; context to parse.
+#' @param d_only TRUE/FALSE; TRUE means only look at design, ignore
+#'   model if present.
 #'
-#' @return list; list of features including number of levels,
-#' level of randomization, etc.
+#' @return list; list of features including number of levels, level of
+#'   randomization, etc.
 #'
 #' @family pump_info
 #'
@@ -208,10 +211,17 @@ parse_design <- function(d_m) {
 #' parse_d_m( supported$d_m[4] )
 #'
 #' @export
-parse_d_m <- function(d_m) {
+parse_d_m <- function(d_m, d_only=FALSE ) {
     des <- stringr::str_split(d_m, "\\.|_")[[1]]
     nums <- readr::parse_number(des)
     levels <- nums[[1]]
+    
+    if ( d_only || length(des) == 2 ) {
+        return( list( levels = levels,
+                      rand_level = nums[[2]],
+                      design = paste0( "d", levels, ".", nums[[2]] ) ) )
+    }
+    
     if ( levels == 3 ) {
         l3 <- substr( des[3], 3, 4)
         l3.p <- strsplit( l3, "" )[[1]]

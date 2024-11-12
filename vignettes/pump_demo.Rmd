@@ -95,7 +95,7 @@ Also, while @Porter2018 focused on estimates of power, PUMP goes further to also
 
 `PUMP` extends functionality of the popular PowerUp! `R` package (and its related tools in the form of a spreadsheet and Shiny application), which compute power or MDES for multi-level RCTs with a single outcome (@RN4473).
 For a wide variety of RCT designs with a single outcome, researchers can take advantage of closed-form solutions and numerous power estimation tools.
-For example, in education and social policy research, see @RN4473; @RN30153; @RN23884; @RN24179.
+For example, in education and social policy research, see @RN4473; @RN30153; @RN23884.
 However, closed-form solutions are difficult or impossible to derive when a MTP is applied to a setting with multiple outcomes.
 Instead, we use a simulation-based approach to achieve estimates of power.
 
