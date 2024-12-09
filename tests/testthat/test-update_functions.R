@@ -168,5 +168,70 @@ test_that( "updating grids possible", {
 } )
 
 
+test_that( "updating with different outcomes and parameter lists", {
+    
+    r21 = c( 0.4, 0.9, 0.1, 0.5)
+    pp <- pump_power( d_m = "d3.2_m3ff2rc",
+                      MTP = c( "BF", "BH" ),
+                      MDES = c( 0.2, 0.1, 0.05, 2.0 ),
+                      R2.1 = r21,
+                      ICC.2 = c( 0, 0.05, 0.2, 0.4 ),
+                      M = 4,
+                      J = 3, # number of schools/block
+                      K = 10, # number RA blocks
+                      nbar = 100,
+                      Tbar = 0.50, # prop Tx
+                      alpha = 0.05, # significance level
+                      numCovar.1 = 5, numCovar.2 = 3,
+                      R2.2 = 0.7,
+                      ICC.3 = 0.4,
+                      rho = 0.4, # how correlated outcomes are
+                      tnum = 200
+    )
+    pp
+    
+    pps = update( pp, type = "sample",
+                  typesample = "nbar", power.definition = "D3indiv", 
+                  MTP = "BF", target.power = 0.80 )
+    expect_equal( params( pps )$R2.1, r21 )
+    summary( pps )
+    
+    ppm = update( pp, type = "mdes", MTP = "BF",
+                  target.power = 0.80, power.definition="min1", tnum = 400 )
+    summary( ppm )
+    expect_equal( params( ppm )$R2.1, r21 )
+    
+    #### Grid versions ####
+    
+    expect_error( pp_g = update_grid( pp,
+                        J = c( 3, 5, 10 ),
+                        ICC.2 = c( 0.05, 0.10 ) ) )
+   # print( pp_g )
+#    summary( pp_g )
+ #   plot( pp_g )
+    
+    
+    
+    expect_error( pps_g = update_grid( pps, 
+                         J = c( 3, 5, 10 ),
+                         ICC.2 = c( 0.05, 0.10 )) )
+    
+  #  print( pps_g )
+   # summary( pps_g )
+    
+    
+    
+   expect_error( ppm_g = update_grid( ppm, 
+                         J = c( 3, 5, 10 ),
+                         ICC.2 = c( 0.05, 0.10 ) ) )
+    
+    #print( ppm_g )
+    #summary( ppm_g )
+    #plot( ppm_g )
+    #plot( ppm_g, var.vary = "ICC.2", color = "J" )
+    
+    
+    
+})
 
 

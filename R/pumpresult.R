@@ -61,10 +61,12 @@ update_grid <- function(x, ...)
     params["d_m"] <- d_m(x)
     for (p in names(params)) {
         params[[p]] <- unique( params[[p]] )
-        
+        if ( length( params[[p]] ) > 1 ) {
+            stop( "different outcomes currently not implemented for grids" )
+        }
         # If find a "***" then this is an old grid and we want to 
         # keep the values of the old grid
-        if ( !is.null( params[[p]] ) && params[[p]] == "***" ) {
+        if ( !is.null( params[[p]] ) && length(params[[p]]) == 1 && params[[p]] == "***" ) {
             params[[p]] = unique( x[[ p ]] )
         }
     }
@@ -644,7 +646,7 @@ print.pumpresult <- function(x, n = 10,
                 SEh <- calc_binomial_SE( SEh, tnum )
                 SEl <- 0.5 + max( abs( 0.5 - pows[,-1] ), na.rm = TRUE )
                 SEl <- calc_binomial_SE( SEl, tnum )                
-                scat("\t%.3f <= SE <= %.3f\n", SEl, SEh )
+                scat("\t%.3f <= MCSE <= %.3f\n", SEl, SEh )
             }
         } else if ( pump_type(x) == "sample" ) {
             if ( !exact_calc(x) ) {
