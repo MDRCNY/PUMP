@@ -5,7 +5,13 @@
 \title{Print context (design, model, parameter values) of 
 pumpresult or pumpgridresult (result function)}
 \usage{
-print_context(x, insert_results = FALSE, insert_control = FALSE, ...)
+print_context(
+  x,
+  insert_results = FALSE,
+  insert_control = FALSE,
+  include_SE = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A pumpresult object or pumpgridresult object.}

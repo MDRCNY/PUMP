@@ -63,7 +63,16 @@ plot_power_curve <- function(pwr, plot.points = TRUE,
     plot1 <-  ggplot2::ggplot( test.pts ) +
         ggplot2::geom_hline( yintercept = test.pts$target.power[[1]],
                              col = "purple" ) +
-        default_theme() +
+        default_theme()
+    
+    if ( plot.points ) {
+        plot1 <- plot1 +
+            ggplot2::geom_point(
+                ggplot2::aes( .data$pt, .data$power, size = .data$w ), 
+                alpha = 0.5 )
+    }
+    
+    plot1 <- plot1 +
         ggplot2::stat_function( 
             col = "red",
             fun = function(x) { bounded_logistic_curve( x, params = fit ) } ) +
@@ -77,13 +86,7 @@ plot_power_curve <- function(pwr, plot.points = TRUE,
         plot1 <- plot1 + scale
     }
     
-    if ( plot.points ) {
-        plot1 <- plot1 +
-            ggplot2::geom_point(
-                ggplot2::aes( .data$pt, .data$power, size = .data$w ), 
-                alpha = 0.5 )
-    }
-    
+  
     return( plot1 )
     
     
@@ -136,7 +139,7 @@ plot_power_search <- function(pwr, fit = NULL, target.line = NULL) {
     
     if ( !is.null( target.line ) ) {
         plot1 <- plot1 +
-            ggplot2::geom_vline( xintercept = target.line, col = "purple" )
+            ggplot2::geom_vline( xintercept = target.line, col = "darkgrey" )
     }
     
     
@@ -147,7 +150,7 @@ plot_power_search <- function(pwr, fit = NULL, target.line = NULL) {
         test.pts,
         ggplot2::aes(.data$step, .data$power, size = .data$w) ) +
         ggplot2::geom_hline( yintercept = test.pts$target.power[1],
-                             col = "purple" ) +
+                             col = "darkgrey" ) +
         ggplot2::geom_point( alpha = 0.5 ) +
         ggplot2::scale_x_continuous( breaks = 0:max(test.pts$step) ) +
         default_theme() +
@@ -165,7 +168,7 @@ plot_power_search <- function(pwr, fit = NULL, target.line = NULL) {
     
     if ( !is.null( target.line ) ) {
         plot3 <- plot3 +
-            ggplot2::geom_hline( yintercept = target.line, col = "purple" )
+            ggplot2::geom_hline( yintercept = target.line, col = "darkgrey" )
     }
     
     ggpubr::ggarrange(plot1, plot2, plot3, 
@@ -260,9 +263,9 @@ plot.pumpresult <- function(x, type = "power",
         plot.data <-
             x %>%
             dplyr::select_all() %>%
-            dplyr::select(-"indiv.mean", -starts_with("df"), -starts_with("SE") ) %>%
-            tidyr::pivot_longer(!"MTP",
-                                names_to = "powerType", values_to = "power")
+            dplyr::select(-tidyselect::any_of("indiv.mean"), -starts_with("df"), -starts_with("SE") ) %>%
+            tidyr::pivot_longer( !"MTP",
+                                 names_to = "powerType", values_to = "power")
         
         # Creating power type as a factor for ordering on x axis
         M <- params(x)$M
@@ -331,7 +334,7 @@ plot.pumpresult <- function(x, type = "power",
 
 
 
-#' Plot a grid pump power object
+#' Plot a pump grid power object
 #'
 #' @inheritParams plot.pumpgridresult
 #' 
@@ -341,6 +344,7 @@ plot.pumpresult <- function(x, type = "power",
 #' @keywords internal
 plot.pumpgridresult.power <- function(
         x, power.definition = NULL, var.vary = NULL, 
+        color = "MTP",
         lines = TRUE, include.title = FALSE,  ... 
 ) {
     dots <- list( ... )
@@ -353,11 +357,9 @@ plot.pumpgridresult.power <- function(
     }
     plot.data <- x
     
-    
     # extract renamed power definition
     powerType <- NULL
     yLabel <- "power"
-    
     
     # For M=1, we only have one kind of power.
     if ( M == 1 ) {
@@ -406,7 +408,14 @@ plot.pumpgridresult.power <- function(
                              names_to = "MTP", values_to = "power")
     
     # Aggregate data, if multiple things varying
-    var_names <- attr( x, "var_names" )
+    var_names <- setdiff( attr( x, "var_names" ), 
+                          c( color, "power.definition" ) )
+    
+    if ( "MTP" %in% var_names ) {
+        stop( "Cannot have multiple MTP for plotting if color not set to MTP" )
+    }
+    
+    
     if ( length( var_names ) > 1 ) {
         plot.data <- plot.data %>%
             dplyr::group_by( 
@@ -421,6 +430,9 @@ plot.pumpgridresult.power <- function(
     
     
     # convert to factors for plotting
+
+    # ensure our color is a factor
+    plot.data$color <- as.factor( plot.data[[color]] )
     
     plot.data <- plot.data %>%
         dplyr::mutate(target.power = as.numeric(.data$power),
@@ -438,8 +450,8 @@ plot.pumpgridresult.power <- function(
         data = plot.data,
         ggplot2::aes(x = .data[[var.vary]],
                      y = .data$power,
-                     shape = .data$MTP,
-                     color = .data$MTP))
+                     shape = .data$color,
+                     color = .data$color))
     
     if ( lines ) {
         grid.plot <- grid.plot +
@@ -459,7 +471,7 @@ plot.pumpgridresult.power <- function(
     grid.plot <- grid.plot +
         ggplot2::scale_y_continuous(limits = c(0,1)) +
         ggplot2::labs(x = var.vary, y = yLabel, title = title,
-                      color = "", shape = "") +
+                      color = color, shape = color) +
         default_theme()
     
     if ( lines ) {
@@ -505,8 +517,7 @@ plot.pumpgridresult.mdes <- function(
         x, power.definition = NULL, var.vary, 
         color = "MTP",
         lines = TRUE, include.title = FALSE, ...  
-)
-{
+) {
     M <- params(x)$M
     dots <- list( ... )
     
@@ -954,8 +965,8 @@ default_theme <- function() {
     list( ggplot2::theme_minimal(),
           ggplot2::theme( legend.position = "bottom", 
                           legend.direction = "horizontal", 
-                          legend.key.width = unit(1,"cm"),
-                          panel.border = element_blank(),
+                          legend.key.width = grid::unit(1,"cm"),
+                          panel.border = ggplot2::element_blank(),
                           plot.title = ggplot2::element_text(size = 16,
                                                              face = "bold",
                                                              vjust = 1,

@@ -2,12 +2,13 @@
 % Please edit documentation in R/plots.R
 \name{plot.pumpgridresult.power}
 \alias{plot.pumpgridresult.power}
-\title{Plot a grid pump power object}
+\title{Plot a pump grid power object}
 \usage{
 \method{plot}{pumpgridresult.power}(
   x,
   power.definition = NULL,
   var.vary = NULL,
+  color = "MTP",
   lines = TRUE,
   include.title = FALSE,
   ...
@@ -23,6 +24,9 @@ NULL, plot all definitions as a facet wrap.}
 only one thing varies, then it will default to single varying
 parameter.}
 
+\item{color}{string; Group lines by this element to make an
+interaction plot (default "MTP", giving one curve for each MTP).}
+
 \item{lines}{logical; TRUE means connect dots with lines on the
 plots. FALSE means no lines.}
 
@@ -35,6 +39,6 @@ planning a facet wrap, for example).}
 Plot; a ggplot object
 }
 \description{
-Plot a grid pump power object
+Plot a pump grid power object
 }
 \keyword{internal}

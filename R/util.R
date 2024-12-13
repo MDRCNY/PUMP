@@ -8,8 +8,7 @@ parse_power_definition <- function(power.definition, M) {
     powertype <- list( min = FALSE,
                        complete = FALSE,
                        indiv = FALSE )
-    if ( !is.null(power.definition) )
-    {
+    if ( !is.null(power.definition) ) {
         if ( stringr::str_detect( power.definition, "min" ) ) {
             powertype$min <- TRUE
             powertype$min_k <- readr::parse_number( power.definition )

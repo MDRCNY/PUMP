@@ -29,7 +29,7 @@ test_that( "pumpgridresult dimensions work", {
     expect_true( length(ss[2,] ) == dim(ss)[[2]] )
     expect_true( is.character(ss[[3,1]] ) )
     
-    
+    #print(ss)
     capture_output( pp <- print( ss ) )
     
     capture_output( pd <- print_context(ss) )
@@ -59,11 +59,9 @@ test_that( "pumpgridresult dimensions work", {
     
     
     ssLW <- pump_mdes_grid(    d_m = "d2.1_m2fc",
-                               MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,
                                target.power = 0.80, 
-                               power.definition="D2indiv",
-                               M = 5,
+                               M = 1,
                                Tbar = 0.50, alpha = 0.05,
                                numCovar.1 = 5,
                                R2.1 = c( 0.1, 0.4 ),
@@ -73,7 +71,9 @@ test_that( "pumpgridresult dimensions work", {
                                drop.unique.columns = FALSE)
     
     ssLW
-    
+    output <- capture.output(summary(ssLW))
+    expect_true(!any(grepl("outcomes", output)))
+    expect_equal( nrow(ssLW), 2)
     
     ssLW <- pump_mdes_grid(    d_m = "d2.1_m2fc",
                                MTP = c( "HO", "BH" ),
@@ -115,6 +115,7 @@ test_that( "pumpgridresult dimensions work", {
     expect_output( ss <- summary( ssLW ) )
     expect_true( !is.null( ss ) )
 
+    
 })
 
 

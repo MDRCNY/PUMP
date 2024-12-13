@@ -717,14 +717,17 @@ validate_MTP <- function(
     chk <- MTP %in% pump_info()$Adjustment$Method
 
     if ( !all( chk ) ) {
+        val_MTPs = paste0( pump_info()$Adjustment$Method, collapse = ", " )
         if ( length( MTP ) > 1 ) {
-            msg <- sprintf( 'You have at least one invalid MTP: %s',
+            msg <- sprintf( 'You have at least one invalid MTP: %s. Valid MTPs are: %s',
                              paste( "'", MTP[!chk], "'", sep = "",
-                               collapse = ", " ) )
+                               collapse = ", " ),
+                            val_MTPs )
         } else {
-            msg <- sprintf( '"%s" is an invalid MTP.', MTP )
+            msg <- sprintf( '"%s" is an invalid MTP. Valid MTPs are: %s.', 
+                            MTP, val_MTPs )
         }
-        stop( msg )
+        stop( msg, call. = FALSE )
     }
 
     return( MTP )
@@ -759,7 +762,7 @@ validate_d_m <- function(d_m) {
                                        collapse = ", " )
                     d_m <- info$Context$d_m[[match_index[[1]]]]
                     warning(glue::glue(paste("Selecting design and model",
-                                             "{d_m} as default for design",
+                                             "{d_m} as default model for design",
                                              "from following options: {options}")),
                         call. = FALSE )
                 }
@@ -813,6 +816,11 @@ validate_inputs <- function(d_m, params.list,
         params.list$power.definition, params.list$M
     )
 
+    if ( pdef$indiv && !is.null(pdef$indiv_k) && pdef$indiv_k > params.list$M ||
+         pdef$min && pdef$min_k > params.list$M ) {
+        stop( glue::glue( "Can't calculate power '{params.list$power.definition}' for non-existant outcome (only {params.list$M} outcomes)" ), call.=FALSE )
+    }
+    
     params.list$MTP <- validate_MTP( MTP = params.list$MTP,
                                     power.call = power.call,
                                     mdes.call = mdes.call,
@@ -821,6 +829,7 @@ validate_inputs <- function(d_m, params.list,
                                     pdef = pdef,
                                     multi.MTP.ok = multi.MTP.ok )
 
+    
     #-------------------------------------------------------#
     # Westfall-Young
     #-------------------------------------------------------#
@@ -1207,6 +1216,9 @@ validate_inputs <- function(d_m, params.list,
     return(params.list)
 
 }
+
+
+
 
 
 #' # Not yet implemented

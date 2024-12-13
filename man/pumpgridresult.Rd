@@ -9,9 +9,9 @@
 \usage{
 is.pumpgridresult(x)
 
-\method{print}{pumpgridresult}(x, header = TRUE, ...)
+\method{print}{pumpgridresult}(x, header = TRUE, include_SE = FALSE, ...)
 
-\method{summary}{pumpgridresult}(object, ...)
+\method{summary}{pumpgridresult}(object, include_SE = FALSE, ...)
 }
 \arguments{
 \item{x}{a pumpgridresult object 
@@ -20,6 +20,8 @@ is.pumpgridresult(x)
 \item{header}{logical; FALSE means skip some 
 header info on the result, just print
 the data.frame of actual results.}
+
+\item{include_SE}{logical; TRUE means include standard errors and df.}
 
 \item{...}{extra options passed to print.pumpgridresult}
 

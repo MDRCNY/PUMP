@@ -602,20 +602,22 @@ calc_binomial_SE <- function(prop, tnum)
 #'
 #' @param ... No extra options passed.
 #' @param n Number of lines of search path to print, max.
-#' @param header FALSE means skip some header info on the result, just print
-#'   the data.frame of actual results.
-#' @param search FALSE means don't print the search path for a result for
-#'   mdes or sample.
-#'   
-#' @return print: No return value; prints results.  
-#'   
+#' @param header FALSE means skip some header info on the result, just
+#'   print the data.frame of actual results.
+#' @param search FALSE means don't print the search path for a result
+#'   for mdes or sample.
+#' @param include_SE TRUE means include standard errors given design
+#'   (if any) in the printout.  Default to TRUE.
+#' @return print: No return value; prints results.
+#'
 #' @rdname pumpresult
-#' 
+#'
 #' @export
 #' 
 print.pumpresult <- function(x, n = 10,
                              header = TRUE,
                              search = FALSE,
+                             include_SE = TRUE, #params(x)$M == 1,
                              ... )
 {
     result_type <- attr( x, "type" )
@@ -623,8 +625,13 @@ print.pumpresult <- function(x, n = 10,
     pars = params(x)
     
     if ( header ) {
-        scat( "%s result: %s d_m with %d outcomes\n",
-              result_type, d_m(x), pars$M )
+        if ( pars$M > 1 ) {
+            scat( "%s result: %s d_m with %s outcomes\n",
+                  result_type, d_m(x), pars$M )
+        } else {
+            scat( "%s result: %s d_m\n",
+                  result_type, d_m(x) )
+        }    
         
         if ( result_type == "mdes" || result_type == "sample" ) {
             pow_params <- attr( x, "power.params.list" )
@@ -638,7 +645,31 @@ print.pumpresult <- function(x, n = 10,
     if ( is.pumpresult(x) ) {
         
         if ( pump_type(x) == "power" ) {
-            print( as.data.frame( x ), row.names = FALSE )
+            
+            lv <- !(startsWith(colnames(x), "df"))
+            lv[1] = FALSE
+            xdf <- x %>%
+                dplyr::mutate(dplyr::across(which(lv), ~ sprintf("%.3f", .)))
+            
+            if ( !include_SE ) {
+                xdf <- xdf %>%
+                    dplyr::select( -tidyselect::starts_with("SE"),
+                                   -tidyselect::starts_with("df" ) )
+            } else if ( pars$M > 1 ) {
+                SEs <- xdf %>%
+                    dplyr::select( tidyselect::starts_with("SE") )
+                SEs = SEs[ 1, ]
+                SEs = paste( "(", as.character(SEs), ")", sep="" )
+                # Put SEs as a line in the printout if M > 1
+                xdf <- xdf %>%
+                    dplyr::select( -tidyselect::starts_with("SE") )
+                stopifnot( length(SEs) > 0 )
+                xdf <- rbind(xdf[1, ], NA, xdf[-1, ])
+                xdf[ 2, seq( 2, 1 + length(SEs)) ] <- SEs
+                xdf[ 2, 1 ] <- "SE"
+            }
+            xdf[ is.na(xdf) | xdf == "NA" ] <- ""
+            print( xdf, row.names = FALSE )
             
             if ( pars$M > 1 ) {
                 pows = strip_SEs(x)
@@ -664,10 +695,33 @@ print.pumpresult <- function(x, n = 10,
             print( as.data.frame( x ), row.names = FALSE )
         }
     } else {
-        nc <- ncol(x)
-        pvs <-  x[,nc][[1]]
-        x$SE <- calc_binomial_SE( pvs, tnum )
-        print( as.data.frame(x) )
+        # pump grid printout code
+        pows = x %>%
+            dplyr::select( contains( "indiv" ), starts_with( "min" ), any_of( c("complete" ) ) ) %>%
+            as.data.frame()
+        SEh <- 0.5 + min( abs( 0.5 - pows ), na.rm = TRUE )
+        SEh <- calc_binomial_SE( SEh, tnum )
+        SEl <- 0.5 + max( abs( 0.5 - pows ), na.rm = TRUE )
+        SEl <- calc_binomial_SE( SEl, tnum )                
+        
+        if ( !include_SE ) {
+            x <- x[ , !grepl( "SE", colnames( x ) ) ]
+            x <- x[ , !grepl( "df", colnames( x ) ) ]
+        } else {
+            # convert all columns starting with df to character
+            x <- x %>%
+                dplyr::mutate(dplyr::across( starts_with("df"), ~ as.character(.)))
+        }
+        lv <- !(startsWith(colnames(x), "df"))
+        lv[ !purrr::map_lgl( x, is.numeric ) ] = FALSE
+        xdf <- x %>%
+            dplyr::mutate(dplyr::across(which(lv), ~ sprintf("%.3f", .)))
+        
+        xdf[ is.na(xdf) | xdf == "NA" ] <- ""
+        
+        print( as.data.frame(xdf), row.names = FALSE )
+        
+        scat("\t%.3f <= MCSE <= %.3f\n", SEl, SEh )
     }
     
     if ( search ) {
@@ -683,6 +737,7 @@ print.pumpresult <- function(x, n = 10,
          !is.null(attr(x, "flat" )) && attr(x, "flat") ) {
         scat( "Note: Power curve is relatively flat. \n" )
     }
+    
     invisible( x )
 }
 
@@ -745,7 +800,7 @@ print_search <- function(x, n = 10)
 #' @export
 #' 
 print_context <- function( 
-    x, insert_results = FALSE, insert_control = FALSE, ...  ) 
+        x, insert_results = FALSE, insert_control = FALSE, include_SE = TRUE, ...  ) 
 {
     is_grid <- is.pumpgridresult(x)
     
@@ -792,7 +847,7 @@ print_context <- function(
     
     # adjust for grid printout
     if ( is_grid ) {
-        print_grid_header( x )
+        #print_grid_header( x )
         
         varnames <- attr( x, "var_names" )
         for (v in varnames) {
@@ -804,8 +859,14 @@ print_context <- function(
         } 
     } else {
         
-        scat( "%s result: %s d_m with %s outcomes",
-              result_type, d_m(x), params$M )
+        if ( params$M > 1 ) {
+            scat( "%s result: %s d_m with %s outcomes\n",
+                  result_type, d_m(x), params$M )
+        } else {
+            scat( "%s result: %s d_m\n",
+                  result_type, d_m(x) )
+        }    
+        
         if ( !is.null( params$numZero ) ) {
             scat( " (%s zeros)\n", params$numZero )
         } else {
@@ -871,7 +932,7 @@ print_context <- function(
     }
     
     if ( insert_results ) {
-        print.pumpresult(x, header = FALSE, search = FALSE, ... )
+        print.pumpresult(x, header = FALSE, search = FALSE, include_SE = include_SE, ... )
     }
     
     if ( insert_control ) {

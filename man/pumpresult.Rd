@@ -36,7 +36,7 @@ is.pumpresult(x)
 
 \method{summary}{pumpresult}(object, ...)
 
-\method{print}{pumpresult}(x, n = 10, header = TRUE, search = FALSE, ...)
+\method{print}{pumpresult}(x, n = 10, header = TRUE, search = FALSE, include_SE = TRUE, ...)
 
 \method{as.data.frame}{pumpresult}(x, row.names = NULL, optional = FALSE, ...)
 }
@@ -51,11 +51,14 @@ as.data.frame.list methods.}
 
 \item{n}{Number of lines of search path to print, max.}
 
-\item{header}{FALSE means skip some header info on the result, just print
-the data.frame of actual results.}
+\item{header}{FALSE means skip some header info on the result, just
+print the data.frame of actual results.}
 
-\item{search}{FALSE means don't print the search path for a result for
-mdes or sample.}
+\item{search}{FALSE means don't print the search path for a result
+for mdes or sample.}
+
+\item{include_SE}{TRUE means include standard errors given design
+(if any) in the printout.  Default to TRUE.}
 
 \item{row.names}{NULL or a character vector giving the 
 row names for the data frame.}

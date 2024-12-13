@@ -15,7 +15,7 @@ make.pumpgridresult <- function(x,
         stopifnot( !is.null( attr(x,"params.list" ) ) )
     }
     attr(x, "d_m") <- d_m
-
+    
     ll <- list(...)
     for (l in names(ll)) {
         attr(x, l) <- ll[[ l ]]
@@ -67,9 +67,13 @@ print_grid_header <- function(x) {
     if ( length( d_m ) > 1 ) {
         d_m <- paste0( "multi-design ", paste( d_m, collapse = "/" ) )
     }
-    scat( "%s grid result: %s d_m with %s outcomes\n",
-          result_type, d_m(x), params(x)$M )
-    
+    if ( params(x)$M > 1 ) {
+        scat( "%s grid result: %s d_m with %s outcomes\n",
+              result_type, d_m, params(x)$M )
+    } else {
+        scat( "%s grid result: %s d_m\n",
+              result_type, d_m )
+    }    
     scat( "Varying across %s\n",
           paste0( attr( x, "var_names" ), collapse = ", " ) )
     
@@ -87,17 +91,25 @@ print_grid_header <- function(x) {
 #' @param header logical; FALSE means skip some 
 #' header info on the result, just print
 #' the data.frame of actual results.
+#' @param include_SE logical; TRUE means include standard errors and df.
 #' @rdname pumpgridresult
 #' 
 #' @return print: No return value; prints results.
 #' 
 #' @export
-print.pumpgridresult <- function(x,header = TRUE, ...) 
+print.pumpgridresult <- function(x,
+                                 header = TRUE, 
+                                 include_SE = FALSE, #params(x)$M == 1,
+                                 ...) 
 {
     if ( header ) {
-       print_grid_header( x )
+        print_grid_header( x )
     }
     
+    if ( !include_SE ) {
+        x <- x[ , !grepl( "SE", colnames( x ) ) ]
+        x <- x[ , !grepl( "df", colnames( x ) ) ]
+    }
     print( as.data.frame( x ), row.names = FALSE )
     
     invisible( x )
@@ -112,12 +124,14 @@ print.pumpgridresult <- function(x,header = TRUE, ...)
 #' @return summary: No return value; prints results.
 #' 
 #' @export
-summary.pumpgridresult <- function(object, ...)
+summary.pumpgridresult <- function(object, include_SE = FALSE,
+                                   ...)
 {
     print_grid_header( object )
     
     print_context( object, 
-                  insert_results = TRUE, insert_control = TRUE, ... )
+                   insert_results = TRUE, include_SE = include_SE, 
+                   insert_control = TRUE, ... )
     
     invisible( object )
 }

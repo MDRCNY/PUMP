@@ -300,60 +300,24 @@ pump_power <- function(
         MTP <- MTP[which(MTP != 'None')]
     }
     
+    
     # Recursively call self for each element on MTP list.
+    MTP_list = NULL
     if ( length( MTP ) > 1 ) {
         if ( verbose ) {
             smessage( "Multiple MTPs leading to %d calls\n", length(MTP) )
         }
-        validate_MTP( MTP = MTP,
+        MTP_list <- validate_MTP( MTP = MTP,
                       power.call = TRUE, mdes.call = FALSE, ss.call = FALSE,
                       M = M, pdef = NULL, multi.MTP.ok = TRUE )
         
-        des <- purrr::map( MTP,
-                           pump_power, 
-                           d_m = d_m, MDES = MDES,
-                           M = M, J = J, K = K, nbar = nbar,
-                           numZero = numZero, propZero = propZero,
-                           Tbar = Tbar,
-                           alpha = alpha, two.tailed = two.tailed,
-                           numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
-                           numCovar.3 = numCovar.3,
-                           R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
-                           ICC.2 = ICC.2, ICC.3 = ICC.3,
-                           rho = rho, omega.2 = omega.2, omega.3 = omega.3,
-                           long.table = long.table,
-                           tnum = tnum, B = B, 
-                           parallel.WY.cores = parallel.WY.cores,
-                           updateProgress = updateProgress,
-                           validate.inputs = validate.inputs )
-        
-        plist <- attr( des[[1]], "params.list" )
-        plist$MTP <- MTP
-        
-        if ( long.table ) {
-            ftable <- des[[1]]
-            for (i in 2:length(des)) {
-                ftable <- dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
-            }
-        } else {
-            ftable <- des[[1]]
-            for (i in 2:length(des)) {
-                ftable <- dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
-            }
-        }
-        
-        return( make.pumpresult( ftable, "power",
-                                 params.list = plist,
-                                 d_m = d_m,
-                                 long.table = long.table ) )
     }
-    
     
     
     if (validate.inputs) {
         # validate input parameters
         params.list <- list(
-            MTP = MTP,
+            MTP = MTP[1],
             MDES = MDES, numZero = numZero, propZero = propZero, 
             M = M, J = J, K = K,
             nbar = nbar, Tbar = Tbar, alpha = alpha, two.tailed = two.tailed,
@@ -386,6 +350,52 @@ pump_power <- function(
     } else {
         params.list <- NULL
     }
+    
+    if ( !is.null( MTP_list ) ) {
+        des <- purrr::map( MTP_list,
+                            pump_power, 
+                            d_m = d_m, MDES = MDES,
+                            M = M, J = J, K = K, nbar = nbar,
+                            numZero = numZero, propZero = propZero,
+                            Tbar = Tbar,
+                            alpha = alpha, two.tailed = two.tailed,
+                            numCovar.1 = numCovar.1, numCovar.2 = numCovar.2,
+                            numCovar.3 = numCovar.3,
+                            R2.1 = R2.1, R2.2 = R2.2, R2.3 = R2.3,
+                            ICC.2 = ICC.2, ICC.3 = ICC.3,
+                            rho = rho, rho.matrix = rho.matrix,
+                            omega.2 = omega.2, omega.3 = omega.3,
+                            long.table = long.table,
+                            tnum = tnum, B = B, 
+                            parallel.WY.cores = parallel.WY.cores,
+                            drop.zero.outcomes = drop.zero.outcomes,
+                            verbose = verbose,
+                            exact.where.possible = exact.where.possible,
+                            validate.inputs = FALSE,
+                            updateProgress = updateProgress )
+        
+        plist <- params.list
+        plist$MTP <- MTP_list
+        
+        if ( long.table ) {
+            ftable <- des[[1]]
+            for (i in 2:length(des)) {
+                ftable <- dplyr::bind_cols( ftable, des[[i]][ ncol(des[[i]]) ] )
+            }
+        } else {
+            ftable <- des[[1]]
+            for (i in 2:length(des)) {
+                ftable <- dplyr::bind_rows( ftable, des[[i]][ nrow(des[[i]]), ] )
+            }
+        }
+        
+        return( make.pumpresult( ftable, "power",
+                                 params.list = plist,
+                                 d_m = d_m,
+                                 long.table = long.table ) )
+    }
+    
+    
     
     
     # compute test statistics for when null hypothesis is false
