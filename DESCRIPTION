@@ -1,7 +1,7 @@
 Package: PUMP
 Type: Package
 Title: Power Under Multiplicity Project
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(
   person("Luke", "Miratrix", email = "luke_miratrix@gse.harvard.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-0078-1906")),
   person("Kristen", "Hunter", email = "kristenbhunter@gmail.com", role = c("aut"), comment = c(ORCID = "0000-0002-5678-4620")),
