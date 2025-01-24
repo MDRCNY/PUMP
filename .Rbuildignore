@@ -12,3 +12,7 @@ luke_scratch
 ^PUMP debugging pile$
 ^PUMP development$
 ^PUMP user tests$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

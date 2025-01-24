@@ -38,7 +38,7 @@ For single-level data, no random effects are needed, and the treatment is assume
 
 If you have a PUMP power result, you can generate data representing that design:
 
-```{r}
+```{r gen.data}
 pp <- pump_power( "d3.1_m3rr2rr", MDES = 0.2, 
                   M = 5, rho = 0.8,
                   MTP = "BH",
@@ -50,7 +50,7 @@ sim.data <- gen_sim_data( pp )
 The final output is a list of overlapping datasets, one for each outcome.
 In the above, for example, we would have three datasets.  Here is the first:
 
-```{r}
+```{r first.dataset}
 head( sim.data[[1]] )
 ```
 
@@ -61,7 +61,7 @@ The treatment assignment vector is shared across the different outcome datasets.
 ## Generating for single outcome
 
 If you want only one outcome, then you just get a dataframe back, rather than a list:
-```{r, warning=FALSE}
+```{r single.outcome, warning=FALSE}
 pp.one <- update( pp, M = 1 )
 sim3 <- gen_sim_data( pp.one )
 head( sim3 )
@@ -71,7 +71,7 @@ head( sim3 )
 ## Getting components separately
 
 Alternatively, `gen_sim_data()` can be called to provide data separated by part:
-```{r}
+```{r sep.data}
 sim.data.v2 <- gen_sim_data( pp, return.as.dataframe = FALSE )
 names( sim.data.v2 )
 ```
@@ -95,7 +95,7 @@ For full explanations of parameters, see the Technical Appendix.
 
 The minimum set of parameters the user can provide are as follows:
 
-```{r}
+```{r model.params}
 model.params.list <- list(
   M = 3                             # number of outcomes
   , J = 7                           # number of schools
@@ -131,7 +131,7 @@ A couple of notes about possible choices:
 
 The full set of parameters the user can specify is below.
 
-```{r, eval = FALSE}
+```{r model.params.full, eval = FALSE}
 M <- 3
 rho.default <- 0.5
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
@@ -185,7 +185,7 @@ This parameter is not considered a modeling parameter as it instead informs the 
 process.
 It is not passed as part of the `model.params.list`:
 
-```{r}
+```{r gen.sim.data}
 sim.data <- gen_sim_data(d_m = 'd3.3_m3rc2rc', model.params.list, Tbar = 0.5)
 ```
 
@@ -197,14 +197,15 @@ We briefly walk through the steps conducted by the `gen_sim_data` function in ca
 
 First, the user-given parameters are converted into parameters that inform the data-generating process (DGP).
 For example, a certain value of $R^2$ is converted in a coefficient value.
-```{r}
+
+```{r convert.params}
 dgp.params.list <- convert_params(model.params.list)
 ```
 
 Next, we generate a set of full simulation data, but without assuming any treatment assignment has occurred.
 The simulated data includes both unobserved and unobserved quantities, such as both potential outcomes. 
 
-```{r}
+```{r gen.full.data}
 sim.data <- gen_base_sim_data(dgp.params.list, 
                               dgp.params = TRUE,
                               return.as.dataframe = FALSE )
@@ -213,7 +214,7 @@ sim.data <- gen_base_sim_data(dgp.params.list,
 Finally, we generate the treatment assignment, and the observed outcomes $Y^{obs}$.
 At this point, we need to specify the design and `Tbar` to generate the correct treatment assignment.
 
-```{r}
+```{r tx}
 d_m <- 'd3.3_m3rc2rc'
 sim.data$T.x <- gen_T.x(
     d_m = d_m,
@@ -225,6 +226,6 @@ sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
 ```
 
 Finally, this can be converted to a series of dataframes:
-```{r}
+```{r convert.dataframe}
 sim.data <- PUMP:::makelist_samp( sim.data )
 ```

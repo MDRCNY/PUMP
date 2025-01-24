@@ -39,17 +39,17 @@ process_and_generate_param_list <- function(
         }
         
         if ( pump_type(pump.object) == "sample" ) {
-            param.list$nbar = 10 
-            param.list[ pump.object$Sample.type ] = pump.object$Sample.size
+            param.list$nbar <- 10 
+            param.list[ pump.object$Sample.type ] <- pump.object$Sample.size
         }
     }
     
     if ( !is.null( d_m ) ) {
-        param.list$d_m = d_m
+        param.list$d_m <- d_m
     }
     
     if ( include_Tx && !is.null( Tbar ) ) {
-        param.list$Tbar = Tbar
+        param.list$Tbar <- Tbar
     }
     
     return( param.list )
@@ -459,12 +459,12 @@ gen_sim_data <- function(
         no.list = TRUE,
         include_POs = FALSE ) {
     
-    param.list = process_and_generate_param_list( d_m = d_m,
+    param.list <- process_and_generate_param_list( d_m = d_m,
                                                   param.list = param.list,
                                                   Tbar = Tbar,
                                                   pump.object = pump.object )
-    d_m = param.list$d_m
-    Tbar = param.list$Tbar
+    d_m <- param.list$d_m
+    Tbar <- param.list$Tbar
     
     sim.data <- gen_base_sim_data( param.list, return.as.dataframe = FALSE )
     
@@ -509,25 +509,28 @@ gen_sim_data <- function(
 convert_params <- function(param.list) {
     
     # save out useful parameters
-    M <- param.list[['M']]
-    ICC.2 <- param.list[['ICC.2']]
-    ICC.3 <- param.list[['ICC.3']]
-    R2.1 <- param.list[['R2.1']]
-    R2.2 <- param.list[['R2.2']]
-    R2.3 <- param.list[['R2.3']]
-    omega.2 <- param.list[['omega.2']]
-    omega.3 <- param.list[['omega.3']]
-    rho.default <- param.list[['rho.default']]
+    M <- param.list$M
+    ICC.2 <- param.list$ICC.2
+    ICC.3 <- param.list$ICC.3
+    R2.1 <- param.list$R2.1
+    R2.2 <- param.list$R2.2
+    R2.3 <- param.list$R2.3
+    omega.2 <- param.list$omega.2
+    omega.3 <- param.list$omega.3
+    rho.default <- param.list$rho.default
     
     # If only single outcome, rho not needed.  Give default so code runs.
     if ( M == 1 && is.null( rho.default ) ) {
-        rho.default = 0
+        rho.default <- 0
     }
     
     # If no district info, set district parameters to 0
-    has.level.three <- TRUE
-    if ( parse_d_m( param.list$d_m )$level < 3 ) {
-        has.level.three <- FALSE
+    has.level.three <- FALSE
+    if ( !is.null(param.list$K) && param.list$K > 1 )
+    {
+        has.level.three <- TRUE
+    }
+    if ( !has.level.three ) {
         ICC.3 <- param.list$ICC.3 <- rep(0, M)
         R2.3 <- param.list$R2.3 <- rep(0, M)
         omega.3 <- param.list$omega.3 <- rep(0, M)
@@ -608,17 +611,17 @@ convert_params <- function(param.list) {
     omega.3 <- convert.scalar(omega.3, M)
     
     # defaults for kappa matrices
-    if (is.null(param.list[['kappa.w']]))
+    if (is.null(param.list$kappa.w))
     {
         param.list$kappa.w <- matrix(0, M, M) 
     }
-    if (is.null(param.list[['kappa.u']]))
+    if (is.null(param.list$kappa.u))
     {
         param.list$kappa.u <- matrix(0, M, M) 
     }
     
     # default for grand mean
-    if (is.null(param.list[['Xi0']]))
+    if (is.null(param.list$Xi0))
     {
         param.list$Xi0 <- 0
     }
@@ -643,16 +646,16 @@ convert_params <- function(param.list) {
     eta1.sq <- omega.3 * (eta0.sq + xi^2)
     
     # grand mean impact
-    Xi1 <- param.list[['MDES']] *
+    Xi1 <- param.list$MDES *
         sqrt(xi^2 + gamma^2 + delta^2 + eta0.sq + tau0.sq + 1)
     
     new.param.list <- list(
         has.level.three = has.level.three
-        , M = param.list[['M']]                    # number of outcomes
-        , J = param.list[['J']]                    # number of schools
-        , K = param.list[['K']]                    # number of districts
-        , nbar = param.list[['nbar']]              # number of individuals per school
-        , Xi0 = param.list[['Xi0']]                # scalar grand mean outcome under no treatment
+        , M = param.list$M                    # number of outcomes
+        , J = param.list$J                    # number of schools
+        , K = param.list$K                    # number of districts
+        , nbar = param.list$nbar              # number of individuals per school
+        , Xi0 = param.list$Xi0                # scalar grand mean outcome under no treatment
         , Xi1 = Xi1                                # scalar grand mean impact
     )
     
@@ -660,28 +663,28 @@ convert_params <- function(param.list) {
         new.param.list <- c( new.param.list, list( 
             # -------------------------------------------- level 3
             xi = xi                             # M-vector of coefficient of district covariates
-            , rho.V = param.list[['rho.V']]     # MxM correlation matrix of district covariates
+            , rho.V = param.list$rho.V     # MxM correlation matrix of district covariates
             , eta0.sq = eta0.sq                 # M-vector of variances of district random effects
             , eta1.sq = eta1.sq                 # M-vector of variances of district impacts
-            , rho.w0 = param.list[['rho.w0']]   # MxM matrix of correlations for district random effects
-            , rho.w1 = param.list[['rho.w1']]   # MxM matrix of correlations for district impacts
-            , kappa.w = param.list[['kappa.w']] # MxM matrix of correlations between district random effects and impacts
+            , rho.w0 = param.list$rho.w0   # MxM matrix of correlations for district random effects
+            , rho.w1 = param.list$rho.w1   # MxM matrix of correlations for district impacts
+            , kappa.w = param.list$kappa.w # MxM matrix of correlations between district random effects and impacts
         ) )
     }
     
     new.param.list <- c( new.param.list, list(
         # -------------------------------------------- level 2
         delta = delta                             # M-vector of coefficients of school covariates
-        , rho.X = param.list[['rho.X']]           # MxM correlation matrix of school covariates
+        , rho.X = param.list$rho.X           # MxM correlation matrix of school covariates
         , tau0.sq = tau0.sq                       # M-vector of variances of school random effects
         , tau1.sq = tau1.sq                       # M-vector of variances of school impacts
-        , rho.u0 = param.list[['rho.u0']]         # MxM matrix of correlations for school random effects
-        , rho.u1 = param.list[['rho.u1']]         # MxM matrix of correlations for school impacts
-        , kappa.u = param.list[['kappa.u']]       # MxM matrix of correlations between school random effects and impacts
+        , rho.u0 = param.list$rho.u0         # MxM matrix of correlations for school random effects
+        , rho.u1 = param.list$rho.u1         # MxM matrix of correlations for school impacts
+        , kappa.u = param.list$kappa.u       # MxM matrix of correlations between school random effects and impacts
         # -------------------------------------------- level 1
         , gamma = gamma                           # M-vector of coefficients of individual covariates
-        , rho.C = param.list[['rho.C']]           # MxM correlation matrix of individual covariates
-        , rho.r = param.list[['rho.r']]           # MxM matrix of correlations for individual residuals
+        , rho.C = param.list$rho.C           # MxM correlation matrix of individual covariates
+        , rho.r = param.list$rho.r           # MxM matrix of correlations for individual residuals
     ) )
     
     nulls <- vapply( new.param.list, is.null, logical(1) )
@@ -826,15 +829,15 @@ gen_Yobs <- function(full.data, T.x) {
 makelist_samp <- function(samp.obs, T.x = NULL, include_POs = FALSE ) {
     
     if ( is.null( T.x ) ) {
-        T.x = samp.obs$T.x
+        T.x <- samp.obs$T.x
     }
     
-    M = ncol( samp.obs$C.ijk )
+    M <- ncol( samp.obs$C.ijk )
     
-    tx_assigned = TRUE
+    tx_assigned <- TRUE
     if ( is.null( samp.obs[['Yobs']] ) ) {
         stopifnot( is.null( T.x ) )
-        tx_assigned = FALSE
+        tx_assigned <- FALSE
     } else {
         stopifnot( !is.null( T.x ) )
     }
