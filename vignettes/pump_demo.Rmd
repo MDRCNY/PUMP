@@ -36,6 +36,7 @@ knitr::opts_chunk$set(
 options(knitr.kable.NA = '')
 library( dplyr )
 library( ggplot2 )
+library( ggthemes )
 library( here )
 library( kableExtra )
 library( knitr )
