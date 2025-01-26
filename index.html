@@ -56,7 +56,7 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="pump-package">PUMP package<a class="anchor" aria-label="anchor" href="#pump-package"></a>
 </h1></div>
-<p>Last updated: May 2023.</p>
+<p>Last updated: January 2025.</p>
 <center>
 <img src="reference/figures/pump_icon.png" alt="PUMP icon" width="300">
 </center>
@@ -67,10 +67,20 @@
 <li>Luke Miratrix</li>
 <li>Kristin Porter</li>
 </ul>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<p><a href="mdrcny.github.io/PUMP/">mdrcny.github.io/PUMP/</a></p>
+<p>Using <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
+</h2>
 <p>For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values. Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist. However, this consideration is frequently ignored in typical power analyses, as existing tools do not easily accommodate the use of multiple testing procedures.</p>
 <p>We introduce the PUMP R package as a tool for analysts to estimate statistical power, minimum detectable effect size, and sample size requirements for multi-level RCTs with multiple outcomes. Multiple outcomes are accounted for in two ways. First, power estimates from PUMP properly account for the adjustment in <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-values from applying a multiple testing procedure. Second, as researchers change their focus from one outcome to multiple outcomes, different definitions of statistical power emerge.</p>
 <p>PUMP allows researchers to consider a variety of definitions of power, as some may be more appropriate for the goals of their study. The package estimates power for frequentist multi-level mixed effects models, and supports a variety of commonly-used RCT designs and models and multiple testing procedures. In addition to the main functionality of estimating power, minimum detectable effect size, and sample size requirements, the package allows the user to easily explore sensitivity of these quantities to changes in underlying assumptions.</p>
 <p>Please see the vignettes for examples of how to use this package.</p>
+</div>
 <div class="section level2">
 <h2 id="reference-and-support-materials">Reference and support materials<a class="anchor" aria-label="anchor" href="#reference-and-support-materials"></a>
 </h2>
