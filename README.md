@@ -1,6 +1,6 @@
 # PUMP package
 
-Last updated: May 2023.
+Last updated: January 2025.
 
 <center><img src="man/figures/pump_icon.png" alt="PUMP icon" width="300"/></center>
 
@@ -10,6 +10,14 @@ Authors:
 - Kristen Hunter
 - Luke Miratrix
 - Kristin Porter
+
+## Documentation
+
+[mdrcny.github.io/PUMP/](mdrcny.github.io/PUMP/)
+
+Using [pkgdown](https://pkgdown.r-lib.org/).
+
+## Description
 
 For randomized controlled trials (RCTs) with a single intervention being measured on multiple outcomes, researchers often apply a multiple testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust $p$-values.
 Such an adjustment reduces the likelihood of spurious findings, but also changes the statistical power, sometimes substantially, which reduces the probability of detecting effects when they do exist.
@@ -48,6 +56,7 @@ The latest version has some bug fixes and extra features, and we strongly recomm
 
 
 ## A small illustration
+
 We provide below one example of using PUMP to calculate a minimium detectable effect size (MDES).
 The user specifies the RCT design and model (d_m), the multiple testing procedure (MTP, in this case Holm),
 the target power (0.8), and the type of power desired (individual power for outcome 1).
