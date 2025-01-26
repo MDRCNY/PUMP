@@ -33,7 +33,7 @@ The following give several tools and resources for using this package most effec
 - [Journal of Statistical Software article on the package](https://www.jstatsoft.org/article/view/v108i06)
 - [Detailed technical appendix giving power formula for all models](https://www.jstatsoft.org/index.php/jss/article/view/v108i06/4541)
 - [Shiny app Power Calculator using this package](https://public.mdrc.org/pump/)
-- [A slide-deck overview of PUMP](https://github.com/kristenbhunter/presentations/tree/master/NCI2022)
+- [A slide-deck overview of PUMP](https://github.com/kristenbhunter/presentations/tree/master/2022/NCI2022)
 
 
 ## The hot-off-the-press version

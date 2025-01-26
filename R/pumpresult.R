@@ -66,7 +66,9 @@ update_grid <- function(x, ...)
         }
         # If find a "***" then this is an old grid and we want to 
         # keep the values of the old grid
-        if ( !is.null( params[[p]] ) && length(params[[p]]) == 1 && params[[p]] == "***" ) {
+        if ( !is.null( params[[p]] ) && 
+             length(params[[p]]) == 1 && 
+             params[[p]] == "***" ) {
             params[[p]] = unique( x[[ p ]] )
         }
     }
@@ -321,8 +323,8 @@ d_m <- function(x, ...)
 #' 
 design <- function(x, ...)
 {
-    pp = d_m( x )
-    design = parse_d_m( pp )
+    pp <- d_m( x )
+    design <- parse_d_m( pp )
     return( design$design )
 }
 
@@ -446,9 +448,10 @@ is_long_table <- function(power_table)
 #' @param power_table Dataframe (power result object).
 #' @return Changed dataframe with all columns starting with SE or df
 #'   dropped.
-strip_SEs <- function( power_table ) {
+strip_SEs <- function(power_table) {
     power_table %>%
-        dplyr::select( -tidyselect::starts_with("SE"), -tidyselect::starts_with( "df" ) )
+        dplyr::select( -tidyselect::starts_with("SE"), 
+                       -tidyselect::starts_with( "df" ) )
 }
 
 
@@ -659,7 +662,7 @@ print.pumpresult <- function(x, n = 10,
                 SEs <- xdf %>%
                     dplyr::select( tidyselect::starts_with("SE") )
                 SEs = SEs[ 1, ]
-                SEs = paste( "(", as.character(SEs), ")", sep="" )
+                SEs = paste( "(", as.character(SEs), ")", se = "" )
                 # Put SEs as a line in the printout if M > 1
                 xdf <- xdf %>%
                     dplyr::select( -tidyselect::starts_with("SE") )
@@ -696,8 +699,10 @@ print.pumpresult <- function(x, n = 10,
         }
     } else {
         # pump grid printout code
-        pows = x %>%
-            dplyr::select( contains( "indiv" ), starts_with( "min" ), any_of( c("complete" ) ) ) %>%
+        pows <- x %>%
+            dplyr::select( tidyselect::contains( "indiv" ), 
+                           tidyselect::starts_with( "min" ), 
+                           tidyselect::any_of( c("complete" ) ) ) %>%
             as.data.frame()
         SEh <- 0.5 + min( abs( 0.5 - pows ), na.rm = TRUE )
         SEh <- calc_binomial_SE( SEh, tnum )
@@ -710,7 +715,8 @@ print.pumpresult <- function(x, n = 10,
         } else {
             # convert all columns starting with df to character
             x <- x %>%
-                dplyr::mutate(dplyr::across( starts_with("df"), ~ as.character(.)))
+                dplyr::mutate(dplyr::across(tidyselect::starts_with("df"), 
+                                            ~as.character(.)))
         }
         lv <- !(startsWith(colnames(x), "df"))
         lv[ !purrr::map_lgl( x, is.numeric ) ] = FALSE
@@ -800,7 +806,10 @@ print_search <- function(x, n = 10)
 #' @export
 #' 
 print_context <- function( 
-        x, insert_results = FALSE, insert_control = FALSE, include_SE = TRUE, ...  ) 
+        x, 
+        insert_results = FALSE, 
+        insert_control = FALSE, 
+        include_SE = TRUE, ...  ) 
 {
     is_grid <- is.pumpgridresult(x)
     

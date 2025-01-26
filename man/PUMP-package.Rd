@@ -12,6 +12,7 @@ Estimates power, minimum detectable effect size (MDES) and sample size requireme
 Useful links:
 \itemize{
   \item \url{https://github.com/MDRCNY/PUMP}
+  \item \url{https://mdrcny.github.io/PUMP/}
   \item Report bugs at \url{https://github.com/MDRCNY/PUMP/issues}
 }
 
