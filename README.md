@@ -13,7 +13,7 @@ Authors:
 
 ## Documentation
 
-[mdrcny.github.io/PUMP/](mdrcny.github.io/PUMP/)
+[https://mdrcny.github.io/PUMP/](https://mdrcny.github.io/PUMP/)
 
 Using [pkgdown](https://pkgdown.r-lib.org/).
 
