@@ -22,8 +22,8 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Kristen Hunter \email{kristenbhunter@gmail.com} (\href{https://orcid.org/0000-0002-5678-4620}{ORCID})
-  \item Zarni Htet \email{zarni.htet@mdrc.org}
+  \item Kristen Hunter \email{kristen.hunter@unsw.edu.au} (\href{https://orcid.org/0000-0002-5678-4620}{ORCID})
+  \item Zarni Htet
   \item Kristin Porter \email{kristin.porter@keporterconsulting.com}
 }
 

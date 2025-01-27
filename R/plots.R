@@ -263,7 +263,9 @@ plot.pumpresult <- function(x, type = "power",
         plot.data <-
             x %>%
             dplyr::select_all() %>%
-            dplyr::select(-tidyselect::any_of("indiv.mean"), -starts_with("df"), -starts_with("SE") ) %>%
+            dplyr::select(-tidyselect::any_of("indiv.mean"), 
+                          -tidyselect::starts_with("df"), 
+                          -tidyselect::starts_with("SE") ) %>%
             tidyr::pivot_longer( !"MTP",
                                  names_to = "powerType", values_to = "power")
         
@@ -302,7 +304,8 @@ plot.pumpresult <- function(x, type = "power",
             ggplot2::ggtitle(paste0("Adjusted power across\n",
                                     "different definitions of power")) +
             default_theme() +
-            ggplot2::theme(axis.text.x = ggplot2::element_text(size = 10, angle = 45),
+            ggplot2::theme(axis.text.x = ggplot2::element_text(size = 10, 
+                                                               angle = 45),
                            axis.text.y = ggplot2::element_text(size = 10),
                            axis.title  = ggplot2::element_text(size = 10) ) +
             ggplot2::labs(color = "", shape = "")
@@ -419,11 +422,14 @@ plot.pumpgridresult.power <- function(
     if ( length( var_names ) > 1 ) {
         plot.data <- plot.data %>%
             dplyr::group_by( 
-                dplyr::across( tidyselect::all_of( c( "powerType", "MTP", var.vary ) ) )
+                dplyr::across( tidyselect::all_of( 
+                    c( "powerType", "MTP", var.vary ) ) 
+                )
             ) %>%
             dplyr::summarise( power = mean( .data$power ) )
         
-        smessage('Note: Averaged power across other varying factors in grid: %s',
+        smessage('Note: Averaged power across other varying 
+                 factors in grid: %s',
                  paste0( setdiff( var_names, var.vary ), 
                          collapse = ", " ) )
     }
@@ -632,7 +638,8 @@ plot.pumpgridresult.sample <- function(
             dplyr::group_by( 
                 dplyr::across( tidyselect::all_of( c( color, var.vary ) ) ) 
             ) %>%
-            dplyr::summarise( Sample.size = mean( .data$Sample.size, na.rm = TRUE ) )
+            dplyr::summarise( Sample.size = 
+                              mean( .data$Sample.size, na.rm = TRUE ) )
         
         smessage(paste('Note: Averaged Sample.size across other',
                        'varying factors in grid: %s'),
@@ -761,7 +768,8 @@ plot.pumpgridresult <- function(
     
     if ( !is.null( var.vary ) ) {
         if ( !(var.vary %in% var_names) ) {
-            sstop('Please provide a var.vary amongst the variables that vary. "%s" is not listed.', 
+            sstop('Please provide a var.vary amongst the variables that vary. 
+                  "%s" is not listed.', 
                   var.vary )
         }
     } else {
@@ -791,19 +799,22 @@ plot.pumpgridresult <- function(
         
         grid.plot <- plot.pumpgridresult.power(
             x, power.definition = power.definition, color = color,
-            var.vary = var.vary, lines = lines, include.title = include.title, ... )
+            var.vary = var.vary, lines = lines, 
+            include.title = include.title, ... )
         
     } else if (pump_type(x) == 'mdes') {
         
         grid.plot <- plot.pumpgridresult.mdes(
             x, power.definition = power.definition, color = color,
-            var.vary = var.vary, lines = lines, include.title = include.title, ... )
+            var.vary = var.vary, lines = lines, 
+            include.title = include.title, ... )
         
     } else if (pump_type(x) == 'sample') {
         
         grid.plot <- plot.pumpgridresult.sample(
             x, power.definition = power.definition, color = color,
-            var.vary = var.vary, lines = lines, include.title = include.title, ... )
+            var.vary = var.vary, lines = lines, 
+            include.title = include.title, ... )
         
     } else {
         stop('Invalid pumpresult type.')
