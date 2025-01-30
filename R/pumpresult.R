@@ -799,6 +799,7 @@ print_search <- function(x, n = 10)
 #' @param x A pumpresult object or pumpgridresult object.
 #' @param insert_results Include actual results in the printout.
 #' @param insert_control Include the optimizer control parameter information.
+#' @param include_SE Include standard errors in the printout.
 #' @param ... Extra arguments to pass to print.pumpresult.
 #' 
 #' @return No return value; prints results.

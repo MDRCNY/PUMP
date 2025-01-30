@@ -1,5 +1,5 @@
 
-
+library( testthat )
 
 test_that( "pumpgridresult dimensions work", {
     
@@ -91,7 +91,7 @@ test_that( "pumpgridresult dimensions work", {
     
     ssLW
     
-    
+    set.seed( 40440 )
     ssLW <- pump_sample_grid(  d_m = "d3.2_m3rr2rc",
                                MTP = c( "HO", "BH" ),
                                nbar = 200, J = 40,

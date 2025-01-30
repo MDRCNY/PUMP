@@ -20,6 +20,8 @@ print_context(
 
 \item{insert_control}{Include the optimizer control parameter information.}
 
+\item{include_SE}{Include standard errors in the printout.}
+
 \item{...}{Extra arguments to pass to print.pumpresult.}
 }
 \value{
