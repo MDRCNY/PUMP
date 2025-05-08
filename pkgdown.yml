@@ -1,0 +1,8 @@
+pandoc: 3.1.11
+pkgdown: 2.1.2
+pkgdown_sha: ~
+articles:
+  pump_demo: pump_demo.html
+  pump_sample_demo: pump_sample_demo.html
+  pump_simulate: pump_simulate.html
+last_built: 2025-05-08T05:06Z
