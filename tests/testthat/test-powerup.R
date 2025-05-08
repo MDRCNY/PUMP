@@ -5,9 +5,6 @@ library(PowerUpR)
 # NOTE: This should be even closer, no?  Why not perfect match?
 default.tol <- 0.002
 
-
-
-
 test_that( "very simple RCT tests", {
     sink("sink.txt")
     
