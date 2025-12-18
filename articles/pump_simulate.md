@@ -1,0 +1,257 @@
+# Demo of simulating multi-level data
+
+## Purpose of this vignette
+
+The main purpose of PUMP is to estimate power, MDES, and sample size
+requirements. As a separate task, PUMP provides extra functions that
+allow a user to generate data that simulates multi-level RCTs. These
+functions may not be relevant for most users, but we provide them for
+users who may find it useful. This vignette documents how to use these
+simulation functions.
+
+Overall, these simulation functions can be used in two ways: the user
+can supply a design just as they do with the power calculation tools,
+or, if they want more direct control, they can supply the data
+generating parameters directly, including some parameters not used by
+the power tools.
+
+The simulation function generates data from a multilevel model with
+random intercepts and impacts at each level. In our parlance, for
+two-level data we would use `m2rr`, and for three-level, `m3rr2rr`. For
+single-level data, no random effects are needed, and the treatment is
+assumed constant across all units.
+
+## Generating data
+
+If you have a PUMP power result, you can generate data representing that
+design:
+
+``` r
+pp <- pump_power( "d3.1_m3rr2rr", MDES = 0.2, 
+                  M = 5, rho = 0.8,
+                  MTP = "BH",
+                  nbar = 30, J = 7, K = 5, Tbar = 0.5 )
+sim.data <- gen_sim_data( pp )
+```
+
+The final output is a list of overlapping datasets, one for each
+outcome. In the above, for example, we would have three datasets. Here
+is the first:
+
+``` r
+head( sim.data[[1]] )
+```
+
+    ##          V.k       X.jk      C.ijk S.id D.id         Yobs T.x
+    ## 1 -0.9819827 -0.2346151 -0.1619480    1    1  2.422388557   0
+    ## 2 -0.9819827 -0.2346151 -0.5228986    1    1 -0.397160508   1
+    ## 3 -0.9819827 -0.2346151  0.2764065    1    1  0.009688753   0
+    ## 4 -0.9819827 -0.2346151 -0.7808425    1    1  0.324631103   1
+    ## 5 -0.9819827 -0.2346151  1.9317788    1    1 -0.710576241   1
+    ## 6 -0.9819827 -0.2346151  2.1276960    1    1 -0.450927096   0
+
+We have the observed outcome (`Yobs`), District and School ID (`D.id`,
+`S.id`), the level 1, level 2, and level 3 covariates (`C.ijk`, `X.jk`,
+and `V.k`), and treatment assigment (`T.x`). The treatment assignment
+vector is shared across the different outcome datasets.
+
+### Generating for single outcome
+
+If you want only one outcome, then you just get a dataframe back, rather
+than a list:
+
+``` r
+pp.one <- update( pp, M = 1 )
+sim3 <- gen_sim_data( pp.one )
+head( sim3 )
+```
+
+    ##         V.k     X.jk       C.ijk S.id D.id       Yobs T.x
+    ## 1 0.3608898 1.048434 -0.52190565    1    1  0.4545076   0
+    ## 2 0.3608898 1.048434 -0.17679558    1    1  1.5032026   0
+    ## 3 0.3608898 1.048434 -0.03913424    1    1  1.1670284   1
+    ## 4 0.3608898 1.048434  0.15895222    1    1 -0.7255679   1
+    ## 5 0.3608898 1.048434 -0.01656836    1    1  1.0229475   0
+    ## 6 0.3608898 1.048434 -0.07488324    1    1  1.2134919   1
+
+### Getting components separately
+
+Alternatively,
+[`gen_sim_data()`](https://mdrcny.github.io/PUMP/reference/gen_sim_data.md)
+can be called to provide data separated by part:
+
+``` r
+sim.data.v2 <- gen_sim_data( pp, return.as.dataframe = FALSE )
+names( sim.data.v2 )
+```
+
+    ## [1] "Y0"    "Y1"    "V.k"   "X.jk"  "C.ijk" "ID"    "T.x"   "Yobs"
+
+Now the simulation output contains a list of the following vectors:
+
+- potential outcomes `Y0` and `Y1`. These will be $M$ columns, one for
+  each outcome.
+- observed outcomes `Yobs`. Again $M$ columns.
+- treatment assignment `T.x`. A numeric vector.
+- covariates at each level: level 3 `V.k`, level 2 `X.jk`, level 1
+  `C.ijk`. Each will be $M$ columns.
+- ID, matrix of the assignments at each level, with level 2 `S.id` and
+  level 3 `D.id`. This is a two column data.frame
+
+Note that these simulated data contains both observed parameters and
+unobserved parameters (the unobserved potential outcome, depending on
+treatment assignment).
+
+## Choosing parameter values
+
+The user can also directly set parameter values that will inform the
+data generating process. Some of these parameters directly influence
+power, while others are “nuisance” parameters that are nevertheless
+needed to generate a full dataset. For full explanations of parameters,
+see the Technical Appendix.
+
+The minimum set of parameters the user can provide are as follows:
+
+``` r
+model.params.list <- list(
+  M = 3                             # number of outcomes
+  , J = 7                           # number of schools
+  , K = 5                           # number of districts
+                                    # (for two-level model, set K = 1)
+  , nbar = 30                       # number of individuals per school
+  , rho.default = 0.5               # default rho value (optional)
+  ################################################## impact
+  , MDES = 0.125                    # minimum detectable effect size      
+  ################################################## level 3: districts
+  , R2.3 = 0.1                      # percent of district variation
+                                      # explained by district covariates
+  , ICC.3 = 0.2                     # district intraclass correlation
+  , omega.3 = 0.1                   # ratio of district effect size variability
+                                      # to random effects variability
+  ################################################## level 2: schools
+  , R2.2 = 0.1                      # percent of school variation
+                                    # explained by school covariates
+  , ICC.2 = 0.2                     # school intraclass correlation 
+  , omega.2 = 0.1                   # ratio of school effect size variability
+                                      # to random effects variability
+  ################################################## level 1: individuals
+  , R2.1 = 0.1                      # percent of indiv variation explained
+                                      # by indiv covariates
+)
+```
+
+The user can also make additional choices that influence the simulated
+dat. A couple of notes about possible choices:
+
+- By default, the function will generate a vector of school and district
+  assignments S.id and D.id that are evenly split, e.g. with an equal
+  number of schools in each district and an equal number of students in
+  each school. However, the user can also provide their own vector of
+  assignments if they require a specific setup.
+- If the user specifies a `rho.default` value, all matrices will be
+  populated using the assumed $\rho$. The user can instead provide their
+  own $\rho$ matrices.
+
+The full set of parameters the user can specify is below.
+
+``` r
+M <- 3
+rho.default <- 0.5
+default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
+default.kappa.matrix <- matrix(0, M, M) 
+
+model.params.list <- list(
+  M = 3                             # number of outcomes
+  , J = 7                           # number of schools
+  , K = 5                           # number of districts
+                                    # (for two-level model, set K = 1)
+  , nbar = 30                       # number of individuals per school
+  , S.id = NULL                     # N-length vector of school assignments
+  , D.id = NULL                     # N-length vector of district assignments
+  ################################################## grand mean outcome and impact
+  , Xi0 = 0                         # scalar grand mean outcome under no treatment
+  , MDES = rep(0.125, M)            # minimum detectable effect size      
+  ################################################## level 3: districts
+  , R2.3 = rep(0.1, M)              # percent of district variation
+                                      # explained by district covariates
+  , rho.V = default.rho.matrix      # MxM correlation matrix of district covariates
+  , ICC.3 = rep(0.2, M)             # district intraclass correlation
+  , omega.3 = rep(0.1, M)           # ratio of district effect size variability
+                                      # to random effects variability
+  , rho.w0 = default.rho.matrix     # MxM matrix of correlations for district random effects
+  , rho.w1 = default.rho.matrix     # MxM matrix of correlations for district impacts
+  , kappa.w =  default.kappa.matrix # MxM matrix of correlations between district
+                                      # random effects and impacts
+  ################################################## level 2: schools
+  , R2.2 = rep(0.1, M)              # percent of school variation
+                                      # explained by school covariates
+  , rho.X = default.rho.matrix      # MxM correlation matrix of school covariates
+  , ICC.2 = rep(0.2, M)             # school intraclass correlation 
+  , omega.2 = rep(0.1, M)           # ratio of school effect size variability
+                                      # to random effects variability
+  , rho.u0 = default.rho.matrix     # MxM matrix of correlations for school random effects
+  , rho.u1 = default.rho.matrix     # MxM matrix of correlations for school impacts
+  , kappa.u = default.kappa.matrix  # MxM matrix of correlations between school
+                                      # random effects and impacts
+  ################################################## level 1: individuals
+  , R2.1 = rep(0.1, M)              # percent of indiv variation explained
+                                      # by indiv covariates
+  , rho.C = default.rho.matrix      # MxM correlation matrix of individual covariates
+  , rho.r = default.rho.matrix      # MxM matrix of correlations for individual residuals 
+)
+```
+
+Once the user has chosen the model parameters, the only remaining choice
+is `Tbar`, the proportion of units assigned to the treatment. This
+parameter is not considered a modeling parameter as it instead informs
+the randomization process. It is not passed as part of the
+`model.params.list`:
+
+``` r
+sim.data <- gen_sim_data(d_m = 'd3.3_m3rc2rc', model.params.list, Tbar = 0.5)
+```
+
+## Simulation process
+
+We briefly walk through the steps conducted by the `gen_sim_data`
+function in case the user wants to inspect intermediate steps of the
+process.
+
+First, the user-given parameters are converted into parameters that
+inform the data-generating process (DGP). For example, a certain value
+of $R^{2}$ is converted in a coefficient value.
+
+``` r
+dgp.params.list <- convert_params(model.params.list)
+```
+
+Next, we generate a set of full simulation data, but without assuming
+any treatment assignment has occurred. The simulated data includes both
+unobserved and unobserved quantities, such as both potential outcomes.
+
+``` r
+sim.data <- gen_base_sim_data(dgp.params.list, 
+                              dgp.params = TRUE,
+                              return.as.dataframe = FALSE )
+```
+
+Finally, we generate the treatment assignment, and the observed outcomes
+$Y^{obs}$. At this point, we need to specify the design and `Tbar` to
+generate the correct treatment assignment.
+
+``` r
+d_m <- 'd3.3_m3rc2rc'
+sim.data$T.x <- gen_T.x(
+    d_m = d_m,
+    S.id = sim.data$ID$S.id,
+    D.id = sim.data$ID$D.id,
+    Tbar = 0.5
+)
+sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
+```
+
+Finally, this can be converted to a series of dataframes:
+
+``` r
+sim.data <- PUMP:::makelist_samp( sim.data )
+```
