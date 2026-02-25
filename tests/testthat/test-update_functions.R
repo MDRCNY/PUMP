@@ -2,6 +2,8 @@
 # library( testthat )
 
 test_that( "update generally works", {
+    
+    sink("sink.txt")
 
     set.seed( 101010 )
     ss <- pump_sample(    d_m = "d2.1_m2fc",
@@ -47,11 +49,15 @@ test_that( "update generally works", {
                   MDES = 0.02, ICC.3 = 0.4, R2.2 = 0.1, numCovar.2 = 1)
     tp2
     expect_true( d_m(tp2) == "d3.2_m3ff2rc" )
+    
+    sink()
 })
 
 
 
 test_that( "unused parameters get preserved", {
+    
+    sink("sink.txt")
     res <- pump_mdes( "d2.1_m2fr", nbar = 80, J = 23,
                        Tbar = 0.50,
                        R2.1 = 0.60, 
@@ -70,12 +76,17 @@ test_that( "unused parameters get preserved", {
     summary( grd )
     grd2 = update_grid( grd, d_m = "d2.1_m2fc" )
     expect_equal( params(grd2)$omega.2, 0.4 )
+    
+    sink()
 } )
 
     
 test_that( "update works for parallel", {
     
     skip_on_cran()
+    
+    sink("sink.txt")
+    
     set.seed( 101010 )
     pp <- pump_power( d_m = "d3.2_m3ff2rc",
                       MTP = "WY-SD",
@@ -97,6 +108,8 @@ test_that( "update works for parallel", {
     up <- update(pp, parallel.WY.cores = 2)
     
     expect_equal( up$D1indiv[2], pp$D1indiv[2], tol = 0.1 )
+    
+    sink()
 
 })
 
@@ -105,6 +118,8 @@ test_that( "update works for parallel", {
 test_that( "update_grid generally works", {
     
     skip_on_cran()
+    
+    sink("sink.txt")
 
     set.seed( 101010 )
     ss <- pump_mdes(    d_m = "d2.1_m2fc",
@@ -134,10 +149,14 @@ test_that( "update_grid generally works", {
                  target.power = 0.70, tol = 0.03 )
     gd3 <- update_grid( s3, power.definition = c( "min1", "min2" )  )
     expect_true( nrow(gd3) == 2 )
+    
+    sink()
 } )
 
 
 test_that( "updating grids possible", {
+    
+    sink("sink.txt")
     res2 <- pump_mdes( "d2.1_m2fc", nbar = 80, J = 23,
                        Tbar = 0.50,
                        R2.1 = 0.60, 
@@ -165,10 +184,14 @@ test_that( "updating grids possible", {
     
     gd4b <- update( gd3, omega.2 = c( 1, 2, 3, 4 ) )
     expect_equal( gd4, gd4b )
+    
+    sink()
 } )
 
 
 test_that( "updating with different outcomes and parameter lists", {
+    
+    sink("sink.txt")
     
     r21 = c( 0.4, 0.9, 0.1, 0.5)
     pp <- pump_power( d_m = "d3.2_m3ff2rc",
@@ -231,7 +254,9 @@ test_that( "updating with different outcomes and parameter lists", {
     #plot( ppm_g, var.vary = "ICC.2", color = "J" )
     
     
+    sink()
     
+    file.remove("sink.txt")
 })
 
 
