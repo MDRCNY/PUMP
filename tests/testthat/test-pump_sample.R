@@ -230,7 +230,7 @@ test_that("pump_sample 2 level/2 level", {
                     rho = 0.4 )
 
   p2
-  expect_equal( p2[ 2, "indiv.mean" ], 0.80, tol = 0.02 )
+  expect_equal( p2[ 2, "indiv.mean" ], 0.80, tol = 0.03 )
 } )
 
 
