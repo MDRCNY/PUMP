@@ -5,7 +5,7 @@ default.tnum <- 1000
 
 test_that("calc_nbar works", {
 
-  nbar <- PUMP:::calc_nbar(  d_m = "d2.2_m2rc",
+  nbar <- PUMP:::calc_nbar( d_m = "d2.2_m2rc",
                             MT = 2.8,
                             MDES = 0.20,
                             J = 5,
@@ -217,6 +217,8 @@ test_that("pump_sample 2 level/2 level", {
                         R2.1 = 0.1, ICC.2 = 0.05,
                         rho = 0.4 )
   ss2
+  
+  expect_equal( ss2[1, "Sample.size" ], 61)
 
   p2 <- pump_power( d_m = "d2.1_m2fc",
                     MTP = "HO",
