@@ -61,9 +61,16 @@ update_grid <- function(x, ...)
     params["d_m"] <- d_m(x)
     for (p in names(params)) {
         params[[p]] <- unique( params[[p]] )
-        if ( length( params[[p]] ) > 1 ) {
-            stop( "different outcomes currently not implemented for grids" )
+        
+        # These cannot vary for the grid syntax to work, since then we
+        # cannot tell if a user wants different levels or if this is
+        # corresponding to the individual outcomes.
+        per_outcome_params <- c("MDES", "R2.1", "R2.2", "R2.3",
+                                "ICC.2", "ICC.3", "omega.2", "omega.3")
+        if ( p %in% per_outcome_params && length( params[[p]] ) > 1 ) {
+            stop( glue::glue( "different levels for {p} across outcomes currently not implemented for grids" ) )
         }
+        
         # If find a "***" then this is an old grid and we want to 
         # keep the values of the old grid
         if ( !is.null( params[[p]] ) && 

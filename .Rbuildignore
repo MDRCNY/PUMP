@@ -16,3 +16,5 @@ luke_scratch
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.positai$
+^\.claude$

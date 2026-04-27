@@ -189,6 +189,57 @@ test_that( "updating grids possible", {
 } )
 
 
+test_that( "update_grid works with multiple MTPs and uniform per-outcome params", {
+
+    sink("sink.txt")
+
+    # Regression test for bug: update_grid was incorrectly erroring when
+    # MTP was a vector (e.g. c("BF","HO")), even though per-outcome
+    # parameters were uniform.
+    pow <- pump_power(
+        d_m = "d2.1_m2fc",
+        MTP = c("BF", "HO"),
+        MDES = rep(0.10, 3),
+        M = 3,
+        J = 10,
+        nbar = 275,
+        Tbar = 0.50,
+        alpha = 0.05,
+        numCovar.1 = 5,
+        R2.1 = 0.1,
+        ICC.2 = 0.05,
+        rho = 0.4
+    )
+
+    # Should succeed: varying a design param across a grid is the whole point
+    gridR2 <- update_grid(pow, R2.1 = seq(0, 0.5, 0.25))
+    expect_true(nrow(gridR2) > 0)
+
+    gridJ <- update_grid(pow, J = c(5, 10, 20))
+    expect_equal(nrow(gridJ), 3 * 3)  # 3 J values x 3 MTP rows (None, BF, HO)
+
+    # Should still error: per-outcome MDES differ, grid cannot handle this
+    pow_diff <- pump_power(
+        d_m = "d2.1_m2fc",
+        MTP = "BF",
+        MDES = c(0.10, 0.15, 0.20),
+        M = 3,
+        J = 10,
+        nbar = 275,
+        Tbar = 0.50,
+        alpha = 0.05,
+        numCovar.1 = 5,
+        R2.1 = 0.1,
+        ICC.2 = 0.05,
+        rho = 0.4
+    )
+    expect_error(update_grid(pow_diff, J = c(5, 10, 20)))
+
+    sink()
+    file.remove("sink.txt")
+})
+
+
 test_that( "updating with different outcomes and parameter lists", {
     
     sink("sink.txt")
