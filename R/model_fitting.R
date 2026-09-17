@@ -35,15 +35,6 @@ get_rawpt <- function(dat.all, d_m, model.params.list) {
 #' @param model.params.list list of model parameters
 #' 
 #' @keywords internal
-
-#'  Function: get_pval_tstat	                                       
-#'  
-#' extracts p-value and t statistics from a given model
-#'
-#' @param mod model object
-#' @param model.params.list list of model parameters
-#' 
-#' @keywords internal
 get_pval_tstat <- function(mod, d_m, model.params.list) {
     if (methods::is(mod, "lm")) {
         tstat <- summary(mod)$coefficients["T.x","t value"]

@@ -145,8 +145,8 @@ g <- pump_sample_grid(d_m = "d3.2_m3ff2rc", typesample = "J",
  
 }
 \seealso{
-Other grid functions: 
-\code{\link{pump_mdes_grid}()},
-\code{\link{pump_power_grid}()}
+Other grid functions:
+\code{\link[=pump_mdes_grid]{pump_mdes_grid()}},
+\code{\link[=pump_power_grid]{pump_power_grid()}}
 }
 \concept{grid functions}

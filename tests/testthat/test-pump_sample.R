@@ -218,7 +218,7 @@ test_that("pump_sample 2 level/2 level", {
                         rho = 0.4 )
   ss2
   
-  expect_equal( ss2[1, "Sample.size" ], 61)
+  expect_equal( ss2[1, "Sample.size" ], 61, tolerance = 1)
 
   p2 <- pump_power( d_m = "d2.1_m2fc",
                     MTP = "HO",

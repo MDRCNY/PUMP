@@ -144,6 +144,4 @@ update
 update_grid
 
 print_context
-
-print_context
 }

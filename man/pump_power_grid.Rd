@@ -141,8 +141,8 @@ g <- pump_power_grid( d_m = "d3.2_m3ff2rc", MTP = c( "HO", "BF" ),
  ICC.2 = 0.25, ICC.3 = 0.25, rho = 0.4, tnum = 1000)
 }
 \seealso{
-Other grid functions: 
-\code{\link{pump_mdes_grid}()},
-\code{\link{pump_sample_grid}()}
+Other grid functions:
+\code{\link[=pump_mdes_grid]{pump_mdes_grid()}},
+\code{\link[=pump_sample_grid]{pump_sample_grid()}}
 }
 \concept{grid functions}
