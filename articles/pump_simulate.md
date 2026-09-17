@@ -27,6 +27,7 @@ If you have a PUMP power result, you can generate data representing that
 design:
 
 ``` r
+
 pp <- pump_power( "d3.1_m3rr2rr", MDES = 0.2, 
                   M = 5, rho = 0.8,
                   MTP = "BH",
@@ -39,6 +40,7 @@ outcome. In the above, for example, we would have three datasets. Here
 is the first:
 
 ``` r
+
 head( sim.data[[1]] )
 ```
 
@@ -61,6 +63,7 @@ If you want only one outcome, then you just get a dataframe back, rather
 than a list:
 
 ``` r
+
 pp.one <- update( pp, M = 1 )
 sim3 <- gen_sim_data( pp.one )
 head( sim3 )
@@ -81,6 +84,7 @@ Alternatively,
 can be called to provide data separated by part:
 
 ``` r
+
 sim.data.v2 <- gen_sim_data( pp, return.as.dataframe = FALSE )
 names( sim.data.v2 )
 ```
@@ -89,12 +93,12 @@ names( sim.data.v2 )
 
 Now the simulation output contains a list of the following vectors:
 
-- potential outcomes `Y0` and `Y1`. These will be $M$ columns, one for
+- potential outcomes `Y0` and `Y1`. These will be $`M`$ columns, one for
   each outcome.
-- observed outcomes `Yobs`. Again $M$ columns.
+- observed outcomes `Yobs`. Again $`M`$ columns.
 - treatment assignment `T.x`. A numeric vector.
 - covariates at each level: level 3 `V.k`, level 2 `X.jk`, level 1
-  `C.ijk`. Each will be $M$ columns.
+  `C.ijk`. Each will be $`M`$ columns.
 - ID, matrix of the assignments at each level, with level 2 `S.id` and
   level 3 `D.id`. This is a two column data.frame
 
@@ -113,6 +117,7 @@ see the Technical Appendix.
 The minimum set of parameters the user can provide are as follows:
 
 ``` r
+
 model.params.list <- list(
   M = 3                             # number of outcomes
   , J = 7                           # number of schools
@@ -149,12 +154,13 @@ dat. A couple of notes about possible choices:
   each school. However, the user can also provide their own vector of
   assignments if they require a specific setup.
 - If the user specifies a `rho.default` value, all matrices will be
-  populated using the assumed $\rho$. The user can instead provide their
-  own $\rho$ matrices.
+  populated using the assumed $`\rho`$. The user can instead provide
+  their own $`\rho`$ matrices.
 
 The full set of parameters the user can specify is below.
 
 ``` r
+
 M <- 3
 rho.default <- 0.5
 default.rho.matrix <- gen_corr_matrix(M = M, rho.scalar = rho.default)
@@ -208,6 +214,7 @@ the randomization process. It is not passed as part of the
 `model.params.list`:
 
 ``` r
+
 sim.data <- gen_sim_data(d_m = 'd3.3_m3rc2rc', model.params.list, Tbar = 0.5)
 ```
 
@@ -219,9 +226,10 @@ process.
 
 First, the user-given parameters are converted into parameters that
 inform the data-generating process (DGP). For example, a certain value
-of $R^{2}$ is converted in a coefficient value.
+of $`R^2`$ is converted in a coefficient value.
 
 ``` r
+
 dgp.params.list <- convert_params(model.params.list)
 ```
 
@@ -230,16 +238,18 @@ any treatment assignment has occurred. The simulated data includes both
 unobserved and unobserved quantities, such as both potential outcomes.
 
 ``` r
+
 sim.data <- gen_base_sim_data(dgp.params.list, 
                               dgp.params = TRUE,
                               return.as.dataframe = FALSE )
 ```
 
 Finally, we generate the treatment assignment, and the observed outcomes
-$Y^{obs}$. At this point, we need to specify the design and `Tbar` to
+$`Y^{obs}`$. At this point, we need to specify the design and `Tbar` to
 generate the correct treatment assignment.
 
 ``` r
+
 d_m <- 'd3.3_m3rc2rc'
 sim.data$T.x <- gen_T.x(
     d_m = d_m,
@@ -253,5 +263,6 @@ sim.data$Yobs <- gen_Yobs(sim.data, T.x = sim.data$T.x)
 Finally, this can be converted to a series of dataframes:
 
 ``` r
+
 sim.data <- PUMP:::makelist_samp( sim.data )
 ```

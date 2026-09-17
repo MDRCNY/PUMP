@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Demo and discussion of the pump_sample method • PUMP</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Demo and discussion of the pump_sample method">
 </head>
@@ -333,8 +333,8 @@ given a fixed
 <tbody><tr class="odd">
 <td align="left">HO</td>
 <td align="left">J</td>
-<td align="right">28</td>
-<td align="right">0.41175</td>
+<td align="right">24</td>
+<td align="right">0.413</td>
 </tr></tbody>
 </table>
 <p>Our calculated
@@ -345,18 +345,34 @@ can print out information about the search path the algorithm took to
 arrive at the final answer.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pumpresult.html">search_path</a></span><span class="op">(</span><span class="va">J1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    step MTP target.power         pt          dx    w     power       delta</span></span>
-<span><span class="co">#&gt; 1     0  HO        0.418    4.00000          NA  100 0.3200000 -0.09800000</span></span>
-<span><span class="co">#&gt; 2     0  HO        0.418   88.46708          NA  100 0.4600000  0.04200000</span></span>
-<span><span class="co">#&gt; 3     0  HO        0.418  282.62278          NA  100 0.4700000  0.05200000</span></span>
-<span><span class="co">#&gt; 4     0  HO        0.418  586.46708          NA  100 0.4300000  0.01200000</span></span>
-<span><span class="co">#&gt; 5     0  HO        0.418 1000.00000          NA  100 0.4700000  0.05200000</span></span>
-<span><span class="co">#&gt; 6     1  HO        0.418   12.89153 0.006228501  110 0.3545455 -0.06345455</span></span>
-<span><span class="co">#&gt; 7     2  HO        0.418   78.72271 0.014661378  121 0.4380165  0.02001653</span></span>
-<span><span class="co">#&gt; 8     3  HO        0.418   44.77373 0.001355573  133 0.4436090  0.02560902</span></span>
-<span><span class="co">#&gt; 9     4  HO        0.418   32.17284 0.001934751  146 0.4315068  0.01350685</span></span>
-<span><span class="co">#&gt; 10    5  HO        0.418   27.80871 0.003069826 1000 0.4250000  0.00700000</span></span>
-<span><span class="co">#&gt; 11    5  HO        0.418   27.80871 0.003069826 4000 0.4117500 -0.00625000</span></span></code></pre></div>
+<span><span class="co">#&gt;    step MTP target.power          pt           dx    w     power       delta</span></span>
+<span><span class="co">#&gt; 1     0  HO        0.418    4.000000           NA  100 0.3200000 -0.09800000</span></span>
+<span><span class="co">#&gt; 2     0  HO        0.418   88.467082           NA  100 0.4600000  0.04200000</span></span>
+<span><span class="co">#&gt; 3     0  HO        0.418  282.622777           NA  100 0.4700000  0.05200000</span></span>
+<span><span class="co">#&gt; 4     0  HO        0.418  586.467082           NA  100 0.4300000  0.01200000</span></span>
+<span><span class="co">#&gt; 5     0  HO        0.418 1000.000000           NA  100 0.4700000  0.05200000</span></span>
+<span><span class="co">#&gt; 6     1  HO        0.418   16.303446 4.494483e-03  110 0.3727273 -0.04527273</span></span>
+<span><span class="co">#&gt; 7     2  HO        0.418   27.952038 3.157795e-03 1000 0.4270000  0.00900000</span></span>
+<span><span class="co">#&gt; 8     2  HO        0.418   27.952038 3.157795e-03 4000 0.4347500  0.01675000</span></span>
+<span><span class="co">#&gt; 9     3  HO        0.418   24.155022 3.740783e-03  133 0.4285714  0.01057143</span></span>
+<span><span class="co">#&gt; 10    4  HO        0.418   23.424265 3.195300e-03  146 0.4383562  0.02035616</span></span>
+<span><span class="co">#&gt; 11    5  HO        0.418   22.300027 3.126001e-03  161 0.4596273  0.04162733</span></span>
+<span><span class="co">#&gt; 12    6  HO        0.418   20.755709 3.312577e-03  177 0.3898305 -0.02816949</span></span>
+<span><span class="co">#&gt; 13    7  HO        0.418    2.666667 3.992103e-05  195 0.2410256 -0.17697436</span></span>
+<span><span class="co">#&gt; 14    8  HO        0.418   21.804304 3.240676e-03  215 0.3953488 -0.02265116</span></span>
+<span><span class="co">#&gt; 15    9  HO        0.418   22.393276 3.175350e-03  237 0.3586498 -0.05935021</span></span>
+<span><span class="co">#&gt; 16   10  HO        0.418   24.595565 4.581739e-03 1000 0.4330000  0.01500000</span></span>
+<span><span class="co">#&gt; 17   11  HO        0.418   23.791196 3.162884e-03 1000 0.4050000 -0.01300000</span></span>
+<span><span class="co">#&gt; 18   12  HO        0.418   24.145082 3.010188e-03 1000 0.4130000 -0.00500000</span></span>
+<span><span class="co">#&gt; 19   12  HO        0.418   24.145082 3.010188e-03 4000 0.4307500  0.01275000</span></span>
+<span><span class="co">#&gt; 20   13  HO        0.418   14.739402 8.348798e-05 1000 0.4070000 -0.01100000</span></span>
+<span><span class="co">#&gt; 21   14  HO        0.418   14.159296 2.740219e-04  383 0.3733681 -0.04463185</span></span>
+<span><span class="co">#&gt; 22   15  HO        0.418   18.101265 9.263023e-05  421 0.3966746 -0.02132542</span></span>
+<span><span class="co">#&gt; 23   16  HO        0.418   28.761281 1.030806e-04  463 0.4406048  0.02260475</span></span>
+<span><span class="co">#&gt; 24   17  HO        0.418   26.922446 1.205809e-04  509 0.4322200  0.01422004</span></span>
+<span><span class="co">#&gt; 25   18  HO        0.418   10.460154 1.092297e-04  560 0.3696429 -0.04835714</span></span>
+<span><span class="co">#&gt; 26   19  HO        0.418   23.017844 2.870381e-03 1000 0.4170000 -0.00100000</span></span>
+<span><span class="co">#&gt; 27   19  HO        0.418   23.017844 2.870381e-03 4000 0.4130000 -0.00500000</span></span></code></pre></div>
 <p>At step 0, the algorithm tries a range of possible sample size
 values, bounded by calculated minimum and maximum values for the
 scenario, and calculates power for each. After step 0, the algorithm
@@ -401,12 +417,12 @@ can help us examine whether smaller values of
 might result in similar values of power.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/power_curve.html">power_curve</a></span><span class="op">(</span><span class="va">J1</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   step        pt    w MTP target.power  power</span></span>
-<span><span class="co">#&gt; 1    0    6.0000 2000  HO        0.418 0.3375</span></span>
-<span><span class="co">#&gt; 2    0  110.1948 2000  HO        0.418 0.4570</span></span>
-<span><span class="co">#&gt; 3    0  343.9264 2000  HO        0.418 0.4435</span></span>
-<span><span class="co">#&gt; 4    0  707.1948 2000  HO        0.418 0.4615</span></span>
-<span><span class="co">#&gt; 5    0 1200.0000 2000  HO        0.418 0.4745</span></span></code></pre></div>
+<span><span class="co">#&gt;   step          pt    w MTP target.power  power</span></span>
+<span><span class="co">#&gt; 1    0    4.666667 2000  HO        0.418 0.3120</span></span>
+<span><span class="co">#&gt; 2    0  105.687430 2000  HO        0.418 0.4570</span></span>
+<span><span class="co">#&gt; 3    0  338.583241 2000  HO        0.418 0.4435</span></span>
+<span><span class="co">#&gt; 4    0  703.354097 2000  HO        0.418 0.4615</span></span>
+<span><span class="co">#&gt; 5    0 1200.000000 2000  HO        0.418 0.4745</span></span></code></pre></div>
 <p>From this output, we can see that the power curve is very flat. This
 outcome means that a variety of sample size values result in relatively
 similar estimates of power.</p>
@@ -540,7 +556,7 @@ power.</p>
 <tbody><tr class="odd">
 <td align="left">HO</td>
 <td align="left">nbar</td>
-<td align="right">22327</td>
+<td align="right">33750</td>
 <td align="right">0.252</td>
 </tr></tbody>
 </table>
@@ -732,7 +748,7 @@ asymptotes.</p>
 <tbody><tr class="odd">
 <td align="left">HO</td>
 <td align="left">nbar</td>
-<td align="right">23632079</td>
+<td align="right">19691402</td>
 <td align="right">0.2640118</td>
 </tr></tbody>
 </table>
@@ -792,7 +808,7 @@ precision provides a better estimate of the true power curve.</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

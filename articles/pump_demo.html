@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Demonstration of the PUMP package • PUMP</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Demonstration of the PUMP package">
 </head>
@@ -115,7 +115,7 @@ intervention on multiple outcomes. The package uses a frequentist
 framework of mixed effects regression models, which is currently the
 prevailing framework for estimating impacts from experiments in
 education and other social policy research.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;Other options include nonparametric or Bayesian methods,
-but these are less prevalent in applied research (for example, see &lt;span class="citation"&gt;Gelman, Hill, and Yajima (2012)&lt;/span&gt;, &lt;span class="citation"&gt;Gelman, Hill, and Yajima (2007)&lt;/span&gt;).&lt;/p&gt;'><sup>1</sup></a></p>
+but these are less prevalent in applied research (for example, see &lt;span class="citation"&gt;Gelman et al. (2012)&lt;/span&gt;, &lt;span class="citation"&gt;Gelman et al. (2007)&lt;/span&gt;).&lt;/p&gt;'><sup>1</sup></a></p>
 <p>To our knowledge, none of the existing software tools for power
 calculations allow researchers to account for multiple hypothesis tests
 and the use of a multiple testing procedure (MTP). MTPs adjust
@@ -128,10 +128,10 @@ designing studies, researchers who plan to test for effects on multiple
 outcomes and employ MTPs frequently ignore the power implications of the
 MTPs.</p>
 <p>Also, as researchers change their focus from one outcome to multiple
-outcomes, multiple definitions of statistical power emerge (<span class="citation">Chen et al. (2011)</span>; <span class="citation">Dudoit, Shaffer, and Boldrick (2003)</span>; <span class="citation">Senn and Bretz (2007)</span>; <span class="citation">Westfall, Tobias, and Wolfinger (2011)</span>). The
-<code>PUMP</code> package allows researchers to consider multiple
-definitions of power, selecting those most suited to the goals of their
-study. The definitions of power include:</p>
+outcomes, multiple definitions of statistical power emerge (<span class="citation">Chen et al. (2011)</span>; <span class="citation">Dudoit et al. (2003)</span>; <span class="citation">Senn and Bretz (2007)</span>; <span class="citation">Westfall et al. (2011)</span>). The <code>PUMP</code>
+package allows researchers to consider multiple definitions of power,
+selecting those most suited to the goals of their study. The definitions
+of power include:</p>
 <ul>
 <li>
 <strong>individual power</strong>: the probability of detecting an
@@ -822,7 +822,7 @@ our outcomes to no effect with the <code>numZero</code> parameter:</p>
 <pre><code><span><span class="co">#&gt; mdes result: d3.2_m3fc2rc d_m with 5 outcomes</span></span>
 <span><span class="co">#&gt;   target min1 power: 0.80</span></span>
 <span><span class="co">#&gt;  MTP Adjusted.MDES min1.power   SE</span></span>
-<span><span class="co">#&gt;   HO    0.08970923    0.79125 0.01</span></span>
+<span><span class="co">#&gt;   HO    0.08971391    0.79125 0.01</span></span>
 <span><span class="co">#&gt;  (13 steps in search)</span></span></code></pre>
 <p>The MDES goes up, as expected: when there are not effects on some
 outcomes, there are fewer good chances for detecting an effect.
@@ -1217,7 +1217,7 @@ fully interacted experiment. Note that in addition to
 <p>We see that higher ICC.2 radically reduces power to detect anything
 and ICC.3 does little. To understand why, we turn to our standard error
 formula for this design and model:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>S</mi><mi>E</mi><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msqrt><mrow><mfrac><mrow><msub><mtext mathvariant="normal">ICC</mtext><mn>2</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>R</mi><mn>2</mn><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mover><mi>T</mi><mo accent="true">‾</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mi>J</mi><mi>K</mi></mrow></mfrac><mo>+</mo><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mtext mathvariant="normal">ICC</mtext><mn>2</mn></msub><mo>−</mo><msub><mtext mathvariant="normal">ICC</mtext><mn>3</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>R</mi><mn>1</mn><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mover><mi>T</mi><mo accent="true">‾</mo></mover><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mi>J</mi><mi>K</mi><mover><mi>n</mi><mo accent="true">‾</mo></mover></mrow></mfrac></mrow></msqrt><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>S</mi><mi>E</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>τ</mi><mo accent="true">̂</mo></mover><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msqrt><mrow><mfrac><mrow><msub><mtext mathvariant="normal">ICC</mtext><mn>2</mn></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>R</mi><mn>2</mn><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mi>J</mi><mi>K</mi></mrow></mfrac><mo>+</mo><mfrac><mrow><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mtext mathvariant="normal">ICC</mtext><mn>2</mn></msub><mo>−</mo><msub><mtext mathvariant="normal">ICC</mtext><mn>3</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msubsup><mi>R</mi><mn>1</mn><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><mrow><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><mover><mi>T</mi><mo accent="true">‾</mo></mover><mo stretchy="false" form="postfix">)</mo><mi>J</mi><mi>K</mi><mover><mi>n</mi><mo accent="true">‾</mo></mover></mrow></mfrac></mrow></msqrt><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
 SE( \hat{\tau} ) = \sqrt{
 \frac{\text{ICC}_{2}(1 - R^2_{2})}{\bar{T}(1 - \bar{T}) JK} +
@@ -1391,10 +1391,10 @@ the opposite.</p>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-RN27978" class="csl-entry">
-Bloom, Howard S. 2006. <span>“The Core Analytics of Randomized
-Experiments for Social Research.”</span> MDRC.
+Bloom, Howard S. 2006. <em>The Core Analytics of Randomized Experiments
+for Social Research</em>. MDRC.
 </div>
 <div id="ref-RN23882" class="csl-entry">
 Chen, J., J. Luo, K. Liu, and D. Mehrotra. 2011. <span>“On Power and
@@ -1402,9 +1402,9 @@ Sample Size Computation for Multiple Testing Procedures.”</span>
 <em>Computational Statistics and Data Analysis</em> 55: 110–22.
 </div>
 <div id="ref-DNREPORT" class="csl-entry">
-Corrin, W., S. Sepanik, R. Rosen, and A. Shane. 2016. <span>“Addressing
+Corrin, W., S. Sepanik, R. Rosen, and A. Shane. 2016. <em>Addressing
 Early Warning Indicators: Interim Impact Findings from the Investing in
-Innovation (I3) Evaluation of Diplomas Now.”</span> MDRC.
+Innovation (I3) Evaluation of Diplomas Now</em>. MDRC.
 </div>
 <div id="ref-RN4473" class="csl-entry">
 Dong, Nianbo, and Rebecca Maynard. 2013. <span>“PowerUP!: A Tool for
@@ -1423,13 +1423,13 @@ Regression and Multilevel/Hierarchical Models</em>. Cambridge University
 Press.
 </div>
 <div id="ref-GELMANETAL2012" class="csl-entry">
-———. 2012. <span>“Why We (Usually) Don’t Have to Worry about Multiple
-Comparisons.”</span> <em>Journal of Research on Educational
-Effectiveness</em> 5: 189–211.
+Gelman, A., J. Hill, and M. Yajima. 2012. <span>“Why We (Usually) Don’t
+Have to Worry about Multiple Comparisons.”</span> <em>Journal of
+Research on Educational Effectiveness</em> 5: 189–211.
 </div>
 <div id="ref-RN30153" class="csl-entry">
-Hedges, Larry V., and Christopher Rhoads. 2010. <span>“Statistical Power
-Analysis in Education Research.”</span> National Center for Special
+Hedges, Larry V., and Christopher Rhoads. 2010. <em>Statistical Power
+Analysis in Education Research</em>. National Center for Special
 Education Research. <a href="https://ies.ed.gov/use-work/resource-library/report/research-report/statistical-power-analysis-education-research" class="external-link">https://ies.ed.gov/use-work/resource-library/report/research-report/statistical-power-analysis-education-research</a>.
 </div>
 <div id="ref-Porter2018" class="csl-entry">
@@ -1440,14 +1440,13 @@ Effectiveness</em> 11: 267–95.
 </div>
 <div id="ref-RN23884" class="csl-entry">
 Raudenbush, S. W., H. Bloom, J. Spybrook, and A. Martinez. 2011.
-<span>“Optimal Design with Empirical Information (OD+) (Version
-3.0).”</span> <a href="https://wtgrantfoundation.org/optimal-design-with-empirical-information-od" class="external-link">https://wtgrantfoundation.org/optimal-design-with-empirical-information-od</a>.
+<em>Optimal Design with Empirical Information (OD+) (Version 3.0)</em>.
+<a href="https://wtgrantfoundation.org/optimal-design-with-empirical-information-od" class="external-link">https://wtgrantfoundation.org/optimal-design-with-empirical-information-od</a>.
 </div>
 <div id="ref-RN23748" class="csl-entry">
-Schochet, Peter Z. 2008. <span>“Guidelines for Multiple Testing in
-Impact Evaluations of Educational Interventions. Final Report.”</span>
-Mathematica Policy Research, Inc. P.O. Box 2393, Princeton, NJ
-08543-2393. <a href="https://eric.ed.gov/?id=ED502199" class="external-link">https://eric.ed.gov/?id=ED502199</a>.
+Schochet, Peter Z. 2008. <em>Guidelines for Multiple Testing in Impact
+Evaluations of Educational Interventions. Final Report</em>. Mathematica
+Policy Research, Inc. P.O. Box 2393, Princeton, NJ 08543-2393. <a href="https://eric.ed.gov/?id=ED502199" class="external-link">https://eric.ed.gov/?id=ED502199</a>.
 </div>
 <div id="ref-RN23881" class="csl-entry">
 Senn, Stephen, and Frank Bretz. 2007. <span>“Power and Sample Size When
@@ -1472,7 +1471,7 @@ Comparisons and Multiple Tests Using SAS</em>. The SAS Institute.
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

@@ -72,6 +72,7 @@ assignment.
 ## Examples
 
 ``` r
+
 pp <- pump_power( d_m = "d3.2_m3ff2rc",
                   MTP = "BF",
                   MDES = rep( 0.10, 3 ),

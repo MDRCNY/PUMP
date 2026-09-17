@@ -25,6 +25,9 @@ Useful links:
 
 Authors:
 
+- Luke Miratrix <luke_miratrix@gse.harvard.edu>
+  ([ORCID](https://orcid.org/0000-0002-0078-1906))
+
 - Kristen Hunter <kristen.hunter@unsw.edu.au>
   ([ORCID](https://orcid.org/0000-0002-5678-4620))
 

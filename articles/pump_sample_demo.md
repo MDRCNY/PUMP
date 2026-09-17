@@ -21,6 +21,7 @@ we start with calculating power for a given set of parameters, and then
 try to recover those parameters.
 
 ``` r
+
 p <- pump_power(
     d_m = "d3.1_m3rr2rr",
     MTP = "HO",
@@ -38,16 +39,17 @@ p <- pump_power(
 )
 ```
 
-| MTP  | D1indiv | D2indiv | D3indiv | indiv.mean |    min1 |    min2 | complete |       SE1 |       SE2 |       SE3 | df1 |
-|:-----|--------:|--------:|--------:|-----------:|--------:|--------:|---------:|----------:|----------:|----------:|----:|
-| None | 0.56213 | 0.56524 | 0.56428 |  0.5638833 |      NA |      NA |       NA | 0.0542586 | 0.0542586 | 0.0542586 |  14 |
-| HO   | 0.41618 | 0.41911 | 0.41886 |  0.4180500 | 0.58365 | 0.39567 |  0.31228 |        NA |        NA |        NA |  NA |
+| MTP | D1indiv | D2indiv | D3indiv | indiv.mean | min1 | min2 | complete | SE1 | SE2 | SE3 | df1 |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| None | 0.56213 | 0.56524 | 0.56428 | 0.5638833 | NA | NA | NA | 0.0542586 | 0.0542586 | 0.0542586 | 14 |
+| HO | 0.41618 | 0.41911 | 0.41886 | 0.4180500 | 0.58365 | 0.39567 | 0.31228 | NA | NA | NA | NA |
 
 Our individual power using the Holm procedure is estimated as 0.418.
-First, let’s try to recover the original parameter $K$, the number of
+First, let’s try to recover the original parameter $`K`$, the number of
 districts, given the power we just found.
 
 ``` r
+
 K <- pump_sample(
   d_m = "d3.1_m3rr2rr",
   typesample = "K",
@@ -83,9 +85,9 @@ have two sources of uncertainty: uncertainty in what the actual power is
 
 Second, the search algorithm finds a sample size which is within a
 certain tolerance of the target power, give or take this estimation
-uncertainty. The default tolerance is $0.01$, meaning the algorithm will
-return a value of $K$ that has an estimated power within 1% of our
-target power.
+uncertainty. The default tolerance is $`0.01`$, meaning the algorithm
+will return a value of $`K`$ that has an estimated power within 1% of
+our target power.
 
 These two facts highlight how the output should be interpreted:
 `pump_sample` finds one possible sample size that would result in a
@@ -100,30 +102,32 @@ way to verify the power is to use the
 [`update()`](https://rdrr.io/r/stats/update.html) function. We feed in
 the sample size object and specify that we now want to run a power
 calculation, and can also provide any other parameters that we would
-like to update. Here, we override the default $tnum$ for
+like to update. Here, we override the default $`tnum`$ for
 [`pump_power()`](https://mdrcny.github.io/PUMP/reference/pump_power.md)
 to increase precision.
 
 ``` r
+
 p <- update(K, type = "power", tnum = 100000)
 ```
 
-| MTP  | D1indiv | D2indiv | D3indiv | indiv.mean |    min1 |    min2 | complete |       SE1 |       SE2 |       SE3 | df1 |
-|:-----|--------:|--------:|--------:|-----------:|--------:|--------:|---------:|----------:|----------:|----------:|----:|
-| None | 0.59761 | 0.59543 | 0.59621 |  0.5964167 |      NA |      NA |       NA | 0.0525357 | 0.0525357 | 0.0525357 |  15 |
-| HO   | 0.45930 | 0.45677 | 0.45735 |  0.4578067 | 0.62488 | 0.43872 |  0.34743 |        NA |        NA |        NA |  NA |
+| MTP | D1indiv | D2indiv | D3indiv | indiv.mean | min1 | min2 | complete | SE1 | SE2 | SE3 | df1 |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| None | 0.59761 | 0.59543 | 0.59621 | 0.5964167 | NA | NA | NA | 0.0525357 | 0.0525357 | 0.0525357 | 15 |
+| HO | 0.45930 | 0.45677 | 0.45735 | 0.4578067 | 0.62488 | 0.43872 | 0.34743 | NA | NA | NA | NA |
 
-We also could find that other values of $K$, including smaller values,
+We also could find that other values of $`K`$, including smaller values,
 would result in a very similar power, so the user should explore
 different possible values near the output to get a better sense of the
 variation in power. This idea will be explored in the next section.
 
 ## Exploring a range of sample size values
 
-Now let’s turn to determining the necessary number of schools $J$, given
-a fixed $K$.
+Now let’s turn to determining the necessary number of schools $`J`$,
+given a fixed $`K`$.
 
 ``` r
+
 J1 <- pump_sample(
     d_m = "d3.1_m3rr2rr",
     typesample = "J",
@@ -145,27 +149,44 @@ J1 <- pump_sample(
 
 | MTP | Sample.type | Sample.size | D1indiv.power |
 |:----|:------------|------------:|--------------:|
-| HO  | J           |          28 |       0.41175 |
+| HO  | J           |          24 |         0.413 |
 
-Our calculated $J$ is only slightly off from our original input `20`.
+Our calculated $`J`$ is only slightly off from our original input `20`.
 Let’s explore more information about this sample size calculation.
 First, we can print out information about the search path the algorithm
 took to arrive at the final answer.
 
 ``` r
+
 search_path(J1)
-#>    step MTP target.power         pt          dx    w     power       delta
-#> 1     0  HO        0.418    4.00000          NA  100 0.3200000 -0.09800000
-#> 2     0  HO        0.418   88.46708          NA  100 0.4600000  0.04200000
-#> 3     0  HO        0.418  282.62278          NA  100 0.4700000  0.05200000
-#> 4     0  HO        0.418  586.46708          NA  100 0.4300000  0.01200000
-#> 5     0  HO        0.418 1000.00000          NA  100 0.4700000  0.05200000
-#> 6     1  HO        0.418   12.89153 0.006228501  110 0.3545455 -0.06345455
-#> 7     2  HO        0.418   78.72271 0.014661378  121 0.4380165  0.02001653
-#> 8     3  HO        0.418   44.77373 0.001355573  133 0.4436090  0.02560902
-#> 9     4  HO        0.418   32.17284 0.001934751  146 0.4315068  0.01350685
-#> 10    5  HO        0.418   27.80871 0.003069826 1000 0.4250000  0.00700000
-#> 11    5  HO        0.418   27.80871 0.003069826 4000 0.4117500 -0.00625000
+#>    step MTP target.power          pt           dx    w     power       delta
+#> 1     0  HO        0.418    4.000000           NA  100 0.3200000 -0.09800000
+#> 2     0  HO        0.418   88.467082           NA  100 0.4600000  0.04200000
+#> 3     0  HO        0.418  282.622777           NA  100 0.4700000  0.05200000
+#> 4     0  HO        0.418  586.467082           NA  100 0.4300000  0.01200000
+#> 5     0  HO        0.418 1000.000000           NA  100 0.4700000  0.05200000
+#> 6     1  HO        0.418   16.303446 4.494483e-03  110 0.3727273 -0.04527273
+#> 7     2  HO        0.418   27.952038 3.157795e-03 1000 0.4270000  0.00900000
+#> 8     2  HO        0.418   27.952038 3.157795e-03 4000 0.4347500  0.01675000
+#> 9     3  HO        0.418   24.155022 3.740783e-03  133 0.4285714  0.01057143
+#> 10    4  HO        0.418   23.424265 3.195300e-03  146 0.4383562  0.02035616
+#> 11    5  HO        0.418   22.300027 3.126001e-03  161 0.4596273  0.04162733
+#> 12    6  HO        0.418   20.755709 3.312577e-03  177 0.3898305 -0.02816949
+#> 13    7  HO        0.418    2.666667 3.992103e-05  195 0.2410256 -0.17697436
+#> 14    8  HO        0.418   21.804304 3.240676e-03  215 0.3953488 -0.02265116
+#> 15    9  HO        0.418   22.393276 3.175350e-03  237 0.3586498 -0.05935021
+#> 16   10  HO        0.418   24.595565 4.581739e-03 1000 0.4330000  0.01500000
+#> 17   11  HO        0.418   23.791196 3.162884e-03 1000 0.4050000 -0.01300000
+#> 18   12  HO        0.418   24.145082 3.010188e-03 1000 0.4130000 -0.00500000
+#> 19   12  HO        0.418   24.145082 3.010188e-03 4000 0.4307500  0.01275000
+#> 20   13  HO        0.418   14.739402 8.348798e-05 1000 0.4070000 -0.01100000
+#> 21   14  HO        0.418   14.159296 2.740219e-04  383 0.3733681 -0.04463185
+#> 22   15  HO        0.418   18.101265 9.263023e-05  421 0.3966746 -0.02132542
+#> 23   16  HO        0.418   28.761281 1.030806e-04  463 0.4406048  0.02260475
+#> 24   17  HO        0.418   26.922446 1.205809e-04  509 0.4322200  0.01422004
+#> 25   18  HO        0.418   10.460154 1.092297e-04  560 0.3696429 -0.04835714
+#> 26   19  HO        0.418   23.017844 2.870381e-03 1000 0.4170000 -0.00100000
+#> 27   19  HO        0.418   23.017844 2.870381e-03 4000 0.4130000 -0.00500000
 ```
 
 At step 0, the algorithm tries a range of possible sample size values,
@@ -176,27 +197,28 @@ closer to a sample size achieving the target power.
 
 Note the `dx` column of the printout, above: this is the derivative of
 the estimated power curve. We see it is not particularly large, meaning
-an increase of $J$ by 4 would result in an estimated change in power of
-a bit less than 0.01, which is below our set tolerance level.
+an increase of $`J`$ by 4 would result in an estimated change in power
+of a bit less than 0.01, which is below our set tolerance level.
 
-We can also plot the path the algorithm took to estimate $J$:
+We can also plot the path the algorithm took to estimate $`J`$:
 
 ``` r
+
 plot(J1, type = "search")
 ```
 
 ![](pump_sample_demo_files/figure-html/unnamed-chunk-14-1.png)
 
 The first plot on the left shows how power varies over different sample
-sizes. The $x$ axis, $pt$, shows different values of the sample size,
-and the $y$ axis shows the corresponding values of power. Each point on
-the graph represents a step in the search algorithm. The number for each
-point corresponds to the step number. In this case, the algorithm took
-only 2 steps after the initial set of points tested at step 0. The size
-of the point corresponds to the weight of the step; steps with more
-precision (higher tnum) are weighted more highly, which generally occur
-in later steps of the algorithm. The purple line shows the target power
-we are trying to achieve.
+sizes. The $`x`$ axis, $`pt`$, shows different values of the sample
+size, and the $`y`$ axis shows the corresponding values of power. Each
+point on the graph represents a step in the search algorithm. The number
+for each point corresponds to the step number. In this case, the
+algorithm took only 2 steps after the initial set of points tested at
+step 0. The size of the point corresponds to the weight of the step;
+steps with more precision (higher tnum) are weighted more highly, which
+generally occur in later steps of the algorithm. The purple line shows
+the target power we are trying to achieve.
 
 The remaining plots show information about the steps taken by the search
 algorithm to arrive at the final results. The middle plot shows the
@@ -204,18 +226,19 @@ calculated power at each step of the algorithm. The final plot shows the
 value(s) of the sample size tried at each step.
 
 We can also examine the power for a grid of points up to our selected
-$J$. This information is a second estimation step to verify our results,
-and can help us examine whether smaller values of $J$ might result in
-similar values of power.
+$`J`$. This information is a second estimation step to verify our
+results, and can help us examine whether smaller values of $`J`$ might
+result in similar values of power.
 
 ``` r
+
 power_curve(J1)
-#>   step        pt    w MTP target.power  power
-#> 1    0    6.0000 2000  HO        0.418 0.3375
-#> 2    0  110.1948 2000  HO        0.418 0.4570
-#> 3    0  343.9264 2000  HO        0.418 0.4435
-#> 4    0  707.1948 2000  HO        0.418 0.4615
-#> 5    0 1200.0000 2000  HO        0.418 0.4745
+#>   step          pt    w MTP target.power  power
+#> 1    0    4.666667 2000  HO        0.418 0.3120
+#> 2    0  105.687430 2000  HO        0.418 0.4570
+#> 3    0  338.583241 2000  HO        0.418 0.4435
+#> 4    0  703.354097 2000  HO        0.418 0.4615
+#> 5    0 1200.000000 2000  HO        0.418 0.4745
 ```
 
 From this output, we can see that the power curve is very flat. This
@@ -225,6 +248,7 @@ similar estimates of power.
 Finally, we can also visualize this power curve.
 
 ``` r
+
 plot(J1)
 ```
 
@@ -246,9 +270,10 @@ then it doesn’t matter how many schools we have for each district–we
 will not be able to explain the district-level variation unless we
 increase the number of districts. Let’s examine a case where we see a
 flat power curve. First, we calculate power for a sample size of `nbar`
-= $50$.
+= $`50`$.
 
 ``` r
+
 pp1 <- pump_power(
     d_m = "d3.3_m3rc2rc",
     MTP = "HO",
@@ -265,14 +290,15 @@ pp1 <- pump_power(
 )
 ```
 
-| MTP  | D1indiv | D2indiv | D3indiv | indiv.mean |   min1 |   min2 | complete |       SE1 |       SE2 |       SE3 | df1 |
-|:-----|--------:|--------:|--------:|-----------:|-------:|-------:|---------:|----------:|----------:|----------:|----:|
-| None |  0.3981 |  0.4015 |  0.3991 |  0.3995667 |     NA |     NA |       NA | 0.1360956 | 0.1360956 | 0.1360956 |  17 |
-| HO   |  0.2594 |  0.2639 |  0.2609 |  0.2614000 | 0.4085 | 0.2336 |   0.1676 |        NA |        NA |        NA |  NA |
+| MTP | D1indiv | D2indiv | D3indiv | indiv.mean | min1 | min2 | complete | SE1 | SE2 | SE3 | df1 |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| None | 0.3981 | 0.4015 | 0.3991 | 0.3995667 | NA | NA | NA | 0.1360956 | 0.1360956 | 0.1360956 | 17 |
+| HO | 0.2594 | 0.2639 | 0.2609 | 0.2614000 | 0.4085 | 0.2336 | 0.1676 | NA | NA | NA | NA |
 
 Now, we attempt to recover the `nbar` value given this power.
 
 ``` r
+
 nbar1 <- pump_sample(
         d_m = "d3.3_m3rc2rc",
         power.definition = "D1indiv",
@@ -295,7 +321,7 @@ nbar1 <- pump_sample(
 
 | MTP | Sample.type | Sample.size | D1indiv.power |
 |:----|:------------|------------:|--------------:|
-| HO  | nbar        |       22327 |         0.252 |
+| HO  | nbar        |       33750 |         0.252 |
 
 The output returns an unexpectedly large sample size! We also see a
 warning message that the derivative is flat.
@@ -304,6 +330,7 @@ Given the warning message about the flatness, we examine the power curve
 plot.
 
 ``` r
+
 plot( nbar1 )
 ```
 
@@ -324,9 +351,10 @@ also give us sufficient power.
 There are two ways to proceed from here. First, we can look at the
 curve, and proceed straight to plugging sample sizes into the power
 function to see if the desired power is achieved. Let’s check a value of
-$10$ for `nbar`.
+$`10`$ for `nbar`.
 
 ``` r
+
 pp2 <- pump_power(
     d_m = "d3.3_m3rc2rc",
     MTP = "HO",
@@ -343,10 +371,10 @@ pp2 <- pump_power(
 )
 ```
 
-| MTP  | D1indiv | D2indiv | D3indiv | indiv.mean |   min1 |   min2 | complete |       SE1 |       SE2 |       SE3 | df1 |
-|:-----|--------:|--------:|--------:|-----------:|-------:|-------:|---------:|----------:|----------:|----------:|----:|
-| None |  0.3922 |  0.3964 |  0.3943 |  0.3943000 |     NA |     NA |       NA | 0.1371496 | 0.1371496 | 0.1371496 |  17 |
-| HO   |  0.2545 |  0.2590 |  0.2549 |  0.2561333 | 0.4006 | 0.2292 |   0.1646 |        NA |        NA |        NA |  NA |
+| MTP | D1indiv | D2indiv | D3indiv | indiv.mean | min1 | min2 | complete | SE1 | SE2 | SE3 | df1 |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| None | 0.3922 | 0.3964 | 0.3943 | 0.3943000 | NA | NA | NA | 0.1371496 | 0.1371496 | 0.1371496 | 17 |
+| HO | 0.2545 | 0.2590 | 0.2549 | 0.2561333 | 0.4006 | 0.2292 | 0.1646 | NA | NA | NA | NA |
 
 Even with a substantially smaller value of `nbar`, we have achieved a
 level of power that is relatively close to our initial target.
@@ -358,6 +386,7 @@ Let’s try setting the maximum to 100, which is still somewhat
 conservative based on the curve.
 
 ``` r
+
 nbar2 <- pump_sample(
     d_m = "d3.3_m3rc2rc",
     typesample = "nbar",
@@ -400,10 +429,11 @@ power.
 
 Let’s return to a scenario very similar to the previous section, but now
 we want a higher target power. In particular, we want a target power of
-$40\%$, which we know is higher than the point at which the power
+$`40\%`$, which we know is higher than the point at which the power
 asymptotes.
 
 ``` r
+
 nbar3 <- pump_sample(
         d_m = "d3.3_m3rc2rc",
         power.definition = "D1indiv",
@@ -424,12 +454,13 @@ nbar3 <- pump_sample(
 
 | MTP | Sample.type | Sample.size | D1indiv.power |
 |:----|:------------|------------:|--------------:|
-| HO  | nbar        |    23632079 |     0.2640118 |
+| HO  | nbar        |    19691402 |     0.2640118 |
 
 We see that the algorithm returns `NA` as the required sample size.
 Let’s examine the power search for more information.
 
 ``` r
+
 plot(nbar3, type = "search")
 ```
 
@@ -437,10 +468,10 @@ plot(nbar3, type = "search")
 
 The first plot shows us the sample size against power. We can see that
 no matter how large `nbar` is, we can never achieve a power above about
-$0.26$. The algorithm keeps trying larger and larger points until it
+$`0.26`$. The algorithm keeps trying larger and larger points until it
 reaches the maximum number of steps, and returns `NA`. If we want to
-achieve a power of $0.4$ with this design, we will need to change other
-parameters, such as $J$ or $K$.
+achieve a power of $`0.4`$ with this design, we will need to change
+other parameters, such as $`J`$ or $`K`$.
 
 ### Note: Non-convergence for feasible designs
 

@@ -100,8 +100,13 @@ J <- pump_sample(d_m = "d2.1_m2fc",
    numCovar.1 = 1, R2.1 = 0.1, ICC.2 = 0.05,
    rho = 0.2, tnum = 500)
 #> Warning: Number of final iterations (2000) not up to specified tolerance (0.01).
+#> Warning: Reached maximum iterations without converging on estimate within tolerance.
+#>  See sample size vignette for suggestions.
 plot(J)
 
 plot(J, type = "search")
+#> Registered S3 method overwritten by 'car':
+#>   method           from
+#>   na.action.merMod lme4
 
 ```

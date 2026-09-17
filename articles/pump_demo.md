@@ -7,7 +7,7 @@
 For randomized controlled trials (RCTs) with a single intervention being
 measured on multiple outcomes, researchers often apply a multiple
 testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust
-$p$-values. Such an adjustment reduces the likelihood of spurious
+$`p`$-values. Such an adjustment reduces the likelihood of spurious
 findings, but also changes the statistical power, sometimes
 substantially, which reduces the probability of detecting effects when
 they do exist. However, this consideration is frequently ignored in
@@ -17,7 +17,7 @@ as a tool for analysts to estimate statistical power, minimum detectable
 effect size, and sample size requirements for multi-level RCTs with
 multiple outcomes. Multiple outcomes are accounted for in two ways.
 First, power estimates from `PUMP` properly account for the adjustment
-in $p$-values from applying a multiple testing procedure. Second, as
+in $`p`$-values from applying a multiple testing procedure. Second, as
 researchers change their focus from one outcome to multiple outcomes,
 different definitions of statistical power emerge. `PUMP` allows
 researchers to consider a variety of definitions of power, as some may
@@ -42,12 +42,12 @@ calculated for estimating the impact of a single intervention on
 multiple outcomes. The package uses a frequentist framework of mixed
 effects regression models, which is currently the prevailing framework
 for estimating impacts from experiments in education and other social
-policy research.[¹](#fn1)
+policy research.[^1]
 
 To our knowledge, none of the existing software tools for power
 calculations allow researchers to account for multiple hypothesis tests
 and the use of a multiple testing procedure (MTP). MTPs adjust
-$p$-values to reduce the likelihood of spurious findings when
+$`p`$-values to reduce the likelihood of spurious findings when
 researchers are testing for effects on multiple outcomes. This
 adjustment can result in a substantial change in statistical power,
 greatly reducing the probability of detecting effects when they do
@@ -57,21 +57,20 @@ the power implications of the MTPs.
 
 Also, as researchers change their focus from one outcome to multiple
 outcomes, multiple definitions of statistical power emerge (Chen et al.
-(2011); Dudoit, Shaffer, and Boldrick (2003); Senn and Bretz (2007);
-Westfall, Tobias, and Wolfinger (2011)). The `PUMP` package allows
-researchers to consider multiple definitions of power, selecting those
-most suited to the goals of their study. The definitions of power
-include:
+(2011); Dudoit et al. (2003); Senn and Bretz (2007); Westfall et al.
+(2011)). The `PUMP` package allows researchers to consider multiple
+definitions of power, selecting those most suited to the goals of their
+study. The definitions of power include:
 
 - **individual power**: the probability of detecting an effect of a
   particular size (specified by the researcher) or larger for each
   hypothesis test. Individual power corresponds to how power is defined
   when there is focus on a single outcome.
-- **$1 -$minimal power**: the probability of detecting effects of at
+- **$`1-`$minimal power**: the probability of detecting effects of at
   least a particular size on at least one outcome. Similarly, the
-  researcher can consider **$d -$minimal power** for any $d$ less than
-  the number of outcomes, or fractional powers, such as $1/2 -$minimal
-  power.
+  researcher can consider **$`d-`$minimal power** for any $`d`$ less
+  than the number of outcomes, or fractional powers, such as
+  $`1/2-`$minimal power.
 - **complete power**: the power to detect effects of at least a
   particular size on *all* outcomes.
 
@@ -317,16 +316,16 @@ level beyond the first, about the intercepts and the treatment impacts:
     representative of a larger super-population, in terms of treatment
     impact estimation.
 
-We denote the research design by $d$, followed by the number of levels
+We denote the research design by $`d`$, followed by the number of levels
 and randomization level, so `d3.1` is a three level design with
-randomization at level one. The model is denoted by $m$, followed by the
-level and the assumption for the intercepts, either $f$ or $r$ and then
-the assumption for the treatment impacts, $c$, $f$, or $r$. For example,
-`m3ff2rc` means at level $3$, we assume fixed intercepts and fixed
-treatment impacts, and at level two we assume random intercepts and
-constant treatment impacts. The full design and model are specified by
-concatenating these together, e.g. `d2.1_m3fc`. The Diplomas Now model,
-for example, is `d3.2_m3fc2rc`.
+randomization at level one. The model is denoted by $`m`$, followed by
+the level and the assumption for the intercepts, either $`f`$ or $`r`$
+and then the assumption for the treatment impacts, $`c`$, $`f`$, or
+$`r`$. For example, `m3ff2rc` means at level $`3`$, we assume fixed
+intercepts and fixed treatment impacts, and at level two we assume
+random intercepts and constant treatment impacts. The full design and
+model are specified by concatenating these together, e.g. `d2.1_m3fc`.
+The Diplomas Now model, for example, is `d3.2_m3fc2rc`.
 
 The full list of supported design and model combinations is below. The
 user can see the list by calling
@@ -341,28 +340,28 @@ combination of design and model, see the Technical Appendix.
 Here we provide a review of the multiple testing procedures supported by
 the `PUMP` package:
 
-- *Bonferroni*: adjusts $p$-values by multiplying them by $M$ to ensure
-  strong control of the FWER. Bonferroni is a simple procedure, but the
-  most conservative.
+- *Bonferroni*: adjusts $`p`$-values by multiplying them by $`M`$ to
+  ensure strong control of the FWER. Bonferroni is a simple procedure,
+  but the most conservative.
 - *Holm*: a step-down version of Bonferroni. Starting from smallest to
-  largest, $p$-values are sequentially adjusted by different
+  largest, $`p`$-values are sequentially adjusted by different
   multipliers. Holm is less conservative than Bonferroni for larger
-  $p$-values.
+  $`p`$-values.
 - *Benjamini-Hochberg*: A sequential, step-up procedure that controls
-  the FDR. Using the BH method, only null hypotheses with $p$-values
+  the FDR. Using the BH method, only null hypotheses with $`p`$-values
   below a certain threshold are rejected, where the threshold is
-  determined by the number of tests and the level $\alpha$.
+  determined by the number of tests and the level $`\alpha`$.
 - *Single-step Westfall-Young*: A permutation-based procedure for
   controlling the FWER, which directly takes into account the joint
   correlation structure of the outcomes. In the single-step approach,
   all outcomes are adjusted by using the permuted distribution of the
-  minimum $p$-value. Although Westfall-Young procedures are less
+  minimum $`p`$-value. Although Westfall-Young procedures are less
   conservative while still protecting against false discoveries, they
   are computationally very intensive.
 - *Step-down Westfall-Young*: A similar approach to the single-step
   procedure, except that outcomes are adjusted sequentially from
   smallest to largest according to the permuted distributions of the
-  corresponding sequential $p$-values.
+  corresponding sequential $`p`$-values.
 
 For a more detailed explanation of each MTP, see Appendix A of Porter
 (2018).
@@ -370,40 +369,41 @@ For a more detailed explanation of each MTP, see Appendix A of Porter
 The following table from Porter (2018) summarizes the important features
 for each of the MTPs supported by `PUMP`.
 
-| Procedure                          | Control | Single-step or stepwise | Accounts for correlation |
-|------------------------------------|---------|-------------------------|--------------------------|
-| Bonferroni (BF)                    | FWER    | single-step             | No                       |
-| Holm (HO)                          | FWER    | stepwise                | No                       |
-| Westfall-Young Single-step (WY-SS) | FWER    | single-step             | Yes                      |
-| Westfall-Young Step-down (WY-SD)   | FWER    | stepwise                | Yes                      |
-| Benjamini-Hochberg (BH)            | FDR     | stepwise                | No                       |
+| Procedure | Control | Single-step or stepwise | Accounts for correlation |
+|----|----|----|----|
+| Bonferroni (BF) | FWER | single-step | No |
+| Holm (HO) | FWER | stepwise | No |
+| Westfall-Young Single-step (WY-SS) | FWER | single-step | Yes |
+| Westfall-Young Step-down (WY-SD) | FWER | stepwise | Yes |
+| Benjamini-Hochberg (BH) | FDR | stepwise | No |
 
 ### Model parameters
 
-The table below shows the parameters that influence $Q_{m}$, the
+The table below shows the parameters that influence $`Q_m`$, the
 standard error, for different designs and models.
 
 A few parameters warrant more explanation.
 
-- The quantity $\text{ICC}$ is the unconditional Intraclass Correlation,
-  and gives a measure of variation at different levels of the model. For
-  each outcome, the ICC for each level is defined as the ratio of the
-  variance at that level divided by the overall variance of the
-  individual outcomes. The ICC includes the variation due to covariates.
+- The quantity $`\text{ICC}`$ is the unconditional Intraclass
+  Correlation, and gives a measure of variation at different levels of
+  the model. For each outcome, the ICC for each level is defined as the
+  ratio of the variance at that level divided by the overall variance of
+  the individual outcomes. The ICC includes the variation due to
+  covariates.
 
-- For each outcome, the quantity omega ($\omega$) for each level is the
-  ratio between impact variation at that level and variation in
+- For each outcome, the quantity omega ($`\omega`$) for each level is
+  the ratio between impact variation at that level and variation in
   intercepts (including covariates) at that level. It is a measure of
   treatment impact heterogeneity.
 
-- The $R^{2}$ expressions are the percent of variation at a particular
+- The $`R^2`$ expressions are the percent of variation at a particular
   level predicted by covariates specific to that level. For simplicity
   we assume covariates at a level are group mean centered, so only
   covariates at a particular level explain variance at that level.
 
 For precise formulae of these expressions, see the Technical Appendix,
 which outlines the assumed data-generating process, and the resulting
-expressions for $\text{ICC}$, $\omega$, and $R^{2}$.
+expressions for $`\text{ICC}`$, $`\omega`$, and $`R^2`$.
 
 In addition to design parameters, there are additional parameters that
 control the precision of the power estimates themselves:
@@ -430,8 +430,8 @@ control the precision of the power estimates themselves:
 In this section, we illustrate how to use the `PUMP` package, using our
 example motivated by the Diplomas Now study. Given the study’s design,
 we ask a natural initial question: What size of impact could we
-reasonably detect after using a MTP to adjust $p$-values to account for
-our multiple outcomes?
+reasonably detect after using a MTP to adjust $`p`$-values to account
+for our multiple outcomes?
 
 We mimic the planning process one might use for planning a study similar
 to Diplomas Now (e.g., if we were planning a replication trial in a
@@ -459,7 +459,7 @@ We next discuss selection of all needed design parameters and modeling
 choices. For further discussion of selecting these parameters see, for
 example Bloom (2006) and Dong and Maynard (2013). For discussion in the
 multiple testing context, especially with regards to the overall power
-measures such as $1 -$minimal or complete power, see Porter (2018); the
+measures such as $`1-`$minimal or complete power, see Porter (2018); the
 findings there are general, as they are a function of the final
 distribution of test statistics. The key insight is that power is a
 function of only a few summarizing elements: the individual-level
@@ -494,14 +494,14 @@ in the report. We assume 50% of the schools are treated; our
 calculations will be approximate here in that we could not actually
 treat exactly 50% in small and odd-sized blocks.
 
-*Control variables.* We next need values for the $R^{2}$ of the possible
+*Control variables.* We next need values for the $`R^2`$ of the possible
 covariates. The report does not provide these quantities, but it does
 mention covariate adjustment in the presentation of the model. Given the
 types of outcomes we are working with, it is unlikely that there are
 highly predictive individual-level covariates, but our prior year
 school-average attendance measures are likely to be highly predictive of
-corresponding school-average outcomes. We thus set $R_{1}^{2} = 0.1$ and
-$R_{2}^{2} = 0.5$. We assume five covariates at level one and three at
+corresponding school-average outcomes. We thus set $`R^2_1 = 0.1`$ and
+$`R^2_2 = 0.5`$. We assume five covariates at level one and three at
 level two; this decision, especially for level one, usually does not
 matter much in practice, unless sample sizes are very small (the number
 of covariates along with sample size determine the degrees of freedom
@@ -537,12 +537,12 @@ need to more research in the field, both empirical and theoretical, to
 further guide this choice.
 
 If the information were available, we could specify different values for
-the design parameters such as the $R^{2}$s and $ICC$s for each outcome,
-if we thought they had different characteristics; for simplicity we do
-not do this here. The `PUMP` package also allows specifying different
-pairwise correlations between the test statistics of the different
-outcomes via a matrix of $\rho$s rather than a single $\rho$; also for
-simplicity, we do not do that here.
+the design parameters such as the $`R^2`$s and $`ICC`$s for each
+outcome, if we thought they had different characteristics; for
+simplicity we do not do this here. The `PUMP` package also allows
+specifying different pairwise correlations between the test statistics
+of the different outcomes via a matrix of $`\rho`$s rather than a single
+$`\rho`$; also for simplicity, we do not do that here.
 
 Once we have established initial values for all needed parameters, we
 first conduct a baseline calculation, and then explore how MDES or other
@@ -571,6 +571,7 @@ Here, for example, we find the MDES if we want an 80% chance of
 detecting an impact on our first outcome when using the Holm procedure:
 
 ``` r
+
 m <- pump_mdes(
   d_m = "d3.2_m3fc2rc",         # choice of design and analysis strategy
   MTP = "HO",                   # multiple testing procedure
@@ -593,6 +594,7 @@ The results are easily made into a nice table via the `knitr` `kable()`
 command:
 
 ``` r
+
 knitr::kable( m, digits = 3 ) %>%
   kableExtra::kable_styling( position = "center" )
 ```
@@ -613,12 +615,13 @@ iterations. Lower tolerance and higher `tnum` values will give more
 exact results (and take more computational time).
 
 Changing the type of power is straightforward: for example, to identify
-the MDES for $1 -$minimal power (i.e., what effect do we have to assume
+the MDES for $`1-`$minimal power (i.e., what effect do we have to assume
 across all observations such that we will find at least one significant
 result with 80% power?), we simply update our result with our new power
 definition:
 
 ``` r
+
 m2 <- update( m, power.definition = "min1" )
 ```
 
@@ -630,10 +633,10 @@ m2 <- update( m, power.definition = "min1" )
 
 The [`update()`](https://rdrr.io/r/stats/update.html) method can replace
 any number of arguments of the prior call with new ones, making
-exploration of different scenarios very straightforward.[²](#fn2) Our
-results show that if we just want to detect at least one outcome with
-80% power, we can reliably detect an effect of size $0.08$ (assuming all
-five outcomes have effects of at least that size).
+exploration of different scenarios very straightforward.[^2] Our results
+show that if we just want to detect at least one outcome with 80% power,
+we can reliably detect an effect of size $`0.08`$ (assuming all five
+outcomes have effects of at least that size).
 
 When estimating power for multiple outcomes, it is important to consider
 cases where some of the outcomes in fact have null, or very small,
@@ -642,13 +645,14 @@ being well measured. One way to do this is to set two of our outcomes to
 no effect with the `numZero` parameter:
 
 ``` r
+
 m3 <- update( m2, numZero = 2 )
 ```
 
     #> mdes result: d3.2_m3fc2rc d_m with 5 outcomes
     #>   target min1 power: 0.80
     #>  MTP Adjusted.MDES min1.power   SE
-    #>   HO    0.08970923    0.79125 0.01
+    #>   HO    0.08971391    0.79125 0.01
     #>  (13 steps in search)
 
 The MDES goes up, as expected: when there are not effects on some
@@ -667,12 +671,13 @@ schools, or the number of blocks to detect an effect of a given size.
 The `pump_sample` method will search over any one of these.
 
 Assuming we have three schools per block, we first calculate how many
-blocks we would need to achieve a MDES of 0.10 for $1 -$minimal power
+blocks we would need to achieve a MDES of 0.10 for $`1-`$minimal power
 (this answers the question of how big of an experiment do we need in
 order to have an 80% chance of finding at least one outcome significant,
 if all outcomes had a true effect size of 0.10):
 
 ``` r
+
 smp <- pump_sample(
   d_m = "d3.2_m3fc2rc",
   MTP = "HO",
@@ -692,7 +697,7 @@ print( smp )
     #>  (18 steps in search)
 
 We would need 15 blocks, rather than the originally specified 21, giving
-45 total schools in our study, to achieve 80% $1 -$minimal power.
+45 total schools in our study, to achieve 80% $`1-`$minimal power.
 
 We recommend checking MDES and sample-size calculators, as the
 estimation error combined with the stochastic search can give results a
@@ -707,6 +712,7 @@ this, we can also increase the number of iterations to get more precise
 estimates of power, as well:
 
 ``` r
+
 p_check <- update( smp, type = "power", tnum = 20000,
                    long.table = TRUE )
 ```
@@ -733,20 +739,20 @@ the five outcomes—they are (up to simulation error) the same since we
 are assuming the same MDES and other design parameters for each. The
 “mean individual” is the mean individual power across all outcomes. The
 first column is power without adjustment, and the second has our power
-with the listed $p$-value adjustment.
+with the listed $`p`$-value adjustment.
 
 The next rows show different multi-outcome definitions of power. In
 particular, `1-minimum` shows the chance of rejecting at least one
 hypotheses. The `complete` row shows the power to reject all hypotheses;
 it is only defined if all outcomes are specified to have a non-zero
-effect.[³](#fn3)
+effect.[^3]
 
 We can look at a power curve of our
 [`pump_sample()`](https://mdrcny.github.io/PUMP/reference/pump_sample.md)
-call to assess how sensitive power is to our level two sample
-size:[⁴](#fn4)
+call to assess how sensitive power is to our level two sample size:[^4]
 
 ``` r
+
 plot( smp )
 ```
 
@@ -757,6 +763,7 @@ it also increases computation time. Thus, for future calculations we
 save a call with the default `tnum` to reduce computation time.
 
 ``` r
+
 pow <- update( p_check, tnum = 10000 )
 ```
 
@@ -783,6 +790,7 @@ adjustments, and plot the results using the default
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) method:
 
 ``` r
+
 p2 <- update( pow,
               MTP = c( "BF", "HO", "WY-SD" ) )
 plot( p2 )
@@ -796,16 +804,16 @@ computation. We could also reduce `tnum` to decrease computation time.
 
 The more sophisticated (and less conservative) adjustment exploits the
 correlation in our outcomes (`rho = 0.4`) to provide higher individual
-power. Note, however, that we do not see elevated rates for $1 -$minimal
-power. Accounting for the correlation of the test statistics when
-adjusting $p$-values can drive some power (individual power) up, but on
-the flip side $1 -$power can be driven down as the lack of independence
-between tests gives fewer chances for a significant result. See Porter
-(2018) for further discussion; while the paper focuses on the multisite
-randomized trial context, the lessons learned there apply to all designs
-as the only substantive differences between different design and
-modeling choices is in how we calculate the unadjusted distribution of
-their test statistics.
+power. Note, however, that we do not see elevated rates for
+$`1-`$minimal power. Accounting for the correlation of the test
+statistics when adjusting $`p`$-values can drive some power (individual
+power) up, but on the flip side $`1-`$power can be driven down as the
+lack of independence between tests gives fewer chances for a significant
+result. See Porter (2018) for further discussion; while the paper
+focuses on the multisite randomized trial context, the lessons learned
+there apply to all designs as the only substantive differences between
+different design and modeling choices is in how we calculate the
+unadjusted distribution of their test statistics.
 
 ### Exploring sensitivity to design parameters
 
@@ -843,6 +851,7 @@ above. As a further example, here we examine what happens if the ICCs
 are more equally split across levels two and three:
 
 ``` r
+
 p_b <- update( pow, ICC.2 = 0.20, ICC.3 = 0.25 )
 print( p_b )
 ```
@@ -866,6 +875,7 @@ many of our design parameters by outcome. For example, if we thought we
 had better predictive covariates for our second outcome, we might try:
 
 ``` r
+
 p_d <- update( pow,
                R2.1 = c( 0.1, 0.3, 0.1, 0.2, 0.2 ),
                R2.2 = c( 0.4, 0.8, 0.3, 0.2, 0.2 ) )
@@ -883,7 +893,7 @@ print( p_d )
     #>  0.413 0.238 0.138    0.100    
     #>  0.001 <= MCSE <= 0.002
 
-Notice how the individual powers are heavily impacted. The $d$-minimal
+Notice how the individual powers are heavily impacted. The $`d`$-minimal
 powers naturally take the varying outcomes into account as we are
 calculating a joint distribution of test statistics that will have the
 correct marginal distributions based on these different design parameter
@@ -896,6 +906,7 @@ with
 or [`summary()`](https://rdrr.io/r/base/summary.html):
 
 ``` r
+
 summary( p_d )
 #> power result: d3.2_m3fc2rc d_m with 5 outcomes
 #> 
@@ -940,6 +951,7 @@ min1 power by calling
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) on the object.
 
 ``` r
+
 grid <- update_grid( pow,
             ICC.2 = seq( 0, 0.3, 0.05 ),
             ICC.3 = seq( 0, 0.60, 0.20 ) )
@@ -961,15 +973,21 @@ and
 
 We see that higher ICC.2 radically reduces power to detect anything and
 ICC.3 does little. To understand why, we turn to our standard error
-formula for this design and model: $$\begin{array}{r}
-{SE\left( \widehat{\tau} \right) = \sqrt{\frac{\text{ICC}_{2}\left( 1 - R_{2}^{2} \right)}{\bar{T}\left( 1 - \bar{T} \right)JK} + \frac{\left( 1 - \text{ICC}_{2} - \text{ICC}_{3} \right)\left( 1 - R_{1}^{2} \right)}{\bar{T}\left( 1 - \bar{T} \right)JK\bar{n}}}.}
-\end{array}$$ In the above, the $\bar{n} = 258$ students per group makes
-the second term very small compared to the first, regardless of the
-ICC.3 value. The first term, however, is a direct scaling of ICC.2;
-changing it will change the standard error, and therefore power, a lot.
-All provided designs and models implemented in the package are
-discussed, along with corresponding formula such as these, in our
-technical supplement accompanying this paper and package.
+formula for this design and model:
+``` math
+\begin{aligned}
+SE( \hat{\tau} ) = \sqrt{
+\frac{\text{ICC}_{2}(1 - R^2_{2})}{\bar{T}(1 - \bar{T}) JK} +
+\frac{(1-\text{ICC}_{2} - \text{ICC}_{3})(1-R^2_{1})}{\bar{T}(1 - \bar{T}) J K\bar{n}} } .
+\end{aligned}
+```
+In the above, the $`\bar{n} = 258`$ students per group makes the second
+term very small compared to the first, regardless of the ICC.3 value.
+The first term, however, is a direct scaling of ICC.2; changing it will
+change the standard error, and therefore power, a lot. All provided
+designs and models implemented in the package are discussed, along with
+corresponding formula such as these, in our technical supplement
+accompanying this paper and package.
 
 For grid searches we recommend reducing the number of permutations, via
 `tnum`, to speed up computation. As `tnum` shrinks, we will get
@@ -989,16 +1007,17 @@ method.
 
 #### Exploring the impact of rho
 
-The correlation of test statistics, $\rho$, is a critical parameter for
-how power will play out across the multiple tests. For example, with
+The correlation of test statistics, $`\rho`$, is a critical parameter
+for how power will play out across the multiple tests. For example, with
 Westfall-Young, we saw that the correlation can improve our individual
 power, as compared to Bonferroni. We might not know what will happen to
-$2 -$minimal power, however: on one hand, correlated statistics make
+$`2-`$minimal power, however: on one hand, correlated statistics make
 individual adjustment less severe, and on the other correlation means we
 succeed or fail all together. We can explore this question relatively
 easily by letting `rho` vary as so:
 
 ``` r
+
 gridRho <- update_grid( pow,
               MTP = c( "BF", "WY-SD" ),
               rho = seq( 0, 0.9, by = 0.15 ),
@@ -1009,6 +1028,7 @@ gridRho <- update_grid( pow,
 We then plot our results.
 
 ``` r
+
 plot( gridRho )
 ```
 
@@ -1017,8 +1037,8 @@ plot( gridRho )
 First, we see the benefit of the Westfall-Young single-step procedure is
 minimal, as compared to Bonferroni. Second, the impact on individual
 adjustment is flat, as anticipated. Third, across a very broad range of
-rho, we maintain good $1 -$minimal power. Complete power climbs as
-correlation increases, and $2 -$minimal power is generally unchanged.
+rho, we maintain good $`1-`$minimal power. Complete power climbs as
+correlation increases, and $`2-`$minimal power is generally unchanged.
 
 #### Exploring the impact of null outcomes
 
@@ -1030,6 +1050,7 @@ varying the number of outcomes that have no treatment impact via the
 `numZero` design parameter:
 
 ``` r
+
 gridZero <- update_grid( pow,
                          numZero = 0:4,
                          M = 5 )
@@ -1133,16 +1154,16 @@ varies with just `ICC.2`, and the second plot does the opposite.
 
 ## References
 
-Bloom, Howard S. 2006. “The Core Analytics of Randomized Experiments for
-Social Research.” MDRC.
+Bloom, Howard S. 2006. *The Core Analytics of Randomized Experiments for
+Social Research*. MDRC.
 
 Chen, J., J. Luo, K. Liu, and D. Mehrotra. 2011. “On Power and Sample
 Size Computation for Multiple Testing Procedures.” *Computational
 Statistics and Data Analysis* 55: 110–22.
 
-Corrin, W., S. Sepanik, R. Rosen, and A. Shane. 2016. “Addressing Early
+Corrin, W., S. Sepanik, R. Rosen, and A. Shane. 2016. *Addressing Early
 Warning Indicators: Interim Impact Findings from the Investing in
-Innovation (I3) Evaluation of Diplomas Now.” MDRC.
+Innovation (I3) Evaluation of Diplomas Now*. MDRC.
 
 Dong, Nianbo, and Rebecca Maynard. 2013. “PowerUP!: A Tool for
 Calculating Minimum Detectable Effect Sizes and Minimum Required Sample
@@ -1157,12 +1178,12 @@ Gelman, A., J. Hill, and M. Yajima. 2007. *Data Analysis Using
 Regression and Multilevel/Hierarchical Models*. Cambridge University
 Press.
 
-———. 2012. “Why We (Usually) Don’t Have to Worry about Multiple
-Comparisons.” *Journal of Research on Educational Effectiveness* 5:
-189–211.
+Gelman, A., J. Hill, and M. Yajima. 2012. “Why We (Usually) Don’t Have
+to Worry about Multiple Comparisons.” *Journal of Research on
+Educational Effectiveness* 5: 189–211.
 
-Hedges, Larry V., and Christopher Rhoads. 2010. “Statistical Power
-Analysis in Education Research.” National Center for Special Education
+Hedges, Larry V., and Christopher Rhoads. 2010. *Statistical Power
+Analysis in Education Research*. National Center for Special Education
 Research.
 <https://ies.ed.gov/use-work/resource-library/report/research-report/statistical-power-analysis-education-research>.
 
@@ -1171,11 +1192,11 @@ Investigate Effects on Multiple Outcomes: A Guide for Researchers.”
 *Journal of Research on Educational Effectiveness* 11: 267–95.
 
 Raudenbush, S. W., H. Bloom, J. Spybrook, and A. Martinez. 2011.
-“Optimal Design with Empirical Information (OD+) (Version 3.0).”
+*Optimal Design with Empirical Information (OD+) (Version 3.0)*.
 <https://wtgrantfoundation.org/optimal-design-with-empirical-information-od>.
 
-Schochet, Peter Z. 2008. “Guidelines for Multiple Testing in Impact
-Evaluations of Educational Interventions. Final Report.” Mathematica
+Schochet, Peter Z. 2008. *Guidelines for Multiple Testing in Impact
+Evaluations of Educational Interventions. Final Report*. Mathematica
 Policy Research, Inc. P.O. Box 2393, Princeton, NJ 08543-2393.
 <https://eric.ed.gov/?id=ED502199>.
 
@@ -1186,21 +1207,19 @@ Multiple Endpoints Are Considered.” *Pharmaceutical Statistics* 6:
 Westfall, Peter H, R. D. Tobias, and R. D. Wolfinger. 2011. *Multiple
 Comparisons and Multiple Tests Using SAS*. The SAS Institute.
 
-------------------------------------------------------------------------
+[^1]: Other options include nonparametric or Bayesian methods, but these
+    are less prevalent in applied research (for example, see Gelman et
+    al. (2012), Gelman et al. (2007)).
 
-1.  Other options include nonparametric or Bayesian methods, but these
-    are less prevalent in applied research (for example, see Gelman,
-    Hill, and Yajima (2012), Gelman, Hill, and Yajima (2007)).
-
-2.  The update() method re-runs the underlying call of pump_mdes(),
+[^2]: The update() method re-runs the underlying call of pump_mdes(),
     pump_sample(), or pump_power() with the revised set of design
     parameters. You can even change which call to use via the type
     parameter.
 
-3.  The package does not show power for these without adjustment for
+[^3]: The package does not show power for these without adjustment for
     multiple testing, as that power would be grossly inflated and
     meaningless.
 
-4.  The points on the plots show the evaluated simulation trials, with
+[^4]: The points on the plots show the evaluated simulation trials, with
     larger points corresponding to more iterations and greater
     precision.

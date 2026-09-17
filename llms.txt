@@ -22,7 +22,7 @@ Using [pkgdown](https://pkgdown.r-lib.org/).
 For randomized controlled trials (RCTs) with a single intervention being
 measured on multiple outcomes, researchers often apply a multiple
 testing procedure (such as Bonferroni or Benjamini-Hochberg) to adjust
-$p$-values. Such an adjustment reduces the likelihood of spurious
+$`p`$-values. Such an adjustment reduces the likelihood of spurious
 findings, but also changes the statistical power, sometimes
 substantially, which reduces the probability of detecting effects when
 they do exist. However, this consideration is frequently ignored in
@@ -33,7 +33,7 @@ We introduce the PUMP R package as a tool for analysts to estimate
 statistical power, minimum detectable effect size, and sample size
 requirements for multi-level RCTs with multiple outcomes. Multiple
 outcomes are accounted for in two ways. First, power estimates from PUMP
-properly account for the adjustment in $p$-values from applying a
+properly account for the adjustment in $`p`$-values from applying a
 multiple testing procedure. Second, as researchers change their focus
 from one outcome to multiple outcomes, different definitions of
 statistical power emerge.
@@ -59,7 +59,8 @@ most effectively:
 - [Detailed technical appendix giving power formula for all
   models](https://www.jstatsoft.org/index.php/jss/article/view/v108i06/4541)
 - [Shiny app Power Calculator using this
-  package](https://public.mdrc.org/pump/)
+  package](https://public.mdrc.org/pump/). **Note**: This app is only
+  available when browsing from a United States of America location.
 - [A slide-deck overview of
   PUMP](https://github.com/kristenbhunter/presentations/tree/master/2022/NCI2022)
 
